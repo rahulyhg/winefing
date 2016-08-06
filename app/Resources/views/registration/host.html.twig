@@ -1,0 +1,292 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <form id="account" name="account" class="display-block" data-toggle="validator">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <fieldset class="form-group" id="lastname">
+                                <label for="lastName">*{{ 'label.last_name'|trans }} : </label>
+                                <input class="form-control" id="lastName" name="lastName" required>
+                                <span id="lastNameSpan" class="display-none glyphicon glyphicon-ok form-control-feedback"></span>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-6">
+                            <fieldset class="form-group" id="firstName">
+                                <label for="firstName">*Prenom : </label>
+                                <input class="form-control" id="firstname" name="firstName" required>
+                                <span id="firstNameSpan" class="display-none glyphicon glyphicon-ok form-control-feedback"></span>
+                            </fieldset>
+                        </div>
+                    </div>
+                    <fieldset class="form-group" id="phoneNumber">
+                        <label for="phoneNumber">*Téléphone : </label>
+                        <input class="form-control" id="phoneNumber" maxlength="10" name="phoneNumber" required>
+                        <span id="phoneNumberSpan" class="display-none glyphicon glyphicon-ok form-control-feedback"></span>
+                    </fieldset>
+                    <fieldset class="form-group" id="emailFieldset">
+                        <label for="email">*Email : </label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                        <span id="emailSpan" class="display-none glyphicon glyphicon-ok form-control-feedback"></span>
+                    </fieldset>
+                    <div class="alert alert-danger display-none" id="emailError">
+                        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                        <strong>Attention </strong> Un compte est déjà enregistré pour cet email. <a href="#">Mot de passe oublié.</a>
+                    </div>
+                    <fieldset id="emailRepeatFieldset" class="form-group has-feedback">
+                        <label for="email">*Confirmation email : </label>
+                        <input type="email" class="form-control" id="emailRepeat" name="emailRepeat" required>
+                        <span id="emailRepeatSpan" class="display-none glyphicon glyphicon-ok form-control-feedback"></span>
+                    </fieldset>
+                    <fieldset class="form-group" id="passwordFieldset">
+                        <label for="password">*Mot de passe :</label>
+                        <input data-toggle="popover" data-trigger="focus" data-placement="right" data-content="Le mot de passe doit contenir une majuscule, une minuscule, un chiffre et 6 caractères." type="password" class="form-control" id="password" name="password" required >
+                        <span id="passwordSpan" class="display-none glyphicon glyphicon-ok form-control-feedback"></span>
+                    </fieldset>
+                    <fieldset class="form-group" id="passwordRepeatFieldset">
+                        <label for="passwordRepeat">*Mot de passe :</label>
+                        <input type="password" class="form-control" id="passwordRepeat" name="passwordRepeat" required>
+                        <span id="passwordRepeatSpan" class="display-none glyphicon glyphicon-ok form-control-feedback"></span>
+                    </fieldset>
+                    <input type="button" id="suivant" name="suivant" value="Suivant" class="btn btn-primary pull-right" />
+                </form>
+                <form id="property" class="display-none">
+                    <fieldset class="form-group">
+                        <label for="title">Titre du domaine : </label>
+                        <input class="form-control" id="name" name="name">
+                    </fieldset>
+                    <fieldset class="form-group" id="addressFieldset">
+                        <label for="address">Adresse : </label>
+                        <input class="form-control"  id="address" name="address">
+                        <span id="addressSpan" class="display-none glyphicon glyphicon-ok form-control-feedback"></span>
+                    </fieldset>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <fieldset class="form-group">
+                                <label for="postal_code">Code Postal : </label>
+                                <input class="form-control" id="postal_code" name="postal_code" disabled="true">
+                            </fieldset>
+                        </div>
+                        <div class="col-md-6">
+                            <fieldset class="form-group">
+                                <label for="locality">Ville : </label>
+                                <input class="form-control" id="locality" name="locality" disabled="true">
+                            </fieldset>
+                        </div>
+                    </div>
+                    <fieldset class="form-group">
+                        <label for="country">Country : </label>
+                        <input class="form-control" id="country" name="country" disabled="true">
+                    </fieldset>
+                    <input type="button" value="Précédent" id="before" class="btn btn-primary pull-left" />
+                    <input type="button" value="Envoyer" id="suivant2" class="btn btn-primary pull-right" />
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        $('#phoneNumber').keyup(function () {
+            if (this.value != this.value.replace(/[^0-9\.]/g, '')) {
+                this.value = this.value.replace(/[^0-9\.]/g, '');
+            }
+        });
+        $("#email").keyup(function() {
+            if($("#emailRepeat").val() != '') {
+                changeRepeatInputCss('email');
+            }
+        });
+        $("#password").keyup(function() {
+            var upperCase= new RegExp('[A-Z]');
+            var lowerCase= new RegExp('[a-z]');
+            var numbers = new RegExp('[0-9]');
+            if($(this).val().match(upperCase) && $(this).val().match(lowerCase) && $(this).val().match(numbers))
+            {
+                $('#password').popover('hide');
+                changeInputCss('password', true);
+            } else {
+                $('#password').popover('show');
+                changeInputCss('password', false);
+            }
+            if($("#passwordRepeat").val() != '') {
+                changeRepeatInputCss('password');
+            }
+        });
+
+        function geolocate() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var geolocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    var circle = new google.maps.Circle({
+                        center: geolocation,
+                        radius: position.coords.accuracy
+                    });
+                    autocomplete.setBounds(circle.getBounds());
+                });
+            }
+        }
+        $("#before").on('click', function() {
+            hiddeForm('property');
+            displayForm('account');
+        });
+        $("#emailRepeat").keyup(function() {
+            changeRepeatInputCss('email');
+        });
+        $("#passwordRepeat").keyup(function() {
+            changeRepeatInputCss('password');
+        });
+        $( "#suivant" ).on('click', function() {
+            $.ajax({
+                url: "{{ path('host_registration_add') }}",
+                type: 'POST',
+                data: $('#account').serialize(),
+                async: false,
+                success: function (data, textStatus, jqXHR) {
+                    hiddeForm('account');
+                    displayForm('property');
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    $("#emailError").removeClass().addClass('alert alert-danger');
+                    changeInputCss('email', false);
+                    console.log(textStatus);
+                    console.log(jqXHR);
+                    console.log(errorThrown);
+                }
+            });
+        });
+        function changeRepeatInputCss(input) {
+            if($( "#" + input + 'Repeat').val() == $("#" + input).val()) {
+                $("#" + input + 'RepeatFieldset').removeClass().addClass('form-group has-feedback has-success');
+                $("#" + input + 'RepeatSpan').removeClass().addClass('glyphicon glyphicon-ok form-control-feedback');
+            } else {$("#" + input + 'RepeatFieldset').removeClass().addClass('form-group has-error has-feedback');
+                $("#" + input + 'RepeatSpan').removeClass().addClass('glyphicon glyphicon-remove form-control-feedback');
+            }
+        }
+        /**
+         * Permet de changer le style de l'input passé en parametre en success ou error.
+         * @param input
+         * @param success
+         */
+        function changeInputCss(input, success) {
+            if(success) {
+                $("#" + input + 'Fieldset').removeClass().addClass('form-group has-feedback has-success');
+                $("#" + input + 'Span').removeClass().addClass('glyphicon glyphicon-ok form-control-feedback');
+            } else {
+                $("#" + input + 'Fieldset').removeClass().addClass('form-group has-error has-feedback');
+                $("#" + input + 'Span').removeClass().addClass('glyphicon glyphicon-remove form-control-feedback');
+            }
+        }
+
+        function displayForm(idForm) {
+            $("#" + idForm).removeClass().addClass('form-group display-block');
+        }
+
+        function hiddeForm(idForm) {
+            $("#" + idForm).removeClass().addClass('form-group display-none');
+        }
+
+
+        var placeSearch, address;
+        var componentForm = {
+            locality: 'long_name',
+            country: 'long_name',
+            postal_code: 'short_name'
+        };
+        function initAutocomplete() {
+            // Create the autocomplete object, restricting the search to geographical
+            // location types.
+            address = new google.maps.places.Autocomplete(
+                    /** @type {!HTMLInputElement} */(document.getElementById('address')),
+                    {types: ['geocode']});
+
+            // When the user selects an address from the dropdown, populate the address
+            // fields in the form.
+            address.addListener('place_changed', fillInAddress);
+        }
+
+        function fillInAddress() {
+            // Get the place details from the autocomplete object.
+            var place = address.getPlace();
+
+            // Get each component of the address from the place details
+            // and fill the corresponding field on the form.
+            if(place.address_components != undefined) {
+                for (var i = 0; i < place.address_components.length; i++) {
+                    var addressType = place.address_components[i].types[0];
+                    if (addressType == "locality") {
+                        var val = place.address_components[i][componentForm[addressType]];
+                        document.getElementById(addressType).value = val;
+                    }
+                    if (addressType == "country") {
+                        var val = place.address_components[i][componentForm[addressType]];
+                        document.getElementById(addressType).value = val;
+                    }
+                    if (addressType == "postal_code") {
+                        var val = place.address_components[i][componentForm[addressType]];
+                        document.getElementById(addressType).value = val;
+                    }
+                }
+            }
+            geocodeAddress();
+        }
+
+        $("#suivant2").on('click', function() {
+            console.log(document.getElementById("postal_code").value);
+            geocodeAddressFinal(document.getElementById("address").value, function(res) {
+                if(res != null) {
+                    console.log('good');
+                    $('#country').prop("disabled", false);
+                    $('#locality').prop("disabled", false);
+                    $('#postal_code').prop("disabled", false);
+                    $.ajax({
+                        url: "{{ path('property_registration_add') }}",
+                        type: 'POST',
+                        data: $('#property').serialize(),
+                        async: false,
+                        success: function (data, textStatus, jqXHR) {
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                        }
+                    });
+                } else {
+                    console.log('not good');
+                }
+            });
+
+        });
+        function geocodeAddress() {
+            var geocoder = new google.maps.Geocoder();
+            var address = document.getElementById("address").value;
+            geocoder.geocode( { 'address': address}, function(results, status) {
+                if (status == google.maps.GeocoderStatus.OK && results[0]['geometry']['location_type'] == google.maps.GeocoderLocationType.ROOFTOP) {
+                    changeInputCss('address', true);
+                    return true;
+                } else {
+                    changeInputCss('address', false);
+                    return false;
+                }
+            });
+
+        }
+
+        geocodeAddressFinal = function(address, f){
+            var geocoder = new google.maps.Geocoder();
+            if(typeof address != 'undefined' && address != null) {
+                geocoder.geocode( { 'address': address}, function(results, status) {
+                    if (status == google.maps.GeocoderStatus.OK && results[0]['geometry']['location_type'] == google.maps.GeocoderLocationType.ROOFTOP) {
+                        f(results);
+                    } else {
+                        f(null);
+                    }
+                });
+            }
+            return -1;
+        }
+    </script>
+    <script type="text/javascript" src="http://maps.google.com/maps/api/js?key=AIzaSyBXbn5jGttQkXWIfV91bBmsMg-HS_o_f7o&signed_in=true&libraries=places&callback=initAutocomplete"
+            async defer></script>
+{% endblock %}
