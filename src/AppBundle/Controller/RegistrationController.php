@@ -8,6 +8,8 @@
 
 namespace AppBundle\Controller;
 
+use Symfony\Component\Translation\Translator;
+use Symfony\Component\Translation\Loader\ArrayLoader;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -29,6 +31,7 @@ class RegistrationController extends Controller
      */
     public function test()
     {
+
         return $this->render('host/index.html.twig');
     }
     /**
@@ -36,7 +39,6 @@ class RegistrationController extends Controller
      */
     public function host()
     {
-        var_dump($this->get('translator')->trans('label.last_name'));
         return $this->render('registration/host.html.twig');
     }
 
@@ -46,6 +48,7 @@ class RegistrationController extends Controller
      */
     public function addHost(Request $request)
     {
+        var_dump($request->request->all());
         $session = new Session();
         $userManager = $this->get('fos_user.user_manager');
         $email = $request->request->get('email');

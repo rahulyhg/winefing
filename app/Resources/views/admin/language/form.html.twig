@@ -1,0 +1,35 @@
+
+
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Ajouter une langue</h4>
+                </div>
+                {{ form_start(form) }}
+                <div class="modal-body">
+                    <fieldset class="form-group" id="name">
+                        {{ form_widget(form.id,  { 'attr': {'required': 'false'} }) }}
+                    </fieldset>
+                    <fieldset class="form-group" id="name">
+                        {{ form_label(form.name) }}
+                        {{ form_widget(form.name,  { 'attr': {'class': 'form-control'} }) }}
+                    </fieldset>
+                    <fieldset class="form-group" id="code">
+                        {{ form_label(form.code) }}
+                        {{ form_widget(form.code,  { 'attr': {'class': 'form-control'} }) }}
+                    </fieldset>
+                    <fieldset class="form-group" id="picture">
+                        {{ form_label(form.picture) }}
+                        {{ form_widget(form.picture,  { 'attr': {'class': 'form-control'} }) }}
+                    </fieldset>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+                    <input type="button" value="Ajouter" id="add" class="btn btn-primary pull-right" />
+                    {{ form_widget(form.save)}}
+                </div>
+                {{ form_end(form) }}
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->

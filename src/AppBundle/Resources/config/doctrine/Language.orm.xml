@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity repository-class="AppBundle\Repository\LanguageRepository" name="AppBundle\Entity\Language">
+    <id name="id" type="integer" column="id">
+      <generator strategy="AUTO"/>
+    </id>
+    <field name="code" type="string" column="code" length="50" unique="true"/>
+    <field name="name" type="string" column="name" length="50"/>
+    <field name="picture" type="string" column="picture" length="1000" nullable="true"/>
+  </entity>
+</doctrine-mapping>

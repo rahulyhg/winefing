@@ -1,0 +1,90 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="col-md-2">
+        <nav class="navbar navbar-default" role="navigation">
+
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+
+            <div class="collapse navbar-collapse">
+                <ul class="nav nav-stacked">
+                    <li class="active"><a href="#">Mon domaine</a></li>
+                    <li><a href="#">Mes offres</a></li>
+                    <li><a href="#">Réservations</a></li>
+                    <li><a href="#">Mon compte</a></li>
+                </ul>
+
+
+            </div><!-- /.navbar-collapse -->
+        </nav>
+
+    </div><!--/end left column-->
+
+    <div class="col-md-10">
+        <div class="container">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Nom</th>
+                    <th>Photos</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for language in languages %}
+                    <tr>
+                        <td>{{ language.code }}</td>
+                        <td>{{ language.name }}</td>
+                        <td>{{ language.picture }}</td>
+                        <td><input onclick="openModal(this)" type="button" class="btn btn-primary" data-code="{{ language.code }}" data-name="{{ language.name }}" data-picture="{{ language.picture }}" data-id="{{ language.id }}" value="Editer"/></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <button type="button" class="btn btn-primary pull-left" data-toggle="modal" data-target="#myModal" data-path="{{path('language_create')}}">
+            Ajouter une langue
+        </button>
+    </div>
+    <a data-toggle="modal" href="{{ path('language_create') }}" data-target="#language">click me</a>
+    <div class="modal fade" tabindex="-1" role="dialog" id="language">
+        {{ render(controller('AppBundle:Language:Create')) }}
+    </div>
+    <script>
+    $( "#add" ).on('click', function() {
+        $.ajax({
+            url: "{{ path('language_save') }}",
+            type: 'POST',
+            data: $('#language').serialize(),
+            async: false,
+            success: function (data, textStatus, jqXHR) {
+                console.log("good");
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(textStatus);
+                console.log(jqXHR);
+                console.log(errorThrown);
+            }
+        });
+    });
+
+    function openModal(elt) {
+        console.log($(elt).data('code'));
+        $("#myModal").find('input[name="language[code]"]').val($(elt).data('code'));
+        $("#myModal").find('input[name="language[name]"]').val($(elt).data('name'));
+        $("#myModal").find('input[name="language[picture]"]').val($(elt).data('picture'));
+        $("#myModal").find('input[name="language[id]"]').val($(elt).data('id'));
+        $('#myModal').modal('show');
+    }
+    $('#myModal').on('hidden.bs.modal', function () {
+        $(this).find('form').trigger('reset');
+    })
+</script>
+{% endblock %}

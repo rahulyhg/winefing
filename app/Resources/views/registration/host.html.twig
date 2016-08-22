@@ -8,14 +8,14 @@
                     <div class="row">
                         <div class="col-md-6">
                             <fieldset class="form-group" id="lastname">
-                                <label for="lastName">*{{ 'label.last_name'|trans }} : </label>
+                                <label for="lastName">*{% trans %}label.last_name{% endtrans %} : </label>
                                 <input class="form-control" id="lastName" name="lastName" required>
                                 <span id="lastNameSpan" class="display-none glyphicon glyphicon-ok form-control-feedback"></span>
                             </fieldset>
                         </div>
                         <div class="col-md-6">
                             <fieldset class="form-group" id="firstName">
-                                <label for="firstName">*Prenom : </label>
+                                <label for="firstName">*{% trans %}label.first_name{% endtrans %} : </label>
                                 <input class="form-control" id="firstname" name="firstName" required>
                                 <span id="firstNameSpan" class="display-none glyphicon glyphicon-ok form-control-feedback"></span>
                             </fieldset>
@@ -58,26 +58,26 @@
                         <input class="form-control" id="name" name="name">
                     </fieldset>
                     <fieldset class="form-group" id="addressFieldset">
-                        <label for="address">Adresse : </label>
+                        <label for="address">*Adresse : </label>
                         <input class="form-control"  id="address" name="address">
                         <span id="addressSpan" class="display-none glyphicon glyphicon-ok form-control-feedback"></span>
                     </fieldset>
                     <div class="row">
                         <div class="col-md-6">
                             <fieldset class="form-group">
-                                <label for="postal_code">Code Postal : </label>
+                                <label for="postal_code">*Code Postal : </label>
                                 <input class="form-control" id="postal_code" name="postal_code" disabled="true">
                             </fieldset>
                         </div>
                         <div class="col-md-6">
                             <fieldset class="form-group">
-                                <label for="locality">Ville : </label>
+                                <label for="locality">*Ville : </label>
                                 <input class="form-control" id="locality" name="locality" disabled="true">
                             </fieldset>
                         </div>
                     </div>
                     <fieldset class="form-group">
-                        <label for="country">Country : </label>
+                        <label for="country">*Country : </label>
                         <input class="form-control" id="country" name="country" disabled="true">
                     </fieldset>
                     <input type="button" value="Précédent" id="before" class="btn btn-primary pull-left" />
@@ -211,6 +211,9 @@
         function fillInAddress() {
             // Get the place details from the autocomplete object.
             var place = address.getPlace();
+            var localityCounter = 0;
+            var countryCounter = 0;
+            var postalCodeCounter = 0;
 
             // Get each component of the address from the place details
             // and fill the corresponding field on the form.
@@ -220,16 +223,28 @@
                     if (addressType == "locality") {
                         var val = place.address_components[i][componentForm[addressType]];
                         document.getElementById(addressType).value = val;
+                        localityCounter++;
                     }
                     if (addressType == "country") {
                         var val = place.address_components[i][componentForm[addressType]];
                         document.getElementById(addressType).value = val;
+                        countryCounter++;
                     }
                     if (addressType == "postal_code") {
                         var val = place.address_components[i][componentForm[addressType]];
                         document.getElementById(addressType).value = val;
+                        postalCodeCounter++;
                     }
                 }
+            }
+            if(localityCounter == 0) {
+                document.getElementById('locality').value = '';
+            }
+            if(countryCounter == 0) {
+                document.getElementById('country').value = '';
+            }
+            if(postalCodeCounter == 0) {
+                document.getElementById('postal_code').value = '';
             }
             geocodeAddress();
         }
@@ -238,10 +253,15 @@
             console.log(document.getElementById("postal_code").value);
             geocodeAddressFinal(document.getElementById("address").value, function(res) {
                 if(res != null) {
-                    console.log('good');
+                    console.log('lol' + res[0]['geometry']['location']);
+                    console.log('lol' + res[0].geometry.location.lat());
                     $('#country').prop("disabled", false);
                     $('#locality').prop("disabled", false);
                     $('#postal_code').prop("disabled", false);
+                    var data = $('#property').serializeArray(); // convert form to array
+                    data.push({name: "name", value: document.getElementById("name").value});
+                    data.push({name: "lng", value: res[0].geometry.location.lng()});
+                    data.push({name: "lat", value: res[0].geometry.location.lat()});
                     $.ajax({
                         url: "{{ path('property_registration_add') }}",
                         type: 'POST',
