@@ -1,3 +1,8 @@
+winefing_api:
+    type: rest
+    prefix: /api
+    resource: "@WinefingApiBundle/Resources/config/routing.yml"
+
 app:
     resource: "@AppBundle/Controller/"
     type:     annotation

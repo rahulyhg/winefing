@@ -1,0 +1,4 @@
+language:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\LanguageController
+    name_prefix:  api_
