@@ -17,6 +17,7 @@ use Doctrine\ORM\EntityManager;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Winefing\ApiBundle\Entity\Language;
 
 class LanguageController extends Controller implements ClassResourceInterface
 {
@@ -34,14 +35,24 @@ class LanguageController extends Controller implements ClassResourceInterface
         return new Response($json);
     }
 
-    public function newAction(Request $request)
+    public function postAction(Request $request)
     {
       $em = $this->getDoctrine()->getManager();
       $language = new Language();
-/*      $language.setCode($request->request->get('code'));
-      $language.setName($request->request->get('name'));
-      $language.setPicture($request->request->get('picture'));*/
-      $em->flush();
+      
+        var_dump($request->request->all());
+        var_dump($request->request->get('name'));
+      $language->setCode($request->request->get('code'));
+      $language->setName($request->request->get('name'));
+      $language->setPicture("lol");
+
+        $encoders = array(new JsonEncoder());
+        $normalizers = array(new ObjectNormalizer());
+        $serializer = new Serializer($normalizers, $encoders);
+        $json = $serializer->serialize($language, 'json');
+/*        $em->merge($language);
+      $em->flush();*/
+      return new Response($json);
     } // "new_users"     [GET] /users/new
     public function editAction($id)
     {

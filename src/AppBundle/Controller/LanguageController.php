@@ -25,7 +25,7 @@ class LanguageController extends Controller
     /**
      * @Route("/language", name="language")
      */
-    public function index() {
+    public function cgetAction() {
         $client = new Client();
         $response = $client->request('GET', 'http://104.47.146.137/winefing/web/app_dev.php/api/languages', []);
         $languagesJson = $response->getBody()->getContents();
@@ -40,43 +40,54 @@ class LanguageController extends Controller
         ));
     }
     /**
-     * @Route("/language/save", name="language_save")
+     * @Route("/language/createForm", name="language_new_empty_form")
      */
-    public function save(Request $request) {
-        $id = $request->request->get('language')["id"];
-        if(!$id) {
-            $this.update($id);
-        } else {
-            $this.create($request);
-        };
-        return new Response();
-    }
-    /**
-     * @Route("/language/create", name="language_create")
-     */
-    public function create(Request $request) {
-        $em = $this->getDoctrine()->getManager();
-        $form = $this->createForm(LanguageType::class, new Language());
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em->persist($form->getData());
-            $em->flush();
-        }
+    public function newEmptyFormAction() {
+        $form = $this->createForm(LanguageType::class, new Language(), array(
+            'action' => $this->generateUrl('language_new'),
+            'method' => 'POST'));
         return $this->render('admin/language/form.html.twig', array(
             'form' => $form->createView()
         ));
     }
     /**
-     * @Route("/language/update", name="language_update")
+     * @Route("/language/createForm/{id}", name="language_new_form")
      */
-    public function update($id) {
-        /*        $repository = $this->getDoctrine()->getRepository('AppBundle:Language');
-                $em = $this->getDoctrine()->getManager();
-                $language = $repository->findOneById($id);
-                if($id) {
-                    $language.setName("llol");
-                    $em->flush();
-                }*/
+    public function newFormAction($id) {
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
+        $language = $repository->findOneById($id);
+        $form = $this->createForm(LanguageType::class, $language, array(
+            'action' => $this->generateUrl('language'),
+            'method' => 'GET'));
+        return $this->render('admin/language/form.html.twig', array(
+            'form' => $form->createView()
+        ));
+    }
+    /**
+     * @Route("/language/new", name="language_new")
+     */
+    public function newAction(Request $request)
+    {
+
+        $encoders = array(new JsonEncoder());
+        $normalizers = array(new ObjectNormalizer());
+        $serializer = new Serializer($normalizers, $encoders);
+
+        $encoders = array(new JsonEncoder());
+        $normalizers = array(new ObjectNormalizer());
+        $serializer = new Serializer($normalizers, $encoders);
+        $json = $serializer->serialize($request, 'json');
+        //$languages = $serializer->decode(curl_exec($ch), 'json');
+        //var_dump(curl_exec($ch));
+        //return $this->redirectToRoute('language');
+        $client = new Client();
+        //var_dump( $request->request->all());
+        $response = $client->request('POST', 'http://104.47.146.137/winefing/web/app_dev.php/api/languages',  [ 'form_params' => $request->request->all() ]); #set body!
+        var_dump($response->getBody()->getContents());
         return new Response();
+    }
+
+    public function editAction($id)
+    {
     }
 }
