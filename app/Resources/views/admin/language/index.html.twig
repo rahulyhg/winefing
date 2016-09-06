@@ -43,7 +43,10 @@
                         <td>{{ language.code }}</td>
                         <td>{{ language.name }}</td>
                         <td>{{ language.picture }}</td>
-                        <td><input type="button"  class="btn btn-primary" value="Editer" id="languageUpdate" onclick="loadUpdateForm('{{ path('language_new_form', {'id' : language.id}) }}')"/></td>
+                        <td>
+                            <input type="button"  class="btn btn-primary" value="Editer" id="languageUpdate" onclick="loadUpdateForm('{{ path('language_new_form', {'id' : language.id}) }}')"/>
+                            <input type="button" class="btn btn-primary" value="SUpprimer" onclick="setPathDeleteButton('{{ path('language_delete', {'id' : language.id}) }}')"/>
+                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -69,7 +72,28 @@
             </div><!-- /.modal-dialog -->
         </div><!-- /.modal -->
     </div>
+    <div class="modal fade" tabindex="-1" role="dialog" id="confirmation">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Ajouter une langue</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Etes-vous sur de vouloir supprimer cette langue ?</p>
+                </div><!-- /.modal-content -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+                    <a type="submit" id="languageDelete" class="btn btn-primary pull-right">Valider</a>
+                </div>
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+    </div>
     <script>
+    function setPathDeleteButton(path) {
+        $("#languageDelete").attr("href", path);
+        $('#confirmation').modal();
+    }
     $( "#languageCreate" ).on('click', function() {
         $.ajax({
             url: "{{ path('language_new_empty_form')}}",

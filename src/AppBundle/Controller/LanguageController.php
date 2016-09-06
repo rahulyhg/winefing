@@ -17,7 +17,7 @@ use Winefing\ApiBundle\Entity\Language;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-
+use GuzzleHttp;
 use GuzzleHttp\Client;
 
 class LanguageController extends Controller
@@ -57,7 +57,7 @@ class LanguageController extends Controller
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
         $language = $repository->findOneById($id);
         $form = $this->createForm(LanguageType::class, $language, array(
-            'action' => $this->generateUrl('language'),
+            'action' => $this->generateUrl('language_edit'),
             'method' => 'GET'));
         return $this->render('admin/language/form.html.twig', array(
             'form' => $form->createView()
@@ -73,21 +73,35 @@ class LanguageController extends Controller
         $normalizers = array(new ObjectNormalizer());
         $serializer = new Serializer($normalizers, $encoders);
 
+        $json = $serializer->serialize($request->request->all()["language"], 'json');
+        $client = new Client();
+        $response = $client->request('POST', 'http://104.47.146.137/winefing/web/app_dev.php/api/languages', ['body'=> $json]);
+        return $this->redirectToRoute('language');
+    }
+
+    /**
+     * @Route("/language/delete/{id}", name="language_delete")
+     */
+    public function deleteAction($id)
+    {
+        $client = new Client();
+        $response = $client->request('DELETE', 'http://104.47.146.137/winefing/web/app_dev.php/api/languages/'.$id);
+        return $this->redirectToRoute('language');
+    }
+    /**
+     * @Route("/language/edit/{$slug}/{id}", name="language_edit")
+     */
+    public function putAction($slug, $id)
+    {
         $encoders = array(new JsonEncoder());
         $normalizers = array(new ObjectNormalizer());
         $serializer = new Serializer($normalizers, $encoders);
-        $json = $serializer->serialize($request, 'json');
-        //$languages = $serializer->decode(curl_exec($ch), 'json');
-        //var_dump(curl_exec($ch));
-        //return $this->redirectToRoute('language');
+        var_dump($slug);
+/*        $json = $serializer->serialize($request->request->all()["language"], 'json');
         $client = new Client();
-        //var_dump( $request->request->all());
-        $response = $client->request('POST', 'http://104.47.146.137/winefing/web/app_dev.php/api/languages',  [ 'form_params' => $request->request->all() ]); #set body!
-        var_dump($response->getBody()->getContents());
-        return new Response();
-    }
-
-    public function editAction($id)
-    {
+        $response = $client->request('PUT', 'http://104.47.146.137/winefing/web/app_dev.php/api/languages', ['body'=> $json]);*/
+        //var_dump($response);
+        //return $this->redirectToRoute('language');
+        return Response();
     }
 }

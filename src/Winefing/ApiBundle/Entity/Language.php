@@ -1,6 +1,9 @@
 <?php
 
 namespace Winefing\ApiBundle\Entity;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Gedmo\Mapping\Annotation as Gedmo;
+
 
 /**
  * Language
@@ -27,6 +30,19 @@ class Language
      */
     private $picture;
 
+    /**
+     * @Gedmo\Slug(fields={"code", "name", "picture"})
+     * @ODM\Field(type="string")
+     */
+    private $slug;
+
+    /**
+     * @return mixed
+     */
+    public function getSlug()
+    {
+        return $this->slug;
+    }
 
     /**
      * Get id

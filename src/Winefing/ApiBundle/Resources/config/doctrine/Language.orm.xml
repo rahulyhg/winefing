@@ -7,5 +7,8 @@
     <field name="code" type="string" column="code" length="50" unique="true"/>
     <field name="name" type="string" column="name" length="50"/>
     <field name="picture" type="string" column="picture" length="1000" nullable="true"/>
+    <field name="slug" type="string" length="1000" unique="true">
+      <gedmo:slug unique="true" style="camel" updatable="false" separator="_" fields="code,name,picture" />
+    </field>
   </entity>
 </doctrine-mapping>
