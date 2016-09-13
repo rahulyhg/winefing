@@ -32,7 +32,9 @@
         "symfony/assetic-bundle": "^2.8",
         "nelmio/cors-bundle": "^1.4",
         "symfony/translation": "^3.1",
-        "friendsofsymfony/rest-bundle": "^2.0"
+        "friendsofsymfony/rest-bundle": "^2.0",
+        "guzzlehttp/guzzle": "^6.2",
+        "gedmo/doctrine-extensions": "dev-master"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",

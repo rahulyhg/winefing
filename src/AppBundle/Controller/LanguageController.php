@@ -19,6 +19,7 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use GuzzleHttp;
 use GuzzleHttp\Client;
+use GuzzleHttp\RequestOptions;
 
 class LanguageController extends Controller
 {
@@ -58,7 +59,7 @@ class LanguageController extends Controller
         $language = $repository->findOneById($id);
         $form = $this->createForm(LanguageType::class, $language, array(
             'action' => $this->generateUrl('language_edit'),
-            'method' => 'GET'));
+            'method' => 'PUT'));
         return $this->render('admin/language/form.html.twig', array(
             'form' => $form->createView()
         ));
@@ -72,11 +73,20 @@ class LanguageController extends Controller
         $encoders = array(new JsonEncoder());
         $normalizers = array(new ObjectNormalizer());
         $serializer = new Serializer($normalizers, $encoders);
-
         $json = $serializer->serialize($request->request->all()["language"], 'json');
+        //$file = $serializer->serialize($_FILES, 'json');
         $client = new Client();
-        $response = $client->request('POST', 'http://104.47.146.137/winefing/web/app_dev.php/api/languages', ['body'=> $json]);
-        return $this->redirectToRoute('language');
+        //$uploaded_files = $request->getUploadedFiles();
+        //var_dump($_FILES["language"]);
+
+        $response = $client->request('POST', 'http://104.47.146.137/winefing/web/app_dev.php/api/languages', ['multipart'=> [
+            'name'     => 'foo',
+            'contents' => 'data',
+            'headers'  => ['X-Baz' => 'bar']
+        ]]);
+        var_dump($response->getBody()->getContents());
+        return new Response();
+       // return $this->redirectToRoute('language');
     }
 
     /**
@@ -89,19 +99,16 @@ class LanguageController extends Controller
         return $this->redirectToRoute('language');
     }
     /**
-     * @Route("/language/edit/{$slug}/{id}", name="language_edit")
+     * @Route("/language/edit", name="language_edit")
      */
-    public function putAction($slug, $id)
+    public function putAction(Request $request)
     {
         $encoders = array(new JsonEncoder());
         $normalizers = array(new ObjectNormalizer());
         $serializer = new Serializer($normalizers, $encoders);
-        var_dump($slug);
-/*        $json = $serializer->serialize($request->request->all()["language"], 'json');
+        $json = $serializer->serialize($request->request->all()["language"], 'json');
         $client = new Client();
-        $response = $client->request('PUT', 'http://104.47.146.137/winefing/web/app_dev.php/api/languages', ['body'=> $json]);*/
-        //var_dump($response);
-        //return $this->redirectToRoute('language');
-        return Response();
+        $response = $client->request('PUT', 'http://104.47.146.137/winefing/web/app_dev.php/api/language', ['body'=> $json]);
+        return $this->redirectToRoute('language');
     }
 }

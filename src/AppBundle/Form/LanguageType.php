@@ -13,6 +13,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ButtonType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 
 class LanguageType extends AbstractType
 {
@@ -23,7 +24,7 @@ class LanguageType extends AbstractType
                 'required' => false))
             ->add('code')
             ->add('name')
-            ->add('picture')
+            ->add('picture', FileType::class)
             ->add('save', SubmitType::class)
         ;
     }

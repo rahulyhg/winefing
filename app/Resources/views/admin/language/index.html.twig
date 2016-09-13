@@ -45,7 +45,7 @@
                         <td>{{ language.picture }}</td>
                         <td>
                             <input type="button"  class="btn btn-primary" value="Editer" id="languageUpdate" onclick="loadUpdateForm('{{ path('language_new_form', {'id' : language.id}) }}')"/>
-                            <input type="button" class="btn btn-primary" value="SUpprimer" onclick="setPathDeleteButton('{{ path('language_delete', {'id' : language.id}) }}')"/>
+                            <input type="button" class="btn btn-primary" value="Supprimer" onclick="setPathDeleteButton('{{ path('language_delete', {'id' : language.id}) }}')"/>
                         </td>
                     </tr>
                 {% endfor %}
@@ -67,7 +67,7 @@
                 </div><!-- /.modal-content -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-                    <button type="submit" class="btn btn-primary pull-right">Ajouter</button>
+                    <button type="submit" id="languageValidate" class="btn btn-primary pull-right">Ajouter</button>
                 </div>
             </div><!-- /.modal-dialog -->
         </div><!-- /.modal -->
@@ -84,7 +84,7 @@
                 </div><!-- /.modal-content -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-                    <a type="submit" id="languageDelete" class="btn btn-primary pull-right">Valider</a>
+                    <a type="submit" class="btn btn-primary pull-right">Valider</a>
                 </div>
             </div><!-- /.modal-dialog -->
         </div><!-- /.modal -->
@@ -102,6 +102,20 @@
             success: function (data, textStatus, jqXHR) {
                 $('#language-body').html(data);
                 $('#language').modal();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log("no good");
+            }
+        });
+    });
+    $( "#languageValidate" ).on('click', function() {
+        $.ajax({
+            url: "{{ path('api_post_language')}}",
+            type: 'POST',
+            data: $('#language').serialize(),
+            async: false,
+            success: function (data, textStatus, jqXHR) {
+                console.log(data);
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log("no good");

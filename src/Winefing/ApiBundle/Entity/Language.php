@@ -1,7 +1,6 @@
 <?php
 
 namespace Winefing\ApiBundle\Entity;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
 
 
@@ -32,7 +31,7 @@ class Language
 
     /**
      * @Gedmo\Slug(fields={"code", "name", "picture"})
-     * @ODM\Field(type="string")
+     *
      */
     private $slug;
 
