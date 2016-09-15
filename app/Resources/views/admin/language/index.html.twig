@@ -33,7 +33,7 @@
                 <tr>
                     <th>Code</th>
                     <th>Nom</th>
-                    <th>Photos</th>
+                    <th>Photo</th>
                     <th>Actions</th>
                 </tr>
                 </thead>
@@ -42,7 +42,8 @@
                     <tr>
                         <td>{{ language.code }}</td>
                         <td>{{ language.name }}</td>
-                        <td>{{ language.picture }}</td>
+                        {% set link = 'http://104.47.146.137/winefing/src/Winefing/ApiBundle/Resources/pictures/language/'~ language.picture  %}
+                        <td><img style="height: 20%" src="{{ link }}" /></td>
                         <td>
                             <input type="button"  class="btn btn-primary" value="Editer" id="languageUpdate" onclick="loadUpdateForm('{{ path('language_new_form', {'id' : language.id}) }}')"/>
                             <input type="button" class="btn btn-primary" value="Supprimer" onclick="setPathDeleteButton('{{ path('language_delete', {'id' : language.id}) }}')"/>
@@ -84,7 +85,7 @@
                 </div><!-- /.modal-content -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-                    <a type="submit" class="btn btn-primary pull-right">Valider</a>
+                    <a id="languageDelete" type="submit" class="btn btn-primary pull-right">Valider</a>
                 </div>
             </div><!-- /.modal-dialog -->
         </div><!-- /.modal -->

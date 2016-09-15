@@ -8,6 +8,7 @@ imports:
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale:  en
+    language_directory: '%kernel.root_dir%/../src/Winefing/ApiBundle/Resources/pictures/language/'
 
 framework:
     #esi:             ~
@@ -37,6 +38,8 @@ framework:
 twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
+    globals:
+        language_directory: '%language_directory%'
 
 # Doctrine Configuration
 doctrine:

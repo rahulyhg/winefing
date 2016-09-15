@@ -1,9 +1,6 @@
 <?php
 
 namespace Winefing\ApiBundle\Entity;
-use Gedmo\Mapping\Annotation as Gedmo;
-
-
 /**
  * Language
  */
@@ -28,20 +25,6 @@ class Language
      * @var string
      */
     private $picture;
-
-    /**
-     * @Gedmo\Slug(fields={"code", "name", "picture"})
-     *
-     */
-    private $slug;
-
-    /**
-     * @return mixed
-     */
-    public function getSlug()
-    {
-        return $this->slug;
-    }
 
     /**
      * Get id
