@@ -24,8 +24,7 @@ class LanguageType extends AbstractType
                 'required' => false))
             ->add('code')
             ->add('name')
-            ->add('picture', FileType::class, array('data_class' => null))
-            ->add('save', SubmitType::class)
+            ->add('picture', FileType::class, array('data_class' => null, 'required' => false))
         ;
     }
 }

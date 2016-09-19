@@ -2,3 +2,8 @@ language:
     type: rest
     resource: Winefing\ApiBundle\Controller\LanguageController
     name_prefix:  api_
+
+format:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\FormatController
+    name_prefix:  api_

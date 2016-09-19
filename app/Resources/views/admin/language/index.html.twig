@@ -2,32 +2,25 @@
 
 {% block body %}
     <div class="col-md-2">
-        <nav class="navbar navbar-default" role="navigation">
-
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-            </div>
-
-            <div class="collapse navbar-collapse">
-                <ul class="nav nav-stacked">
-                    <li class="active"><a href="#">Mon domaine</a></li>
-                    <li><a href="#">Mes offres</a></li>
-                    <li><a href="#">Réservations</a></li>
-                    <li><a href="#">Mon compte</a></li>
-                </ul>
-
-
-            </div><!-- /.navbar-collapse -->
-        </nav>
-
+        {{ include('admin/navbar.html.twig') }}
     </div><!--/end left column-->
 
     <div class="col-md-10">
         <div class="container">
+            {% if app.session.flashBag.has('success') %}
+                <div class="alert alert-success">
+                    {% for msg in app.session.flashBag.get('success') %}
+                        {{ msg }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% if app.session.flashBag.has('error') %}
+                <div class="alert alert-danger">
+                    {% for msg in app.session.flashBag.get('error') %}
+                        {{ msg }}
+                    {% endfor %}
+                </div>
+            {% endif %}
             <table class="table table-striped">
                 <thead>
                 <tr>
@@ -42,8 +35,12 @@
                     <tr>
                         <td>{{ language.code }}</td>
                         <td>{{ language.name }}</td>
-                        {% set link = 'http://104.47.146.137/winefing/src/Winefing/ApiBundle/Resources/pictures/language/'~ language.picture  %}
-                        <td><img style="height: 20%" src="{{ link }}" /></td>
+                        <td>
+                            {% if language.picture is not null %}
+                                {% set link = 'http://104.47.146.137/winefing/src/Winefing/ApiBundle/Resources/pictures/language/'~ language.picture  %}
+                                <img style="height: 60px" src="{{ link }}" />
+                            {% endif %}
+                        </td>
                         <td>
                             <input type="button"  class="btn btn-primary" value="Editer" id="languageUpdate" onclick="loadUpdateForm('{{ path('language_new_form', {'id' : language.id}) }}')"/>
                             <input type="button" class="btn btn-primary" value="Supprimer" onclick="setPathDeleteButton('{{ path('language_delete', {'id' : language.id}) }}')"/>
@@ -62,13 +59,13 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">Ajouter une langue</h4>
+                    <h4 class="modal-title">Ajouter/modifier une langue</h4>
                 </div>
                 <div class="modal-body" id="language-body">
                 </div><!-- /.modal-content -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-                    <button type="submit" id="languageValidate" class="btn btn-primary pull-right">Ajouter</button>
+                    <button type="submit" id="languageValidate" class="btn btn-primary pull-right">Valider</button>
                 </div>
             </div><!-- /.modal-dialog -->
         </div><!-- /.modal -->
@@ -78,7 +75,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">Ajouter une langue</h4>
+                    <h4 class="modal-title">Supprimer une langue</h4>
                 </div>
                 <div class="modal-body">
                     <p>Etes-vous sur de vouloir supprimer cette langue ?</p>
@@ -91,54 +88,43 @@
         </div><!-- /.modal -->
     </div>
     <script>
-    function setPathDeleteButton(path) {
-        $("#languageDelete").attr("href", path);
-        $('#confirmation').modal();
-    }
-    $( "#languageCreate" ).on('click', function() {
-        $.ajax({
-            url: "{{ path('language_new_empty_form')}}",
-            type: 'GET',
-            async: false,
-            success: function (data, textStatus, jqXHR) {
-                $('#language-body').html(data);
-                $('#language').modal();
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.log("no good");
-            }
+        function setPathDeleteButton(path) {
+            $("#languageDelete").attr("href", path);
+            $('#confirmation').modal();
+        }
+        $( "#languageCreate" ).on('click', function() {
+            $.ajax({
+                url: "{{ path('language_new_form')}}",
+                type: 'GET',
+                async: false,
+                success: function (data, textStatus, jqXHR) {
+                    $('#language-body').html(data);
+                    $('#language').modal();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log("no good");
+                }
+            });
         });
-    });
-    $( "#languageValidate" ).on('click', function() {
-        $.ajax({
-            url: "{{ path('api_post_language')}}",
-            type: 'POST',
-            data: $('#language').serialize(),
-            async: false,
-            success: function (data, textStatus, jqXHR) {
-                console.log(data);
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.log("no good");
-            }
+        $( "#languageValidate" ).on('click', function() {
+            $('form#language').submit();
         });
-    });
-    function loadUpdateForm(path) {
-        $.ajax({
-            url:  path,
-            type: 'GET',
-            async: false,
-            success: function (data, textStatus, jqXHR) {
-                $('#language-body').html(data);
-                $('#language').modal();
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.log("no good");
-            }
-        });
-    }
-    $('#myModal').on('hidden.bs.modal', function () {
-        $(this).find('form').trigger('reset');
-    })
-</script>
+        function loadUpdateForm(path) {
+            $.ajax({
+                url:  path,
+                type: 'GET',
+                async: false,
+                success: function (data, textStatus, jqXHR) {
+                    $('#language-body').html(data);
+                    $('#language').modal();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log("no good");
+                }
+            });
+        }
+        $('#myModal').on('hidden.bs.modal', function () {
+            $(this).find('form').trigger('reset');
+        })
+    </script>
 {% endblock %}

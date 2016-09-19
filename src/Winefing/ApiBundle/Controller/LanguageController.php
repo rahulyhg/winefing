@@ -22,9 +22,17 @@ use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\Annotations\FileParam;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+
+
 
 class LanguageController extends Controller implements ClassResourceInterface
 {
+    /**
+     * Liste de tout les languages possible en base
+     * @return Response
+     */
     public function cgetAction()
     {
         $encoders = array(new JsonEncoder());
@@ -52,23 +60,35 @@ class LanguageController extends Controller implements ClassResourceInterface
             $language->setCode($request->request->get('code'));
             $language->setName($request->request->get('name'));
             $uploadedFile = $request->files->get('picture');
-            if ((!empty($language->getPicture()) && !empty($uploadedFile))) {
+            if (!empty($language->getPicture()) && !empty($uploadedFile)) {
                 unlink($this->getParameter('language_directory') . $language->getPicture());
-                $language->setPicture(uploadPicture($uploadedFile)->getBody()->getContents()["name"]);
-            } elseif(!empty($uploadedFile)) {
                 $fileName = md5(uniqid()) . '.' . $uploadedFile->getClientOriginalExtension();
+                $language->setPicture($fileName);
                 $uploadedFile->move(
                     $this->getParameter('language_directory'),
                     $fileName
                 );
+            } elseif(!empty($uploadedFile)) {
+                $fileName = md5(uniqid()) . '.' . $uploadedFile->getClientOriginalExtension();
                 $language->setPicture($fileName);
+                $uploadedFile->move(
+                    $this->getParameter('language_directory'),
+                    $fileName
+                );
             }
-            $encoders = array(new JsonEncoder());
-            $normalizers = array(new ObjectNormalizer());
-            $serializer = new Serializer($normalizers, $encoders);
-            $json = $serializer->serialize($language, 'json');
-            $em->flush();
-            return new Response($json);
+            $validator = $this->get('validator');
+            $errors = $validator->validate($language);
+            if (count($errors) > 0) {
+                $errorsString = (string) $errors;
+                throw new HttpException(400, $errorsString);
+            } else {
+                $encoders = array(new JsonEncoder());
+                $normalizers = array(new ObjectNormalizer());
+                $serializer = new Serializer($normalizers, $encoders);
+                $json = $serializer->serialize($language, 'json');
+                $em->flush();
+                return new Response(200, "The language is well modified.");
+            }
         } else {
             $language = $repository->findOneByCode($request->request->get('code'));
             if (empty($language)) {
@@ -84,18 +104,22 @@ class LanguageController extends Controller implements ClassResourceInterface
                 }
                 $language->setCode($request->request->get('code'));
                 $language->setName($request->request->get('name'));
-                $encoders = array(new JsonEncoder());
-                $normalizers = array(new ObjectNormalizer());
-                $serializer = new Serializer($normalizers, $encoders);
-                $json = $serializer->serialize($language, 'json');
-                $em->merge($language);
-                $em->flush();
-                return new Response($json);
+                $validator = $this->get('validator');
+                $errors = $validator->validate($language);
+                if (count($errors) > 0) {
+                    $errorsString = (string) $errors;
+                    return new Response(400, $errorsString);
+                } else {
+                    $encoders = array(new JsonEncoder());
+                    $normalizers = array(new ObjectNormalizer());
+                    $serializer = new Serializer($normalizers, $encoders);
+                    $json = $serializer->serialize($language, 'json');
+                    $em->merge($language);
+                    $em->flush();
+                }
+                return new Response(200, "The language is well modified.");
             } else {
-                var_dump("lol");
-                //var_dump($paramFetcher->get('picture'));
-                var_dump("after");
-                return new Response(json_encode(['lol' => 200]));
+                throw new BadRequestHttpException("A language with this code already exist.");
             }
         }
     }
@@ -112,12 +136,12 @@ class LanguageController extends Controller implements ClassResourceInterface
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
         $language = $repository->findOneById($id);
         $em = $this->getDoctrine()->getManager();
-        if(!empty($language->getPicture())) {
-            unlink($this->getParameter('language_directory') . $language->getPicture());
+        if(!unlink($this->getParameter('language_directory') . $language->getPicture())) {
+            throw new HttpException("Problem on server to delete the language's picture.");
         }
         $em->remove($language);
         $em->flush();
-        return new Response(json_encode(['lol' => 'lol']));
+        return new Response(200, "success");
     }
 
 }
