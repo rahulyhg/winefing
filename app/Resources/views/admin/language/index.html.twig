@@ -42,7 +42,7 @@
                             {% endif %}
                         </td>
                         <td>
-                            <input type="button"  class="btn btn-primary" value="Editer" id="languageUpdate" onclick="loadUpdateForm('{{ path('language_new_form', {'id' : language.id}) }}')"/>
+                            <input type="button"  class="btn btn-primary" value="Editer" id="update" onclick="loadUpdateForm('{{ path('language_new_form', {'id' : language.id}) }}')"/>
                             <input type="button" class="btn btn-primary" value="Supprimer" onclick="setPathDeleteButton('{{ path('language_delete', {'id' : language.id}) }}')"/>
                         </td>
                     </tr>
@@ -50,7 +50,7 @@
                 </tbody>
             </table>
         </div>
-        <button type="button" class="btn btn-primary pull-left" id="languageCreate">
+        <button type="button" class="btn btn-primary pull-left" id="create">
             Ajouter une langue
         </button>
     </div>
@@ -65,7 +65,7 @@
                 </div><!-- /.modal-content -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-                    <button type="submit" id="languageValidate" class="btn btn-primary pull-right">Valider</button>
+                    <button type="submit" id="validate" class="btn btn-primary pull-right">Valider</button>
                 </div>
             </div><!-- /.modal-dialog -->
         </div><!-- /.modal -->
@@ -82,17 +82,17 @@
                 </div><!-- /.modal-content -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-                    <a id="languageDelete" type="submit" class="btn btn-primary pull-right">Valider</a>
+                    <a id="delete" type="submit" class="btn btn-primary pull-right">Valider</a>
                 </div>
             </div><!-- /.modal-dialog -->
         </div><!-- /.modal -->
     </div>
     <script>
         function setPathDeleteButton(path) {
-            $("#languageDelete").attr("href", path);
+            $("#delete").attr("href", path);
             $('#confirmation').modal();
         }
-        $( "#languageCreate" ).on('click', function() {
+        $( "#create" ).on('click', function() {
             $.ajax({
                 url: "{{ path('language_new_form')}}",
                 type: 'GET',
@@ -106,7 +106,7 @@
                 }
             });
         });
-        $( "#languageValidate" ).on('click', function() {
+        $( "#validate" ).on('click', function() {
             $('form#language').submit();
         });
         function loadUpdateForm(path) {
@@ -123,8 +123,5 @@
                 }
             });
         }
-        $('#myModal').on('hidden.bs.modal', function () {
-            $(this).find('form').trigger('reset');
-        })
     </script>
 {% endblock %}

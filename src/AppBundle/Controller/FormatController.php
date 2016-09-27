@@ -6,14 +6,13 @@
  * Time: 20:38
  */
 namespace AppBundle\Controller;
-use AppBundle\Form\LanguageType;
+use AppBundle\Form\FormatType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Form\FormBuilderInterface;
-use Winefing\ApiBundle\Entity\Language;
+use Winefing\ApiBundle\Entity\Format;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
@@ -33,35 +32,36 @@ class FormatController extends Controller
     public function cgetAction() {
         $client = new Client();
         $response = $client->request('GET', 'http://104.47.146.137/winefing/web/app_dev.php/api/formats', []);
-        $languagesJson = $response->getBody()->getContents();
+        $formatsJson = $response->getBody()->getContents();
 
         $encoders = array(new JsonEncoder());
         $normalizers = array(new ObjectNormalizer());
         $serializer = new Serializer($normalizers, $encoders);
-        $formats = $serializer->decode($languagesJson, 'json');
+        $formats = $serializer->decode($formatsJson, 'json');
         return $this->render('admin/format/index.html.twig', array(
-            'formats' => $formats
+            'formats' => $formats, 'entity' => 'format', 'preposition' => 'ce'
         ));
     }
     /**
-     * @Route("/language/createForm/{id}", name="language_new_form")
+     * @Route("/format/newForm/{id}", name="format_new_form")
      */
     public function newFormAction($id = '') {
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Format');
         if(empty($id)) {
-            $language = new Language();
+            $form = $this->createForm(FormatType::class, new Format(), array(
+                'action' => $this->generateUrl('format_post'),
+                'method' => 'POST'));
         } else {
-            $language = $repository->findOneById($id);
+            $form = $this->createForm(FormatType::class, $repository->findOneById($id), array(
+                'action' => $this->generateUrl('format_put'),
+                'method' => 'PUT'));
         }
-        $form = $this->createForm(LanguageType::class, $language, array(
-            'action' => $this->generateUrl('post_language'),
-            'method' => 'POST'));
-        return $this->render('admin/language/form.html.twig', array(
+        return $this->render('admin/format/form.html.twig', array(
             'form' => $form->createView()
         ));
     }
     /**
-     * @Route("/format/post", name="post_format")
+     * @Route("/format/post", name="format_post")
      */
     public function postAction(Request $request)
     {
@@ -69,34 +69,59 @@ class FormatController extends Controller
             $request->getSession()
                 ->getFlashBag()
                 ->add('error', "The name is mandatory.");
-            return $this->redirectToRoute('language');
-        } elseif(empty($request->request->all()["language"]["code"])) {
-            $request->getSession()
-                ->getFlashBag()
-                ->add('error', "The code is mandatory.");
-            return $this->redirectToRoute('language');
+            return $this->redirectToRoute('format');
         }
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
-        if(empty($request->request->all()["language"]["id"]) && !empty($repository->findOneByCode($request->request->all()["language"]['code']))) {
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Format');
+        if(!empty($repository->findOneByName($request->request->all()["format"]['name']))) {
             $request->getSession()
                 ->getFlashBag()
-                ->add('error', "A language with this code already exist.");
-            return $this->redirectToRoute('language');
+                ->add('error', "A format with this name already exist.");
+            return $this->redirectToRoute('format');
         }
         $api = $this->container->get('winefing.api_controller');
-        try {
-            $api->post("http://104.47.146.137/winefing/web/app_dev.php/api/languages", $request->request->all()["language"], $request->files->all()["language"]["picture"]);
-        } catch(\Exception $e) {
-            error_log($e->getMessage());
-        }
+        $api->post("http://104.47.146.137/winefing/web/app_dev.php/api/formats", $request->request->all()["format"], null);
         $request->getSession()
             ->getFlashBag()
-            ->add('success', "The language is well created/modified.");
+            ->add('success', "The format is well created/modified.");
+        return $this->redirectToRoute('format');
+    }
+    /**
+     * @Route("/format/put", name="format_put")
+     */
+    public function putAction(Request $request)
+    {
+        if(empty($request->request->all()["format"]["name"])) {
+            $request->getSession()
+                ->getFlashBag()
+                ->add('error', "The name is mandatory.");
+            return $this->redirectToRoute('format');
+        }
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Format');
+        $format = $repository->findOneByName($request->request->all()["format"]['name']);
+        //var_dump($request->request->all()["format"]);
+        if(!empty($format) && ($format->getId() != $request->request->all()["format"]["id"])) {
+            $request->getSession()
+                ->getFlashBag()
+                ->add('error', "A format with this name already exist.");
+            return $this->redirectToRoute('format');
+        }
+        $api = $this->container->get('winefing.api_controller');
+/*        try {
+            $api->put("http://104.47.146.137/winefing/web/app_dev.php/api/formats", $request->request->all()["format"], $request->files->all()["format"]["picture"]);
+        } catch(\Exception $e) {
+            error_log($e->getMessage());
+        }*/
+
+        $api->put("http://104.47.146.137/winefing/web/app_dev.php/api/format", $request->request->all()["format"]);
+
+        $request->getSession()
+            ->getFlashBag()
+            ->add('success', "The format is well created/modified.");
         return $this->redirectToRoute('format');
     }
 
     /**
-     * @Route("/format/delete/{id}", name="language_delete")
+     * @Route("/format/delete/{id}", name="format_delete")
      */
     public function deleteAction($id, Request $request)
     {
@@ -108,7 +133,7 @@ class FormatController extends Controller
         }
         $request->getSession()
             ->getFlashBag()
-            ->add('success', "The language is well deleted.");
+            ->add('success', "The format is well deleted.");
         return $this->redirectToRoute('format');
     }
 }

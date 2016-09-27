@@ -1,0 +1,13 @@
+{{ form_start(form,  { 'attr': {'required': 'true', 'id' : 'format'} }) }}
+    <fieldset class="form-group" id="name">
+        {{ form_widget(form.id,  { 'attr': {'required': 'false'} }) }}
+    </fieldset>
+    <fieldset class="form-group" id="name">
+        {{ form_label(form.name) }}
+        {{ form_widget(form.name,  { 'attr': {'class': 'form-control'} }) }}
+    </fieldset>
+    <fieldset class="form-group" id="description">
+        {{ form_label(form.description) }}
+        {{ form_widget(form.description,  { 'attr': {'class': 'form-control'} }) }}
+    </fieldset>
+{{ form_end(form) }}

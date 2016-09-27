@@ -14,11 +14,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use Doctrine\ORM\EntityManager;
+use Winefing\ApiBundle\Entity\Format;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Winefing\ApiBundle\Entity\Format;
-use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\Annotations\FileParam;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -54,82 +53,48 @@ class FormatController extends Controller implements ClassResourceInterface
     public function postAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
-        $language = $repository->findOneById($request->request->get('id'));
-        if (!empty($language)) {
-            $language->setCode($request->request->get('code'));
-            $language->setName($request->request->get('name'));
-            $uploadedFile = $request->files->get('picture');
-            if (!empty($language->getPicture()) && !empty($uploadedFile)) {
-                unlink($this->getParameter('language_directory') . $language->getPicture());
-                $fileName = md5(uniqid()) . '.' . $uploadedFile->getClientOriginalExtension();
-                $language->setPicture($fileName);
-                $uploadedFile->move(
-                    $this->getParameter('language_directory'),
-                    $fileName
-                );
-            } elseif(!empty($uploadedFile)) {
-                $fileName = md5(uniqid()) . '.' . $uploadedFile->getClientOriginalExtension();
-                $language->setPicture($fileName);
-                $uploadedFile->move(
-                    $this->getParameter('language_directory'),
-                    $fileName
-                );
-            }
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Format');
+        $format = $repository->findOneByName($request->request->get('name'));
+        if (empty($format)) {
+            $format = new Format();
+            $format->setDescription($request->request->get('description'));
+            $format->setName(strtoupper($request->request->get('name')));
             $validator = $this->get('validator');
-            $errors = $validator->validate($language);
+            $errors = $validator->validate($format);
             if (count($errors) > 0) {
                 $errorsString = (string) $errors;
-                throw new HttpException(400, $errorsString);
+                return new Response(400, $errorsString);
             } else {
-                $encoders = array(new JsonEncoder());
-                $normalizers = array(new ObjectNormalizer());
-                $serializer = new Serializer($normalizers, $encoders);
-                $json = $serializer->serialize($language, 'json');
+                $em->merge($format);
                 $em->flush();
-                return new Response(200, "The language is well modified.");
             }
         } else {
-            $language = $repository->findOneByCode($request->request->get('code'));
-            if (empty($language)) {
-                $language = new Language();
-                $uploadedFile = $request->files->get('picture');
-                if (!empty($uploadedFile)) {
-                    $fileName = md5(uniqid()) . '.' . $uploadedFile->getClientOriginalExtension();
-                    $uploadedFile->move(
-                        $this->getParameter('language_directory'),
-                        $fileName
-                    );
-                    $language->setPicture($fileName);
-                }
-                $language->setCode($request->request->get('code'));
-                $language->setName($request->request->get('name'));
-                $validator = $this->get('validator');
-                $errors = $validator->validate($language);
-                if (count($errors) > 0) {
-                    $errorsString = (string) $errors;
-                    return new Response(400, $errorsString);
-                } else {
-                    $encoders = array(new JsonEncoder());
-                    $normalizers = array(new ObjectNormalizer());
-                    $serializer = new Serializer($normalizers, $encoders);
-                    $json = $serializer->serialize($language, 'json');
-                    $em->merge($language);
-                    $em->flush();
-                }
-                return new Response(200, "The language is well modified.");
-            } else {
-                throw new BadRequestHttpException("A language with this code already exist.");
-            }
+            throw new BadRequestHttpException("A format with this name already exist.");
         }
+        return new Response(json_encode([200, "The format is well created."]));
     }
-    public function uploadPicture(UploadedFile $uploadedFile){
-        $fileName = md5(uniqid()) . '.' . $uploadedFile->getClientOriginalExtension();
-        $uploadedFile->move(
-            $this->getParameter('language_directory'),
-            $fileName
-        );
-        return new Response(["name" => $fileName]);
+
+    /**
+     * Edit a format
+     * @param Request $request
+     * @return Response
+     */
+    public function putAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Format');
+        $format = $repository->findOneById($request->request->get("id"));
+        $format->setDescription($request->request->get('description'));
+        $format->setName(strtoupper($request->request->get('name')));
+        $validator = $this->get('validator');
+        $errors = $validator->validate($format);
+        if (count($errors) > 0) {
+            $errorsString = (string) $errors;
+            throw new HttpException(400, $errorsString);
+        } else {
+            $em->flush();
+        }
+        return new Response(json_encode([200, "The format is well modified."]));
     }
     public function deleteAction($id)
     {
@@ -140,5 +105,4 @@ class FormatController extends Controller implements ClassResourceInterface
         $em->flush();
         return new Response(200, "success");
     }
-
 }

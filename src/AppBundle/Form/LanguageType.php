@@ -14,6 +14,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ButtonType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class LanguageType extends AbstractType
 {
@@ -26,5 +27,11 @@ class LanguageType extends AbstractType
             ->add('name')
             ->add('picture', FileType::class, array('data_class' => null, 'required' => false))
         ;
+    }
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults(array(
+            'data_class' => 'Winefing\ApiBundle\Entity\Language',
+        ));
     }
 }

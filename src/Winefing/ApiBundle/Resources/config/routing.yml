@@ -7,3 +7,13 @@ format:
     type: rest
     resource: Winefing\ApiBundle\Controller\FormatController
     name_prefix:  api_
+
+characteristicCategory:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\CharacteristicCategoryController
+    name_prefix:  api_
+
+characteristic:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\CharacteristicController
+    name_prefix:  api_

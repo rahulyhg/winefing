@@ -13,14 +13,13 @@
         <meta name="author" content="a.carval">
 
         <!-- Custom styles for this template -->
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
         <link href='http://fonts.googleapis.com/css?family=Raleway:400,600,800' rel='stylesheet' type='text/css'>
 
         <!-- Bootstrap core JavaScript
 ================================================== -->
 
-        <script src="{{ asset('bundles/framework/js/jquery.js') }}"></script>
         <script src="{{ asset('bundles/framework/js/bootstrap.js') }}"></script>
-        <script src="{{ asset('bundles/framework/js/script.js') }}"></script>
 
 
         <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -29,6 +28,7 @@
         <script src="{{ asset('bundles/framework/js/respond.min.js') }}"></script>
         <script src="{{ asset('bundles/framework/js/custom.js') }}"></script>
         <!--[endif]-->
+
     </head>
 
     <body><!-- begin:navbar -->
@@ -76,87 +76,12 @@
         </nav>
         <!-- end:navbar -->
         <div class="container" style="margin-bottom: 40px; margin-top:40px">
-            {% block body %}{% endblock %}
+            {% block body %}
+            {% endblock %}
         </div>
-
-        <!-- begin:footer -->
-        <div id="footer">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-3 col-sm-6 col-xs-12">
-                        <div class="widget">
-                            <h3>Top Real Estate Listed</h3>
-                            <ul class="list-unstyled">
-                                <li><a href="#">Apartments</a></li>
-                                <li><a href="#">Office</a></li>
-                                <li><a href="#">Bungalows</a></li>
-                                <li><a href="#">Serviced Residence</a></li>
-                                <li><a href="#">Villa</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <!-- break -->
-                    <div class="col-md-3 col-sm-6 col-xs-12">
-                        <div class="widget">
-                            <h3>Top Agents Listed</h3>
-                            <ul class="list-unstyled">
-                                <li><a href="#">Lorenso</a></li>
-                                <li><a href="#">Bardiman</a></li>
-                                <li><a href="#">Tarjono noto boto limo</a></li>
-                                <li><a href="#">Surti</a></li>
-                                <li><a href="#">Ngatinem</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <!-- break -->
-                    <div class="col-md-3 col-sm-6 col-xs-12">
-                        <div class="widget">
-                            <h3>Features</h3>
-                            <ul class="list-unstyled">
-                                <li><a href="#">My Account</a></li>
-                                <li><a href="#">How To</a></li>
-                                <li><a href="#">Market Trend</a></li>
-                                <li><a href="#">Android App</a></li>
-                                <li><a href="#">IOS App</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <!-- break -->
-                    <div class="col-md-3 col-sm-6 col-xs-12">
-                        <div class="widget">
-                            <h2>Winefing</h2>
-                            <address>
-                                <strong>Real estate theme.</strong><br>
-                                33600 PESSAC<br>
-                                <br>
-                                Telp. : +62-345678910<br>
-                                Email : contact@winefing.com
-                            </address>
-                        </div>
-                    </div>
-                    <!-- break -->
-                </div>
-                <!-- break -->
-
-                <!-- begin:copyright -->
-                <div class="row">
-                    <div class="col-md-12 copyright">
-                        <p>Copyright &copy; 2014 Company, Inc. All Right Reserved.</p>
-                        <p>Theme : Arillo 1.0 Designed by <strong>avriqqlabs.</strong></p>
-                        <a href="#top" class="btn btn-danger scroltop"><i class="fa fa-angle-up"></i></a>
-                        <ul class="list-inline social-links">
-                            <li><a href="#" class="icon-twitter" rel="tooltip" title="" data-placement="bottom" data-original-title="Twitter"><i class="fa fa-twitter"></i></a></li>
-                            <li><a href="#" class="icon-facebook" rel="tooltip" title="" data-placement="bottom" data-original-title="Facebook"><i class="fa fa-facebook"></i></a></li>
-                            <li><a href="#" class="icon-gplus" rel="tooltip" title="" data-placement="bottom" data-original-title="Gplus"><i class="fa fa-google-plus"></i></a></li>
-                        </ul>
-                    </div>
-                </div>
-                <!-- end:copyright -->
-
-            </div>
-        </div>
-        <!-- end:footer -->
-
+        {% block footer %}
+            {{ include('footer.html.twig') }}
+        {% endblock %}
         <!-- begin:modal-signin -->
         <div class="modal fade" id="modal-signin" tabindex="-1" role="dialog" aria-labelledby="modal-signin" aria-hidden="true">
             <div class="modal-dialog modal-sm">
@@ -225,5 +150,7 @@
             </div>
         </div>
         <!-- end:modal-signup -->
+    {% block script %}
+    {% endblock %}
     </body>
 </html>

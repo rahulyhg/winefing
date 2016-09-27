@@ -3,6 +3,7 @@
 namespace Winefing\ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Format
@@ -25,6 +26,7 @@ class Format
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=20, unique=true)
+     * @Assert\NotBlank()
      */
     private $name;
 
