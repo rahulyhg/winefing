@@ -85,4 +85,12 @@ class CharacteristicCategoryController extends Controller
         return $this->redirectToRoute('characteristic', ['scopeName' => 'RENTAL']);
         //return new Response();
     }
+    /**
+     * @Route("/characteristicCategory/activated/", name="characteristicCategory_activated")
+     */
+    public function putActivatedAction(Request $request) {
+        $api = $this->container->get('winefing.api_controller');
+        $api->put('http://104.47.146.137/winefing/web/app_dev.php/api/characteristic/category/activated', $request->request->all());
+        return new Response(json_encode([200, "success"]));
+    }
 }

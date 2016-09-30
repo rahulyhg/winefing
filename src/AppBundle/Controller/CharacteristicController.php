@@ -102,7 +102,8 @@ class CharacteristicController extends Controller
         $request->getSession()
             ->getFlashBag()
             ->add('success', "The Characteristic is well modified/created.");
-        return $this->redirectToRoute('characteristic', ['scopeName' => 'RENTAL']);
+        return new Response();
+        //return $this->redirectToRoute('characteristic', ['scopeName' => 'RENTAL']);
 
     }
 

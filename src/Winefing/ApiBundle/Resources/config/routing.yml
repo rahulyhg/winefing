@@ -17,3 +17,18 @@ characteristic:
     type: rest
     resource: Winefing\ApiBundle\Controller\CharacteristicController
     name_prefix:  api_
+
+article:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\ArticleController
+    name_prefix:  api_
+
+articleCategory:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\ArticleCategoryController
+    name_prefix:  api_
+
+articleTr:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\ArticleTrController
+    name_prefix:  api_

@@ -46,10 +46,10 @@ class CharacteristicCategoryController extends Controller implements ClassResour
 
         if (empty($characteristicCategory)) {
             $characteristicCategory = new CharacteristicCategory();
+            $characteristicCategory->setActivated(0);
             $new = true;
         }
         $characteristicCategory->setDescription($request->request->get('description'));
-        $characteristicCategory->setActivated($request->request->get('activated'));
         $characteristicCategory->setScope($scope);
 
         $characteristicCategoryTrs = $request->request->all()["characteristicCategoryTrs"];
@@ -90,6 +90,15 @@ class CharacteristicCategoryController extends Controller implements ClassResour
             $em->remove($characteristicCategory);
             $em->flush();
         }
+        return new Response(json_encode([200, "success"]));
+    }
+
+    public function putActivatedAction(Request $request) {
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:CharacteristicCategory');
+        $characteristicCategory = $repository->findOneById($request->request->get("id"));
+        $characteristicCategory->setActivated($request->request->get("activated"));
+        $em = $this->getDoctrine()->getManager();
+        $em->flush();
         return new Response(json_encode([200, "success"]));
     }
 }

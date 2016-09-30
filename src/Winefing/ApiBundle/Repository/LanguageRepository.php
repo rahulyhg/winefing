@@ -1,6 +1,7 @@
 <?php
 
 namespace Winefing\ApiBundle\Repository;
+use Winefing\ApiBundle\Entity\Article;
 
 /**
  * LanguageRepository
@@ -10,4 +11,15 @@ namespace Winefing\ApiBundle\Repository;
  */
 class LanguageRepository extends \Doctrine\ORM\EntityRepository
 {
+    function findMissingLanguagesForArticle(Article $article) {
+        foreach ($article->getArticleTrs() as $articleTr) {
+            $languagesId[] = $articleTr->getLanguage()->getId();
+        }
+        $query = $this->createQueryBuilder('language')
+            ->where('language.id not in (:languages)')
+            ->setParameter('languages', array_values($languagesId))
+            ->getQuery();
+        $languages = $query->getResult();
+        return $languages;
+    }
 }

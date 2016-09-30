@@ -37,7 +37,6 @@ class CharacteristicCategoryType extends AbstractType
             ->add('picture', FileType::class, ['required' => false])
             ->add('characteristicCategoryTrs', CollectionType::class, array(
                 'entry_type' => CharacteristicCategoryTrType::class))
-            ->add('activated', CheckboxType::class)
         ;
     }
     public function configureOptions(OptionsResolver $resolver)

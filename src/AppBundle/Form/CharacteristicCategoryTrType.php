@@ -35,8 +35,7 @@ class CharacteristicCategoryTrType extends AbstractType
             ->add('name')
             ->add('language', EntityType::class,  array(
                 'class' => 'WinefingApiBundle:Language',
-                'choice_label' => 'name'))
-        ;
+                'choice_label' => 'name'));
     }
     public function configureOptions(OptionsResolver $resolver)
     {

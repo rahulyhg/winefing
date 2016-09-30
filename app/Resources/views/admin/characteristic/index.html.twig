@@ -29,9 +29,14 @@
                     {% if characteristicCategory.characteristics is empty %}
                         <input type="button" class="btn btn-primary" value="Supprimer" onclick="setPathDeleteButton('{{ path('characteristicCategory_delete', {'id' : characteristicCategory.id}) }}')"/>
                     {% else %}
-                        <input type="checkbox" checked data-toggle="toggle">
+                        {% if characteristicCategory.activated == 1 %}
+                            {% set checked = 'checked' %}
+                        {% else %}
+                            {% set checked = '' %}
+                        {% endif %}
+                        <input {{ checked }} onchange="activate('{{ path('characteristicCategory_activated') }}', 'characteristicCategoryActivatedToggle', '{{ characteristicCategory.id }}')" id="characteristicCategoryActivatedToggle-{{ characteristicCategory.id }}" type="checkbox" value="{{ characteristicCategory.id }}" data-toggle="toggle" data-off="Not activated" data-on="Activated" data-onstyle="success">
                     {% endif %}
-                    <input type="button"  class="btn btn-primary" value="Editer" id="update" onclick="loadForm('{{ path('characteristicCategory_new_form', {'scopeId' : characteristicCategories[0].scope.id, 'id' : characteristicCategory.id, }) }}', 'characteristicCategory')"/>
+                    <input type="button" class="btn btn-primary" value="Editer" id="update" onclick="loadForm('{{ path('characteristicCategory_new_form', {'scopeId' : characteristicCategories[0].scope.id, 'id' : characteristicCategory.id, }) }}', 'characteristicCategory')"/>
                 </td>
             </tr>
             <tr id="characteristics-{{ characteristicCategory.id }}" class="collapse">
@@ -109,8 +114,6 @@
                 async: false,
                 success: function (data, textStatus, jqXHR) {
                     $('#modalCreate').html(data);
-                    //$('[disabled="true"]').removeAttr('disabled');
-                    //$('[disabled="false"]').removeAttr('disabled');
                     $('#'+modalId).modal();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
@@ -118,14 +121,35 @@
                 }
             });
         }
+        function activate(path, checkBox, id){
+            var checkBoxId = checkBox+'-'+id;
+            if(document.getElementById(checkBoxId).checked){
+                activatedValue = 1;
+            } else {
+                activatedValue = 0;
+            }
+            $.ajax({
+                url:  path,
+                type: 'PUT',
+                data: {activated:activatedValue, id:id},
+                async: false,
+                success: function (data, textStatus, jqXHR) {
+                    console.log(data);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log("no good");
+                }
+            });
+        }
+        $('input[type="checkbox"]').live('change', function(){
+            this.value = (Number(this.checked));
+        });
     </script>
     <script>
         $('#characteristicCategory').live('submit', function () {
-            console.log("in");
             $("#characteristicCategory :disabled").removeAttr('disabled');
         });
         $('#characteristic').live('submit', function (event) {
-            console.log("in first");
             $("#characteristic :disabled").removeAttr('disabled');
         });
     </script>

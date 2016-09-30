@@ -59,7 +59,6 @@ class CharacteristicController extends Controller implements ClassResourceInterf
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Characteristic');
         $characteristic = $repository->findOneById($request->request->get('id'));
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:CharacteristicCategory');
-        var_dump($request->request->all()['format']);
         $characteristicChategory = $repository->findOneById($request->request->all()['characteristicCategory']);
 
         if (empty($characteristic)) {
@@ -67,7 +66,11 @@ class CharacteristicController extends Controller implements ClassResourceInterf
             $new = true;
         }
         $characteristic->setDescription($request->request->get('description'));
-        $characteristic->setActivated($request->request->get('activated'));
+        if($request->request->get('activated') == null){
+            $characteristic->setActivated(0);
+        } else {
+            $characteristic->setActivated($request->request->get('activated'));
+        }
         $characteristic->setChacarteristicCategory($characteristicChategory);
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Format');
         $characteristic->setFormat($repository->findOneById($request->request->all()['format']));
