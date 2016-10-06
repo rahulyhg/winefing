@@ -4,7 +4,7 @@
         <thead>
         <tr>
             <th>
-                <button type="button" class="btn btn-default" onclick="loadForm('{{ url('characteristicCategory_new_form', {'scopeId' : characteristicCategories[0].scope.id }) }}', 'characteristicCategory')">
+                <button type="button" class="btn btn-default" onclick="loadForm('{{ url('characteristicCategory_new_form', {'scopeName' : scopeName }) }}', 'characteristicCategory')">
                     <span class="glyphicon glyphicon-plus-sign"></span>
                 </button>
                 Catégorie
@@ -27,7 +27,7 @@
                 </td>
                 <td>
                     {% if characteristicCategory.characteristics is empty %}
-                        <input type="button" class="btn btn-primary" value="Supprimer" onclick="setPathDeleteButton('{{ path('characteristicCategory_delete', {'id' : characteristicCategory.id}) }}')"/>
+                        <input type="button" class="btn btn-primary" value="Supprimer" onclick="setPathDeleteButton('{{ path('characteristicCategory_delete', {'id' : characteristicCategory.id, 'scopeName' : scopeName }) }}')"/>
                     {% else %}
                         {% if characteristicCategory.activated == 1 %}
                             {% set checked = 'checked' %}
@@ -36,7 +36,7 @@
                         {% endif %}
                         <input {{ checked }} onchange="activate('{{ path('characteristicCategory_activated') }}', 'characteristicCategoryActivatedToggle', '{{ characteristicCategory.id }}')" id="characteristicCategoryActivatedToggle-{{ characteristicCategory.id }}" type="checkbox" value="{{ characteristicCategory.id }}" data-toggle="toggle" data-off="Not activated" data-on="Activated" data-onstyle="success">
                     {% endif %}
-                    <input type="button" class="btn btn-primary" value="Editer" id="update" onclick="loadForm('{{ path('characteristicCategory_new_form', {'scopeId' : characteristicCategories[0].scope.id, 'id' : characteristicCategory.id, }) }}', 'characteristicCategory')"/>
+                    <input type="button" class="btn btn-primary" value="Editer" id="update" onclick="loadForm('{{ path('characteristicCategory_new_form', {'scopeName' : scopeName, 'id' : characteristicCategory.id, }) }}', 'characteristicCategory')"/>
                 </td>
             </tr>
             <tr id="characteristics-{{ characteristicCategory.id }}" class="collapse">
@@ -58,14 +58,14 @@
                                         {{ characteristic.description }}
                                     </td>
                                     <td>
-                                        <input type="button"  class="btn btn-primary" value="Editer" id="update" onclick="loadForm('{{ path('characteristic_new_form', {'characteristicCategoryId' : characteristicCategory.id, 'id' : characteristic.id}) }}', 'characteristic')"/>
-                                        <input type="button" class="btn btn-primary" value="Suprimer" onclick="setPathDeleteButton('{{ path('characteristic_delete', {'id' : characteristic.id}) }}')"/>
+                                        <input type="button"  class="btn btn-primary" value="Editer" id="update" onclick="loadForm('{{ path('characteristic_new_form', {'characteristicCategoryId' : characteristicCategory.id, 'scopeName': scopeName, 'id' : characteristic.id}) }}', 'characteristic')"/>
+                                        <input type="button" class="btn btn-primary" value="Suprimer" onclick="setPathDeleteButton('{{ path('characteristic_delete', {'id' : characteristic.id, 'scopeName': scopeName}) }}')"/>
                                     </td>
                                 </tr>
                             {% endfor %}
                             <tr>
                                 <td colspan="4">
-                                    <button type="button" class="btn btn-default" onclick="loadForm('{{ path('characteristic_new_form', {'characteristicCategoryId' : characteristicCategory.id}) }}', 'characteristic')">
+                                    <button type="button" class="btn btn-default" onclick="loadForm('{{ path('characteristic_new_form', {'characteristicCategoryId' : characteristicCategory.id, 'scopeName': scopeName}) }}', 'characteristic')">
                                         <span class="glyphicon glyphicon-plus-sign"></span>
                                     </button>
                                 </td>

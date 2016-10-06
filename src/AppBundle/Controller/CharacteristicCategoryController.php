@@ -34,9 +34,9 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 class CharacteristicCategoryController extends Controller
 {
     /**
-     * @Route("/characteristicCategory/newForm/{scopeId}/{id}", name="characteristicCategory_new_form")
+     * @Route("/characteristicCategory/newForm/{scopeName}/{id}", name="characteristicCategory_new_form")
      */
-    public function newFormAction($scopeId, $id = '') {
+    public function newFormAction($scopeName, $id = '') {
         if(empty($id)) {
             $caracteristicCategory = new CharacteristicCategory();
             $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
@@ -51,9 +51,9 @@ class CharacteristicCategoryController extends Controller
             $caracteristicCategory = $repository->findOneById($id);
         }
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Scope');
-        $caracteristicCategory->setScope($repository->findOneById($scopeId));
+        $caracteristicCategory->setScope($repository->findOneByName($scopeName));
         $form = $this->createForm(CharacteristicCategoryType::class, $caracteristicCategory, array(
-            'action' => $this->generateUrl('characteristicCategory_post'),
+            'action' => $this->generateUrl('characteristicCategory_post', array('scopeName' => $scopeName)),
             'method' => 'POST'));
         return $this->render('admin/characteristic/form/characteristicCategory.html.twig', array(
             'form' => $form->createView()
@@ -61,14 +61,15 @@ class CharacteristicCategoryController extends Controller
     }
 
     /**
-     * @Route("/characteristicCategory/", name="characteristicCategory_post")
+     * @Route("/characteristicCategory/{scopeName}", name="characteristicCategory_post")
      */
-    public function postAction(Request $request) {
+    public function postAction($scopeName, Request $request) {
         $api = $this->container->get('winefing.api_controller');
-        //var_dump($request->request->all()["characteristic_category"]);
         $api->post("http://104.47.146.137/winefing/web/app_dev.php/api/characteristics/categories", $request->request->all()["characteristic_category"], null);
-        //var_dump($request->request->all());
-        return new Response();
+        $request->getSession()
+            ->getFlashBag()
+            ->add('success', "The characteristic's category is well created/modified.");
+        return $this->redirectToRoute('characteristic', ['scopeName' => $scopeName]);
     }
 
     /**

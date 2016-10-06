@@ -63,14 +63,14 @@ class CharacteristicController extends Controller
         $serializer = new Serializer($normalizers, $encoders);
         $characteristics = $serializer->decode($formatsJson, 'json');*/
         return $this->render('admin/characteristic/index.html.twig', array(
-            'characteristicCategories' => $characteristicCategories));
+            'characteristicCategories' => $characteristicCategories, 'scopeName' => $scopeName));
 
         //return new Response();
     }
     /**
-     * @Route("/characteristic/newForm/{characteristicCategoryId}/{id}", name="characteristic_new_form")
+     * @Route("/characteristic/newForm/{characteristicCategoryId}/{scopeName}/{id}", name="characteristic_new_form")
      */
-    public function newFormAction($characteristicCategoryId, $id = '') {
+    public function newFormAction($characteristicCategoryId, $scopeName, $id = '') {
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Characteristic');
         $characteristic = $repository->findOneById($id);
         if(empty($characteristic)) {
@@ -86,7 +86,7 @@ class CharacteristicController extends Controller
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:CharacteristicCategory');
         $characteristic->setChacarteristicCategory($repository->findOneById($characteristicCategoryId));
         $form = $this->createForm(CharacteristicType::class, $characteristic, array(
-            'action' => $this->generateUrl('characteristic_post'),
+            'action' => $this->generateUrl('characteristic_post', array('scopeName'=> $scopeName)),
             'method' => 'POST'));
         return $this->render('admin/characteristic/form/characteristic.html.twig', array(
             'form' => $form->createView()
@@ -94,23 +94,21 @@ class CharacteristicController extends Controller
     }
 
     /**
-     * @Route("/characteristic/", name="characteristic_post")
+     * @Route("/post/characteristic/{scopeName}", name="characteristic_post")
      */
-    public function postAction(Request $request) {
+    public function postAction($scopeName, Request $request) {
         $api = $this->container->get('winefing.api_controller');
         $api->post("http://104.47.146.137/winefing/web/app_dev.php/api/characteristics", $request->request->all()["characteristic"], null);
         $request->getSession()
             ->getFlashBag()
             ->add('success', "The Characteristic is well modified/created.");
-        return new Response();
-        //return $this->redirectToRoute('characteristic', ['scopeName' => 'RENTAL']);
-
+        return $this->redirectToRoute('characteristic', ['scopeName' => $scopeName]);
     }
 
     /**
-     * @Route("/characteristic/delete/{id}", name="characteristic_delete")
+     * @Route("/characteristic/delete/{id}/{scopeName}", name="characteristic_delete")
      */
-    public function deleteAction($id, Request $request)
+    public function deleteAction($id, $scopeName, Request $request)
     {
         $client = new Client();
         $response = $client->request('DELETE', 'http://104.47.146.137/winefing/web/app_dev.php/api/characteristics/'.$id);
@@ -118,7 +116,7 @@ class CharacteristicController extends Controller
         $request->getSession()
             ->getFlashBag()
             ->add('success', "The Characteristic is well deleted.");
-        return $this->redirectToRoute('characteristic', ['scopeName' => 'RENTAL']);
+        return $this->redirectToRoute('characteristic', ['scopeName' => $scopeName]);
     }
 
 }

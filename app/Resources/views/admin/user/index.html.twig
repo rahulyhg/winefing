@@ -1,0 +1,106 @@
+{% extends 'admin/base.html.twig' %}
+{% block table %}
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>
+                <button type="button" class="btn btn-default" onclick="loadForm('{{ url('user_new_form')}}', 'user')">
+                    <span class="glyphicon glyphicon-plus-sign"></span>
+                </button> Utilisateur
+            </th>
+            <th>Téléphone</th>
+            <th>Email</th>
+            <th>Dernière connexion</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.firstName }} {{ user.lastName }}</td>
+                <td>{{ user.phoneNumber }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.lastLogin }}</td>
+                <td>
+                    {% if user.enabled == 1 %}
+                        {% set checked = 'checked' %}
+                    {% else %}
+                        {% set checked = '' %}
+                    {% endif %}
+                    <input {{ checked }} onchange="activate('{{ path('user_activated') }}', 'userActivatedToggle', '{{ user.id }}')" id="userActivatedToggle-{{ user.id }}" type="checkbox" value="" data-toggle="toggle" data-off="Not activated" data-on="Activated" data-onstyle="success">
+                    {% if user.deleted == 1 %}
+                        <input type="button" class="btn btn-primary" value="Supprimer" onclick="setPathDeleteButton('{{ path('user_admin_delete', {'id' : user.id}) }}')"/>
+                    {% endif %}
+                    <input type="button"  class="btn btn-primary" value="Editer" id="update" onclick="loadForm('{{ path('user_new_form', {'id' : user.id}) }}', 'user')"/>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+{% block modal %}
+    <span id="modalDelete">
+        <div class="modal fade" tabindex="-1" role="dialog" id="confirmation">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Suppression</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Etes-vous sur de vouloir supprimer cet élément ?</p>
+                    </div><!-- /.modal-content -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+                        <a id="delete" type="submit" class="btn btn-primary pull-right">Valider</a>
+                    </div>
+                </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
+        </div>
+    </span>
+    <span id="modalCreate">
+    </span>
+{% endblock %}
+
+{% block script %}
+    <script>
+        function setPathDeleteButton(path) {
+            $("#delete").attr("href", path);
+            $('#confirmation').modal();
+        }
+        function activate(path, checkBox, id){
+            var checkBoxId = checkBox+'-'+id;
+            if(document.getElementById(checkBoxId).checked){
+                activatedValue = 1;
+            } else {
+                activatedValue = 0;
+            }
+            $.ajax({
+                url:  path,
+                type: 'PUT',
+                data: {activated:activatedValue, id:id},
+                async: false,
+                success: function (data, textStatus, jqXHR) {
+                    console.log(data);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log("no good");
+                }
+            });
+        }
+        function loadForm(path, modalId) {
+            $.ajax({
+                url:  path,
+                type: 'GET',
+                async: false,
+                success: function (data, textStatus, jqXHR) {
+                    $('#modalCreate').html(data);
+                    $('#'+modalId).modal();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log("no good");
+                }
+            });
+        }
+    </script>
+{% endblock %}

@@ -21,6 +21,8 @@ use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Winefing\ApiBundle\Repository\UserRepository;
+use Winefing\ApiBundle\Entity\UserGroupEnum;
 
 class ArticleType extends AbstractType
 {
@@ -31,8 +33,14 @@ class ArticleType extends AbstractType
                 'required' => false))
             ->add('user', EntityType::class,  array(
                 'class' => 'WinefingApiBundle:User',
-                'choice_label' => 'fullName'))
-            ->add('description', TextareaType::class, ['required' => false])
+                'choice_label' => 'fullName',
+                'query_builder' => function (UserRepository $er) {
+                    return $er->createQueryBuilder('user')
+                        ->where('user.roles like :blog or user.roles like :managment')
+                        ->setParameter('blog', '%'.UserGroupEnum::Blog.'%')
+                        ->setParameter('managment', '%'.UserGroupEnum::Managment.'%');
+                    }
+                ))
             ->add('picture', FileType::class, ['required' => false])
             ->add('articleCategories', EntityType::class,  array(
                 'class' => 'WinefingApiBundle:articleCategory',

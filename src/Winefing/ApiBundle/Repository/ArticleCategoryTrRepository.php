@@ -10,4 +10,19 @@ namespace Winefing\ApiBundle\Repository;
  */
 class ArticleCategoryTrRepository extends \Doctrine\ORM\EntityRepository
 {
+    function findFrenchName($articleCategoryId)
+    {
+        $query = $this->createQueryBuilder('articleCategoryTr')
+            ->select("articleCategoryTr.name")
+            ->join("articleCategoryTr.articleCategory", "articleCategory")
+            ->join("articleCategoryTr.language", "language")
+            ->where('language.code = :langueCode and articleCategory.id = :articleCategory')
+            ->setParameter('langueCode', 'fr')
+            ->setParameter('articleCategory', $articleCategoryId)
+            ->setMaxResults(1)
+            ->getQuery();
+        $frenchName = $query->getResult();
+        var_dump($query->getResult());
+        return $frenchName;
+    }
 }

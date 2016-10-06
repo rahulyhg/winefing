@@ -136,12 +136,14 @@ class LanguageController extends Controller implements ClassResourceInterface
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
         $language = $repository->findOneById($id);
         $em = $this->getDoctrine()->getManager();
-        if(!unlink($this->getParameter('language_directory') . $language->getPicture())) {
-            throw new HttpException("Problem on server to delete the language's picture.");
+        if(!empty($language->getPicture())) {
+            if(!unlink($this->getParameter('language_directory') . $language->getPicture())) {
+                throw new HttpException("Problem on server to delete the language's picture.");
+            }
         }
         $em->remove($language);
         $em->flush();
-        return new Response(200, "success");
+        return new Response(json_encode([200, "success"]));
     }
 
 }

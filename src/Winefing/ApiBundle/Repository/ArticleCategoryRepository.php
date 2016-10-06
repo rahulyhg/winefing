@@ -10,4 +10,5 @@ namespace Winefing\ApiBundle\Repository;
  */
 class ArticleCategoryRepository extends \Doctrine\ORM\EntityRepository
 {
+
 }

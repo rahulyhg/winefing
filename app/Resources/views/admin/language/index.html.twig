@@ -1,122 +1,89 @@
-{% extends 'base.html.twig' %}
-
-{% block body %}
-    <div class="col-md-2">
-        {{ include('admin/navbar.html.twig') }}
-    </div><!--/end left column-->
-
-    <div class="col-md-10">
-        <div class="container">
-            {% if app.session.flashBag.has('success') %}
-                <div class="alert alert-success">
-                    {% for msg in app.session.flashBag.get('success') %}
-                        {{ msg }}
-                    {% endfor %}
-                </div>
-            {% endif %}
-            {% if app.session.flashBag.has('error') %}
-                <div class="alert alert-danger">
-                    {% for msg in app.session.flashBag.get('error') %}
-                        {{ msg }}
-                    {% endfor %}
-                </div>
-            {% endif %}
-            <table class="table table-striped">
-                <thead>
-                <tr>
-                    <th>Code</th>
-                    <th>Nom</th>
-                    <th>Photo</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for language in languages %}
-                    <tr>
-                        <td>{{ language.code }}</td>
-                        <td>{{ language.name }}</td>
-                        <td>
-                            {% if language.picture is not null %}
-                                {% set link = 'http://104.47.146.137/winefing/src/Winefing/ApiBundle/Resources/pictures/language/'~ language.picture  %}
-                                <img style="height: 60px" src="{{ link }}" />
-                            {% endif %}
-                        </td>
-                        <td>
-                            <input type="button"  class="btn btn-primary" value="Editer" id="update" onclick="loadUpdateForm('{{ path('language_new_form', {'id' : language.id}) }}')"/>
-                            <input type="button" class="btn btn-primary" value="Supprimer" onclick="setPathDeleteButton('{{ path('language_delete', {'id' : language.id}) }}')"/>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+{% extends 'admin/base.html.twig' %}
+{% block table %}
+    {% if app.session.flashBag.has('success') %}
+        <div class="alert alert-success">
+            {% for msg in app.session.flashBag.get('success') %}
+                {{ msg }}
+            {% endfor %}
         </div>
-        <button type="button" class="btn btn-primary pull-left" id="create">
-            Ajouter une langue
-        </button>
-    </div>
-    <div class="modal fade" tabindex="-1" role="dialog" id="language">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">Ajouter/modifier une langue</h4>
-                </div>
-                <div class="modal-body" id="language-body">
-                </div><!-- /.modal-content -->
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-                    <button type="submit" id="validate" class="btn btn-primary pull-right">Valider</button>
-                </div>
-            </div><!-- /.modal-dialog -->
-        </div><!-- /.modal -->
-    </div>
-    <div class="modal fade" tabindex="-1" role="dialog" id="confirmation">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">Supprimer une langue</h4>
-                </div>
-                <div class="modal-body">
-                    <p>Etes-vous sur de vouloir supprimer cette langue ?</p>
-                </div><!-- /.modal-content -->
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-                    <a id="delete" type="submit" class="btn btn-primary pull-right">Valider</a>
-                </div>
-            </div><!-- /.modal-dialog -->
-        </div><!-- /.modal -->
-    </div>
+    {% endif %}
+    {% if app.session.flashBag.has('error') %}
+        <div class="alert alert-danger">
+            {% for msg in app.session.flashBag.get('error') %}
+                {{ msg }}
+            {% endfor %}
+        </div>
+    {% endif %}
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>
+                <button type="button" class="btn btn-default" onclick="loadForm('{{ url('language_new_form')}}', 'language')">
+                    <span class="glyphicon glyphicon-plus-sign"></span>
+                </button> Language
+            </th>
+            <th>Code</th>
+            <th>Photo</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for language in languages %}
+            <tr>
+                <td>{{ language.name }}</td>
+                <td>{{ language.code }}</td>
+                <td>
+                    {% if language.picture is not null %}
+                        {% set link = 'http://104.47.146.137/winefing/src/Winefing/ApiBundle/Resources/pictures/language/'~ language.picture  %}
+                        <img style="height: 60px" src="{{ link }}" />
+                    {% endif %}
+                </td>
+                <td>
+                    <input type="button"  class="btn btn-primary" value="Editer" id="update" onclick="loadForm('{{ path('language_new_form', {'id' : language.id}) }}', 'language')"/>
+                    <input type="button" class="btn btn-primary" value="Supprimer" onclick="setPathDeleteButton('{{ path('language_delete', {'id' : language.id}) }}')"/>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+{% block modal %}
+    <span id="modalDelete">
+        <div class="modal fade" tabindex="-1" role="dialog" id="confirmation">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Suppression</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Etes-vous sur de vouloir supprimer cet élément ?</p>
+                    </div><!-- /.modal-content -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+                        <a id="delete" type="submit" class="btn btn-primary pull-right">Valider</a>
+                    </div>
+                </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
+        </div>
+    </span>
+    <span id="modalCreate">
+    </span>
+{% endblock %}
+{% block script %}
     <script>
         function setPathDeleteButton(path) {
             $("#delete").attr("href", path);
             $('#confirmation').modal();
         }
-        $( "#create" ).on('click', function() {
-            $.ajax({
-                url: "{{ path('language_new_form')}}",
-                type: 'GET',
-                async: false,
-                success: function (data, textStatus, jqXHR) {
-                    $('#language-body').html(data);
-                    $('#language').modal();
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.log("no good");
-                }
-            });
-        });
-        $( "#validate" ).on('click', function() {
-            $('form#language').submit();
-        });
-        function loadUpdateForm(path) {
+        function loadForm(path, modalId) {
             $.ajax({
                 url:  path,
                 type: 'GET',
                 async: false,
                 success: function (data, textStatus, jqXHR) {
-                    $('#language-body').html(data);
-                    $('#language').modal();
+                    $('#modalCreate').html(data);
+                    $('#'+modalId).modal();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     console.log("no good");

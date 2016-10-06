@@ -34,8 +34,8 @@ class ArticleTrType extends AbstractType
         $builder
             ->add('id',  HiddenType::class, array(
                 'required' => false))
-            ->add('title')
-            ->add('shortDescription', TextareaType::class)
+            ->add('title', null, array('attr'=> array('maxlength'=>"60")))
+            ->add('shortDescription', TextareaType::class, array('attr'=> array('maxlength'=>"155")))
             ->add('content', TextareaType::class)
             ->add('language', EntityType::class,  array(
                 'class' => 'WinefingApiBundle:Language',

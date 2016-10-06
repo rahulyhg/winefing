@@ -32,3 +32,13 @@ articleTr:
     type: rest
     resource: Winefing\ApiBundle\Controller\ArticleTrController
     name_prefix:  api_
+
+promotion:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\PromotionController
+    name_prefix:  api_
+
+adminUser:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\AdminUserController
+    name_prefix:  api_

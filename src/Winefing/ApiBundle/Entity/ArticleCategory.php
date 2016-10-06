@@ -48,6 +48,8 @@ class ArticleCategory
      */
     private $articleCategoryTrs;
 
+    private $hierarchy;
+
     /**
      * Get id
      *
@@ -117,6 +119,7 @@ class ArticleCategory
     public function __construct() {
         $this->articles = new ArrayCollection();
         $this->articleCategoryTrs = new ArrayCollection();
+        $this->setHierarchy();
     }
 
     /**
@@ -136,6 +139,27 @@ class ArticleCategory
     public function removeArticleCategoryTr(ArticleCategoryTr $articleCategoryTr)
     {
         $this->articleCategoryTrs->removeElement($articleCategoryTr);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHierarchy()
+    {
+        return $this->hierarchy;
+    }
+
+    /**
+     * @param mixed $hierarchy
+     */
+    public function setHierarchy($hierarchie)
+    {
+        do {
+            $articleCategory = $this->getCategoryPere();
+            $hierarchy = $articleCategory->getDescription().',';
+        } while (!empty($this->getCategoryPere()));
+
+        $this->hierarchy = $hierarchy;
     }
 }
 

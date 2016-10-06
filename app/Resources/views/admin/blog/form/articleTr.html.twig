@@ -3,47 +3,57 @@
     <h4>Nouvel/Modifier Article</h4>
     {{ form_start(form) }}
     {{ form_errors(form) }}
-    <fieldset class="form-group">
-        {{ form_widget(form.article.id, {'id' : 'article'}) }}
-    </fieldset>
-    <fieldset class="form-group">
-        {{ form_label(form.article.user) }}
-        {{ form_widget(form.article.user) }}
-    </fieldset>
-    <fieldset class="form-group">
-        {{ form_label(form.article.description) }}
-        <br>
-        {{ form_widget(form.article.description, {'attr': {'style': 'readonly: readonly'}}) }}
-    </fieldset>
-    <fieldset class="form-group">
-        {{ form_label(form.article.picture) }}
-        {{ form_widget(form.article.picture) }}
-    </fieldset>
-    <fieldset class="form-group">
-        {{ form_label(form.article.articleCategories) }}
-        <br>
-        {{ form_widget(form.article.articleCategories) }}
-    </fieldset>
+    <div>
+        <fieldset class="form-group">
+            {{ form_widget(form.article.id, {'id' : 'article'}) }}
+        </fieldset>
+        <div class="row">
+            <div class="col-md-4">
+                <fieldset class="form-group">
+                    {{ form_label(form.article.user) }}
+                    <br>
+                    {{ form_widget(form.article.user, { 'attr': {'class': 'selectpicker'}}) }}
+                </fieldset>
+            </div>
+            <div class="col-md-4">
+                <fieldset class="form-group">
+                    {{ form_label(form.article.articleCategories) }}
+                    <br>
+                    {{ form_widget(form.article.articleCategories, { 'attr': {'class': 'selectpicker'}}) }}
+                </fieldset>
+            </div>
+        </div>
+        <fieldset class="form-group">
+            {{ form_label(form.article.picture) }}
+            {{ form_widget(form.article.picture) }}
+        </fieldset>
+    </div>
+    <br>
     {{ form_widget(form.id, {'attr': {'style': 'display: none'}}) }}
-    <fieldset class="form-group">
-        {{ form_label(form.language) }}
-        {{ form_widget(form.language) }}
-    </fieldset>
-    <fieldset class="form-group">
-        {{ form_label(form.title) }}
-        {{ form_widget(form.title,  { 'attr': {'class': 'form-control', 'style': 'width: 50%;'} }) }}
-    </fieldset>
+    <div class="row">
+        <div class="col-md-4">
+            <fieldset class="form-group">
+                {{ form_label(form.language) }}
+                <br>
+                {{ form_widget(form.language, { 'attr': {'class': 'selectpicker'}}) }}
+            </fieldset>
+        </div>
+        <div class="col-md-8">
+            <fieldset class="form-group">
+                {{ form_label(form.title) }}
+                {{ form_widget(form.title,  { 'attr': {'class': 'form-control', 'style': 'width: 50%;'} }) }}
+            </fieldset>
+        </div>
+    </div>
     <fieldset class="form-group" id="description">
         {{ form_label(form.shortDescription) }}
         {{ form_widget(form.shortDescription,  { 'attr': {'class': 'form-control'} }) }}
     </fieldset>
-    <fieldset class="form-group" id="description">
-        {{ form_label(form.content) }}
-        {{ form_widget(form.content,  { 'attr': {'class': 'form-control'} }) }}
-    </fieldset>
-    <fieldset class="form-group" id="description">
+    {{ form_label(form.content) }}
+    {{ form_widget(form.content,  {'id': 'summernote'}) }}
+    <fieldset class="form-group" id="activated">
         <input type='hidden' value='0' name='article_tr[activated]'>
-        {{ form_widget(form.activated,  { 'attr': {'class': 'form-control'} }) }}
+        {{ form_widget(form.activated,  { 'attr': {'data-toggle':"toggle", 'data-off':"Not activated", 'data-on':"Activated", 'data-onstyle':"success"} }) }}
     </fieldset>
     <a href="{{ path('article') }}" type="button" class="btn btn-default" data-dismiss="modal">Retour</a>
     <button type="submit" class="btn btn-primary">Valider</button>
@@ -61,4 +71,12 @@
             }
         });
     </script>
+    <script>
+        $(document).ready(function() {
+            $('#summernote').summernote({
+                height: 400,                 // set editor height
+                minHeight: null
+            });
+        });
+</script>
 {% endblock %}

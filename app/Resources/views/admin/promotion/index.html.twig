@@ -1,0 +1,101 @@
+{% extends 'admin/base.html.twig' %}
+{% block table %}
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>
+                <button type="button" class="btn btn-default" onclick="loadForm('{{ url('promotion_new_form')}}', 'promotion')">
+                    <span class="glyphicon glyphicon-plus-sign"></span>
+                </button>Code
+            </th>
+            <th>Montant</th>
+            <th>Montant min</th>
+            <th>Nombre dispo.</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for promotion in promotions %}
+            <tr>
+                <td>{{ promotion.code }}</td>
+                <td>{{ promotion.amount ~' '~ promotion.symbol}}</td>
+                <td>{{ promotion.minAmount }}</td>
+                <td>{{ promotion.numberDisponible }}</td>
+                <td>
+                    {{ promotion.startDate["timestamp"]|date("m/d/Y")}}
+                    {% if promotion.endDate is not null %}
+                        <span>~</span>
+                        {{ promotion.endDate["timestamp"]|date("m/d/Y")}}
+                    {% endif %}
+                </td>
+                <td>
+                    {% if  promotion.startDate["timestamp"]|date("m/d/Y") == "now"|date("m/d/Y") %}
+                        {% set status = "En cours" %}
+                    {% elseif  promotion.startDate["timestamp"]|date("m/d/Y") > "now"|date("m/d/Y") %}
+                        {% set status = "Futur" %}
+                    {% elseif promotion.endDate is null %}
+                        {% set status = "En cours" %}
+                    {% elseif promotion.endDate["timestamp"]|date("m/d/Y") > "now"|date("m/d/Y") %}
+                        {% set status = "En cours" %}
+                    {% else %}
+                        {% set status = "Terminé" %}
+                    {% endif %}
+                    {{ status }}
+                </td>
+                <td>
+                    <input type="button"  class="btn btn-primary" value="Editer" id="update" onclick="loadForm('{{ path('promotion_new_form', {'id' : promotion.id}) }}', 'promotion')"/>
+                    <input type="button" class="btn btn-primary" value="Supprimer" onclick="setPathDeleteButton('{{ path('promotion_delete', {'id' : promotion.id}) }}')"/>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+{% block modal %}
+    <span id="modalDelete">
+        <div class="modal fade" tabindex="-1" role="dialog" id="confirmation">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Suppression</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Etes-vous sur de vouloir supprimer cet élément ?</p>
+                    </div><!-- /.modal-content -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+                        <a id="delete" type="submit" class="btn btn-primary pull-right">Valider</a>
+                    </div>
+                </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
+        </div>
+    </span>
+    <span id="modalCreate">
+    </span>
+{% endblock %}
+
+{% block script %}
+    <script>
+        function setPathDeleteButton(path) {
+            $("#delete").attr("href", path);
+            $('#confirmation').modal();
+        }
+        function loadForm(path, modalId) {
+            $.ajax({
+                url:  path,
+                type: 'GET',
+                async: false,
+                success: function (data, textStatus, jqXHR) {
+                    $('#modalCreate').html(data);
+                    $('#'+modalId).modal();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log("no good");
+                }
+            });
+        }
+    </script>
+{% endblock %}

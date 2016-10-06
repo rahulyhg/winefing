@@ -48,9 +48,9 @@ class ArticleTr
     private $shortDescription;
 
     /**
-     * @var string
+     * @var text
      *
-     * @ORM\Column(name="content", type="string", length=2000)
+     * @ORM\Column(name="content", type="text")
      */
     private $content;
 
@@ -60,6 +60,22 @@ class ArticleTr
      * @ORM\Column(name="activated", type="boolean")
      */
     private $activated;
+
+    /**
+     * @var \DateTime $created
+     *
+     * @Gedmo\Timestampable(on="create")
+     * @ORM\Column(type="datetime")
+     */
+    private $created;
+
+    /**
+     * @var \DateTime $updated
+     *
+     * @Gedmo\Timestampable(on="update")
+     * @ORM\Column(type="datetime")
+     */
+    private $updated;
 
     /**
      * Get id
@@ -197,6 +213,16 @@ class ArticleTr
     public function setArticle($article)
     {
         $this->article = $article;
+    }
+
+    public function getCreated()
+    {
+        return $this->created;
+    }
+
+    public function getUpdated()
+    {
+        return $this->updated;
     }
 
 }

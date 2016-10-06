@@ -3,7 +3,11 @@
     <table class="table table-striped">
         <thead>
         <tr>
-            <th>Nom</th>
+            <th>
+                <button type="button" class="btn btn-default" onclick="loadForm('{{ url('format_new_form')}}', 'format')">
+                    <span class="glyphicon glyphicon-plus-sign"></span>
+                </button> Format
+            </th>
             <th>Description</th>
             <th>Actions</th>
         </tr>
@@ -14,48 +18,52 @@
                 <td>{{ format.name }}</td>
                 <td>{{ format.description }}</td>
                 <td>
-                    <input type="button"  class="btn btn-primary" value="Editer" id="update" onclick="loadUpdateForm('{{ path('format_new_form', {'id' : format.id}) }}')"/>
+                    <input type="button"  class="btn btn-primary" value="Editer" id="update" onclick="loadForm('{{ path('format_new_form', {'id' : format.id}) }}', 'format')"/>
                     <input type="button" class="btn btn-primary" value="Supprimer" onclick="setPathDeleteButton('{{ path('format_delete', {'id' : format.id}) }}')"/>
                 </td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
-    <button type="button" class="btn btn-primary pull-left" id="create">
-        Ajouter
-    </button>
 {% endblock %}
+{% block modal %}
+    <span id="modalDelete">
+        <div class="modal fade" tabindex="-1" role="dialog" id="confirmation">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Suppression</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Etes-vous sur de vouloir supprimer cet élément ?</p>
+                    </div><!-- /.modal-content -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+                        <a id="delete" type="submit" class="btn btn-primary pull-right">Valider</a>
+                    </div>
+                </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
+        </div>
+    </span>
+    <span id="modalCreate">
+    </span>
+{% endblock %}
+
 {% block script %}
     <script>
         function setPathDeleteButton(path) {
             $("#delete").attr("href", path);
             $('#confirmation').modal();
         }
-        $( "#create" ).on('click', function() {
-            $.ajax({
-                url: "{{ path('format_new_form')}}",
-                type: 'GET',
-                async: false,
-                success: function (data, textStatus, jqXHR) {
-                    $('#format-body').html(data);
-                    $('#format').modal();
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.log("no good");
-                }
-            });
-        });
-        $( "#validate" ).on('click', function() {
-            $('form#format').submit();
-        });
-        function loadUpdateForm(path) {
+        function loadForm(path, modalId) {
             $.ajax({
                 url:  path,
                 type: 'GET',
                 async: false,
                 success: function (data, textStatus, jqXHR) {
-                    $('#format-body').html(data);
-                    $('#format').modal();
+                    $('#modalCreate').html(data);
+                    $('#'+modalId).modal();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     console.log("no good");

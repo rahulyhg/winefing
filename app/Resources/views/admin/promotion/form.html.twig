@@ -1,0 +1,85 @@
+<div class="modal fade" tabindex="-1" role="dialog" id="promotion">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            {{ form_start(form,  { 'attr': {'required': 'true', 'id' : 'promotion'} }) }}
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Ajouter/modifier un promotion</h4>
+            </div>
+            <div class="modal-body">
+                <fieldset class="form-group">
+                    {{ form_widget(form.id,  { 'attr': {'required': 'false'} }) }}
+                </fieldset>
+                <div class="row">
+                    <div class="col-md-4">
+                        <fieldset class="form-group">
+                            {{ form_label(form.amount) }}
+                            {{ form_widget(form.amount,  { 'attr': {'class': 'form-control'} }) }}
+                        </fieldset>
+                    </div>
+                    <div class="col-md-4">
+                        <fieldset class="form-group">
+                            {{ form_label(form.minAmount) }}
+                            {{ form_widget(form.minAmount,  { 'attr': {'class': 'form-control'} }) }}
+                        </fieldset>
+                    </div>
+                    <div class="col-md-4">
+                        <fieldset class="form-group">
+                            {{ form_label(form.numberDisponible) }}
+                            {{ form_widget(form.numberDisponible,  { 'attr': {'class': 'form-control'} }) }}
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <fieldset class="form-group">
+                            {{ form_label(form.format) }}
+                            {{ form_widget(form.format,  { 'attr': {'class': 'form-control'} }) }}
+                        </fieldset>
+                    </div>
+                    <div class="col-md-6">
+                        <fieldset class="form-group">
+                            {{ form_label(form.code) }}
+                            {{ form_widget(form.code,  { 'attr': {'class': 'form-control'} }) }}
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <fieldset class="form-group">
+                            {{ form_label(form.startDate) }}
+                            {{ form_widget(form.startDate,  { 'attr': {'class': 'form-control'} }) }}
+                        </fieldset>
+                    </div>
+                    <div class="col-md-6">
+                        <fieldset class="form-group">
+                            {{ form_label(form.endDate) }}
+                            {{ form_widget(form.endDate,  { 'attr': {'class': 'form-control'} }) }}
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <fieldset class="form-group">
+                            {{ form_label(form.firstOrder) }}
+                            <input type='hidden' value='0' name='promotion[firstOrder]'>
+                            {{ form_widget(form.firstOrder,  { 'attr': {'class': 'form-control'} }) }}
+                        </fieldset>
+                    </div>
+                    <div class="col-md-6">
+                        <fieldset class="form-group">
+                            {{ form_label(form.freeShipping) }}
+                            <input type='hidden' value='0' name='promotion[freeShipping]'>
+                            {{ form_widget(form.freeShipping,  { 'attr': {'class': 'form-control'} }) }}
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+                <button type="submit" class="btn btn-primary pull-right">Valider</button>
+            </div>
+            {{ form_end(form) }}
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>

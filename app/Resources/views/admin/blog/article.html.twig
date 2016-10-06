@@ -5,10 +5,10 @@
             <tr>
                 <th>
                     &nbsp;<a href="{{ path('articleTr_new_form') }}" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span></a>
-                    Titre
+                    Article
                 </th>
                 <th>Autheur</th>
-                <th>Supprimer</th>
+                <th>Catégorie(s)</th>
             </tr>
             </thead>
         <tbody>
@@ -21,9 +21,13 @@
                     {{ article.user.fullName }}
                     </td>
                     <td>
-                        {% if article.articleTrs is empty %}
-                        <input type="button" class="btn btn-primary" value="Suprimer" onclick=""/>
-                        {% endif %}
+                        {% set length = article.articleCategories|length %}
+                        {% for category in article.articleCategories %}
+                            {{ category.description }}
+                            {% if loop.index < length %}
+                                <span>, </span>
+                            {% endif %}
+                        {% endfor %}
                     </td>
                 </tr>
                 <tr id="article-{{ article.id }}" class="collapse">
@@ -33,21 +37,26 @@
                             {% for articleTr in article.articleTrs %}
                                 <tr>
                                     <td>
-                                        {{ articleTr.language.picture }} {{ articleTr.title }}
+                                        {{ articleTr.language.name }} {{ articleTr.title }}
                                     </td>
                                     <td>
                                         {{ articleTr.shortDescription }}
                                     </td>
                                     <td>
-                                        {{ articleTr.activated }}
                                         <a href="{{ path('articleTr_new_form', {'id':articleTr.id, 'articleId' : article.id}) }}" class="btn btn-primary">Editer</a>
                                         <input type="button" class="btn btn-primary" value="Supprimer" onclick="setPathDeleteButton('{{ path('articleTr_delete', {'id' : articleTr.id}) }}')"/>
+                                        {% if articleTr.activated == 1 %}
+                                            {% set checked = 'checked' %}
+                                        {% else %}
+                                            {% set checked = '' %}
+                                        {% endif %}
+                                        <input {{ checked }} onchange="activate('{{ path('articleTr_activated') }}', 'articleTrActivatedToggle', '{{ articleTr.id }}')" id="articleTrActivatedToggle-{{ articleTr.id }}" type="checkbox" value="{{ articleTr.id }}" data-toggle="toggle" data-off="Not activated" data-on="Activated" data-width="126"  data-onstyle="success">
                                     </td>
                                 </tr>
                             {% endfor %}
                             {% for missingLanguage in article.missingLanguages %}
                                 <tr>
-                                    <td>
+                                    <td colspan="3">
                                         {{ missingLanguage.name }} {{ missingLanguage.picture }}
                                         &nbsp;<a href="{{ path('articleTr_new_form', {'id': 0, 'articleId': article.id, 'languageId':missingLanguage.id}) }}" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span></a>
                                     </td>
@@ -85,13 +94,6 @@
     </span>
 {% endblock %}
 {% block script %}
-    <!-- Menu Toggle Script -->
-    <script>
-        $("#menu-toggle").click(function(e) {
-            e.preventDefault();
-            $("#wrapper").toggleClass("toggled");
-        });
-    </script>
     <script>
         function setPathDeleteButton(path) {
             console.log("in");
@@ -109,6 +111,26 @@
                     console.log("ifffn");
                     $('#modalCreate').html(data);
                     $('#'+modalId).modal();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log("no good");
+                }
+            });
+        }
+        function activate(path, checkBox, id){
+            var checkBoxId = checkBox+'-'+id;
+            if(document.getElementById(checkBoxId).checked){
+                activatedValue = 1;
+            } else {
+                activatedValue = 0;
+            }
+            $.ajax({
+                url:  path,
+                type: 'PUT',
+                data: {activated:activatedValue, id:id},
+                async: false,
+                success: function (data, textStatus, jqXHR) {
+                    console.log(data);
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     console.log("no good");

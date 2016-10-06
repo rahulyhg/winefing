@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html style="background-color: white">
+    <head>
+        <meta charset="utf-8">
+        <title>{% block title %}Winefing{% endblock %}</title>
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+        <meta name="description" content="winefing">
+        <meta name="author" content="a.carval">
+
+        {% stylesheets 'assets/arillo/css/*' filter='cssrewrite' %}
+        <link rel="stylesheet" href="{{ asset_url }}" />
+        {% endstylesheets %}
+        <link rel="stylesheet" href="{{ asset('assets/custom.css') }}">
+
+
+        <!-- Custom styles for this template -->
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+        <link href='http://fonts.googleapis.com/css?family=Raleway:400,600,800' rel='stylesheet' type='text/css'>
+
+        <!-- Bootstrap core JavaScript
+================================================== -->
+        <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+        <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+
+
+
+        <!-- PLUGIN SELECT -->
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.2/css/bootstrap-select.min.css">
+
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.2/js/bootstrap-select.min.js"></script>
+
+        <!-- START PLUGIN SUMMERNOTE -->
+        <!-- include summernote css/js-->
+        <link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.css" rel="stylesheet">
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.js"></script>
+        <!-- END PLUGIN SUMMERNOTE -->
+        <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
+
+        {% javascripts 'assets/arillo/js/*' %}
+            <script type="text/javascript" src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+    </head>
+
+    <body><!-- begin:navbar -->
+        {% block nav %}
+            {{ include('navbar.html.twig') }}
+        {% endblock %}
+            {% block container %}
+            {% endblock %}
+        {% block script %}
+        {% endblock %}
+    </body>
+</html>

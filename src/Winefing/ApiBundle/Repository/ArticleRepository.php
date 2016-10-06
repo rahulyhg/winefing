@@ -13,5 +13,13 @@ use Doctrine\ORM\EntityRepository;
  */
 class ArticleRepository extends EntityRepository
 {
-
+    function findByUserId($userId) {
+        $query = $this->createQueryBuilder('article')
+            ->join("article.user", "user")
+            ->where('user.id = :userId')
+            ->setParameter('userId', $userId)
+            ->getQuery();
+        $users = $query->getResult();
+        return $users;
+    }
 }

@@ -58,7 +58,7 @@ class ArticleTrController extends Controller implements ClassResourceInterface
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
         $user = $repository->findOneById($article["user"]);
         $articleTr->getArticle()->setUser($user);
-        $articleTr->getArticle()->setDescription($article["description"]);
+        $articleTr->getArticle()->setDescription($articleTr->getTitle());
 
         $articleCategories = $article["articleCategories"];
         $articleTr->getArticle()->resetArticleCategories();
@@ -92,5 +92,14 @@ class ArticleTrController extends Controller implements ClassResourceInterface
         }
         $em->flush();
         return new Response(json_encode([200, "The Article is well deleted."]));
+    }
+
+    public function putActivatedAction(Request $request) {
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:ArticleTr');
+        $articleTr = $repository->findOneById($request->request->get("id"));
+        $articleTr->setActivated($request->request->get("activated"));
+        $em = $this->getDoctrine()->getManager();
+        $em->flush();
+        return new Response(json_encode([200, "success"]));
     }
 }

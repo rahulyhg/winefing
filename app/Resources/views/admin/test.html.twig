@@ -1,39 +1,56 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-
-
-
     <div id="wrapper">
-
         <!-- Sidebar -->
         <div id="sidebar-wrapper">
-            <ul class="sidebar-nav">
-                <li class="sidebar-brand">
-                    <a href="#">
-                        Start Bootstrap
+            <ul class="nav nav-pills nav-stacked">
+                <li>
+                    <a href="#" data-toggle="collapse" data-target="#technical" data-parent="#sidenav01" class="collapsed">
+                        <span class="glyphicon glyphicon-cloud"></span> Technique <span class="caret pull-right"></span>
                     </a>
+                    <div class="collapse" id="technical" style="height: 0px;">
+                        <ul class="nav nav-list">
+                            <li class="{% if app.request.attributes.get('_route') == 'language' %}active{% endif %}"><a class="active" href="{{ path('language') }}">Langues</a></li>
+                            <li class="{% if app.request.attributes.get('_route') == 'formats' %}active{% endif %}"><a class="active" href="{{ path('format') }}">Formats</a></li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="active">
+                    <a href="#" data-toggle="collapse" data-target="#charac" data-parent="#sidenav01" class="collapsed">
+                        <span class="glyphicon glyphicon-inbox"></span> Charactéristiques <span class="caret pull-right"></span>
+                    </a>
+                    <div class="collapse" id="charac" style="height: 0px;">
+                        <ul class="nav nav-list">
+                            <li class=""><a href="{{ path('characteristic', {'scopeName' : 'domain'}) }}">Domaine</a></li>
+                            <li class=""><a href="{{ path('characteristic', {'scopeName' : 'property'}) }}">Propriété</a></li>
+                            <li class=""><a href="{{ path('characteristic', {'scopeName' : 'rental'}) }}">Location</a></li>
+                        </ul>
+                    </div>
                 </li>
                 <li>
-                    <a href="#">Dashboard</a>
+                    <a href="#" data-toggle="collapse" data-target="#user" data-parent="#sidenav01" class="collapsed">
+                        <span class="glyphicon glyphicon-cloud"></span> Utilisateur <span class="caret pull-right"></span>
+                    </a>
+                    <div class="collapse" id="user" style="height: 0px;">
+                        <ul class="nav nav-list">
+                            <li class=""><a href="{{ path('characteristic', {'scopeName' : 'domain'}) }}">Admin</a></li>
+                            <li class=""><a href="{{ path('characteristic', {'scopeName' : 'property'}) }}">Propriétaires</a></li>
+                        </ul>
+                    </div>
                 </li>
+                <li><a href="#"><span class="glyphicon glyphicon-lock"></span> Promotion</a></li>
                 <li>
-                    <a href="#">Shortcuts</a>
+                    <a href="#" data-toggle="collapse" data-target="#blog" data-parent="#sidenav01" class="collapsed">
+                        <span class="glyphicon glyphicon-cloud"></span> Blog <span class="caret pull-right"></span>
+                    </a>
+                    <div class="collapse" id="user" style="height: 0px;">
+                        <ul class="nav nav-list">
+                            <li class=""><a href="{{ path('articleCategory') }}">Catégories</a></li>
+                            <li class=""><a href="{{ path('article') }}">Articles</a></li>
+                        </ul>
+                    </div>
                 </li>
-                <li>
-                    <a href="#">Overview</a>
-                </li>
-                <li>
-                    <a href="#">Events</a>
-                </li>
-                <li>
-                    <a href="#">About</a>
-                </li>
-                <li>
-                    <a href="#">Services</a>
-                </li>
-                <li>
-                    <a href="#">Contact</a>
                 </li>
             </ul>
         </div>

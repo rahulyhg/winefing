@@ -101,11 +101,7 @@ class LanguageController extends Controller
     public function deleteAction($id, Request $request)
     {
         $client = new Client();
-        try {
-            $client->request('DELETE', 'http://104.47.146.137/winefing/web/app_dev.php/api/languages/'.$id);
-        } catch (\Exception $e) {
-            error_log($e->getMessage());
-        }
+        $client->request('DELETE', 'http://104.47.146.137/winefing/web/app_dev.php/api/languages/'.$id);
         $request->getSession()
             ->getFlashBag()
             ->add('success', "The language is well deleted.");

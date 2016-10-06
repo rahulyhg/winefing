@@ -10,9 +10,11 @@ namespace Winefing\ApiBundle\Entity;
 
 use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Winefing\ApiBundle\Repository\UserRepository")
  * @ORM\Table(name="fos_user")
  */
 class User extends BaseUser
@@ -25,45 +27,51 @@ class User extends BaseUser
     protected $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(name="first_name", type="string", length=255, nullable=true)
      */
     protected $firstName;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(name="last_name", type="string", length=255, nullable=true)
      */
     protected $lastName;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(name="phone_number", type="string", length=50, nullable=true)
      */
     protected $phoneNumber;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(name="verify", type="string", length=255, nullable=true)
      */
     protected $verify;
 
     /**
-     * @ORM\Column(type="date", length=255)
+     * @ORM\Column(name="birth_date", type="date", length=255, nullable=true)
      */
     protected $birthDate;
 
     /**
-     * @ORM\Column(type="string", length=500)
+     * @ORM\Column(name="description", type="string", length=500, nullable=true)
      */
     protected $description;
+
+    protected $deleted = false;
     /**
      * @var string
      */
     protected $fullName;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Subscription", inversedBy="users", cascade={"persist", "merge", "detach"})
+     */
+    private $subscriptions;
 
     public function __construct()
     {
         parent::__construct();
-        $this->setFullName();
-        // your own logic
+        $this->subscriptions = new ArrayCollection();
+        return $this;
     }
 
     /**
@@ -192,5 +200,21 @@ class User extends BaseUser
     public function setFullName()
     {
         $this->fullName = $this->getFirstName().' '.$this->getLastName();
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isDeleted()
+    {
+        return $this->deleted;
+    }
+
+    /**
+     * @param boolean $delete
+     */
+    public function setDeleted($deleted)
+    {
+        $this->deleted = $deleted;
     }
 }

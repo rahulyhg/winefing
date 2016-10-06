@@ -116,12 +116,4 @@ class ArticleController extends Controller implements ClassResourceInterface
         return new Response(json_encode([200, "success"]));
     }
 
-//    public function putActivatedAction(Request $request) {
-//        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:ArticleCategory');
-//        $characteristicCategory = $repository->findOneById($request->request->get("id"));
-//        $characteristicCategory->setActivated($request->request->get("activated"));
-//        $em = $this->getDoctrine()->getManager();
-//        $em->flush();
-//        return new Response(json_encode([200, "success"]));
-//    }
 }
