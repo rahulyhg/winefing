@@ -34,6 +34,20 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 class CharacteristicCategoryController extends Controller
 {
     /**
+     * @Route("/characteristics/categories/{scopeName}", name="characteristics_categories")
+     */
+    public function cgetAction($scopeName) {
+        $api = $this->container->get("winefing.api_controller");
+        $response = $api->get('http://104.47.146.137/winefing/web/app_dev.php/api/characteristics/'.$scopeName.'/categories');
+        $characteristicsJson = $response->getBody()->getContents();
+        $encoders = array(new JsonEncoder());
+        $normalizers = array(new ObjectNormalizer());
+        $serializer = new Serializer($normalizers, $encoders);
+        $characteristicCategories = $serializer->decode($characteristicsJson, 'json');
+        return $this->render('admin/characteristic/index.html.twig', array(
+            'characteristicCategories' => $characteristicCategories, 'scopeName' => $scopeName));
+    }
+    /**
      * @Route("/characteristicCategory/newForm/{scopeName}/{id}", name="characteristicCategory_new_form")
      */
     public function newFormAction($scopeName, $id = '') {
@@ -65,17 +79,34 @@ class CharacteristicCategoryController extends Controller
      */
     public function postAction($scopeName, Request $request) {
         $api = $this->container->get('winefing.api_controller');
-        $api->post("http://104.47.146.137/winefing/web/app_dev.php/api/characteristics/categories", $request->request->all()["characteristic_category"], null);
+        $characteristicCategoryTrs = $request->request->all()["characteristic_category"]["characteristicCategoryTrs"];
+        $characteristicCategory = $request->request->all()["characteristic_category"];
+        unset($characteristicCategory["characteristicCategoryTrs"]);
+        $response = $api->post("http://104.47.146.137/winefing/web/app_dev.php/api/characteristics/categories", $characteristicCategory, null);
+        $characteristicCategoryJson = $response->getBody()->getContents();
+        $encoders = array(new JsonEncoder());
+        $normalizers = array(new ObjectNormalizer());
+        $serializer = new Serializer($normalizers, $encoders);
+        $characteristicCategory = $serializer->decode($characteristicCategoryJson, 'json');
+        $characteristicCategoryId = $characteristicCategory["id"];
+        foreach($characteristicCategoryTrs as $characteristicCategoryTr) {
+            $characteristicCategoryTr["characteristicCategory"] = $characteristicCategoryId;
+            if(empty($characteristicCategoryTr["id"])) {
+                $api->post("http://104.47.146.137/winefing/web/app_dev.php/api/characteristiccategories/trs", $characteristicCategoryTr, null);
+            } else {
+                $api->put("http://104.47.146.137/winefing/web/app_dev.php/api/characteristiccategory/tr", $characteristicCategoryTr, null);
+            }
+        }
         $request->getSession()
             ->getFlashBag()
             ->add('success', "The characteristic's category is well created/modified.");
-        return $this->redirectToRoute('characteristic', ['scopeName' => $scopeName]);
+        return $this->redirectToRoute('characteristics_categories', ['scopeName' => $scopeName]);
     }
 
     /**
-     * @Route("/characteristicCategory/delete/{id}", name="characteristicCategory_delete")
+     * @Route("/characteristicCategory/delete/{scopeName}/{id}", name="characteristicCategory_delete")
      */
-    public function deleteAction($id, Request $request)
+    public function deleteAction($scopeName, $id, Request $request)
     {
         $client = new Client();
         $response = $client->request('DELETE', 'http://104.47.146.137/winefing/web/app_dev.php/api/characteristics/'.$id.'/category');
@@ -83,7 +114,7 @@ class CharacteristicCategoryController extends Controller
         $request->getSession()
             ->getFlashBag()
             ->add('success', "The CharacteristicCategory is well deleted.");
-        return $this->redirectToRoute('characteristic', ['scopeName' => 'RENTAL']);
+        return $this->redirectToRoute('characteristics_categories', ['scopeName' => $scopeName]);
         //return new Response();
     }
     /**

@@ -6,3 +6,5 @@ parameters:
 services:
     winefing.api_controller:
         class: Winefing\ApiBundle\Controller\ApiController
+    winefing.serializer_controller:
+            class: Winefing\ApiBundle\Controller\SerializerController

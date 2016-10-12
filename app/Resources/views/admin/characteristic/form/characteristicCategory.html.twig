@@ -36,6 +36,11 @@
                         {{ form_label(form.picture) }}
                         {{ form_widget(form.picture,  { 'attr': {'class': 'form-control'} }) }}
                     </fieldset>
+                    <input checked type='checkbox' name='characteristic_category[activated]' value='0' hidden/>
+                    <fieldset class="form-group">
+                        {{ form_label(form.activated) }}
+                        {{ form_widget(form.activated,  { 'attr': {'class': 'form-control'} }) }}
+                    </fieldset>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>

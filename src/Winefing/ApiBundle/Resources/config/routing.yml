@@ -13,9 +13,19 @@ characteristicCategory:
     resource: Winefing\ApiBundle\Controller\CharacteristicCategoryController
     name_prefix:  api_
 
+characteristicCategoryTr:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\CharacteristicCategoryTrController
+    name_prefix:  api_
+
 characteristic:
     type: rest
     resource: Winefing\ApiBundle\Controller\CharacteristicController
+    name_prefix:  api_
+
+characteristicTr:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\CharacteristicTrController
     name_prefix:  api_
 
 article:
@@ -41,4 +51,14 @@ promotion:
 adminUser:
     type: rest
     resource: Winefing\ApiBundle\Controller\AdminUserController
+    name_prefix:  api_
+
+webPage:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\WebPageController
+    name_prefix:  api_
+
+webPageTr:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\WebPageTrController
     name_prefix:  api_

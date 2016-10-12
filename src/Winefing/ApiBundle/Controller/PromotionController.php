@@ -80,11 +80,17 @@ class PromotionController extends Controller implements ClassResourceInterface
         if (count($errors) > 0) {
             $errorsString = (string) $errors;
             return new Response(400, $errorsString);
-        } else {
-            $em->merge($promotion);
-            $em->flush();
         }
-        return new Response(json_encode([200, "The promotion is well created."]));
+        $em->persist($promotion);
+        $em->flush();
+        $encoder = new JsonEncoder();
+        $normalizer = new ObjectNormalizer();
+        $normalizer->setCircularReferenceHandler(function ($object) {
+            return $object->getId();
+        });
+        $serializer = new Serializer(array($normalizer), array($encoder));
+        $json = $serializer->serialize($promotion, 'json');
+        return new Response($json);
     }
 
     /**
@@ -123,11 +129,17 @@ class PromotionController extends Controller implements ClassResourceInterface
         if (count($errors) > 0) {
             $errorsString = (string) $errors;
             return new Response(400, $errorsString);
-        } else {
-            $em->merge($promotion);
-            $em->flush();
         }
-        return new Response(json_encode([200, "The promotion is well created."]));
+        $em->persist($promotion);
+        $em->flush();
+        $encoder = new JsonEncoder();
+        $normalizer = new ObjectNormalizer();
+        $normalizer->setCircularReferenceHandler(function ($object) {
+            return $object->getId();
+        });
+        $serializer = new Serializer(array($normalizer), array($encoder));
+        $json = $serializer->serialize($promotion, 'json');
+        return new Response($json);
     }
 
     public function deleteAction($id)

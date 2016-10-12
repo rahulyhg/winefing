@@ -36,6 +36,7 @@
                         </fieldset>
                     {% endfor %}
                     <fieldset class="form-group" id="activated">
+                        <input checked hidden name="characteristic[activated]" type="checkbox">
                         {{ form_label(form.activated) }}
                         {{ form_widget(form.activated,  { 'attr': {'class': 'form-control'} }) }}
                     </fieldset>

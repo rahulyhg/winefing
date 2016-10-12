@@ -34,6 +34,7 @@ class CharacteristicCategoryType extends AbstractType
                 'class' => 'WinefingApiBundle:Scope',
                 'choice_label' => 'name'))
             ->add('description', TextareaType::class, ['required' => false])
+            ->add('activated', CheckboxType::class, ['required' => false])
             ->add('picture', FileType::class, ['required' => false])
             ->add('characteristicCategoryTrs', CollectionType::class, array(
                 'entry_type' => CharacteristicCategoryTrType::class))

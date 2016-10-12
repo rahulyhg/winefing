@@ -31,52 +31,64 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 class CharacteristicCategoryController extends Controller implements ClassResourceInterface
 {
     /**
+     * Liste de toute les formats possible en base
+     * @return Response
+     */
+    public function cgetAction($scopeName)
+    {
+        $encoders = array(new JsonEncoder());
+        $normalizers = array(new ObjectNormalizer());
+        $serializer = new Serializer($normalizers, $encoders);
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Scope');
+        $scope = $repository->findOneByName($scopeName);
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:CharacteristicCategory');
+        $characteristicCategories = $repository->findByScope($scope);
+        $encoder = new JsonEncoder();
+        $normalizer = new ObjectNormalizer();
+        $normalizer->setCircularReferenceHandler(function ($object) {
+            return $object->getId();
+        });
+        $serializer = new Serializer(array($normalizer), array($encoder));
+        $json = $serializer->serialize($characteristicCategories, 'json');
+
+        return new Response($json);
+    }
+    /**
      * Create or update a characteristicCategory from the submitted data.<br/>
      *
      *
      */
     public function postAction(Request $request)
     {
-        $new = false;
         $em = $this->getDoctrine()->getManager();
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:CharacteristicCategory');
         $characteristicCategory = $repository->findOneById($request->request->get('id'));
+        if(empty($characteristicCategory)) {
+            $characteristicCategory = new CharacteristicCategory();
+        }
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Scope');
         $scope = $repository->findOneById($request->request->get('scope'));
-
-        if (empty($characteristicCategory)) {
-            $characteristicCategory = new CharacteristicCategory();
-            $characteristicCategory->setActivated(0);
-            $new = true;
-        }
         $characteristicCategory->setDescription($request->request->get('description'));
+        $characteristicCategory->setActivated($request->request->get('activated'));
         $characteristicCategory->setScope($scope);
 
-        $characteristicCategoryTrs = $request->request->all()["characteristicCategoryTrs"];
-        foreach ($characteristicCategoryTrs as $tr) {
-            if(empty($tr["id"])) {
-                $characteristicCategoryTr = new CharacteristicCategoryTr();
-            } else {
-                $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:CharacteristicCategoryTr');
-                $characteristicCategoryTr =  $repository->findOneById($tr["id"]);
-            }
-            $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
-            $characteristicCategoryTr->setLanguage($repository->findOneById($tr["language"]));
-            $characteristicCategoryTr->setName($tr["name"]);
-            $characteristicCategory->addCharacteristicCategoryTr($characteristicCategoryTr);
-        }
         $validator = $this->get('validator');
         $errors = $validator->validate($characteristicCategory);
         if (count($errors) > 0) {
             $errorsString = (string) $errors;
             return new Response(400, $errorsString);
-        } else {
-            if($new) {
-                $em->merge($characteristicCategory);
-            }
-            $em->flush();
         }
-        return new Response(json_encode([200, "The format is well created."]));
+        $em->persist($characteristicCategory);
+        $em->flush();
+        $encoder = new JsonEncoder();
+        $normalizer = new ObjectNormalizer();
+        $normalizer->setCircularReferenceHandler(function ($object) {
+            return $object->getId();
+        });
+        $serializer = new Serializer(array($normalizer), array($encoder));
+        $json = $serializer->serialize($characteristicCategory, 'json');
+
+        return new Response($json);
     }
 
     public function deleteAction($id)

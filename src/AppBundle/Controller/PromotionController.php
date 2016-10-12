@@ -37,8 +37,7 @@ class PromotionController extends Controller
         $normalizers = array(new ObjectNormalizer());
         $serializer = new Serializer($normalizers, $encoders);
         $promotions = $serializer->decode($promotionsJson, 'json');
-        return $this->render('admin/promotion/index.html.twig', array(
-            'promotions' => $promotions));
+        return $this->render('admin/promotion/index.html.twig', array('promotions' => $promotions));
     }
     /**
      * @Route("/promotion/newForm/{id}", name="promotion_new_form")
@@ -46,13 +45,8 @@ class PromotionController extends Controller
     public function newFormAction($id = '') {
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Promotion');
         $promotion = $repository->findOneById($id);
-        $method = 'PUT';
-        $action = $this->generateUrl('promotion_put');
-        if(empty($promotion)) {
-            $promotion = new Promotion();
-            $method = 'POST';
-            $action = $this->generateUrl('promotion_post');
-        }
+        $method = 'POST';
+        $action = $this->generateUrl('promotion_submit');
         $form = $this->createForm(PromotionType::class, $promotion, array(
             'action' => $action,
             'method' => $method));
@@ -61,32 +55,28 @@ class PromotionController extends Controller
         ));
     }
     /**
-     * @Route("/promotion/post", name="promotion_post")
+     * @Route("/promotion/submit", name="promotion_submit")
      */
     public function postAction(Request $request)
     {
         $api = $this->container->get('winefing.api_controller');
-        $api->post("http://104.47.146.137/winefing/web/app_dev.php/api/promotions", $request->request->all()["promotion"], null);
-        $request->getSession()
-            ->getFlashBag()
-            ->add('success', "The promotion is well created.");
-        return new Response();
-        //return $this->redirectToRoute('promotion');
-    }
-    /**
-     * @Route("/promotion/put", name="promotion_put")
-     */
-    public function putAction(Request $request)
-    {
-        $api = $this->container->get('winefing.api_controller');
-        $api->put("http://104.47.146.137/winefing/web/app_dev.php/api/promotion", $request->request->all()["promotion"]);
+        $promotion = $request->request->all()["promotion"];
+        if(empty($promotion["id"])) {
+            $response = $api->post("http://104.47.146.137/winefing/web/app_dev.php/api/promotions", $promotion, null);
+        } else {
+            $response = $api->put("http://104.47.146.137/winefing/web/app_dev.php/api/promotion", $promotion, null);
+        }
+        $promotionJson = $response->getBody()->getContents();
+        $encoders = array(new JsonEncoder());
+        $normalizers = array(new ObjectNormalizer());
+        $serializer = new Serializer($normalizers, $encoders);
+        $promotion = $serializer->decode($promotionJson, 'json');
 
         $request->getSession()
             ->getFlashBag()
-            ->add('success', "The promotion is well modified.");
+            ->add('success', "The promotion \"".$promotion["code"]."\" is well created/modified.");
         return $this->redirectToRoute('promotions');
     }
-
     /**
      * @Route("/promotion/delete/{id}", name="promotion_delete")
      */

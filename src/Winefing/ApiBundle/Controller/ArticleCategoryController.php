@@ -16,18 +16,28 @@ use FOS\RestBundle\Routing\ClassResourceInterface;
 use Doctrine\ORM\EntityManager;
 use Winefing\ApiBundle\Entity\ArticleCategory;
 use Winefing\ApiBundle\Entity\ArticleCategoryTr;
-use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\Annotations\FileParam;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Winefing\ApiBundle\WinefingApiBundle;
 
 
 class ArticleCategoryController extends Controller implements ClassResourceInterface
 {
+    public function cgetAction() {
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:ArticleCategory');
+        $articleCategories = $repository->findAll();
+        $encoder = new JsonEncoder();
+        $normalizer = new ObjectNormalizer();
+
+        $normalizer->setCircularReferenceHandler(function ($object) {
+            return $object->getId();
+        });
+        $serializer = new Serializer(array($normalizer), array($encoder));
+        return new Response($serializer->serialize($articleCategories));
+    }
 
     public function postAction(Request $request)
     {
@@ -52,10 +62,9 @@ class ArticleCategoryController extends Controller implements ClassResourceInter
         if (count($errors) > 0) {
             $errorsString = (string) $errors;
             return new Response(400, $errorsString);
-        } else {
-            $em->merge($articleCategory);
-            $em->flush();
         }
+        $em->persist($articleCategory);
+        $em->flush();
         return new Response(json_encode([200, "The format is well created."]));
     }
 

@@ -27,7 +27,7 @@
                 </td>
                 <td>
                     {% if characteristicCategory.characteristics is empty %}
-                        <input type="button" class="btn btn-primary" value="Supprimer" onclick="setPathDeleteButton('{{ path('characteristicCategory_delete', {'id' : characteristicCategory.id, 'scopeName' : scopeName }) }}')"/>
+                        <input type="button" class="btn btn-primary" value="Supprimer" onclick="setPathDeleteButton('{{ path('characteristicCategory_delete', {'scopeName':scopeName, 'id' : characteristicCategory.id, 'scopeName' : scopeName }) }}')"/>
                     {% else %}
                         {% if characteristicCategory.activated == 1 %}
                             {% set checked = 'checked' %}

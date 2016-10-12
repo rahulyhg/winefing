@@ -46,7 +46,7 @@ class ApiController {
         $client = new Client();
         //var_dump(json_encode($params , JSON_FORCE_OBJECT));
         //$client->request('POST', $url, ['form_params' => $params]);
-        var_dump($client->request('POST', $url, ['form_params' => $params])->getBody()->getContents());
+        return $client->request('POST', $url, ['form_params' => $params]);
 /*        $request = $client->post($url,array(
             'content-type' => 'application/json'
         ),array());
@@ -61,6 +61,50 @@ class ApiController {
             $body[$key] = $value;
         }
         $client = new Client();
-        $client->request('PUT', $url, ['form_params' => $body]);
+        return $client->request('PUT', $url, ['form_params' => $body]);
+    }
+
+    public function get($url){
+        $client = new Client();
+        return $client->request('GET', $url);
+    }
+
+    public function delete($url){
+        $client = new Client();
+        return $client->request('GET', $url);
     }
 }
+
+
+
+//public function getToken($username, $password)
+//{
+//    $client = new GuzzleHttp\Client();
+//    $body =[
+//        'form_params' =>
+//            [
+//                'grant_type' => 'password',
+//                'client_id' => '1_3bcbxd9e24g0gk4swg0kwgcwg4o8k8g4g888kwc44gcc0gwwk4',
+//                'client_secret' => '4ok2x70rlfokc8g0wws8c8kwcokw80k44sg48goc0ok4w0so0k',
+//                'username' => $username,
+//                'password' => $password
+//            ]
+//    ];
+//    if (isset($_SERVER['HTTPS']) &&
+//        ($_SERVER['HTTPS'] == 'on' || $_SERVER['HTTPS'] == 1) ||
+//        isset($_SERVER['HTTP_X_FORWARDED_PROTO']) &&
+//        $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
+//        $protocol = 'https://';
+//    }
+//    else {
+//        $protocol = 'http://';
+//    }
+//    $token = $client->request(
+//        'POST',
+//        $protocol.$_SERVER['HTTP_HOST'].'/app_dev.php/oauth/v2/token',
+//        $body
+//    );
+//
+//    return json_decode($token->getBody(), true)['access_token'];
+//}
+

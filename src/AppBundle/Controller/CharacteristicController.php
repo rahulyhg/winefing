@@ -36,38 +36,6 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 class CharacteristicController extends Controller
 {
     /**
-     * @Route("/characteristic/{scopeName}", name="characteristic")
-     */
-    public function cgetAction($scopeName) {
-        $client = new Client();
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Scope');
-        $scope = $repository->findOneByName($scopeName);
-        $characteristicCategories = $scope->getCharacteristicCategories();
-//        $test = reset($characteristicCategories);
-//        $characteristics = $test[0]->getCharacteristics();
-//        $t = reset($characteristics);
-//        echo '<pre>';
-//        var_dump($t[0]->getDescription());
-//        echo '</pre>';
-
-        //$repository = $this->getDoctrine()->getRepository('WinefingApiBundle:CharacteristicCategory');
-        //$categories = $repository->findByScope($scope);
-        //var_dump($categories);
-        //$repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Characteristic');
-        //$characteristics =  $repository->findByCharacteristicCategory($categories);
-        //var_dump($characteristics);
-/*        $response = $client->request('GET', 'http://104.47.146.137/winefing/web/app_dev.php/api/characteristics', []);
-        $formatsJson = $response->getBody()->getContents();
-        $encoders = array(new JsonEncoder());
-        $normalizers = array(new ObjectNormalizer());
-        $serializer = new Serializer($normalizers, $encoders);
-        $characteristics = $serializer->decode($formatsJson, 'json');*/
-        return $this->render('admin/characteristic/index.html.twig', array(
-            'characteristicCategories' => $characteristicCategories, 'scopeName' => $scopeName));
-
-        //return new Response();
-    }
-    /**
      * @Route("/characteristic/newForm/{characteristicCategoryId}/{scopeName}/{id}", name="characteristic_new_form")
      */
     public function newFormAction($characteristicCategoryId, $scopeName, $id = '') {
@@ -86,7 +54,7 @@ class CharacteristicController extends Controller
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:CharacteristicCategory');
         $characteristic->setChacarteristicCategory($repository->findOneById($characteristicCategoryId));
         $form = $this->createForm(CharacteristicType::class, $characteristic, array(
-            'action' => $this->generateUrl('characteristic_post', array('scopeName'=> $scopeName)),
+            'action' => $this->generateUrl('characteristic_submit', array('scopeName'=> $scopeName)),
             'method' => 'POST'));
         return $this->render('admin/characteristic/form/characteristic.html.twig', array(
             'form' => $form->createView()
@@ -94,15 +62,37 @@ class CharacteristicController extends Controller
     }
 
     /**
-     * @Route("/post/characteristic/{scopeName}", name="characteristic_post")
+     * @Route("/characteristic/submit/{scopeName}", name="characteristic_submit")
      */
     public function postAction($scopeName, Request $request) {
         $api = $this->container->get('winefing.api_controller');
-        $api->post("http://104.47.146.137/winefing/web/app_dev.php/api/characteristics", $request->request->all()["characteristic"], null);
+        $characteristicTrs = $request->request->all()["characteristic"]["characteristicTrs"];
+        $characteristic = $request->request->all()["characteristic"];
+        unset($characteristic["characteristicTrs"]);
+        if(empty($characteristic["id"])) {
+            $response = $api->post("http://104.47.146.137/winefing/web/app_dev.php/api/characteristics", $characteristic, null);
+        } else {
+            $response = $api->put("http://104.47.146.137/winefing/web/app_dev.php/api/characteristic", $characteristic, null);
+        }
+        $characteristicJson = $response->getBody()->getContents();
+        $encoders = array(new JsonEncoder());
+        $normalizers = array(new ObjectNormalizer());
+        $serializer = new Serializer($normalizers, $encoders);
+        $characteristic = $serializer->decode($characteristicJson, 'json');
+        $characteristicId = $characteristic["id"];
+
+        foreach($characteristicTrs as $characteristicTr) {
+            $characteristicTr["characteristic"] = $characteristicId;
+            if(empty($characteristicTr["id"])) {
+                $api->post("http://104.47.146.137/winefing/web/app_dev.php/api/characteristics/trs", $characteristicTr, null);
+            } else {
+                $api->put("http://104.47.146.137/winefing/web/app_dev.php/api/characteristic/tr", $characteristicTr, null);
+            }
+        }
         $request->getSession()
             ->getFlashBag()
             ->add('success', "The Characteristic is well modified/created.");
-        return $this->redirectToRoute('characteristic', ['scopeName' => $scopeName]);
+        return $this->redirectToRoute('characteristics_categories', ['scopeName' => $scopeName]);
     }
 
     /**
@@ -116,7 +106,7 @@ class CharacteristicController extends Controller
         $request->getSession()
             ->getFlashBag()
             ->add('success', "The Characteristic is well deleted.");
-        return $this->redirectToRoute('characteristic', ['scopeName' => $scopeName]);
+        return $this->redirectToRoute('characteristics_categories', ['scopeName' => $scopeName]);
     }
 
 }

@@ -17,13 +17,13 @@
             <span style="margin-right: 10px;" class="glyphicon glyphicon-floppy-disk"></span>Technique<span class="caret pull-right"></span>
         </a>
         <div class="collapse {{ classDivTechical }}" id="techical">
-            <ul class="nav nav-list">
+            <ul class="nav nav-list admin-navbar-text-align">
                 <li class="{% if app.request.attributes.get('_route') == 'language' %}active{% endif %}"><a class="active" href="{{ path('language') }}">Langues</a></li>
                 <li class="{% if app.request.attributes.get('_route') == 'formats' %}active{% endif %}"><a class="active" href="{{ path('format') }}">Formats</a></li>
             </ul>
         </div>
     </li>
-    {% if (app.request.attributes.get('_route') == 'characteristic')  %}
+    {% if (app.request.attributes.get('_route') == 'characteristics_categories')  %}
         {% set classACharac = '' %}
         {% set classLiCharac = 'active' %}
         {% set classDivCharac = 'in' %}
@@ -37,10 +37,10 @@
             <span style="margin-right: 10px;" class="glyphicon glyphicon-cloud"></span>Charactéristiques<span class="caret pull-right"></span>
         </a>
         <div class="collapse {{ classDivCharac }}" id="charac">
-            <ul class="nav nav-list">
-                <li class=""><a href="{{ path('characteristic', {'scopeName' : 'domain'}) }}">Domaine</a></li>
-                <li class=""><a href="{{ path('characteristic', {'scopeName' : 'property'}) }}">Propriété</a></li>
-                <li class=""><a href="{{ path('characteristic', {'scopeName' : 'rental'}) }}">Location</a></li>
+            <ul class="nav nav-list admin-navbar-text-align">
+                <li class=""><a href="{{ path('characteristics_categories', {'scopeName' : 'domain'}) }}">Domaine</a></li>
+                <li class=""><a href="{{ path('characteristics_categories', {'scopeName' : 'property'}) }}">Propriété</a></li>
+                <li class=""><a href="{{ path('characteristics_categories', {'scopeName' : 'rental'}) }}">Location</a></li>
             </ul>
         </div>
     </li>
@@ -58,9 +58,20 @@
             <span style="margin-right: 10px;" class="glyphicon glyphicon-user"></span>Utilisateurs<span class="caret pull-right"></span>
         </a>
         <div class="collapse {{ classDivUsers }}" id="users">
-            <ul class="nav nav-list">
+            <ul class="nav nav-list admin-navbar-text-align">
                 <li class=""><a href="{{ path('users_admin') }}">Admin</a></li>
-                <li class=""><a href="{{ path('characteristic', {'scopeName' : 'property'}) }}">Propriétaires</a></li>
+                <li class=""><a href="{{ path('characteristics_categories', {'scopeName' : 'property'}) }}">Propriétaires</a></li>
+            </ul>
+        </div>
+    </li>
+    <li class="{{ classLiUsers }}">
+        <a href="#" data-toggle="collapse" data-target="#emails" data-parent="#sidenav01" class="{{ classAUsers }}">
+            <span style="margin-right: 10px;" class="glyphicon glyphicon-envelope"></span>Emails<span class="caret pull-right"></span>
+        </a>
+        <div class="collapse {{ classDivUsers }}" id="emails">
+            <ul class="nav nav-list admin-navbar-text-align">
+                <li class=""><a href="{{ path('users_admin') }}">Les abonnements</a></li>
+                <li class=""><a href="{{ path('characteristics_categories', {'scopeName' : 'property'}) }}">Nouveau mail</a></li>
             </ul>
         </div>
     </li>
@@ -70,7 +81,15 @@
         {% set classLiPromo = '' %}
     {% endif %}
     <li class="{{ classLiPromo }}">
-        <a href="{{ path('promotions') }}"><span style="margin-right: 10px;" class="glyphicon glyphicon-euro"></span> Promotion</a>
+        <a href="{{ path('promotions') }}"><span style="margin-right: 10px;" class="glyphicon glyphicon-euro"></span>Promotions</a>
+    </li>
+    {% if (app.request.attributes.get('_route') == 'web_pages') %}
+        {% set classLiWebPage = 'active' %}
+    {% else %}
+        {% set classLiWebPage = '' %}
+    {% endif %}
+    <li class="{{ classLiWebPage }}">
+        <a href="{{ path('web_pages') }}"><span style="margin-right: 10px;" class="glyphicon glyphicon-home"></span>Web page</a>
     </li>
     {% if (app.request.attributes.get('_route') == 'articleCategory') or (app.request.attributes.get('_route') == 'article') %}
         {% set classABlog = '' %}
@@ -86,7 +105,7 @@
             <span style="margin-right: 10px;" class="glyphicon glyphicon-lock"></span>Blog<span class="caret pull-right"></span>
         </a>
         <div class="collapse {{ classDivBlog }}" id="blog">
-            <ul class="nav nav-list">
+            <ul class="nav nav-list admin-navbar-text-align">
                 <li class=""><a href="{{ path('articleCategory') }}">Catégories</a></li>
                 <li class=""><a href="{{ path('article') }}">Articles</a></li>
             </ul>

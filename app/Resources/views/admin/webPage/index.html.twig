@@ -1,0 +1,135 @@
+{% extends 'admin/base.html.twig' %}
+{% block table %}
+    <table class="table table-striped table-responsive">
+            <thead>
+            <tr>
+                <th>
+                    &nbsp;<a href="{{ path('webPageTr_new_form') }}" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span></a>
+                    WebPage
+                </th>
+                <th>Autheur</th>
+                <th>Catégorie(s)</th>
+            </tr>
+            </thead>
+        <tbody>
+            {% for webPage in webPages %}
+                <tr>
+                    <td data-toggle="collapse" data-target="#webPage-{{ webPage.id }}" class="accordion-toggle" style="cursor:pointer">
+                        {{ webPage.title }}
+                    </td>
+                    <td data-toggle="collapse" data-target="#webPage-{{ webPage.id }}" class="accordion-toggle" style="cursor:pointer">
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+                <tr id="webPage-{{ webPage.id }}" class="collapse">
+                    <td colspan="3">
+                        <table class="table table-condensed table-responsive">
+                            <tbody>
+                            {% for webPageTr in webPage.webPageTrs %}
+                                <tr>
+                                    <td>
+                                        {{ webPageTr.language.name }} {{ webPageTr.title }}
+                                    </td>
+                                    <td>
+                                        {{ webPageTr.title }}
+                                    </td>
+                                    <td>
+                                        <a href="{{ path('webPageTr_new_form', {'id':webPageTr.id, 'webPageId' : webPage.id}) }}" class="btn btn-primary">Editer</a>
+                                        <input type="button" class="btn btn-primary" value="Supprimer" onclick="setPathDeleteButton('{{ path('webPageTr_delete', {'id' : webPageTr.id}) }}')"/>
+                                        {% if webPageTr.activated == 1 %}
+                                            {% set checked = 'checked' %}
+                                        {% else %}
+                                            {% set checked = '' %}
+                                        {% endif %}
+                                        <input {{ checked }} onchange="activate('{{ path('webPageTr_activated') }}', 'webPageTrActivatedToggle', '{{ webPageTr.id }}')" id="webPageTrActivatedToggle-{{ webPageTr.id }}" type="checkbox" value="{{ webPageTr.id }}" data-toggle="toggle" data-off="Not activated" data-on="Activated" data-width="126"  data-onstyle="success">
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            {% for missingLanguage in webPage.missingLanguages %}
+                                <tr>
+                                    <td colspan="3">
+                                        {{ missingLanguage.name }} {{ missingLanguage.picture }}
+                                        &nbsp;<a href="{{ path('webPageTr_new_form', {'id': 0, 'webPageId': webPage.id, 'languageId':missingLanguage.id}) }}" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span></a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+{% block modal %}
+    <span id="modalDelete">
+        <div class="modal fade" tabindex="-1" role="dialog" id="confirmation">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Suppression</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Etes-vous sur de vouloir supprimer cet élément ?</p>
+                    </div><!-- /.modal-content -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+                        <a id="delete" type="submit" class="btn btn-primary pull-right">Valider</a>
+                    </div>
+                </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
+        </div>
+    </span>
+    <span id="modalCreate">
+    </span>
+{% endblock %}
+{% block script %}
+    <script>
+        function setPathDeleteButton(path) {
+            console.log("in");
+            $("#delete").attr("href", path);
+            $('#confirmation').modal();
+        };
+        function loadForm(path, modalId) {
+            console.log(path);
+            console.log(modalId);
+            $.ajax({
+                url:  path,
+                type: 'GET',
+                async: false,
+                success: function (data, textStatus, jqXHR) {
+                    console.log("ifffn");
+                    $('#modalCreate').html(data);
+                    $('#'+modalId).modal();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log("no good");
+                }
+            });
+        }
+        function activate(path, checkBox, id){
+            var checkBoxId = checkBox+'-'+id;
+            if(document.getElementById(checkBoxId).checked){
+                activatedValue = 1;
+            } else {
+                activatedValue = 0;
+            }
+            console.log(id);
+            console.log(activatedValue);
+            $.ajax({
+                url:  path,
+                type: 'PUT',
+                data: {activated:activatedValue, id:id},
+                async: false,
+                success: function (data, textStatus, jqXHR) {
+                    console.log(data);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log("no good");
+                }
+            });
+        }
+    </script>
+{% endblock %}

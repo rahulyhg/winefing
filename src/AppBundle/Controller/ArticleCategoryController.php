@@ -40,32 +40,13 @@ class ArticleCategoryController extends Controller
      * @Route("/articleCategory/", name="articleCategory")
      */
     public function cgetAction() {
-        $client = new Client();
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:ArticleCategory');
-        $articleCategories = $repository->findAll();
-//        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:ArticleCategoryTr');
-//        $flag = true;
-//        foreach ($articleCategories as $articleCategory) {
-//            $currentCategory = $articleCategory;
-//            $hierarchie = $repository->findFrenchName($articleCategory->getId());
-//            while($flag) {
-//                $articleCategory = $articleCategory->getCategoryPere();
-//                if($articleCategory == NULL || $currentCategory == $hierarchie){
-//                    $flag = false;
-//                } else {
-//                    $frenchName = $repository->findFrenchName($articleCategory->getId());
-//                    $hierarchie = $frenchName[0];
-//                }
-//            }
-////            $hierarchie = "";
-////            do {
-////                $articleCategory = $articleCategory->getCategoryPere();
-////                //$hierarchie = $repository->findFrenchName($articleCategory->getId());
-////            } while(!empty($articleCategory->getCategoryPere()));
-////            $articleCategory->setHierarchie($hierarchie);
-//        }
-        return $this->render('admin/blog/articleCategory.html.twig', array("articleCategories" => $articleCategories)
-        );
+        $api = $this->container->get('winefing.api_controller');
+        $response = $api->get("http://104.47.146.137/winefing/web/app_dev.php/api/articles/categories");
+//        $serializer = $this->container->get('winefing.serializer_controller');
+//        $articleCategories = $serializer->decode($response->getBody()->getContents());
+        return new Response();
+//        return $this->render('admin/blog/articleCategory.html.twig', array("articleCategories" => $articleCategories)
+//        );
     }
 
     /**
