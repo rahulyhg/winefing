@@ -54,21 +54,23 @@ class ArticleTrController extends Controller
             $language = $repository->findOneById($articleId);
             $articleTr->setLanguage($language);
         }
-        $form = $this->createForm(ArticleTrType::class, $articleTr, array('action' => $this->generateUrl('articleTr_post'), 'method'=> 'POST'));
+        $form = $this->createForm(ArticleTrType::class, $articleTr, array('action' => $this->generateUrl('articleTr_submit'), 'method'=> 'POST'));
         return $this->render('admin/blog/form/articleTr.html.twig', array(
             'form' => $form->createView()
         ));
     }
     /**
-     * @Route("/post/articleTr/", name="articleTr_post")
+     * @Route("/submit/articleTr/", name="articleTr_submit")
      */
     public function postAction(Request $request){
         $api = $this->container->get('winefing.api_controller');
+        var_dump($request->request->all()["article_tr"]);
         $api->post("http://104.47.146.137/winefing/web/app_dev.php/api/articles/trs", $request->request->all()["article_tr"], null);
         $request->getSession()
             ->getFlashBag()
             ->add('success', "The article is well created/modified.");
-        return $this->redirectToRoute('article');
+        return new Response();
+        //return $this->redirectToRoute('article');
     }
 
     /**

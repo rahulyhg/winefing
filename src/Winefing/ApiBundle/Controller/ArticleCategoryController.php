@@ -29,14 +29,9 @@ class ArticleCategoryController extends Controller implements ClassResourceInter
     public function cgetAction() {
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:ArticleCategory');
         $articleCategories = $repository->findAll();
-        $encoder = new JsonEncoder();
-        $normalizer = new ObjectNormalizer();
-
-        $normalizer->setCircularReferenceHandler(function ($object) {
-            return $object->getId();
-        });
-        $serializer = new Serializer(array($normalizer), array($encoder));
-        return new Response($serializer->serialize($articleCategories));
+        $serializer = $this->container->get('winefing.serializer_controller');
+        $json = $serializer->serialize($articleCategories);
+        return new Response($json);
     }
 
     public function postAction(Request $request)
@@ -49,14 +44,6 @@ class ArticleCategoryController extends Controller implements ClassResourceInter
             $articleCategoryPere = $repository->findOneById($request->request->get('categoryPere'));
             $articleCategory->setCategoryPere($articleCategoryPere);
         }
-        $articleCategoryTrs = $request->request->all()["articleCategoryTrs"];
-        foreach ($articleCategoryTrs as $tr) {
-            $articleCategoryTr = new ArticleCategoryTr();
-            $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
-            $articleCategoryTr->setLanguage($repository->findOneById($tr["language"]));
-            $articleCategoryTr->setName($tr["name"]);
-            $articleCategory->addArticleCategoryTr($articleCategoryTr);
-        }
         $validator = $this->get('validator');
         $errors = $validator->validate($articleCategory);
         if (count($errors) > 0) {
@@ -65,7 +52,9 @@ class ArticleCategoryController extends Controller implements ClassResourceInter
         }
         $em->persist($articleCategory);
         $em->flush();
-        return new Response(json_encode([200, "The format is well created."]));
+        $serializer = $this->container->get("winefing.serializer_controller");
+        $json = $serializer->serialize($articleCategory);
+        return new Response($json);
     }
 
     /**
@@ -86,28 +75,17 @@ class ArticleCategoryController extends Controller implements ClassResourceInter
         } else {
             $articleCategory->setCategoryPere(NUll);
         }
-        $articleCategoryTrs = $request->request->all()["articleCategoryTrs"];
-        foreach ($articleCategoryTrs as $tr) {
-            if(empty($tr["id"])) {
-                $articleCategoryTr = new ArticleCategoryTr();
-            } else {
-                $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:ArticleCategoryTr');
-                $articleCategoryTr = $repository->findOneById($tr["id"]);
-            }
-            $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
-            $articleCategoryTr->setLanguage($repository->findOneById($tr["language"]));
-            $articleCategoryTr->setName($tr["name"]);
-            $articleCategory->addArticleCategoryTr($articleCategoryTr);
-        }
         $validator = $this->get('validator');
         $errors = $validator->validate($articleCategory);
         if (count($errors) > 0) {
             $errorsString = (string) $errors;
             return new Response(400, $errorsString);
-        } else {
-            $em->flush();
         }
-        return new Response(json_encode([200, "The article's category is well updated."]));
+        $em->persist($articleCategory);
+        $em->flush();
+        $serializer = $this->container->get("winefing.serializer_controller");
+        $json = $serializer->serialize($articleCategory);
+        return new Response($json);
     }
 
     public function deleteAction($id)
@@ -123,6 +101,4 @@ class ArticleCategoryController extends Controller implements ClassResourceInter
         }
         return new Response(json_encode([200, "success"]));
     }
-
-
 }

@@ -1,0 +1,29 @@
+<div class="modal fade" tabindex="-1" role="dialog" id="country">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            {{ form_start(form,  { 'attr': {'required': 'true', 'id' : 'country'} }) }}
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Ajouter/modifier un pays</h4>
+            </div>
+            <div class="modal-body">
+                <fieldset class="form-group">
+                    {{ form_widget(form.id,  { 'attr': {'required': 'false'} }) }}
+                </fieldset>
+                <fieldset class="form-group">
+                    {{ form_label(form.name) }}
+                    {{ form_widget(form.name,  { 'attr': {'class': 'form-control'} }) }}
+                </fieldset>
+                <fieldset class="form-group">
+                    {{ form_label(form.code) }}
+                    {{ form_widget(form.code,  { 'attr': {'class': 'form-control'} }) }}
+                </fieldset>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+                <button type="submit" class="btn btn-primary pull-right">Valider</button>
+            </div>
+            {{ form_end(form) }}
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>

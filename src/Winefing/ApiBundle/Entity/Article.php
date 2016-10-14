@@ -35,6 +35,11 @@ class Article extends Controller
     private $articleCategories;
 
     /**
+     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Tag", inversedBy="articles", cascade={"persist", "merge", "detach"})
+     */
+    private $tags;
+
+    /**
      * @var ArticleTrs
      * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\ArticleTr", mappedBy="article", fetch="EAGER", cascade="ALL")
      */
@@ -51,6 +56,11 @@ class Article extends Controller
      * @ORM\Column(name="description", type="string", length=255)
      */
     private $description;
+
+    /**
+     *
+     */
+    private $title;
 
     /**
      * @var string
@@ -141,6 +151,7 @@ class Article extends Controller
         $this->articleCategories = new ArrayCollection();
         $this->articleTrs = new ArrayCollection();
         $this->missingLanguages = new ArrayCollection();
+        $this->tags = new ArrayCollection();
     }
 
     /**
@@ -200,6 +211,31 @@ class Article extends Controller
     public function setArticleCategories($articleCategories)
     {
         $this->articleCategories = $articleCategories;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param mixed $title
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
+    }
+
+    public function getTags(){
+        return $this->tags;
+    }
+
+    public function addTag(Tag $tag) {
+        $this->tags[] = $tag;
+        return $this;
     }
 }
 

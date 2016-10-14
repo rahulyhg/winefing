@@ -38,6 +38,11 @@ articleCategory:
     resource: Winefing\ApiBundle\Controller\ArticleCategoryController
     name_prefix:  api_
 
+articleCategoryTr:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\ArticleCategoryTrController
+    name_prefix:  api_
+
 articleTr:
     type: rest
     resource: Winefing\ApiBundle\Controller\ArticleTrController
@@ -61,4 +66,29 @@ webPage:
 webPageTr:
     type: rest
     resource: Winefing\ApiBundle\Controller\WebPageTrController
+    name_prefix:  api_
+
+country:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\CountryController
+    name_prefix:  api_
+
+wineRegion:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\WineRegionController
+    name_prefix:  api_
+
+wineRegionTr:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\WineRegionTrController
+    name_prefix:  api_
+
+tag:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\TagController
+    name_prefix:  api_
+
+tagTr:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\TagTrController
     name_prefix:  api_

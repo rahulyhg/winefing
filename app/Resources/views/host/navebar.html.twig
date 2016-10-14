@@ -1,0 +1,67 @@
+<ul class="nav nav-pills nav-stacked" style="margin-top: 30px;">
+    {% if (app.request.attributes.get('_route') == 'tags')  %}
+        {% set classATags = '' %}
+        {% set classLiTags = 'active' %}
+        {% set classDivTags = 'in' %}
+    {% else %}
+        {% set classATags = '' %}
+        {% set classLiTags = '' %}
+        {% set classDivTags = '' %}
+    {% endif %}
+    <li class="{{ classLiTags }}">
+        <a href="{{ path('tags') }}" class="{{ classAUsers }}">
+            <span style="margin-right: 10px;" class="glyphicon glyphicon-envelope"></span>Mon domaine<span></span>
+        </a>
+    </li>
+    {% if (app.request.attributes.get('_route') == 'wine_regions')  %}
+        {% set classAWineRegions = '' %}
+        {% set classLiWineRegions = 'active' %}
+        {% set classDivWineRegions = 'in' %}
+    {% else %}
+        {% set classAWineRegions = '' %}
+        {% set classLiWineRegions = '' %}
+        {% set classDivWineRegions = '' %}
+    {% endif %}
+    <li class="{{ classLiWineRegions }}">
+        <a href="{{ path('wine_regions') }}"><span style="margin-right: 10px;" class="glyphicon glyphicon-euro"></span>Mes offres</a>
+    </li>
+    {% if (app.request.attributes.get('_route') == 'promotions') %}
+        {% set classLiPromo = 'active' %}
+    {% else %}
+        {% set classLiPromo = '' %}
+    {% endif %}
+    <li class="{{ classLiPromo }}">
+        <a href="{{ path('promotions') }}"><span style="margin-right: 10px;" class="glyphicon glyphicon-euro"></span>Mes réservations</a>
+    </li>
+    {% if (app.request.attributes.get('_route') == 'web_pages') %}
+        {% set classLiWebPage = 'active' %}
+    {% else %}
+        {% set classLiWebPage = '' %}
+    {% endif %}
+    <li class="{{ classLiWebPage }}">
+        <a href="{{ path('web_pages') }}"><span style="margin-right: 10px;" class="glyphicon glyphicon-home"></span>Mon profil</a>
+    </li>
+    <li class="{{ classLiWebPage }}">
+        <a href="{{ path('web_pages') }}"><span style="margin-right: 10px;" class="glyphicon glyphicon-home"></span>Paramètres</a>
+    </li>
+    {% if (app.request.attributes.get('_route') == 'articleCategory') or (app.request.attributes.get('_route') == 'article') %}
+        {% set classABlog = '' %}
+        {% set classLiBlog = 'active' %}
+        {% set classDivBlog = 'in' %}
+    {% else %}
+        {% set classABlog = 'collapsed' %}
+        {% set classLiBlog = '' %}
+        {% set classDivBlog = '' %}
+    {% endif %}
+    <li class="{{ classLiBlog }}">
+        <a href="#" data-toggle="collapse" data-target="#blog" data-parent="#sidenav01" class="{{ classABlog }}">
+            <span style="margin-right: 10px;" class="glyphicon glyphicon-lock"></span>Blog<span class="caret pull-right"></span>
+        </a>
+        <div class="collapse {{ classDivBlog }}" id="blog">
+            <ul class="nav nav-list admin-navbar-text-align">
+                <li class=""><a href="{{ path('articleCategory') }}">Catégories</a></li>
+                <li class=""><a href="{{ path('articles') }}">Arles</a></li>
+            </ul>
+        </div>
+    </li>
+</ul>

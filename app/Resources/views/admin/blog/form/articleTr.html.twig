@@ -8,18 +8,25 @@
             {{ form_widget(form.article.id, {'id' : 'article'}) }}
         </fieldset>
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <fieldset class="form-group">
                     {{ form_label(form.article.user) }}
                     <br>
                     {{ form_widget(form.article.user, { 'attr': {'class': 'selectpicker'}}) }}
                 </fieldset>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <fieldset class="form-group">
                     {{ form_label(form.article.articleCategories) }}
                     <br>
                     {{ form_widget(form.article.articleCategories, { 'attr': {'class': 'selectpicker'}}) }}
+                </fieldset>
+            </div>
+            <div class="col-md-3">
+                <fieldset class="form-group">
+                    {{ form_label(form.article.tags) }}
+                    <br>
+                    {{ form_widget(form.article.tags, { 'attr': {'class': 'selectpicker'}}) }}
                 </fieldset>
             </div>
         </div>
@@ -45,7 +52,7 @@
             </fieldset>
         </div>
     </div>
-    <fieldset class="form-group" id="description">
+    <fieldset class="form-group">
         {{ form_label(form.shortDescription) }}
         {{ form_widget(form.shortDescription,  { 'attr': {'class': 'form-control'} }) }}
     </fieldset>
@@ -55,22 +62,12 @@
         <input type='hidden' value='0' name='article_tr[activated]'>
         {{ form_widget(form.activated,  { 'attr': {'data-toggle':"toggle", 'data-off':"Not activated", 'data-on':"Activated", 'data-onstyle':"success"} }) }}
     </fieldset>
-    <a href="{{ path('article') }}" type="button" class="btn btn-default" data-dismiss="modal">Retour</a>
+    <a href="{{ path('articles') }}" type="button" class="btn btn-default" data-dismiss="modal">Retour</a>
     <button type="submit" class="btn btn-primary">Valider</button>
 {% endblock %}
 {% block modal %}
 {% endblock %}
 {% block script %}
-    <script>
-        $("#article").live('submit', function () {
-            console.log('aout');
-            if(!document.getElementById($('#article_activated')).checked) {
-                console.log('lolilo');
-            } else {
-                console.log('in');
-            }
-        });
-    </script>
     <script>
         $(document).ready(function() {
             $('#summernote').summernote({

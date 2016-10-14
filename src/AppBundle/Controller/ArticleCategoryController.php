@@ -41,12 +41,11 @@ class ArticleCategoryController extends Controller
      */
     public function cgetAction() {
         $api = $this->container->get('winefing.api_controller');
-        $response = $api->get("http://104.47.146.137/winefing/web/app_dev.php/api/articles/categories");
-//        $serializer = $this->container->get('winefing.serializer_controller');
-//        $articleCategories = $serializer->decode($response->getBody()->getContents());
-        return new Response();
-//        return $this->render('admin/blog/articleCategory.html.twig', array("articleCategories" => $articleCategories)
-//        );
+        $response = $api->get("http://104.47.146.137/winefing/web/app_dev.php/api/article/categories");
+        $serializer = $this->container->get('winefing.serializer_controller');
+        $articleCategories = $serializer->decode($response->getBody()->getContents());
+        return $this->render('admin/blog/articleCategory.html.twig', array("articleCategories" => $articleCategories)
+        );
     }
 
     /**
@@ -64,12 +63,9 @@ class ArticleCategoryController extends Controller
                 $articleCategoryTr->setLanguage($language);
                 $articleCategory->addArticleCategoryTr($articleCategoryTr);
             }
-            $action = $this->generateUrl('articleCategory_post');
-            $method = 'POST';
-        } else {
-            $action = $this->generateUrl('articleCategory_put');
-            $method = 'PUT';
         }
+        $action = $this->generateUrl('articleCategory_submit');
+        $method = 'POST';
         $form = $this->createForm(ArticleCategoryType::class, $articleCategory, array(
             'action' => $action,
             'method' => $method));
@@ -78,43 +74,44 @@ class ArticleCategoryController extends Controller
         ));
     }
     /**
-     * @Route("/articleCategory/post", name="articleCategory_post")
+     * @Route("/articleCategory/submit", name="articleCategory_submit")
      */
     public function postAction(Request $request)
     {
         $api = $this->container->get('winefing.api_controller');
-        $api->post("http://104.47.146.137/winefing/web/app_dev.php/api/articles/categories", $request->request->all()["article_category"], null);
-        $request->getSession()
-            ->getFlashBag()
-            ->add('success', "The article's category is well created.");
-        return new Response();
-        //return $this->redirectToRoute('articleCategory');
-    }
-
-    /**
-     * @Route("/articleCategory/put", name="articleCategory_put")
-     */
-    public function putAction(Request $request)
-    {
-        $api = $this->container->get('winefing.api_controller');
-        $api->put("http://104.47.146.137/winefing/web/app_dev.php/api/article/category", $request->request->all()["article_category"], null);
-        $request->getSession()
-            ->getFlashBag()
-            ->add('success', "The article's category is well modified.");
+        $serializer = $this->container->get('winefing.serializer_controller');
+        $articleCategory = $request->request->all()["article_category"];
+        $articleCategoryTrs = $request->request->all()["article_category"]["articleCategoryTrs"];
+        unset($articleCategory["articleCategoryTrs"]);
+        if(empty($articleCategory["id"])) {
+            $response = $api->post("http://104.47.146.137/winefing/web/app_dev.php/api/articles/categories", $articleCategory, null);
+        } else {
+            $response = $api->put("http://104.47.146.137/winefing/web/app_dev.php/api/article/category", $articleCategory, null);
+        }
+        $articleCategory = $serializer->decode($response->getBody()->getContents());
+        foreach($articleCategoryTrs as $articleCategoryTr) {
+            if(empty($articleCategoryTr["id"])) {
+                $articleCategoryTr["articleCategory"] = $articleCategory["id"];
+                $api->post("http://104.47.146.137/winefing/web/app_dev.php/api/articlecategories/trs", $articleCategoryTr, null);
+                $request->getSession()
+                    ->getFlashBag()
+                    ->add('success', "The article's category is well created.");
+            } else {
+                $api->put("http://104.47.146.137/winefing/web/app_dev.php/api/api/articlecategories/trs", $articleCategoryTr, null);
+                $request->getSession()
+                    ->getFlashBag()
+                    ->add('success', "The article's category is well modified.");
+            }
+        }
         return $this->redirectToRoute('articleCategory');
     }
-
     /**
      * @Route("/articleCategory/delete/{id}", name="articleCategory_delete")
      */
     public function deleteAction($id, Request $request)
     {
-        $client = new Client();
-        try {
-            $client->request('DELETE', 'http://104.47.146.137/winefing/web/app_dev.php/api/articles/'.$id.'/category');
-        } catch (\Exception $e) {
-            error_log($e->getMessage());
-        }
+        $api = $this->container->get("winefing.api_controller");
+        $api->delete('http://104.47.146.137/winefing/web/app_dev.php/api/articles/'.$id.'/category');
         $request->getSession()
             ->getFlashBag()
             ->add('success', "The article's category is well deleted.");

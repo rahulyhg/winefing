@@ -29,42 +29,6 @@ class Property
     private $description;
 
     /**
-     * @var string
-     */
-    private $address;
-
-    /**
-     * @var string
-     */
-    private $street;
-
-    /**
-     * @var string
-     */
-    private $postalCode;
-
-    /**
-     * @var string
-     */
-    private $locality;
-
-    /**
-     * @var string
-     */
-    private $country;
-
-    /**
-     * @var float
-     */
-    private $lng;
-
-    /**
-     * @var float
-     */
-    private $lat;
-
-
-    /**
      * Get id
      *
      * @return int

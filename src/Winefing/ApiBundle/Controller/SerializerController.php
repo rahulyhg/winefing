@@ -41,5 +41,16 @@ class SerializerController {
         $array = $serializer->decode($json, 'json');
         return $array;
     }
+    public function deserialize($json, $pathToClass){
+        $encoder = new JsonEncoder();
+        $normalizer = new ObjectNormalizer();
+        $normalizer->setCircularReferenceHandler(function ($object) {
+            return $object->getId();
+        });
+        $serializer = new Serializer(array($normalizer), array($encoder));
+        $object = $serializer->deserialize($json, $pathToClass, 'json');
+        return $object;
+
+    }
 }
 

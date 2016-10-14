@@ -26,6 +26,11 @@ use Winefing\ApiBundle\WinefingApiBundle;
 
 class ArticleCategoryTrController extends Controller implements ClassResourceInterface
 {
+    /**
+     * Create an articleCategoryTr from the submitted data.
+     *
+     *
+     */
     public function postAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
@@ -34,7 +39,7 @@ class ArticleCategoryTrController extends Controller implements ClassResourceInt
         $articleCategoryTr->setLanguage($repository->findOneById($request->request->get("language")));
         $articleCategoryTr->setName($request->request->get("name"));
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:ArticleCategory');
-        $articleCategoryTr->setArticleCategory($repository->findOneById($request->request->get("articleCategoryTr")));
+        $articleCategoryTr->setArticleCategory($repository->findOneById($request->request->get("articleCategory")));
         $validator = $this->get('validator');
         $errors = $validator->validate($articleCategoryTr);
         if (count($errors) > 0) {
@@ -43,49 +48,33 @@ class ArticleCategoryTrController extends Controller implements ClassResourceInt
         }
         $em->persist($articleCategoryTr);
         $em->flush();
-        return new Response(json_encode([200, "The format is well created."]));
+        $serializer = $this->container->get("winefing.serializer_controller");
+        $json = $serializer->serialize($articleCategoryTr);
+        return new Response($json);
     }
 
     /**
-     * Create an articleCategory from the submitted data.
+     * Update an articleCategoryTr from the submitted data.
      *
      *
      */
     public function putAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:ArticleCategory');
-        $articleCategory = $repository->findOneById($request->request->get('id'));
-        $articleCategory->setDescription($request->request->get('description'));
-        if(!empty($request->request->get('categoryPere'))){
-            $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:ArticleCategory');
-            $articleCategoryPere = $repository->findOneById($request->request->get('categoryPere'));
-            $articleCategory->setCategoryPere($articleCategoryPere);
-        } else {
-            $articleCategory->setCategoryPere(NUll);
-        }
-        $articleCategoryTrs = $request->request->all()["articleCategoryTrs"];
-        foreach ($articleCategoryTrs as $tr) {
-            if(empty($tr["id"])) {
-                $articleCategoryTr = new ArticleCategoryTr();
-            } else {
-                $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:ArticleCategoryTr');
-                $articleCategoryTr = $repository->findOneById($tr["id"]);
-            }
-            $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
-            $articleCategoryTr->setLanguage($repository->findOneById($tr["language"]));
-            $articleCategoryTr->setName($tr["name"]);
-            $articleCategory->addArticleCategoryTr($articleCategoryTr);
-        }
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:ArticleCategoryTr');
+        $articleCategoryTr = $repository->findOneById($request->request->get('id'));
+        $articleCategoryTr->setName($request->request->get("name"));
         $validator = $this->get('validator');
-        $errors = $validator->validate($articleCategory);
+        $errors = $validator->validate($articleCategoryTr);
         if (count($errors) > 0) {
             $errorsString = (string) $errors;
             return new Response(400, $errorsString);
-        } else {
-            $em->flush();
         }
-        return new Response(json_encode([200, "The article's category is well updated."]));
+        $em->persist($articleCategoryTr);
+        $em->flush();
+        $serializer = $this->container->get("winefing.serializer_controller");
+        $json = $serializer->serialize($articleCategoryTr);
+        return new Response($json);
     }
 
     public function deleteAction($id)

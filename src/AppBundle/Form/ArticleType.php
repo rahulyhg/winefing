@@ -43,8 +43,11 @@ class ArticleType extends AbstractType
                 ))
             ->add('picture', FileType::class, ['required' => false])
             ->add('articleCategories', EntityType::class,  array(
-                'class' => 'WinefingApiBundle:articleCategory',
+                'class' => 'WinefingApiBundle:ArticleCategory',
                 'choice_label' => 'description', 'multiple' =>true))
+            ->add('tags', EntityType::class,  array(
+                'class' => 'WinefingApiBundle:Tag',
+                'choice_label' => 'title', 'multiple' =>true));
         ;
     }
     public function configureOptions(OptionsResolver $resolver)

@@ -16,62 +16,63 @@ use GuzzleHttp\RequestOptions;
 
 class ApiController {
 
-    public function post($url, $params, $file) {
-        foreach ($params as $key => $value){
-            if(is_array($params)) {
-
-            } else {
-                $body[] = [
-                    'name' => $key,
-                    'contents' => $value
-                ];
-            }
-
+    public function getUrl($uri) {
+        if (isset($_SERVER['HTTPS']) &&
+            ($_SERVER['HTTPS'] == 'on' || $_SERVER['HTTPS'] == 1) ||
+            isset($_SERVER['HTTP_X_FORWARDED_PROTO']) &&
+            $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
+            $protocol = 'https://';
         }
-        $body[] = [
-            'name' => "top",
-            'contents' => [
-                'name' => "lolilo",
-                'contents' => "a"
-            ]
-        ];
-        if($file!= null) {
+        else {
+            $protocol = 'http://';
+        }
+        return $protocol.$_SERVER['HTTP_HOST'].$uri;
+    }
+
+    public function post($uri, $params) {
+        foreach ($params as $key => $value) {
             $body[] = [
-                'name' => 'picture',
-                'contents' => fopen($file->getRealPath(), "r"),
-                'filename' => $file->getClientOriginalName(),
-                'Content-type' => 'multipart/form-data'
+                'name' => $key,
+                'contents' => $value
             ];
         }
         $client = new Client();
-        //var_dump(json_encode($params , JSON_FORCE_OBJECT));
-        //$client->request('POST', $url, ['form_params' => $params]);
-        return $client->request('POST', $url, ['form_params' => $params]);
-/*        $request = $client->post($url,array(
-            'content-type' => 'application/json'
-        ),array());
-        $request->setBody(json_encode($params , JSON_FORCE_OBJECT)); #set body!
-        $response = $request->send();a
-        var_dump($response);*/
+        return $client->request('POST',  $this->getUrl($uri), ['form_params' => $params]);
     }
 
-    public function put($url, $params){
+    public function put($uri, $params){
         $body = [];
         foreach ($params as $key => $value){
             $body[$key] = $value;
         }
         $client = new Client();
-        return $client->request('PUT', $url, ['form_params' => $body]);
+        return $client->request('PUT', $this->getUrl($uri), ['form_params' => $body]);
     }
 
-    public function get($url){
+    public function get($uri){
         $client = new Client();
-        return $client->request('GET', $url);
+        return $client->request('GET', $this->getUrl($uri));
     }
 
-    public function delete($url){
+    public function delete($uri){
         $client = new Client();
-        return $client->request('GET', $url);
+        return $client->request('DELETE', $this->getUrl($uri));
+    }
+
+    public function file($uri, $params, $file) {
+        foreach ($params as $key => $value){
+            $body[] = [
+                'name' => $key,
+                'contents' => $value
+            ];
+        }
+
+        $body[] = [
+            'name'     => 'picture',
+            'contents' => fopen($file['tmp_name'], "r"),
+            'filename' => $file['name'],
+            'Content-type' => 'multipart/form-data'
+        ];
     }
 }
 
@@ -107,4 +108,5 @@ class ApiController {
 //
 //    return json_decode($token->getBody(), true)['access_token'];
 //}
+
 

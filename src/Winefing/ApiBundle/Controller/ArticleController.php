@@ -14,38 +14,39 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use Doctrine\ORM\EntityManager;
+use Winefing\ApiBundle\Entity\LanguageEnum;
 use Winefing\ApiBundle\Entity\Article;
 use Winefing\ApiBundle\Entity\ArticleTr;
-use Winefing\ApiBundle\Entity\ArticleCategoryTr;
-use Winefing\ApiBundle\Entity\ArticleCategory;
-use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\Annotations\FileParam;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-
-
+use Doctrine\Common\Collections\ArrayCollection;
 
 class ArticleController extends Controller implements ClassResourceInterface
 {
     /**
-     * Liste de toute les formats possible en base
+     * Liste de toute les articles possible en base
      * @return Response
      */
-    public function cgetAction($scope)
+    public function cgetAction()
     {
-        $encoders = array(new JsonEncoder());
-        $normalizers = array(new ObjectNormalizer());
-        $serializer = new Serializer($normalizers, $encoders);
-
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Article');
         $articles = $repository->findAll();
-
-        $json = $serializer->serialize($articles, 'json');
-
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
+        $repositoryArticleTr = $this->getDoctrine()->getRepository('WinefingApiBundle:ArticleTr');
+        foreach ($articles as $article) {
+            $missingLanguages = $repository->findMissingLanguagesForArticle($article);
+            $article->setMissingLanguages(new ArrayCollection($missingLanguages));
+            $title = $repositoryArticleTr->findTitleByArticleIdAndLanguageCode($article->getId(), LanguageEnum::Français);
+            if(empty($title)) {
+                $title = $repositoryArticleTr->findTitleByArticleIdAndLanguageCode($article->getId(), LanguageEnum::English);
+            }
+            $article->setTitle($title);
+        }
+        $serializer = $this->container->get("winefing.serializer_controller");
+        $json = $serializer->serialize($articles);
         return new Response($json);
     }
     /**

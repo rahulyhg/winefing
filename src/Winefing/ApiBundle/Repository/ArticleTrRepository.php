@@ -22,4 +22,16 @@ class ArticleTrRepository extends \Doctrine\ORM\EntityRepository
         $languages = $query->getResult();
         return $languages;
     }
+    function findTitleByArticleIdAndLanguageCode($articleId, $languageCode) {
+        $query = $this->createQueryBuilder('articleTr')
+            ->select('articleTr.title')
+            ->join('articleTr.article', 'article')
+            ->join('articleTr.language', 'language')
+            ->where('article.id = :articleId and language.code = :languageCode')
+            ->setParameter('articleId', $articleId)
+            ->setParameter('languageCode', $languageCode)
+            ->setMaxResults(1)
+            ->getQuery();
+        return $query->getResult()[0]["title"];
+    }
 }

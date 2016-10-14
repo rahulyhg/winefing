@@ -9,10 +9,11 @@
         <meta name="description" content="winefing">
         <meta name="author" content="a.carval">
 
-        {% stylesheets 'assets/arillo/css/*' filter='cssrewrite' %}
-        <link rel="stylesheet" href="{{ asset_url }}" />
+        {% stylesheets 'css/*' filter='cssrewrite' %}
+            <link rel="stylesheet" href="{{ asset_url }}" />
         {% endstylesheets %}
         <link rel="stylesheet" href="{{ asset('assets/custom.css') }}">
+        <link rel="stylesheet" href="{{ asset('assets/arillo/css/simple-sidebar.css') }}">
 
 
         <!-- Custom styles for this template -->
@@ -40,7 +41,7 @@
         <!-- END PLUGIN SUMMERNOTE -->
         <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
 
-        {% javascripts 'assets/arillo/js/*' %}
+        {% javascripts 'js/*' %}
             <script type="text/javascript" src="{{ asset_url }}"></script>
         {% endjavascripts %}
     </head>

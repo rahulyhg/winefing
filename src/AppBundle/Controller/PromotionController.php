@@ -30,12 +30,10 @@ class PromotionController extends Controller
      * @Route("/promotions", name="promotions")
      */
     public function cgetAction() {
-        $client = new Client();
-        $response = $client->request('GET', 'http://104.47.146.137/winefing/web/app_dev.php/api/promotions');
+        $api = $this->container->get('winefing.api_controller');
+        $serializer = $this->container->get('winefing.serializer_controller');;
+        $response = $api->get($this->generateUrl('api_get_promotions'));
         $promotionsJson = $response->getBody()->getContents();
-        $encoders = array(new JsonEncoder());
-        $normalizers = array(new ObjectNormalizer());
-        $serializer = new Serializer($normalizers, $encoders);
         $promotions = $serializer->decode($promotionsJson, 'json');
         return $this->render('admin/promotion/index.html.twig', array('promotions' => $promotions));
     }
@@ -59,19 +57,15 @@ class PromotionController extends Controller
      */
     public function postAction(Request $request)
     {
+        $serializer = $this->container->get('winefing.serializer_controller');;
         $api = $this->container->get('winefing.api_controller');
         $promotion = $request->request->all()["promotion"];
         if(empty($promotion["id"])) {
-            $response = $api->post("http://104.47.146.137/winefing/web/app_dev.php/api/promotions", $promotion, null);
+            $response = $api->post($this->generateUrl('api_post_promotionnavebar.html.twig'), $promotion);
         } else {
-            $response = $api->put("http://104.47.146.137/winefing/web/app_dev.php/api/promotion", $promotion, null);
+            $response = $api->put($this->generateUrl('api_put_promotion'), $promotion);
         }
-        $promotionJson = $response->getBody()->getContents();
-        $encoders = array(new JsonEncoder());
-        $normalizers = array(new ObjectNormalizer());
-        $serializer = new Serializer($normalizers, $encoders);
-        $promotion = $serializer->decode($promotionJson, 'json');
-
+        $promotion = $serializer->decode($response->getBody()->getContents());
         $request->getSession()
             ->getFlashBag()
             ->add('success', "The promotion \"".$promotion["code"]."\" is well created/modified.");
@@ -82,9 +76,8 @@ class PromotionController extends Controller
      */
     public function deleteAction($id, Request $request)
     {
-        $client = new Client();
-        $client->request('DELETE', 'http://104.47.146.137/winefing/web/app_dev.php/api/promotions/'.$id);
-
+        $api = $this->container->get('winefing.api_controller');
+        $api->delete($this->get('router')->generate('api_delete_promotion', array('id' => $id)));
         $request->getSession()
             ->getFlashBag()
             ->add('success', "The promotion is well deleted.");

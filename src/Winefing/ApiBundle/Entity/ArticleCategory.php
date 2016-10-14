@@ -119,7 +119,6 @@ class ArticleCategory
     public function __construct() {
         $this->articles = new ArrayCollection();
         $this->articleCategoryTrs = new ArrayCollection();
-        $this->setHierarchy();
     }
 
     /**

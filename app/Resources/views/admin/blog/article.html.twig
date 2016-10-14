@@ -15,7 +15,7 @@
             {% for article in articles %}
                 <tr>
                     <td data-toggle="collapse" data-target="#article-{{ article.id }}" class="accordion-toggle" style="cursor:pointer">
-                        {{ article.description }}
+                        {{ article.title }}
                     </td>
                     <td data-toggle="collapse" data-target="#article-{{ article.id }}" class="accordion-toggle" style="cursor:pointer">
                     {{ article.user.fullName }}
