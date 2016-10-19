@@ -14,9 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Form\FormBuilderInterface;
 use AppBundle\Form\CharacteristicCategoryType;
-use Winefing\ApiBundle\Entity\Characteristic;
 use Winefing\ApiBundle\Entity\CharacteristicCategoryTr;
-use Winefing\ApiBundle\Entity\Language;
 use Winefing\ApiBundle\Entity\CharacteristicCategory;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -38,14 +36,19 @@ class CharacteristicCategoryController extends Controller
      */
     public function cgetAction($scopeName) {
         $api = $this->container->get("winefing.api_controller");
-        $response = $api->get('http://104.47.146.137/winefing/web/app_dev.php/api/characteristics/'.$scopeName.'/categories');
-        $characteristicsJson = $response->getBody()->getContents();
-        $encoders = array(new JsonEncoder());
-        $normalizers = array(new ObjectNormalizer());
-        $serializer = new Serializer($normalizers, $encoders);
-        $characteristicCategories = $serializer->decode($characteristicsJson, 'json');
+        $serializer = $this->container->get("winefing.serializer_controller");
+        $response = $api->get($this->get('_router')->generate('api_get_characteristic_categories', array('scopeName' => $scopeName)));
+        $characteristicCategories = $serializer->decode($response->getBody()->getContents());
+        $response = $api->get($this->get('_router')->generate('api_get_languages_picture_path'));
+        $languagePicturePath = $serializer->decode($response->getBody()->getContents());
+        $response = $api->get($this->get('_router')->generate('api_get_characteristic_categories_picture_path'));
+        $characteristicCategoryPicturePath = $serializer->decode($response->getBody()->getContents());
+        $response = $api->get($this->get('_router')->generate('api_get_characteristic_picture_path'));
+        $characteristicPicturePath = $serializer->decode($response->getBody()->getContents());
         return $this->render('admin/characteristic/index.html.twig', array(
-            'characteristicCategories' => $characteristicCategories, 'scopeName' => $scopeName));
+            'characteristicCategories' => $characteristicCategories, 'scopeName' => $scopeName, 'languagePicturePath' => $languagePicturePath,
+            'characteristicCategoryPicturePath' => $characteristicCategoryPicturePath,
+            'characteristicPicturePath' => $characteristicPicturePath));
     }
     /**
      * @Route("/characteristicCategory/newForm/{scopeName}/{id}", name="characteristicCategory_new_form")
@@ -79,22 +82,27 @@ class CharacteristicCategoryController extends Controller
      */
     public function postAction($scopeName, Request $request) {
         $api = $this->container->get('winefing.api_controller');
+        $serializer = $this->container->get("winefing.serializer_controller");
         $characteristicCategoryTrs = $request->request->all()["characteristic_category"]["characteristicCategoryTrs"];
         $characteristicCategory = $request->request->all()["characteristic_category"];
         unset($characteristicCategory["characteristicCategoryTrs"]);
-        $response = $api->post("http://104.47.146.137/winefing/web/app_dev.php/api/characteristics/categories", $characteristicCategory, null);
-        $characteristicCategoryJson = $response->getBody()->getContents();
-        $encoders = array(new JsonEncoder());
-        $normalizers = array(new ObjectNormalizer());
-        $serializer = new Serializer($normalizers, $encoders);
-        $characteristicCategory = $serializer->decode($characteristicCategoryJson, 'json');
-        $characteristicCategoryId = $characteristicCategory["id"];
+        if(empty($characteristicCategory["id"])) {
+            $response = $api->post($this->get('_router')->generate('api_post_characteristic_category'), $characteristicCategory);
+        } else {
+            $response = $api->put($this->get('_router')->generate('api_put_characteristic_category'), $characteristicCategory);
+        }
+        $characteristicCategory = $serializer->decode($response->getBody()->getContents());
+        $characteristicCategoryId["id"] = $characteristicCategory["id"];
+        $picture = $request->files->all()["characteristic_category"]["picture"];
+        if(!empty($picture)) {
+            $api->file($this->get('_router')->generate('api_post_characteristic_category_file'), $characteristicCategoryId, $picture);
+        }
         foreach($characteristicCategoryTrs as $characteristicCategoryTr) {
-            $characteristicCategoryTr["characteristicCategory"] = $characteristicCategoryId;
+            $characteristicCategoryTr["characteristicCategory"] = $characteristicCategoryId["id"];
             if(empty($characteristicCategoryTr["id"])) {
-                $api->post("http://104.47.146.137/winefing/web/app_dev.php/api/characteristiccategories/trs", $characteristicCategoryTr, null);
+                $api->post($this->get('_router')->generate('api_post_characteristiccategory_tr'), $characteristicCategoryTr);
             } else {
-                $api->put("http://104.47.146.137/winefing/web/app_dev.php/api/characteristiccategory/tr", $characteristicCategoryTr, null);
+                $api->put($this->get('_router')->generate('api_put_characteristiccategory_tr'), $characteristicCategoryTr);
             }
         }
         $request->getSession()
@@ -108,9 +116,8 @@ class CharacteristicCategoryController extends Controller
      */
     public function deleteAction($scopeName, $id, Request $request)
     {
-        $client = new Client();
-        $response = $client->request('DELETE', 'http://104.47.146.137/winefing/web/app_dev.php/api/characteristics/'.$id.'/category');
-        var_dump($response->getBody()->getContents());
+        $api = $this->container->get('winefing.api_controller');
+        $api->delete($this->get('_router')->generate('api_delete_characteristic_category', array('id'=>$id)));
         $request->getSession()
             ->getFlashBag()
             ->add('success', "The CharacteristicCategory is well deleted.");
@@ -122,7 +129,7 @@ class CharacteristicCategoryController extends Controller
      */
     public function putActivatedAction(Request $request) {
         $api = $this->container->get('winefing.api_controller');
-        $api->put('http://104.47.146.137/winefing/web/app_dev.php/api/characteristic/category/activated', $request->request->all());
+        $api->put($this->get('_router')->generate('api_put_characteristic_category_activated'), $request->request->all());
         return new Response(json_encode([200, "success"]));
     }
 }

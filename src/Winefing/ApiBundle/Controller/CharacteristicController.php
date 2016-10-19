@@ -15,8 +15,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use Doctrine\ORM\EntityManager;
 use Winefing\ApiBundle\Entity\Characteristic;
-use Winefing\ApiBundle\Entity\CharacteristicTr;
-use Winefing\ApiBundle\Entity\CharacteristicCategory;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
@@ -39,13 +37,12 @@ class CharacteristicController extends Controller implements ClassResourceInterf
     public function postAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-
+        $serializer = $this->container->get('winefing.serializer_controller');
         $characteristic = new Characteristic();
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:CharacteristicCategory');
         $characteristic->setChacarteristicCategory($repository->findOneById($request->request->get('characteristicCategory')));
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Format');
         $characteristic->setFormat($repository->findOneById($request->request->get('format')));
-        $characteristic->setDescription($request->request->get('description'));
         $characteristic->setActivated($request->request->get('activated'));
 
         $validator = $this->get('validator');
@@ -56,24 +53,17 @@ class CharacteristicController extends Controller implements ClassResourceInterf
         }
         $em->persist($characteristic);
         $em->flush();
-        $encoder = new JsonEncoder();
-        $normalizer = new ObjectNormalizer();
-        $normalizer->setCircularReferenceHandler(function ($object) {
-            return $object->getId();
-        });
-        $serializer = new Serializer(array($normalizer), array($encoder));
-        $json = $serializer->serialize($characteristic, 'json');
-
+        $json = $serializer->serialize($characteristic);
         return new Response($json);
     }
 
     public function putAction(Request $request){
         $em = $this->getDoctrine()->getManager();
+        $serializer = $this->container->get('winefing.serializer_controller');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Characteristic');
         $characteristic = $repository->findOneById($request->request->get('id'));
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Format');
         $characteristic->setFormat($repository->findOneById($request->request->get('format')));
-        $characteristic->setDescription($request->request->get('description'));
         $characteristic->setActivated($request->request->get('activated'));
 
         $validator = $this->get('validator');
@@ -84,21 +74,50 @@ class CharacteristicController extends Controller implements ClassResourceInterf
         }
         $em->persist($characteristic);
         $em->flush();
-        $encoder = new JsonEncoder();
-        $normalizer = new ObjectNormalizer();
-        $normalizer->setCircularReferenceHandler(function ($object) {
-            return $object->getId();
-        });
-        $serializer = new Serializer(array($normalizer), array($encoder));
-        $json = $serializer->serialize($characteristic, 'json');
-
+        $json = $serializer->serialize($characteristic);
         return new Response($json);
+    }
+
+    public function getPicturePathAction() {
+        $serializer = $this->container->get('winefing.serializer_controller');
+        $webPath = $this->container->get('winefing.webpath_controller');
+        $picturePath = $webPath->getPath($this->getParameter('characteristic_directory'));
+        return new Response($serializer->serialize($picturePath));
+    }
+
+    public function postFileAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $serializer = $this->container->get('winefing.serializer_controller');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Characteristic');
+        $characteristic = $repository->findOneById($request->request->get('id'));
+        if(empty($characteristic)) {
+            throw new BadRequestHttpException('The CharacteristicId is mandatory');
+        }
+        $uploadedFile = $request->files->get('picture');
+        $fileName = md5(uniqid()) . '.' . $uploadedFile->getClientOriginalExtension();
+        if (!empty($characteristic->getPicture()) && !empty($uploadedFile)) {
+            unlink($this->getParameter('characteristic_directory_upload') . $characteristic->getPicture());
+        }
+        $uploadedFile->move(
+            $this->getParameter('characteristic_directory_upload'),
+            $fileName
+        );
+        $characteristic->setPicture($fileName);
+        $em->persist($characteristic);
+        $em->flush();
+        return new Response($serializer->serialize($characteristic));
     }
 
     public function deleteAction($id)
     {
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Characteristic');
         $characteristic = $repository->findOneById($id);
+        if (!empty($characteristic->getPicture())) {
+            if(!unlink($this->getParameter('characteristic_directory_upload') . $characteristic->getPicture())) {
+                throw new HttpException("Problem on server to delete the picture.");
+            }
+        }
         $em = $this->getDoctrine()->getManager();
         $em->remove($characteristic);
         $em->flush();

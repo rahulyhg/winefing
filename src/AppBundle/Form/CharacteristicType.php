@@ -34,8 +34,7 @@ class CharacteristicType extends AbstractType
             ->add('format', EntityType::class,  array(
                 'class' => 'WinefingApiBundle:Format',
                 'choice_label' => 'name'))
-            ->add('description', TextareaType::class, ['required' => false])
-            ->add('picture', FileType::class, ['required' => false])
+            ->add('picture', FileType::class, ['required' => false, 'data_class' => null])
             ->add('characteristicTrs', CollectionType::class, array(
                 'entry_type' => CharacteristicTrType::class))
             ->add('activated', CheckboxType::class, ['required' => false])

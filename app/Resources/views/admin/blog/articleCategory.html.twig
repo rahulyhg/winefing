@@ -18,7 +18,10 @@
             <tr>
                 <td>
                     {% for articleCategoryTr in articleCategory.articleCategoryTrs %}
-                        {{ articleCategoryTr.name }}&nbsp;&nbsp;
+                        <object style="float: left;" type="image/svg+xml" data="{{ languagePicturePath }}{{ articleCategoryTr.language.picture }}" height="20px">
+                        </object>
+                        <span style="margin-left: 10px">{{ articleCategoryTr.name }}</span>
+                        <br><br>
                     {% endfor %}
                 </td>
                 <td>

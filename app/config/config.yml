@@ -8,7 +8,15 @@ imports:
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale:  en
-    language_directory: '%kernel.root_dir%/../src/Winefing/ApiBundle/Resources/pictures/language/'
+    language_directory_upload: '%kernel.root_dir%/../web/Resources/pictures/language/'
+    characteristic_category_directory_upload: '%kernel.root_dir%/../web/Resources/pictures/characteristicCategory/'
+    characteristic_directory_upload: '%kernel.root_dir%/../web/Resources/pictures/characteristic/'
+    article_directory_upload: '%kernel.root_dir%/../web/Resources/pictures/characteristic/'
+
+    language_directory: 'winefing/web/Resources/pictures/language/'
+    characteristic_category_directory: 'winefing/web/Resources/pictures/characteristicCategory/'
+    characteristic_directory: 'winefing/web/Resources/pictures/characteristic/'
+    article_directory: 'winefing/web/Resources/pictures/characteristic/'
 
 framework:
     #esi:             ~
@@ -90,7 +98,7 @@ swiftmailer:
 
 fos_user:
     db_driver: orm
-    firewall_name: main
+    firewall_name: dev
     user_class: Winefing\ApiBundle\Entity\User
     use_listener: false
 

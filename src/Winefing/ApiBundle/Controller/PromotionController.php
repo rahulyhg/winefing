@@ -53,9 +53,14 @@ class PromotionController extends Controller implements ClassResourceInterface
     public function postAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
+        $serializer = $this->container->get('winefing.serializer_controller');
         $promotion = new Promotion();
         $promotion->setAmount($request->request->get('amount'));
         $promotion->setFormat($request->request->get('format'));
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Promotion');
+        if(!empty($repository->findOneByCode($request->request->get('code')))) {
+            throw new BadRequestHttpException("A promotion with this code already exist.");
+        }
         $promotion->setCode($request->request->get('code'));
         $promotion->setMinAmount($request->request->get('minAmount'));
         $promotion->setNumberDisponible($request->request->get('numberDisponible'));
@@ -83,13 +88,7 @@ class PromotionController extends Controller implements ClassResourceInterface
         }
         $em->persist($promotion);
         $em->flush();
-        $encoder = new JsonEncoder();
-        $normalizer = new ObjectNormalizer();
-        $normalizer->setCircularReferenceHandler(function ($object) {
-            return $object->getId();
-        });
-        $serializer = new Serializer(array($normalizer), array($encoder));
-        $json = $serializer->serialize($promotion, 'json');
+        $json = $serializer->serialize($promotion);
         return new Response($json);
     }
 
@@ -100,6 +99,7 @@ class PromotionController extends Controller implements ClassResourceInterface
      */
     public function putAction(Request $request)
     {
+        $serializer = $this->container->get('winefing.serializer_controller');
         $em = $this->getDoctrine()->getManager();
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Promotion');
         $promotion = $repository->findOneById($request->request->get('id'));
@@ -132,13 +132,7 @@ class PromotionController extends Controller implements ClassResourceInterface
         }
         $em->persist($promotion);
         $em->flush();
-        $encoder = new JsonEncoder();
-        $normalizer = new ObjectNormalizer();
-        $normalizer->setCircularReferenceHandler(function ($object) {
-            return $object->getId();
-        });
-        $serializer = new Serializer(array($normalizer), array($encoder));
-        $json = $serializer->serialize($promotion, 'json');
+        $json = $serializer->serialize($promotion);
         return new Response($json);
     }
 

@@ -40,7 +40,7 @@ class WineRegionController extends Controller implements ClassResourceInterface
         $serializer = $this->container->get('winefing.serializer_controller');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:WineRegion');
         $wineRegions = $repository->findAll();
-        return new Response($serializer->serialize($wineRegions, 'json'));
+        return new Response($serializer->serialize($wineRegions));
     }
 
 //    public function getAction($id)

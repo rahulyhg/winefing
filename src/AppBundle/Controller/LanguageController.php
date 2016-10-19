@@ -28,20 +28,18 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 class LanguageController extends Controller
 {
     /**
-     * @Route("/language", name="language")
+     * @Route("/languages", name="languages")
      */
     public function cgetAction() {
-        $client = new Client();
-        $response = $client->request('GET', 'http://104.47.146.137/winefing/web/app_dev.php/api/languages', []);
-        $languagesJson = $response->getBody()->getContents();
-
-        $encoders = array(new JsonEncoder());
-        $normalizers = array(new ObjectNormalizer());
-        $serializer = new Serializer($normalizers, $encoders);
-        $languages = $serializer->decode($languagesJson, 'json');
+        $api = $this->container->get('winefing.api_controller');
+        $serializer = $this->container->get('winefing.serializer_controller');
+        $response = $api->get($this->get('router')->generate('api_get_languages'));
+        $languages = $serializer->decode($response->getBody()->getContents());
+        $response = $api->get($this->get('_router')->generate('api_get_languages_picture_path'));
+        $picturePath = $serializer->decode($response->getBody()->getContents());
         return $this->render('admin/language/index.html.twig', array(
-            'languages' => $languages
-        ));
+            'languages' => $languages, 'picturePath' => $picturePath)
+        );
     }
     /**
      * @Route("/language/createForm/{id}", name="language_new_form")
@@ -54,45 +52,34 @@ class LanguageController extends Controller
             $language = $repository->findOneById($id);
         }
         $form = $this->createForm(LanguageType::class, $language, array(
-            'action' => $this->generateUrl('post_language'),
+            'action' => $this->generateUrl('submit_language'),
             'method' => 'POST'));
         return $this->render('admin/language/form.html.twig', array(
             'form' => $form->createView()
         ));
     }
     /**
-     * @Route("/language/post", name="post_language")
+     * @Route("/language/submit", name="submit_language")
      */
-    public function postAction(Request $request)
+    public function submitAction(Request $request)
     {
-        if(empty($request->request->all()["language"]["name"])) {
-            $request->getSession()
-                ->getFlashBag()
-                ->add('error', "The name is mandatory.");
-            return $this->redirectToRoute('language');
-        } elseif(empty($request->request->all()["language"]["code"])) {
-            $request->getSession()
-                ->getFlashBag()
-                ->add('error', "The code is mandatory.");
-            return $this->redirectToRoute('language');
-        }
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
-        if(empty($request->request->all()["language"]["id"]) && !empty($repository->findOneByCode($request->request->all()["language"]['code']))) {
-            $request->getSession()
-                ->getFlashBag()
-                ->add('error', "A language with this code already exist.");
-            return $this->redirectToRoute('language');
-        }
         $api = $this->container->get('winefing.api_controller');
-        try {
-            $api->post("http://104.47.146.137/winefing/web/app_dev.php/api/languages", $request->request->all()["language"], $request->files->all()["language"]["picture"]);
-        } catch(\Exception $e) {
-            error_log($e->getMessage());
+        $serializer = $this->container->get('winefing.serializer_controller');
+        $language = $request->request->all()["language"];
+        if(empty($language["id"])) {
+            $response =  $api->post($this->get('router')->generate('api_post_language'), $language);
+        } else {
+            $response =  $api->put($this->get('router')->generate('api_put_language'), $language);
+        }
+        $language = $serializer->decode($response->getBody()->getContents());
+        $picture = $request->files->all()["language"]["picture"];
+        if($picture != null) {
+            $api->file($this->get('router')->generate('api_post_language_file'), $language, $picture);
         }
         $request->getSession()
             ->getFlashBag()
             ->add('success', "The language is well created/modified.");
-        return $this->redirectToRoute('language');
+        return $this->redirectToRoute('languages');
     }
 
     /**
@@ -100,11 +87,11 @@ class LanguageController extends Controller
      */
     public function deleteAction($id, Request $request)
     {
-        $client = new Client();
-        $client->request('DELETE', 'http://104.47.146.137/winefing/web/app_dev.php/api/languages/'.$id);
+        $api = $this->container->get('winefing.api_controller');
+        $api->delete($this->get('router')->generate('api_delete_language', array('id'=>$id)));
         $request->getSession()
             ->getFlashBag()
             ->add('success', "The language is well deleted.");
-        return $this->redirectToRoute('language');
+        return $this->redirectToRoute('languages');
     }
 }

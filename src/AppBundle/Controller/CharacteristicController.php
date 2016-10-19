@@ -16,8 +16,6 @@ use Symfony\Component\Form\FormBuilderInterface;
 use AppBundle\Form\CharacteristicType;
 use Winefing\ApiBundle\Entity\Characteristic;
 use Winefing\ApiBundle\Entity\CharacteristicTr;
-use Winefing\ApiBundle\Entity\Language;
-use Winefing\ApiBundle\Entity\CharacteristicCategory;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
@@ -66,27 +64,27 @@ class CharacteristicController extends Controller
      */
     public function postAction($scopeName, Request $request) {
         $api = $this->container->get('winefing.api_controller');
+        $serializer = $this->container->get('winefing.serializer_controller');
         $characteristicTrs = $request->request->all()["characteristic"]["characteristicTrs"];
         $characteristic = $request->request->all()["characteristic"];
         unset($characteristic["characteristicTrs"]);
         if(empty($characteristic["id"])) {
-            $response = $api->post("http://104.47.146.137/winefing/web/app_dev.php/api/characteristics", $characteristic, null);
+            $response = $api->post($this->get('_router')->generate('api_post_characteristic'), $characteristic);
         } else {
-            $response = $api->put("http://104.47.146.137/winefing/web/app_dev.php/api/characteristic", $characteristic, null);
+            $response = $api->put($this->get('_router')->generate('api_put_characteristic'), $characteristic);
         }
-        $characteristicJson = $response->getBody()->getContents();
-        $encoders = array(new JsonEncoder());
-        $normalizers = array(new ObjectNormalizer());
-        $serializer = new Serializer($normalizers, $encoders);
-        $characteristic = $serializer->decode($characteristicJson, 'json');
-        $characteristicId = $characteristic["id"];
-
+        $characteristic = $serializer->decode($response->getBody()->getContents());
+        $characteristicId["id"] = $characteristic["id"];
+        $picture = $request->files->all()["characteristic"]["picture"];
+        if(!empty($picture)) {
+            $api->file($this->get('_router')->generate('api_post_characteristic_file'), $characteristicId, $picture);
+        }
         foreach($characteristicTrs as $characteristicTr) {
-            $characteristicTr["characteristic"] = $characteristicId;
+            $characteristicTr["characteristic"] = $characteristicId["id"];
             if(empty($characteristicTr["id"])) {
-                $api->post("http://104.47.146.137/winefing/web/app_dev.php/api/characteristics/trs", $characteristicTr, null);
+                $api->post($this->get('_router')->generate('api_post_characteristic_tr'), $characteristicTr);
             } else {
-                $api->put("http://104.47.146.137/winefing/web/app_dev.php/api/characteristic/tr", $characteristicTr, null);
+                $api->put($this->get('_router')->generate('api_put_characteristic_tr'), $characteristicTr);
             }
         }
         $request->getSession()

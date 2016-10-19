@@ -13,6 +13,8 @@ use Symfony\Component\HttpFoundation\Response;
 use GuzzleHttp;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+
 
 class ApiController {
 
@@ -60,6 +62,8 @@ class ApiController {
     }
 
     public function file($uri, $params, $file) {
+        $client = new Client();
+
         foreach ($params as $key => $value){
             $body[] = [
                 'name' => $key,
@@ -69,10 +73,11 @@ class ApiController {
 
         $body[] = [
             'name'     => 'picture',
-            'contents' => fopen($file['tmp_name'], "r"),
-            'filename' => $file['name'],
+            'contents' => fopen($file->getRealPath(), "r"),
+            'filename' => $file->getClientOriginalName(),
             'Content-type' => 'multipart/form-data'
         ];
+        return $client->request('POST',  $this->getUrl($uri), ['multipart' => $body]);
     }
 }
 

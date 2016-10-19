@@ -57,50 +57,73 @@ class ArticleController extends Controller implements ClassResourceInterface
     public function postAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Article');
-        $article = $repository->findOneById($request->request->get('id'));
-        //var_dump($request->request->all()["articleCategories"]);
-        if (empty($article)) {
-            $article = new Article();
-            $new = true;
-        }
+        $serializer = $this->container->get('winefing.serializer_controller');
+        $article = new Article();
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
         $user = $repository->findOneById($request->request->get('user'));
         $article->setUser($user);
         $article->setDescription($request->request->get('description'));
-        $articleCategories = $request->request->all()["articleCategories"];
-        foreach($articleCategories as $articleCategory) {
-            $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:ArticleCategory');
-            $article->addArticleCategory($repository->findOneById($articleCategory));
-        }
-        $articleTrs = $request->request->all()["articleTrs"];
-        foreach ($articleTrs as $tr) {
-            if(empty($tr["id"])) {
-                $articleTr = new ArticleTr();
-            } else {
-                $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:ArticleTr');
-                $articleTr =  $repository->findOneById($tr["id"]);
-            }
-            $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
-            $articleTr->setLanguage($repository->findOneById($tr["language"]));
-            $articleTr->setTitle($tr["title"]);
-            $articleTr->setShortDescription($tr["shortDescription"]);
-            $articleTr->setContent($tr["content"]);
-            $articleTr->setActivated($tr["activated"]);
-            $article->addArticleTr($articleTr);
-        }
         $validator = $this->get('validator');
         $errors = $validator->validate($article);
         if (count($errors) > 0) {
             $errorsString = (string) $errors;
             return new Response(400, $errorsString);
-        } else {
-            if($new) {
-                $em->merge($article);
-            }
-            $em->flush();
         }
-        return new Response(json_encode([200, "The characteristic is well created."]));
+        $em->persist($article);
+        $em->flush();
+        return new Response($serializer->serialize($article));
+    }
+    public function putArticleCategory(Request $request) {
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Article');
+        $article = $repository->findOneById($request->request->get('article'));
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:ArticleCategory');
+        $articleCategory = $repository->findOneById($request->request->get('id'));
+        if($article->getArticleCategories()->contains($articleCategory)) {
+
+        }
+
+    }
+    public function putAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $serializer = $this->container->get('winefing.serializer_controller');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Article');
+        $article = $repository->findOneById($request->request->get('id'));
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
+        $user = $repository->findOneById($request->request->get('user'));
+        $article->setUser($user);
+        $article->setDescription($request->request->get('description'));
+        $validator = $this->get('validator');
+        $errors = $validator->validate($article);
+        if (count($errors) > 0) {
+            $errorsString = (string) $errors;
+            return new Response(400, $errorsString);
+        }
+        $em->persist($article);
+        $em->flush();
+        return new Response($serializer->serialize($article));
+    }
+
+    public function postFileAction(Request $request) {
+        $em = $this->getDoctrine()->getManager();
+        $serializer = $this->container->get('winefing.serializer_controller');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Article');
+        $article = $repository->findOneById($request->request->get('article'));
+        if(empty($article)) {
+            throw new BadRequestHttpException('The articleId is mandatory');
+        }
+        $uploadedFile = $request->files->get('picture');
+        $fileName = md5(uniqid()) . '.' . $uploadedFile->getClientOriginalExtension();
+        if (!empty($article->getPicture()) && !empty($uploadedFile)) {
+            unlink($this->getParameter('article_directory_upload') . $article->getPicture());
+        }
+        $uploadedFile->move(
+            $this->getParameter('article_directory_upload'),
+            $fileName
+        );
+        $em->persist($article);
+        $em->flush();
+        return new Response($serializer->serialize($article));
     }
 
     public function deleteAction($id)

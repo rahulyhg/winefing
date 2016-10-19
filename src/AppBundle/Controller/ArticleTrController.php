@@ -62,15 +62,34 @@ class ArticleTrController extends Controller
     /**
      * @Route("/submit/articleTr/", name="articleTr_submit")
      */
-    public function postAction(Request $request){
+    public function submitAction(Request $request){
         $api = $this->container->get('winefing.api_controller');
-        var_dump($request->request->all()["article_tr"]);
-        $api->post("http://104.47.146.137/winefing/web/app_dev.php/api/articles/trs", $request->request->all()["article_tr"], null);
+        $serializer = $this->container->get("winefing.serializer_controller");
+        $article = $request->request->all()["article_tr"]["article"];
+        if(empty($article)) {
+            $response = $api->post($this->get('router')->generate('api_post_article'), $article);
+        } else {
+            $response = $api->post($this->get('router')->generate('api_post_article'), $article);
+        }
+        $article = $serializer->serialize($response->getBody()->getContents());
+        foreach($article["articlecategories"] as $articleCategory) {
+
+        }
+        $picture = $request->files->all()["article_tr"]["article"]["picture"];
+        if(!empty($picture)) {
+            $api->file($this->get('router')->generate('api_post_article_file'), $articleId["id"] = $article["id"], $picture);
+        }
+        $articleTr = $request->request->all()["article_tr"];
+        $articleTr["article"] = $article["id"];
+        if(!empty($articleTr["id"])) {
+            $api->post($this->get('router')->generate('api_post_articlecategory_tr'), $articleTr);
+        } else {
+            $api->put($this->get('router')->generate('api_put_articlecategory_tr'), $articleTr);
+        }
         $request->getSession()
             ->getFlashBag()
             ->add('success', "The article is well created/modified.");
-        return new Response();
-        //return $this->redirectToRoute('article');
+        return $this->redirectToRoute('article');
     }
 
     /**
@@ -78,8 +97,8 @@ class ArticleTrController extends Controller
      */
     public function deleteAction($id, Request $request)
     {
-        $client = new Client();
-        $response = $client->request('DELETE', 'http://104.47.146.137/winefing/web/app_dev.php/api/articles/' . $id.'/tr');
+        $api = $this->container->get('winefing.api_controller');
+        $api->delete($this->get('router')->generate('api_delete_article_tr', array('id' => $id)));
         $request->getSession()
             ->getFlashBag()
             ->add('success', "The article is well deleted.");
@@ -90,7 +109,7 @@ class ArticleTrController extends Controller
      */
     public function putActivatedAction(Request $request) {
         $api = $this->container->get('winefing.api_controller');
-        $api->put('http://104.47.146.137/winefing/web/app_dev.php/api/article/tr/activated', $request->request->all());
+        $api->put($this->get('router')->generate('api_put_article_tr_activated'), $request->request->all());
         return new Response(json_encode([200, "success"]));
     }
 }

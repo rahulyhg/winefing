@@ -20,7 +20,7 @@
             <th>
                 <button type="button" class="btn btn-default" onclick="loadForm('{{ url('language_new_form')}}', 'language')">
                     <span class="glyphicon glyphicon-plus-sign"></span>
-                </button> Language
+                </button>Language
             </th>
             <th>Code</th>
             <th>Photo</th>
@@ -34,8 +34,8 @@
                 <td>{{ language.code }}</td>
                 <td>
                     {% if language.picture is not null %}
-                        {% set link = 'http://104.47.146.137/winefing/src/Winefing/ApiBundle/Resources/pictures/language/'~ language.picture  %}
-                        <img style="height: 60px" src="{{ link }}" />
+                        <object type="image/svg+xml" data="{{ picturePath }}{{ language.picture }}" height="40px">
+                        </object>
                     {% endif %}
                 </td>
                 <td>

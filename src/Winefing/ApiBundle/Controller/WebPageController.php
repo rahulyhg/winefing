@@ -37,13 +37,7 @@ class WebPageController extends Controller implements ClassResourceInterface
      */
     public function cgetAction()
     {
-        $encoder = new JsonEncoder();
-        $normalizer = new ObjectNormalizer();
-
-        $normalizer->setCircularReferenceHandler(function ($object) {
-            return $object->getId();
-        });
-        $serializer = new Serializer(array($normalizer), array($encoder));
+        $serializer = $this->container->get('winefing.serializer_controller');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:WebPage');
         $webPages = $repository->findAll();
 

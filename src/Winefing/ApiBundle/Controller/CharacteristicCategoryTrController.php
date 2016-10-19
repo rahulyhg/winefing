@@ -38,6 +38,7 @@ class CharacteristicCategoryTrController extends Controller implements ClassReso
     public function postAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
+        $serializer = $this->container->get('winefing.serializer_controller');
         $characteristicCategoryTr = new CharacteristicCategoryTr();
 
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:CharacteristicCategory');
@@ -46,7 +47,7 @@ class CharacteristicCategoryTrController extends Controller implements ClassReso
 
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
         $characteristicCategoryTr->setLanguage($repository->findOneById($request->request->get("language")));
-        $characteristicCategoryTr->setName($request->request->get("name"));
+        $characteristicCategoryTr->setName(ucfirst(strtolower($request->request->get("name"))));
 
         $validator = $this->get('validator');
         $errors = $validator->validate($characteristicCategoryTr);
@@ -56,13 +57,7 @@ class CharacteristicCategoryTrController extends Controller implements ClassReso
         }
         $em->persist($characteristicCategoryTr);
         $em->flush();
-        $encoder = new JsonEncoder();
-        $normalizer = new ObjectNormalizer();
-        $normalizer->setCircularReferenceHandler(function ($object) {
-            return $object->getId();
-        });
-        $serializer = new Serializer(array($normalizer), array($encoder));
-        $json = $serializer->serialize($characteristicCategoryTr, 'json');
+        $json = $serializer->serialize($characteristicCategoryTr);
         return new Response($json);
     }
 
@@ -72,15 +67,10 @@ class CharacteristicCategoryTrController extends Controller implements ClassReso
      */
     function putAction(Request $request){
         $em = $this->getDoctrine()->getManager();
+        $serializer = $this->container->get('winefing.serializer_controller');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:CharacteristicCategoryTr');
         $characteristicCategoryTr =  $repository->findOneById($request->request->get("id"));
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:CharacteristicCategory');
-        $characteristicCategory = $repository->findOneById($request->request->get('characteristicCategory'));
-        $characteristicCategoryTr->setCharacteristicCategory($characteristicCategory);
-
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
-        $characteristicCategoryTr->setLanguage($repository->findOneById($request->request->get("language")));
-        $characteristicCategoryTr->setName($request->request->get("name"));
+        $characteristicCategoryTr->setName(ucfirst(strtolower($request->request->get("name"))));
 
         $validator = $this->get('validator');
         $errors = $validator->validate($characteristicCategoryTr);
@@ -90,13 +80,7 @@ class CharacteristicCategoryTrController extends Controller implements ClassReso
         }
         $em->persist($characteristicCategoryTr);
         $em->flush();
-        $encoder = new JsonEncoder();
-        $normalizer = new ObjectNormalizer();
-        $normalizer->setCircularReferenceHandler(function ($object) {
-            return $object->getId();
-        });
-        $serializer = new Serializer(array($normalizer), array($encoder));
-        $json = $serializer->serialize($characteristicCategoryTr, 'json');
+        $json = $serializer->serialize($characteristicCategoryTr);
         return new Response($json);
     }
 

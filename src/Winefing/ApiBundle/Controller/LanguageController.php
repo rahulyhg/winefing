@@ -24,7 +24,7 @@ use FOS\RestBundle\Controller\Annotations\FileParam;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-
+use Symfony\Component\Templating\Helper\AssetsHelper;
 
 
 class LanguageController extends Controller implements ClassResourceInterface
@@ -35,16 +35,17 @@ class LanguageController extends Controller implements ClassResourceInterface
      */
     public function cgetAction()
     {
-        $encoders = array(new JsonEncoder());
-        $normalizers = array(new ObjectNormalizer());
-        $serializer = new Serializer($normalizers, $encoders);
-
+        $serializer = $this->container->get('winefing.serializer_controller');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
         $languages = $repository->findAll();
-
-        $json = $serializer->serialize($languages, 'json');
-
-        return new Response($json);
+        return new Response($serializer->serialize($languages));
+    }
+    public function cgetPicturePathAction()
+    {
+        $serializer = $this->container->get('winefing.serializer_controller');
+        $webPath = $this->container->get('winefing.webpath_controller');
+        $picturePath = $webPath->getPath($this->getParameter('language_directory'));
+        return new Response($serializer->serialize($picturePath));
     }
     /**
      * Create or update a language from the submitted data.<br/>
@@ -54,79 +55,73 @@ class LanguageController extends Controller implements ClassResourceInterface
     public function postAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
+        $serializer = $this->container->get('winefing.serializer_controller');
+        $language = new Language();
+        $language->setCode($request->request->get('code'));
+        $language->setName($request->request->get('name'));
+
+        $validator = $this->get('validator');
+        $errors = $validator->validate($language);
+        if (count($errors) > 0) {
+            $errorsString = (string) $errors;
+            throw new HttpException(400, $errorsString);
+        }
+        $em->persist($language);
+        $em->flush();
+        return new Response($serializer->serialize($language));
+    }
+
+    /**
+     * Create or update a language from the submitted data.<br/>
+     *
+     *
+     */
+    public function putAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
         $language = $repository->findOneById($request->request->get('id'));
-        if (!empty($language)) {
-            $language->setCode($request->request->get('code'));
-            $language->setName($request->request->get('name'));
-            $uploadedFile = $request->files->get('picture');
-            if (!empty($language->getPicture()) && !empty($uploadedFile)) {
-                unlink($this->getParameter('language_directory') . $language->getPicture());
-                $fileName = md5(uniqid()) . '.' . $uploadedFile->getClientOriginalExtension();
-                $language->setPicture($fileName);
-                $uploadedFile->move(
-                    $this->getParameter('language_directory'),
-                    $fileName
-                );
-            } elseif(!empty($uploadedFile)) {
-                $fileName = md5(uniqid()) . '.' . $uploadedFile->getClientOriginalExtension();
-                $language->setPicture($fileName);
-                $uploadedFile->move(
-                    $this->getParameter('language_directory'),
-                    $fileName
-                );
-            }
-            $validator = $this->get('validator');
-            $errors = $validator->validate($language);
-            if (count($errors) > 0) {
-                $errorsString = (string) $errors;
-                throw new HttpException(400, $errorsString);
-            } else {
-                $encoders = array(new JsonEncoder());
-                $normalizers = array(new ObjectNormalizer());
-                $serializer = new Serializer($normalizers, $encoders);
-                $json = $serializer->serialize($language, 'json');
-                $em->flush();
-                return new Response(200, "The language is well modified.");
-            }
-        } else {
-            $language = $repository->findOneByCode($request->request->get('code'));
-            if (empty($language)) {
-                $language = new Language();
-                $uploadedFile = $request->files->get('picture');
-                if (!empty($uploadedFile)) {
-                    $fileName = md5(uniqid()) . '.' . $uploadedFile->getClientOriginalExtension();
-                    $uploadedFile->move(
-                        $this->getParameter('language_directory'),
-                        $fileName
-                    );
-                    $language->setPicture($fileName);
-                }
-                $language->setCode($request->request->get('code'));
-                $language->setName($request->request->get('name'));
-                $validator = $this->get('validator');
-                $errors = $validator->validate($language);
-                if (count($errors) > 0) {
-                    $errorsString = (string) $errors;
-                    return new Response(400, $errorsString);
-                } else {
-                    $encoders = array(new JsonEncoder());
-                    $normalizers = array(new ObjectNormalizer());
-                    $serializer = new Serializer($normalizers, $encoders);
-                    $json = $serializer->serialize($language, 'json');
-                    $em->merge($language);
-                    $em->flush();
-                }
-                return new Response(200, "The language is well modified.");
-            } else {
-                throw new BadRequestHttpException("A language with this code already exist.");
-            }
+        $serializer = $this->container->get('winefing.serializer_controller');
+        $language->setCode($request->request->get('code'));
+        $language->setName($request->request->get('name'));
+
+        $validator = $this->get('validator');
+        $errors = $validator->validate($language);
+        if (count($errors) > 0) {
+            $errorsString = (string) $errors;
+            throw new HttpException(400, $errorsString);
         }
+        $em->persist($language);
+        $em->flush();
+        return new Response($serializer->serialize($language));
+    }
+    public function postFileAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $serializer = $this->container->get('winefing.serializer_controller');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
+        $language = $repository->findOneById($request->request->get('id'));
+        if(empty($language)) {
+            throw new BadRequestHttpException('The languageId is mandatory');
+        }
+        $uploadedFile = $request->files->get('picture');
+        $fileName = md5(uniqid()) . '.' . $uploadedFile->getClientOriginalExtension();
+        if (!empty($language->getPicture()) && !empty($uploadedFile)) {
+            unlink($this->getParameter('language_directory_upload') . $language->getPicture());
+        }
+        $uploadedFile->move(
+            $this->getParameter('language_directory_upload'),
+            $fileName
+        );
+        $language->setPicture($fileName);
+        $em->persist($language);
+        $em->flush();
+        return new Response($serializer->serialize($language));
     }
     public function uploadPicture(UploadedFile $uploadedFile){
         $fileName = md5(uniqid()) . '.' . $uploadedFile->getClientOriginalExtension();
         $uploadedFile->move(
-            $this->getParameter('language_directory'),
+            $this->getParameter('language_directory_upload'),
             $fileName
         );
         return new Response(["name" => $fileName]);
@@ -137,7 +132,7 @@ class LanguageController extends Controller implements ClassResourceInterface
         $language = $repository->findOneById($id);
         $em = $this->getDoctrine()->getManager();
         if(!empty($language->getPicture())) {
-            if(!unlink($this->getParameter('language_directory') . $language->getPicture())) {
+            if(!unlink($this->getParameter('language_directory_upload') . $language->getPicture())) {
                 throw new HttpException("Problem on server to delete the language's picture.");
             }
         }

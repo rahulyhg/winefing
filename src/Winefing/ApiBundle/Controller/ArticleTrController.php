@@ -32,14 +32,47 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 class ArticleTrController extends Controller implements ClassResourceInterface
 {
     public function postAction(Request $request) {
-        $new = false;
+        $serializer = $this->container->get('winefing.serializer_controller');
         $em = $this->getDoctrine()->getManager();
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Article');
+        $article = $repository->findOneById($request->request->get("article"));
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
+        $language = $repository->findOneById($request->request->get("language"));
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:ArticleTr');
+        if(!empty($repository->findOneByArticleIdLanguageId($article->getId(), $language->getId()))){
+            throw new \BadMethodCallException('A traduction of '.$language->getName().' already exist for this article.');
+        }
+
+        $articleTr = new ArticleTr();
+        $articleTr->setLanguage($language);
+        $articleTr->setTitle($request->request->get("title"));
+        $articleTr->setShortDescription($request->request->get("shortDescription"));
+        $articleTr->setContent($request->request->get("content"));
+        $articleTr->setActivated($request->request->get("activated"));
+        $articleTr->getArticle()->setDescription($articleTr->getTitle());
+
+        $articleCategories = $article["articleCategories"];
+        $articleTr->getArticle()->resetArticleCategories();
+        foreach($articleCategories as $articleCategory) {
+            $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:ArticleCategory');
+            $articleTr->getArticle()->addArticleCategory($repository->findOneById($articleCategory));
+        }
+        $validator = $this->get('validator');
+        $errors = $validator->validate($articleTr);
+        if (count($errors) > 0) {
+            $errorsString = (string)$errors;
+            return new Response(400, $errorsString);
+        }
+        $em->persist($articleTr);
+        $em->flush();
+        $json = $serializer->serialize($articleTr);
+        return new Response($json);
+    }
+    public function putAction(Request $request) {
+        $em = $this->getDoctrine()->getManager();
+        $serializer = $this->container->get('winefing.serializer_controller');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:ArticleTr');
         $articleTr = $repository->findOneById($request->request->get('id'));
-        if (empty($articleTr)) {
-            $articleTr = new ArticleTr();
-            $new = true;
-        }
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
         $articleTr->setLanguage($repository->findOneById($request->request->get("language")));
         $articleTr->setTitle($request->request->get("title"));
@@ -71,13 +104,11 @@ class ArticleTrController extends Controller implements ClassResourceInterface
         if (count($errors) > 0) {
             $errorsString = (string) $errors;
             return new Response(400, $errorsString);
-        } else {
-            if($new) {
-                $em->merge($articleTr);
-            }
-            $em->flush();
         }
-        return new Response(json_encode([200, "The Article is well created/modified."]));
+        $em->persist($articleTr);
+        $em->flush();
+        $json = $serializer->serialize($articleTr);
+        return new Response($json);
     }
     public function deleteAction($id)
     {

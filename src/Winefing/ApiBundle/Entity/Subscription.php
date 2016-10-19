@@ -33,18 +33,18 @@ class Subscription
     private $subscriptionTrs;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="description", type="string", length=255, nullable=true)
-     */
-    private $description;
-
-    /**
      * @var bool
      *
      * @ORM\Column(name="activated", type="boolean")
      */
     private $activated;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="format", type="string", length=60)
+     */
+    private $format;
 
     /**
      * Get id
@@ -55,31 +55,6 @@ class Subscription
     {
         return $this->id;
     }
-
-    /**
-     * Set description
-     *
-     * @param string $description
-     *
-     * @return Subscription
-     */
-    public function setDescription($description)
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    /**
-     * Get description
-     *
-     * @return string
-     */
-    public function getDescription()
-    {
-        return $this->description;
-    }
-
     /**
      * Set activated
      *
@@ -126,6 +101,22 @@ class Subscription
     public function removeSubscriptionTr(SubscriptionTr $subscriptionTr)
     {
         $this->subscriptionTrs->removeElement($subscriptionTr);
+    }
+
+    /**
+     * @return string
+     */
+    public function getFormat()
+    {
+        return $this->format;
+    }
+
+    /**
+     * @param string $format
+     */
+    public function setFormat($format)
+    {
+        $this->format = $format;
     }
 }
 

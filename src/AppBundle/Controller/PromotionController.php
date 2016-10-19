@@ -61,7 +61,7 @@ class PromotionController extends Controller
         $api = $this->container->get('winefing.api_controller');
         $promotion = $request->request->all()["promotion"];
         if(empty($promotion["id"])) {
-            $response = $api->post($this->generateUrl('api_post_promotionnavebar.html.twig'), $promotion);
+            $response = $api->post($this->generateUrl('api_post_promotion'), $promotion);
         } else {
             $response = $api->put($this->generateUrl('api_put_promotion'), $promotion);
         }

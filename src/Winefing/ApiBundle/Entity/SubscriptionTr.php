@@ -43,13 +43,6 @@ class SubscriptionTr
     /**
      * @var string
      *
-     * @ORM\Column(name="format", type="string", length=60)
-     */
-    private $format;
-
-    /**
-     * @var string
-     *
      * @ORM\Column(name="description", type="string", length=255)
      */
     private $description;

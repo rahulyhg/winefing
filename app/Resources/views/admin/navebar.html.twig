@@ -1,5 +1,5 @@
 <ul class="nav nav-pills nav-stacked" style="margin-top: 30px;">
-    {% if app.request.attributes.get('_route') == 'language' %}
+    {% if app.request.attributes.get('_route') == 'languages' %}
         {% set classATechnical = '' %}
         {% set classLiTechical = 'active' %}
         {% set classDivTechical = 'in' %}
@@ -18,7 +18,7 @@
         </a>
         <div class="collapse {{ classDivTechical }}" id="techical">
             <ul class="nav nav-list admin-navbar-text-align">
-                <li class="{% if app.request.attributes.get('_route') == 'language' %}active{% endif %}"><a class="active" href="{{ path('language') }}">Langues</a></li>
+                <li class="{% if app.request.attributes.get('_route') == 'languages' %}active{% endif %}"><a class="active" href="{{ path('languages') }}">Langues</a></li>
                 <li class="{% if app.request.attributes.get('_route') == 'formats' %}active{% endif %}"><a class="active" href="{{ path('format') }}">Formats</a></li>
                 <li class="{% if app.request.attributes.get('_route') == 'countries' %}active{% endif %}"><a class="active" href="{{ path('countries') }}">Pays</a></li>
             </ul>
@@ -91,6 +91,13 @@
     <li class="{{ classLiWineRegions }}">
         <a href="{{ path('wine_regions') }}"><span style="margin-right: 10px;" class="glyphicon glyphicon-euro"></span>Régions viticoles</a>
     </li>
+    {% if (app.request.attributes.get('_route') == 'subscriptions') %}
+        {% set classLiSubscriptions = 'active' %}
+    {% else %}
+        {% set classLiSubscriptions = '' %}
+    {% endif %}
+    <li class="{{ classLiSubscriptions }}">
+        <a href="{{ path('subscriptions') }}"><span style="margin-right: 10px;" class="glyphicon glyphicon-euro"></span>Abonnements</a>
     {% if (app.request.attributes.get('_route') == 'promotions') %}
         {% set classLiPromo = 'active' %}
     {% else %}
@@ -123,7 +130,7 @@
         <div class="collapse {{ classDivBlog }}" id="blog">
             <ul class="nav nav-list admin-navbar-text-align">
                 <li class=""><a href="{{ path('articleCategory') }}">Catégories</a></li>
-                <li class=""><a href="{{ path('articles') }}">Arles</a></li>
+                <li class=""><a href="{{ path('articles') }}">Articles</a></li>
             </ul>
         </div>
     </li>

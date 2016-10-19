@@ -37,7 +37,10 @@
                             {% for articleTr in article.articleTrs %}
                                 <tr>
                                     <td>
-                                        {{ articleTr.language.name }} {{ articleTr.title }}
+                                        <object style="float: left;" type="image/svg+xml" data="{{ languagePicturePath }}{{ articleTr.language.picture }}" height="20px">
+                                        </object>
+                                        <span style="margin-left: 10px">{{ articleTr.title }}</span>
+                                        <br><br>
                                     </td>
                                     <td>
                                         {{ articleTr.shortDescription }}
@@ -57,8 +60,11 @@
                             {% for missingLanguage in article.missingLanguages %}
                                 <tr>
                                     <td colspan="3">
-                                        {{ missingLanguage.name }} {{ missingLanguage.picture }}
-                                        &nbsp;<a href="{{ path('articleTr_new_form', {'id': 0, 'articleId': article.id, 'languageId':missingLanguage.id}) }}" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span></a>
+                                        <object style="float: left;" type="image/svg+xml" data="{{ languagePicturePath }}{{ missingLanguage.picture }}" height="20px">
+                                        </object>
+                                        <span style="margin-left: 10px">
+                                            <a href="{{ path('articleTr_new_form', {'id': 0, 'articleId': article.id, 'languageId':missingLanguage.id}) }}" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span></a>
+                                        </span>
                                     </td>
                                 </tr>
                             {% endfor %}

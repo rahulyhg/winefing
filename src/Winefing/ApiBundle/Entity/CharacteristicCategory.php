@@ -23,7 +23,7 @@ class CharacteristicCategory
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Scope", inversedBy="characteristicCategories")
+     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Scope", inversedBy="characteristicCategories", fetch="EXTRA_LAZY")
      * @ORM\JoinColumn(nullable=false)
      */
     private $scope;

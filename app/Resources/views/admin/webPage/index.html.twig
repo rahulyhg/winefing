@@ -29,7 +29,8 @@
                         {% for webPageTr in webPage.webPageTrs %}
                             <tr>
                                 <td>
-                                    {{ webPageTr.language.name }} {{ webPageTr.title }}
+                                    <object type="image/svg+xml" data="{{ webPageTr.language.picturePath }}" height="20px">
+                                    </object>
                                 </td>
                                 <td>
                                     {{ webPageTr.title }}

@@ -29,10 +29,12 @@ class TagController extends Controller
      */
     public function cgetAction() {
         $api = $this->container->get('winefing.api_controller');
-        $response = $api->get('http://104.47.146.137/winefing/web/app_dev.php/api/tags');
         $serializer = $this->container->get('winefing.serializer_controller');
+        $response = $api->get($this->get('_router')->generate('api_get_languages_picture_path'));
+        $languagePicturePath = $serializer->decode($response->getBody()->getContents());
+        $response = $api->get($this->get('_router')->generate('api_get_tags'));
         $tags = $serializer->decode($response->getBody()->getContents());
-        return $this->render('admin/tag/index.html.twig', array("tags" => $tags));
+        return $this->render('admin/tag/index.html.twig', array("tags" => $tags, 'languagePicturePath' => $languagePicturePath));
     }
 
     /**
@@ -69,15 +71,16 @@ class TagController extends Controller
         $tagTrs = $tag["tagTrs"];
         unset($tag["tagTrs"]);
         if(empty($tag["id"])) {
-            $response = $api->post('http://104.47.146.137/winefing/web/app_dev.php/api/tags', $tag, null);
+            $response = $api->post($this->get('_router')->generate('api_post_tag'), $tag);
             $tag = $serializer->decode($response->getBody()->getContents());
         }
         foreach($tagTrs as $tagTr) {
             $tagTr["tag"] = $tag["id"];
             if(empty($tagTr["id"])) {
-                $api->post('http://104.47.146.137/winefing/web/app_dev.php/api/tags/trs', $tagTr, null);
+                $api->post($this->get('_router')->generate('api_post_tag_tr'), $tagTr);
             } else {
-                $api->put('http://104.47.146.137/winefing/web/app_dev.php/api/tag/tr', $tagTr, null);
+                $api->put($this->get('_router')->generate('api_put_tag_tr'), $tagTr);
+
             }
         }
         $request->getSession()
@@ -91,7 +94,7 @@ class TagController extends Controller
      */
     public function deleteAction($id, Request $request) {
         $api = $this->container->get('winefing.api_controller');
-        $api->delete('http://104.47.146.137/winefing/web/app_dev.php/api/tags/'.$id);
+        $api->delete($this->get('_router')->generate('api_delete_tag', array('id' => $id)));
         $request->getSession()
             ->getFlashBag()
             ->add('success', "The tag is well deleted.");

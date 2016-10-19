@@ -9,7 +9,8 @@
                 </button>
                 Catégorie
             </th>
-            <th>Description</th>
+            <th>Photo</th>
+            <th>Admin description</th>
             <th>Action</th>
         </tr>
         </thead>
@@ -18,9 +19,17 @@
             <tr>
                 <td data-toggle="collapse" data-target="#characteristics-{{ characteristicCategory.id }}" class="accordion-toggle" style="cursor:pointer">
                     {% for characteristicCategoryTr in characteristicCategory.characteristicCategoryTrs %}
-                        {{ characteristicCategoryTr.name }}
-                        &nbsp;
+                        <object style="float: left;" type="image/svg+xml" data="{{ languagePicturePath }}{{ characteristicCategoryTr.language.picture }}" height="20px">
+                        </object>
+                        <span style="margin-left: 10px">{{ characteristicCategoryTr.name }}</span>
+                        <br><br>
                     {% endfor %}
+                </td>
+                <td>
+                    {% if characteristicCategory.picture is not null %}
+                        <object style="float: left;" type="image/svg+xml" data="{{ characteristicCategoryPicturePath }}{{ characteristicCategory.picture }}" height="20px">
+                        </object>
+                    {% endif %}
                 </td>
                 <td data-toggle="collapse" data-target="#characteristics-{{ characteristicCategory.id }}" class="accordion-toggle" style="cursor:pointer">
                     {{ characteristicCategory.description }}
@@ -47,15 +56,20 @@
                                 <tr>
                                     <td>
                                     {% for characteristicTr in characteristic.characteristicTrs %}
-                                        {{ characteristicTr.name }}
-                                        &nbsp;
+                                        <object style="float: left;" type="image/svg+xml" data="{{ languagePicturePath }}{{ characteristicTr.language.picture }}" height="20px">
+                                        </object>
+                                        <span style="margin-left: 10px">{{ characteristicTr.name }}</span>
+                                        <br><br>
                                     {% endfor %}
                                     </td>
                                     <td>
-                                        {{ characteristic.format.name }}
+                                        {% if characteristic.picture is not null  %}
+                                            <object  type="image/svg+xml" data="{{ characteristicPicturePath }}{{ characteristic.picture }}" height="20px">
+                                            </object>
+                                        {% endif %}
                                     </td>
                                     <td>
-                                        {{ characteristic.description }}
+                                        {{ characteristic.format.name }}
                                     </td>
                                     <td>
                                         <input type="button"  class="btn btn-primary" value="Editer" id="update" onclick="loadForm('{{ path('characteristic_new_form', {'characteristicCategoryId' : characteristicCategory.id, 'scopeName': scopeName, 'id' : characteristic.id}) }}', 'characteristic')"/>

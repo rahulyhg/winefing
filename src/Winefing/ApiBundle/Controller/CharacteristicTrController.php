@@ -39,6 +39,8 @@ class CharacteristicTrController extends Controller implements ClassResourceInte
     public function postAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
+        $serializer = $this->container->get('winefing.serializer_controller');
+
         $characteristicTr = new CharacteristicTr();
 
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Characteristic');
@@ -47,7 +49,7 @@ class CharacteristicTrController extends Controller implements ClassResourceInte
 
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
         $characteristicTr->setLanguage($repository->findOneById($request->request->get("language")));
-        $characteristicTr->setName($request->request->get("name"));
+        $characteristicTr->setName(ucfirst(strtolower($request->request->get("name"))));
 
         $validator = $this->get('validator');
         $errors = $validator->validate($characteristicTr);
@@ -57,13 +59,7 @@ class CharacteristicTrController extends Controller implements ClassResourceInte
         }
         $em->persist($characteristicTr);
         $em->flush();
-        $encoder = new JsonEncoder();
-        $normalizer = new ObjectNormalizer();
-        $normalizer->setCircularReferenceHandler(function ($object) {
-            return $object->getId();
-        });
-        $serializer = new Serializer(array($normalizer), array($encoder));
-        $json = $serializer->serialize($characteristicTr, 'json');
+        $json = $serializer->serialize($characteristicTr);
         return new Response($json);
     }
 
@@ -74,9 +70,11 @@ class CharacteristicTrController extends Controller implements ClassResourceInte
      */
     function putAction(Request $request){
         $em = $this->getDoctrine()->getManager();
+        $serializer = $this->container->get('winefing.serializer_controller');
+
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:CharacteristicTr');
         $characteristicTr =  $repository->findOneById($request->request->get("id"));
-        $characteristicTr->setName($request->request->get("name"));
+        $characteristicTr->setName(ucfirst(strtolower($request->request->get("name"))));
 
         $validator = $this->get('validator');
         $errors = $validator->validate($characteristicTr);
@@ -86,14 +84,8 @@ class CharacteristicTrController extends Controller implements ClassResourceInte
         }
         $em->persist($characteristicTr);
         $em->flush();
-        $encoder = new JsonEncoder();
-        $normalizer = new ObjectNormalizer();
-        $normalizer->setCircularReferenceHandler(function ($object) {
-            return $object->getId();
-        });
-        $serializer = new Serializer(array($normalizer), array($encoder));
-        $json = $serializer->serialize($characteristicTr, 'json');
-        return ($json);
+        $json = $serializer->serialize($characteristicTr);
+        return new Response($json);
     }
 
     public function deleteAction($id)

@@ -17,7 +17,10 @@
             <tr>
                 <td>
                     {% for tagTr in tag.tagTrs %}
-                        {{ tagTr.name }}&nbsp;&nbsp;
+                        <object style="float: left;" type="image/svg+xml" data="{{ languagePicturePath }}{{ tagTr.language.picture }}" height="20px">
+                        </object>
+                        <span style="margin-left: 10px">{{ tagTr.name }}</span>
+                        <br><br>
                     {% endfor %}
                 </td>
                 <td>

@@ -35,7 +35,9 @@ class WineRegionController extends Controller
         $response = $api->get($this->generateUrl('api_get_wine_regions'));
         $serializer = $this->container->get('winefing.serializer_controller');
         $wineRegions = $serializer->decode($response->getBody()->getContents());
-        return $this->render('admin/wineRegion/index.html.twig', array("wineRegions" => $wineRegions));
+        $response = $api->get($this->get('_router')->generate('api_get_languages_picture_path'));
+        $languagePicturePath = $serializer->decode($response->getBody()->getContents());
+        return $this->render('admin/wineRegion/index.html.twig', array("wineRegions" => $wineRegions, 'languagePicturePath'=>$languagePicturePath));
     }
 
     /**
@@ -74,15 +76,16 @@ class WineRegionController extends Controller
         unset($wineRegion["wineRegionTrs"]);
         if(empty($wineRegion["id"])) {
             $response = $api->post($this->generateUrl('api_post_wine_region'), $wineRegion);
-            $wineRegion = $serializer->decode($response->getBody()->getContents());
+        } else {
+            $response = $api->put($this->generateUrl('api_put_wine_region'), $wineRegion);
         }
+        $wineRegion = $serializer->decode($response->getBody()->getContents());
         foreach ($wineRegionTrs as $wineRegionTr) {
             $wineRegionTr["wineRegion"] = $wineRegion["id"];
-            var_dump($wineRegionTr);
             if(empty($wineRegionTr["id"])) {
                 $api->post($this->generateUrl('api_post_wineregion_tr'), $wineRegionTr);
             } else {
-                $api->put($this->generateUrl('api_post_wineregion_tr'), $wineRegionTr);
+                $api->put($this->generateUrl('api_put_wineregion_tr'), $wineRegionTr);
             }
         }
         $request->getSession()

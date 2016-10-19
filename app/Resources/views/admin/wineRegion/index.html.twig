@@ -9,6 +9,7 @@
                 </button>
                 Régions viticoles
             </th>
+            <th>Pays</th>
             <th>Actions</th>
         </tr>
         </thead>
@@ -17,9 +18,14 @@
             <tr>
                 <td data-toggle="collapse" data-target="#characteristics-{{ wineRegion.id }}" class="accordion-toggle" style="cursor:pointer">
                     {% for wineRegionTr in wineRegion.wineRegionTrs %}
-                        {{ wineRegionTr.language.name }} {{ wineRegionTr.name }}
-                        &nbsp;
+                        <object style="float: left;" type="image/svg+xml" data="{{ languagePicturePath }}{{ wineRegionTr.language.picture }}" height="20px">
+                        </object>
+                        <span style="margin-left: 10px">{{ wineRegionTr.name }}</span>
+                        <br><br>
                     {% endfor %}
+                </td>
+                <td>
+                    {{ wineRegion.country.name }}
                 </td>
                 <td>
                     <input type="button"  class="btn btn-primary" value="Editer" id="update" onclick="loadForm('{{ path('wineRegion_new_form', {'id' : wineRegion.id}) }}', 'wineRegion')"/>

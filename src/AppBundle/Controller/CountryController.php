@@ -27,7 +27,7 @@ class CountryController extends Controller
     public function cgetAction() {
         $api = $this->container->get('winefing.api_controller');
         $serializer = $this->container->get('winefing.serializer_controller');
-        $response = $api->get('http://104.47.146.137/winefing/web/app_dev.php/api/countries', []);
+        $response = $api->get($this->get('router')->generate('api_get_countries'));
         $countries = $serializer->decode($response->getBody()->getContents());
         return $this->render('admin/country/index.html.twig', array(
             'countries' => $countries));
@@ -54,9 +54,9 @@ class CountryController extends Controller
         $api = $this->container->get('winefing.api_controller');
         $country = $request->request->all()["country"];
         if(empty($country["id"])) {
-            $response =  $api->post("http://104.47.146.137/winefing/web/app_dev.php/api/countries", $country, null);
+            $response =  $api->post($this->get('router')->generate('api_post_country'), $country);
         } else {
-            $response =  $api->put("http://104.47.146.137/winefing/web/app_dev.php/api/country", $country, null);
+            $response =  $api->put($this->get('router')->generate('api_post_country'), $country);
         }
         $serializer = $this->container->get('winefing.serializer_controller');
         $country = $serializer->decode($response->getBody()->getContents());
@@ -72,7 +72,7 @@ class CountryController extends Controller
     public function deleteAction($id, Request $request)
     {
         $api = $this->container->get('winefing.api_controller');
-        $api->delete('http://104.47.146.137/winefing/web/app_dev.php/api/countries/'.$id);
+        $api->delete($this->get('router')->generate('api_delete_country', array('id'=>$id)));
         $request->getSession()
             ->getFlashBag()
             ->add('success', "The country is well deleted.");

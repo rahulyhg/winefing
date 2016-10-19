@@ -17,10 +17,6 @@
                         {{ form_label(form.format) }}
                         {{ form_widget(form.format) }}
                     </fieldset>
-                    <fieldset class="form-group" id="description">
-                        {{ form_label(form.description) }}
-                        {{ form_widget(form.description,  { 'attr': {'class': 'form-control'} }) }}
-                    </fieldset>
                     <label>Name</label>
                     {% for characteristicTr in form.characteristicTrs %}
                         <fieldset class="form-group">
@@ -35,14 +31,14 @@
                             </div>
                         </fieldset>
                     {% endfor %}
+                    <fieldset class="form-group" id="picture">
+                        {{ form_label(form.picture) }}
+                        {{ form_widget(form.picture,  { 'attr': {'class': 'form-control'} }) }}
+                    </fieldset>
                     <fieldset class="form-group" id="activated">
                         <input checked hidden name="characteristic[activated]" type="checkbox">
                         {{ form_label(form.activated) }}
                         {{ form_widget(form.activated,  { 'attr': {'class': 'form-control'} }) }}
-                    </fieldset>
-                    <fieldset class="form-group" id="picture">
-                        {{ form_label(form.picture) }}
-                        {{ form_widget(form.picture,  { 'attr': {'class': 'form-control'} }) }}
                     </fieldset>
                 </div><!-- /.modal-body -->
                 <div class="modal-footer">

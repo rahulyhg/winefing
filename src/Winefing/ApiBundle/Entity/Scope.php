@@ -39,7 +39,7 @@ class Scope
 
     /**
      * @var CharacteristicCategory
-     * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\CharacteristicCategory", mappedBy="scope", fetch="EAGER")
+     * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\CharacteristicCategory", mappedBy="scope", fetch="EXTRA_LAZY")
      */
     private $characteristicCategories;
 

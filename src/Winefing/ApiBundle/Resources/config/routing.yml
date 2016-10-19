@@ -92,3 +92,13 @@ tagTr:
     type: rest
     resource: Winefing\ApiBundle\Controller\TagTrController
     name_prefix:  api_
+
+subscription:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\SubscriptionController
+    name_prefix:  api_
+
+subscriptionTr:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\SubscriptionTrController
+    name_prefix:  api_

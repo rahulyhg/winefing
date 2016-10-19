@@ -19,8 +19,8 @@ class ArticleTrRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter('articleId', $articleId)
             ->setMaxResults(1)
             ->getQuery();
-        $languages = $query->getResult();
-        return $languages;
+        $articleTr = $query->getResult();
+        return $articleTr;
     }
     function findTitleByArticleIdAndLanguageCode($articleId, $languageCode) {
         $query = $this->createQueryBuilder('articleTr')
