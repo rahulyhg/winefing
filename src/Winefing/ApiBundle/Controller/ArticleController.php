@@ -37,7 +37,11 @@ class ArticleController extends Controller implements ClassResourceInterface
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
         $repositoryArticleTr = $this->getDoctrine()->getRepository('WinefingApiBundle:ArticleTr');
         foreach ($articles as $article) {
-            $missingLanguages = $repository->findMissingLanguagesForArticle($article);
+            $languageId = array();
+            foreach($article->getArticleTrs() as $articleTr) {
+                $languageId[] = $articleTr->getLanguage()->getId();
+            }
+            $missingLanguages = $repository->findMissingLanguages($languageId);
             $article->setMissingLanguages(new ArrayCollection($missingLanguages));
             $title = $repositoryArticleTr->findTitleByArticleIdAndLanguageCode($article->getId(), LanguageEnum::Français);
             if(empty($title)) {
@@ -105,6 +109,13 @@ class ArticleController extends Controller implements ClassResourceInterface
     }
 
     public function postFileAction(Request $request) {
+        $mediaFormat = $this->container->get('winefing.media_format_controller');
+        $uploadedFile = $request->files->get('picture');
+        $fileName = md5(uniqid()) . '.' . $uploadedFile->getClientOriginalExtension();
+        $extentionCorrect = $mediaFormat->checkFormat($uploadedFile->getClientOriginalExtension(), MediaFormatEnum::Image);
+        if($extentionCorrect != 1) {
+            throw new BadRequestHttpException($extentionCorrect);
+        }
         $em = $this->getDoctrine()->getManager();
         $serializer = $this->container->get('winefing.serializer_controller');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Article');
@@ -112,8 +123,6 @@ class ArticleController extends Controller implements ClassResourceInterface
         if(empty($article)) {
             throw new BadRequestHttpException('The articleId is mandatory');
         }
-        $uploadedFile = $request->files->get('picture');
-        $fileName = md5(uniqid()) . '.' . $uploadedFile->getClientOriginalExtension();
         if (!empty($article->getPicture()) && !empty($uploadedFile)) {
             unlink($this->getParameter('article_directory_upload') . $article->getPicture());
         }

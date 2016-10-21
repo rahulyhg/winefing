@@ -41,19 +41,23 @@ class TagController extends Controller
      * @Route("/tag/newForm/{id}", name="tag_new_form")
      */
     public function newFormAction($id = '') {
-        if(empty($id)) {
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Tag');
+        $tag = $repository->findOneById($id);
+        if(empty($tag)) {
             $tag = new Tag();
-            $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
-            $languages = $repository->findAll();
-            foreach($languages as $language) {
-                $tagTr = new TagTr();
-                $tagTr->setLanguage($language);
-                $tag->addTagTr($tagTr);
+        }
+        $languagesId = array();
+        if($tag->getTagTrs() != null) {
+            foreach ($tag->getTagTrs() as $tagTr) {
+                $languagesId[] = $tagTr->getLanguage()->getId();
             }
         }
-        else {
-            $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Tag');
-            $tag = $repository->findOneById($id);
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
+        $missingLanguages = $repository->findMissingLanguages($languagesId);
+        foreach($missingLanguages as $language) {
+            $tagTr = new TagTr();
+            $tagTr->setLanguage($language);
+            $tag->addTagTr($tagTr);
         }
         $form = $this->createForm(TagType::class, $tag, array('action' => $this->generateUrl('tag_submit'),
             'method' => 'POST'));

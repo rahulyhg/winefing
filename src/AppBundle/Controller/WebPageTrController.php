@@ -51,12 +51,15 @@ class WebPageTrController extends Controller
         }
         if(!empty($languageId)) {
             $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
-            $language = $repository->findOneById($webPageId);
+            $language = $repository->findOneById($languageId);
             $webPageTr->setLanguage($language);
         }
         $form = $this->createForm(WebPageTrType::class, $webPageTr, array(
             'action' => $this->generateUrl('webPageTr_submit'),
             'method' => 'POST'));
+//        $form->get('language')->setData($language);
+//        var_dump($languageId);
+
 
         return $this->render('admin/webPage/form.html.twig', array(
             'form' => $form->createView()
@@ -68,29 +71,21 @@ class WebPageTrController extends Controller
     public function submitAction(Request $request){
         $webPageId = $request->request->all()["web_page_tr"]["webPage"]["id"];
         $api = $this->container->get('winefing.api_controller');
+        $serializer = $this->container->get('winefing.serializer_controller');
         if(empty($webPageId)){
-            $response = $api->post("http://104.47.146.137/winefing/web/app_dev.php/api/webs/pages", $request->request->all()["web_page_tr"]["webPage"], null);
-            $webPageJson = $response->getBody()->getContents();
-            $encoders = array(new JsonEncoder());
-            $normalizers = array(new ObjectNormalizer());
-            $serializer = new Serializer($normalizers, $encoders);
-            $webPage = $serializer->decode($webPageJson, 'json');
+            $response = $api->post($this->get('_router')->generate('api_post_web_page'), $request->request->all()["web_page_tr"]["webPage"]);
+            $webPage = $serializer->decode($response->getBody()->getContents());
             $webPageId = $webPage["id"];
         }
         $webPageTr = $request->request->all()["web_page_tr"];
         unset($webPageTr["webPage"]["id"]);
         $webPageTr["webPage"] = $webPageId;
         if(empty($webPageTr["id"])){
-            $response = $api->post("http://104.47.146.137/winefing/web/app_dev.php/api/webpages/trs", $webPageTr, null);
+            $response = $api->post($this->get('_router')->generate('api_post_webpage_tr'), $webPageTr);
         } else {
-            $response = $api->put("http://104.47.146.137/winefing/web/app_dev.php/api/webpage/tr", $webPageTr, null);
+            $response = $api->put($this->get('_router')->generate('api_put_webpage_tr'), $webPageTr);
         }
-        $webPageTrJson = $response->getBody()->getContents();
-        $encoders = array(new JsonEncoder());
-        $normalizers = array(new ObjectNormalizer());
-        $serializer = new Serializer($normalizers, $encoders);
-        $webPageTr = $serializer->decode($webPageTrJson, 'json');
-
+        $webPageTr = $serializer->decode($response->getBody()->getContents());
         $request->getSession()
             ->getFlashBag()
             ->add('success', "The webPage \"".$webPageTr["title"]."\" is well created/modified.");
@@ -102,13 +97,10 @@ class WebPageTrController extends Controller
      */
     public function deleteAction($id, Request $request)
     {
-        $client = new Client();
-        $response = $client->request('DELETE', 'http://104.47.146.137/winefing/web/app_dev.php/api/webpages/'.$id.'/tr');
-        $webPageTrJson = $response->getBody()->getContents();
-        $encoders = array(new JsonEncoder());
-        $normalizers = array(new ObjectNormalizer());
-        $serializer = new Serializer($normalizers, $encoders);
-        $webPageTr = $serializer->decode($webPageTrJson, 'json');
+        $api = $this->container->get('winefing.api_controller');
+        $serializer = $this->container->get('winefing.serializer_controller');
+        $response = $api->delete($this->get('_router')->generate('api_delete_webpage_tr', array('id' => $id)));
+        $webPageTr = $serializer->decode($response->getBody()->getContents());
         $request->getSession()
             ->getFlashBag()
             ->add('success', "The webPage \"".$webPageTr["title"]."\" is well deleted.");
@@ -121,7 +113,7 @@ class WebPageTrController extends Controller
     public function activatedAction(Request $request)
     {
         $api = $this->container->get('winefing.api_controller');
-        $response = $api->put('http://104.47.146.137/winefing/web/app_dev.php/api/webpage/tr/activated', $request->request->all());
+        $api->put($this->get('_router')->generate('api_put_webpage_tr_activated'), $request->request->all());
         return new Response();
     }
 

@@ -17,6 +17,8 @@ parameters:
     characteristic_category_directory: 'winefing/web/Resources/pictures/characteristicCategory/'
     characteristic_directory: 'winefing/web/Resources/pictures/characteristic/'
     article_directory: 'winefing/web/Resources/pictures/characteristic/'
+    mail_chimp_token: '82eeea1796fe25cf7d185ec3ce2af340-us14'
+    mail_chimp_url: 'https://us14.api.mailchimp.com/export/1.0/'
 
 framework:
     #esi:             ~

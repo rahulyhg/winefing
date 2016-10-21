@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Form\FormBuilderInterface;
 use Winefing\ApiBundle\Entity\Language;
+use Winefing\ApiBundle\Entity\MediaFormatEnum;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
@@ -31,6 +32,8 @@ class LanguageController extends Controller
      * @Route("/languages", name="languages")
      */
     public function cgetAction() {
+        $media = $this->container->get('winefing.media_format_controller');
+        $f = $media->getMediaFormatExtentionsPossible(MediaFormatEnum::Icon);
         $api = $this->container->get('winefing.api_controller');
         $serializer = $this->container->get('winefing.serializer_controller');
         $response = $api->get($this->get('router')->generate('api_get_languages'));

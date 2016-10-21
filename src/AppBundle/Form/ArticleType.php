@@ -47,7 +47,7 @@ class ArticleType extends AbstractType
                 'choice_label' => 'description', 'multiple' =>true))
             ->add('tags', EntityType::class,  array(
                 'class' => 'WinefingApiBundle:Tag',
-                'choice_label' => 'title', 'multiple' =>true));
+                'choice_label' => 'id', 'multiple' =>true));
         ;
     }
     public function configureOptions(OptionsResolver $resolver)

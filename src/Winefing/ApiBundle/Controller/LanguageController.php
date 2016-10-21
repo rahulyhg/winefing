@@ -18,6 +18,7 @@ use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Winefing\ApiBundle\Entity\Language;
+use Winefing\ApiBundle\Entity\MediaFormatEnum;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\Annotations\FileParam;
@@ -99,13 +100,18 @@ class LanguageController extends Controller implements ClassResourceInterface
     {
         $em = $this->getDoctrine()->getManager();
         $serializer = $this->container->get('winefing.serializer_controller');
+        $uploadedFile = $request->files->get('picture');
+        $fileName = md5(uniqid()) . '.' . $uploadedFile->getClientOriginalExtension();
+        $mediaFormat = $this->container->get('winefing.media_format_controller');
+        $extentionCorrect = $mediaFormat->checkFormat($uploadedFile->getClientOriginalExtension(), MediaFormatEnum::Icon);
+        if($extentionCorrect != 1) {
+            throw new BadRequestHttpException($extentionCorrect);
+        }
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
         $language = $repository->findOneById($request->request->get('id'));
         if(empty($language)) {
             throw new BadRequestHttpException('The languageId is mandatory');
         }
-        $uploadedFile = $request->files->get('picture');
-        $fileName = md5(uniqid()) . '.' . $uploadedFile->getClientOriginalExtension();
         if (!empty($language->getPicture()) && !empty($uploadedFile)) {
             unlink($this->getParameter('language_directory_upload') . $language->getPicture());
         }

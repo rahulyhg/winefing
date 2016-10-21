@@ -10,3 +10,5 @@ services:
             class: Winefing\ApiBundle\Controller\SerializerController
     winefing.webpath_controller:
             class: Winefing\ApiBundle\Controller\WebPathController
+    winefing.media_format_controller:
+        class: Winefing\ApiBundle\Controller\MediaFormatController

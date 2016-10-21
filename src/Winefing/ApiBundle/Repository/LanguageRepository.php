@@ -1,9 +1,6 @@
 <?php
 
 namespace Winefing\ApiBundle\Repository;
-use Winefing\ApiBundle\Entity\Article;
-use Winefing\ApiBundle\Entity\WebPage;
-
 /**
  * LanguageRepository
  *
@@ -12,27 +9,16 @@ use Winefing\ApiBundle\Entity\WebPage;
  */
 class LanguageRepository extends \Doctrine\ORM\EntityRepository
 {
-    function findMissingLanguagesForArticle(Article $article) {
-        foreach ($article->getArticleTrs() as $articleTr) {
-            $languagesId[] = $articleTr->getLanguage()->getId();
+    function findMissingLanguages($id) {
+        if(empty($id)) {
+            $languages = $this->findAll();
+        } else {
+            $query = $this->createQueryBuilder('language')
+                ->where('language.id not in (:languages)')
+                ->setParameter('languages', array_values($id))
+                ->getQuery();
+            $languages = $query->getResult();
         }
-        $query = $this->createQueryBuilder('language')
-            ->where('language.id not in (:languages)')
-            ->setParameter('languages', array_values($languagesId))
-            ->getQuery();
-        $languages = $query->getResult();
-        return $languages;
-    }
-    function findMissingLanguagesForWebPage(WebPage $webPage) {
-        $webPagesId = array();
-        foreach ($webPage->getWebPageTrs() as $webPageTr) {
-            $webPagesId[] = $webPageTr->getLanguage()->getId();
-        }
-        $query = $this->createQueryBuilder('language')
-            ->where('language.id not in (:languages)')
-            ->setParameter('languages', array_values($webPagesId))
-            ->getQuery();
-        $languages = $query->getResult();
         return $languages;
     }
 }

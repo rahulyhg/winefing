@@ -41,16 +41,20 @@ class CharacteristicController extends Controller
         $characteristic = $repository->findOneById($id);
         if(empty($characteristic)) {
             $characteristic = new Characteristic();
-            $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
-            $languages = $repository->findAll();
-            foreach($languages as $language) {
-                $caracteristicTr = new CharacteristicTr();
-                $caracteristicTr->setLanguage($language);
-                $characteristic->addCharacteristicTr($caracteristicTr);
-            }
         }
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:CharacteristicCategory');
         $characteristic->setChacarteristicCategory($repository->findOneById($characteristicCategoryId));
+        $languagesId = array();
+        foreach ($characteristic->getCharacteristicTrs() as $characteristicTr) {
+            $languagesId[] = $characteristicTr->getLanguage()->getId();
+        }
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
+        $missingLanguages = $repository->findMissingLanguages($languagesId);
+        foreach($missingLanguages as $language) {
+            $characteristicTr = new CharacteristicTr();
+            $characteristicTr->setLanguage($language);
+            $characteristic->addCharacteristicTr($characteristicTr);
+        }
         $form = $this->createForm(CharacteristicType::class, $characteristic, array(
             'action' => $this->generateUrl('characteristic_submit', array('scopeName'=> $scopeName)),
             'method' => 'POST'));

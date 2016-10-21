@@ -29,11 +29,10 @@
                         {% for webPageTr in webPage.webPageTrs %}
                             <tr>
                                 <td>
-                                    <object type="image/svg+xml" data="{{ webPageTr.language.picturePath }}" height="20px">
+                                    <object style="float: left;" type="image/svg+xml" data="{{ languagePicturePath }}{{ webPageTr.language.picture }}" height="20px">
                                     </object>
-                                </td>
-                                <td>
-                                    {{ webPageTr.title }}
+                                    <span style="margin-left: 10px">{{ webPageTr.title }}</span>
+                                    <br><br>
                                 </td>
                                 <td>
                                     <a href="{{ path('webPageTr_new_form', {'id':webPageTr.id, 'webPageId' : webPage.id}) }}" class="btn btn-primary">Editer</a>
@@ -50,8 +49,9 @@
                         {% for missingLanguage in webPage.missingLanguages %}
                             <tr>
                                 <td colspan="3">
-                                    {{ missingLanguage.name }} {{ missingLanguage.picture }}
-                                    &nbsp;<a href="{{ path('webPageTr_new_form', {'id': 0, 'webPageId': webPage.id, 'languageId':missingLanguage.id}) }}" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span></a>
+                                    <object style="float: left;" type="image/svg+xml" data="{{ languagePicturePath }}{{ missingLanguage.picture }}" height="20px">
+                                    </object>
+                                    <span style="margin-left: 10px"><a href="{{ path('webPageTr_new_form', {'id': 0, 'webPageId': webPage.id, 'languageId':missingLanguage.id}) }}" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span></a></span>
                                 </td>
                             </tr>
                         {% endfor %}

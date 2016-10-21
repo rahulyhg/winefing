@@ -55,21 +55,32 @@ class CharacteristicCategoryController extends Controller
      */
     public function newFormAction($scopeName, $id = '') {
         if(empty($id)) {
-            $caracteristicCategory = new CharacteristicCategory();
+            $characteristicCategory = new CharacteristicCategory();
             $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
             $languages = $repository->findAll();
             foreach($languages as $language) {
-                $caracteristicCategoryTr = new CharacteristicCategoryTr();
-                $caracteristicCategoryTr->setLanguage($language);
-                $caracteristicCategory->addCharacteristicCategoryTr($caracteristicCategoryTr);
+                $characteristicCategoryTr = new CharacteristicCategoryTr();
+                $characteristicCategoryTr->setLanguage($language);
+                $characteristicCategory->addCharacteristicCategoryTr($characteristicCategoryTr);
             }
         } else {
             $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:CharacteristicCategory');
-            $caracteristicCategory = $repository->findOneById($id);
+            $characteristicCategory = $repository->findOneById($id);
+            $languagesId = array();
+            foreach ($characteristicCategory->getCharacteristicCategoryTrs() as $characteristicCategoryTr) {
+                $languagesId[] = $characteristicCategoryTr->getLanguage()->getId();
+            }
+            $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
+            $missingLanguages = $repository->findMissingLanguages($languagesId);
+            foreach($missingLanguages as $language) {
+                $characteristicCategoryTr = new CharacteristicCategoryTr();
+                $characteristicCategoryTr->setLanguage($language);
+                $characteristicCategory->addCharacteristicCategoryTr($characteristicCategoryTr);
+            }
         }
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Scope');
-        $caracteristicCategory->setScope($repository->findOneByName($scopeName));
-        $form = $this->createForm(CharacteristicCategoryType::class, $caracteristicCategory, array(
+        $characteristicCategory->setScope($repository->findOneByName($scopeName));
+        $form = $this->createForm(CharacteristicCategoryType::class, $characteristicCategory, array(
             'action' => $this->generateUrl('characteristicCategory_post', array('scopeName' => $scopeName)),
             'method' => 'POST'));
         return $this->render('admin/characteristic/form/characteristicCategory.html.twig', array(

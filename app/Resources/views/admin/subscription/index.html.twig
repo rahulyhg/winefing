@@ -9,6 +9,7 @@
                 </button>
                 Abonnement
             </th>
+            <th>Description</th>
             <th>Format</th>
             <th>Actions</th>
         </tr>
@@ -21,6 +22,12 @@
                         <object style="float: left;" type="image/svg+xml" data="{{ languagePicturePath }}{{ subscriptionTr.language.picture }}" height="20px">
                         </object>
                         <span style="margin-left: 10px">{{ subscriptionTr.name }}</span>
+                        <br><br>
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for subscriptionTr in subscription.subscriptionTrs %}
+                        {{ subscriptionTr.description }}
                         <br><br>
                     {% endfor %}
                 </td>

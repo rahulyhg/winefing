@@ -41,14 +41,12 @@ class WebPageController extends Controller
      * @Route("/web/pages", name="web_pages")
      */
     public function cgetAction() {
-        $client = new Client();
-        $response = $client->request('GET', 'http://104.47.146.137/winefing/web/app_dev.php/api/web/pages', []);
-        $webPagesJson = $response->getBody()->getContents();
-
-        $encoders = array(new JsonEncoder());
-        $normalizers = array(new ObjectNormalizer());
-        $serializer = new Serializer($normalizers, $encoders);
-        $webPages = $serializer->decode($webPagesJson, 'json');
-        return $this->render('admin/webPage/index.html.twig', array("webPages" => $webPages));
+        $api = $this->container->get('winefing.api_controller');
+        $serializer = $this->container->get('winefing.serializer_controller');
+        $response = $api->get($this->get('_router')->generate('api_get_web_pages'));
+        $webPages = $serializer->decode($response->getBody()->getContents());
+        $response = $api->get($this->get('_router')->generate('api_get_languages_picture_path'));
+        $languagePicturePath = $serializer->decode($response->getBody()->getContents());
+        return $this->render('admin/webPage/index.html.twig', array("webPages" => $webPages, 'languagePicturePath' => $languagePicturePath));
     }
 }

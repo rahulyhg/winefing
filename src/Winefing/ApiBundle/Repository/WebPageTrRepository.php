@@ -10,7 +10,7 @@ namespace Winefing\ApiBundle\Repository;
  */
 class WebPageTrRepository extends \Doctrine\ORM\EntityRepository
 {
-    function findTitleByWebPageIdAndLanguageCode($webPageId, $languageCode) {
+    function findOneByWebPageIdAndLanguageCode($webPageId, $languageCode) {
         $query = $this->createQueryBuilder('webPageTr')
             ->select('webPageTr.title')
             ->join('webPageTr.webPage', 'webPage')
@@ -20,6 +20,6 @@ class WebPageTrRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter('languageCode', $languageCode)
             ->setMaxResults(1)
             ->getQuery();
-        return $query->getResult()[0]["title"];
+        return $query->getResult();
     }
 }

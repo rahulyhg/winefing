@@ -23,7 +23,7 @@ use FOS\RestBundle\Controller\Annotations\FileParam;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-
+use Winefing\ApiBundle\Entity\MediaFormatEnum;
 
 
 class CharacteristicController extends Controller implements ClassResourceInterface
@@ -87,22 +87,32 @@ class CharacteristicController extends Controller implements ClassResourceInterf
 
     public function postFileAction(Request $request)
     {
+        $mediaFormat = $this->container->get('winefing.media_format_controller');
+        $uploadedFile = $request->files->get('picture');
+        $fileName = md5(uniqid()) . '.' . $uploadedFile->getClientOriginalExtension();
+        $extentionCorrect = $mediaFormat->checkFormat($uploadedFile->getClientOriginalExtension(), MediaFormatEnum::Icon);
+        if($extentionCorrect != 1) {
+            throw new BadRequestHttpException($extentionCorrect);
+        }
+
         $em = $this->getDoctrine()->getManager();
         $serializer = $this->container->get('winefing.serializer_controller');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Characteristic');
         $characteristic = $repository->findOneById($request->request->get('id'));
+
         if(empty($characteristic)) {
             throw new BadRequestHttpException('The CharacteristicId is mandatory');
         }
-        $uploadedFile = $request->files->get('picture');
-        $fileName = md5(uniqid()) . '.' . $uploadedFile->getClientOriginalExtension();
+
         if (!empty($characteristic->getPicture()) && !empty($uploadedFile)) {
             unlink($this->getParameter('characteristic_directory_upload') . $characteristic->getPicture());
         }
+
         $uploadedFile->move(
             $this->getParameter('characteristic_directory_upload'),
             $fileName
         );
+
         $characteristic->setPicture($fileName);
         $em->persist($characteristic);
         $em->flush();

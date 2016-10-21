@@ -3,6 +3,7 @@
 namespace Winefing\ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Subscription
@@ -89,6 +90,14 @@ class Subscription
 
     public function __construct() {
         $this->subscriptionTrs = new ArrayCollection();
+    }
+
+    /**
+     * @return SubscriptionTr
+     */
+    public function getSubscriptionTrs()
+    {
+        return $this->subscriptionTrs;
     }
 
     public function addSubscriptionTr(SubscriptionTr $subscriptionTr)

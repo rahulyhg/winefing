@@ -44,19 +44,23 @@ class WineRegionController extends Controller
      * @Route("/wineRegion/newForm/{id}", name="wineRegion_new_form")
      */
     public function newFormAction($id = '') {
-        if(empty($id)) {
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:WineRegion');
+        $wineRegion = $repository->findOneById($id);
+        if(empty($wineRegion)) {
             $wineRegion = new WineRegion();
-            $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
-            $languages = $repository->findAll();
-            foreach($languages as $language) {
-                $wineRegionTr = new WineRegionTr();
-                $wineRegionTr->setLanguage($language);
-                $wineRegion->addWineRegionTr($wineRegionTr);
+        }
+        $languagesId = array();
+        if($wineRegion->getWineRegionTrs() != null) {
+            foreach ($wineRegion->getWineRegionTrs() as $wineRegionTr) {
+                $languagesId[] = $wineRegionTr->getLanguage()->getId();
             }
         }
-        else {
-            $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:WineRegion');
-            $wineRegion = $repository->findOneById($id);
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
+        $missingLanguages = $repository->findMissingLanguages($languagesId);
+        foreach($missingLanguages as $language) {
+            $wineRegionTr = new WineRegionTr();
+            $wineRegionTr->setLanguage($language);
+            $wineRegion->addWineRegionTr($wineRegionTr);
         }
         $form = $this->createForm(WineRegionType::class, $wineRegion, array(
             'action' => $this->generateUrl('wineRegion_submit'),

@@ -1,7 +1,7 @@
 {% extends 'admin/base.html.twig' %}
 {% block table %}
     <h4>Nouvel/Modifier une page web</h4>
-    {{ form_start(form) }}
+    {{ form_start(form, {'attr':{'id' : 'webPage'}}) }}
     {{ form_errors(form) }}
     <div>
         <fieldset class="form-group" hidden>
@@ -15,7 +15,11 @@
             <fieldset class="form-group">
                 {{ form_label(form.language) }}
                 <br>
-                {{ form_widget(form.language, { 'attr': {'class': 'selectpicker'}}) }}
+                {% if app.request.get('languageId') is null  %}
+                    {{ form_widget(form.language, { 'attr': {'class': 'form-control'}}) }}
+                {% else %}
+                    {{ form_widget(form.language, { 'attr': {'class': 'form-control', 'disabled': 'false'}}) }}
+                {% endif %}
             </fieldset>
         </div>
         <div class="col-md-8">
@@ -44,5 +48,10 @@
                 minHeight: null
             });
         });
-</script>
+    </script>
+    <script>
+        $('#webPage').live('submit', function (event) {
+            $("#webPage :disabled").removeAttr('disabled');
+        });
+    </script>
 {% endblock %}

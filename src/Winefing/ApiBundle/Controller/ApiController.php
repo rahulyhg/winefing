@@ -79,6 +79,27 @@ class ApiController {
         ];
         return $client->request('POST',  $this->getUrl($uri), ['multipart' => $body]);
     }
+
+    public function postMailChimp($url, $methode, $bodyJson) {
+
+        $client = new GuzzleHttp\Client();
+
+        $headers = [
+            'Authorization' => 'Bearer '.$this->getParameter('mail_chimp_token'),
+            'content-type' => 'application/json',
+            'Accept' => 'application/json',
+        ];
+
+        $test = new GuzzleHttp\Psr7\Request(
+            'POST',
+            $url,
+            $headers,
+            $bodyJson
+        );
+
+        $promise = $client->send($test);
+        return json_decode($promise->getBody(),true);
+    }
 }
 
 

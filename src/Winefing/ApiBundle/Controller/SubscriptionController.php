@@ -44,8 +44,6 @@ class SubscriptionController extends Controller implements ClassResourceInterfac
         $subscription = new Subscription();
         $subscription->setFormat($request->request->get('format'));
         $subscription->setActivated($request->request->get('activated'));
-        $subscription->setDescription($request->request->get('description'));
-
         $validator = $this->get('validator');
         $errors = $validator->validate($subscription);
         if (count($errors) > 0) {
@@ -65,8 +63,6 @@ class SubscriptionController extends Controller implements ClassResourceInterfac
         $subscription = $repository->findOneById($request->request->get("id"));
         $subscription->setFormat($request->request->get('format'));
         $subscription->setActivated($request->request->get('activated'));
-        $subscription->setDescription($request->request->get('description'));
-
         $validator = $this->get('validator');
         $errors = $validator->validate($subscription);
         if (count($errors) > 0) {

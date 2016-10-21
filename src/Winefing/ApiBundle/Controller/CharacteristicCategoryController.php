@@ -14,10 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use Doctrine\ORM\EntityManager;
-use Winefing\ApiBundle\Entity\Characteristic;
-use Winefing\ApiBundle\Entity\CharacteristicCategoryTr;
 use Winefing\ApiBundle\Entity\CharacteristicCategory;
-use Winefing\ApiBundle\Entity\Scope;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
@@ -26,6 +23,7 @@ use FOS\RestBundle\Controller\Annotations\FileParam;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Winefing\ApiBundle\Entity\MediaFormatEnum;
 
 
 class CharacteristicCategoryController extends Controller implements ClassResourceInterface
@@ -105,11 +103,18 @@ class CharacteristicCategoryController extends Controller implements ClassResour
         $serializer = $this->container->get('winefing.serializer_controller');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:CharacteristicCategory');
         $characteristicCatrgory = $repository->findOneById($request->request->get('id'));
+
+        $mediaFormat = $this->container->get('winefing.media_format_controller');
+        $uploadedFile = $request->files->get('picture');
+        $fileName = md5(uniqid()) . '.' . $uploadedFile->getClientOriginalExtension();
+        $extentionCorrect = $mediaFormat->checkFormat($uploadedFile->getClientOriginalExtension(), MediaFormatEnum::Icon);
+        if($extentionCorrect != 1) {
+            throw new BadRequestHttpException($extentionCorrect);
+        }
+
         if(empty($characteristicCatrgory)) {
             throw new BadRequestHttpException('The CharacteristicCategoryId is mandatory');
         }
-        $uploadedFile = $request->files->get('picture');
-        $fileName = md5(uniqid()) . '.' . $uploadedFile->getClientOriginalExtension();
         if (!empty($characteristicCatrgory->getPicture()) && !empty($uploadedFile)) {
             unlink($this->getParameter('characteristic_category_directory_upload') . $characteristicCatrgory->getPicture());
         }

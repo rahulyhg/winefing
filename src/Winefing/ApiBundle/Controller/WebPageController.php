@@ -45,12 +45,16 @@ class WebPageController extends Controller implements ClassResourceInterface
         $repositoryLanguage = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
 
         foreach ($webPages as $webPage) {
-            $title = $repositoryWebPageTr->findTitleByWebPageIdAndLanguageCode($webPage->getId(), LanguageEnum::Français);
+            $title = $repositoryWebPageTr->findOneByWebPageIdAndLanguageCode($webPage->getId(), LanguageEnum::Français)[0]["title"];
             if(empty($title)) {
-                $title = $repositoryWebPageTr->findTitleByWebPageIdAndLanguageCode($webPage->getId(), LanguageEnum::English);
+                $title = $repositoryWebPageTr->findOneByWebPageIdAndLanguageCode($webPage->getId(), LanguageEnum::English)[0]["title"];
             }
             $webPage->setTitle($title);
-            $missingLanguages = $repositoryLanguage->findMissingLanguagesForWebPage($webPage);
+            $languageId = array();
+            foreach($webPage->getWebPageTrs() as $webPageTr) {
+                $languageId[] = $webPageTr->getLanguage()->getId();
+            }
+            $missingLanguages = $repositoryLanguage->findMissingLanguages($languageId);
             $webPage->setMissingLanguages(new ArrayCollection($missingLanguages));
         }
         $json = $serializer->serialize($webPages, 'json');

@@ -41,12 +41,16 @@ class WebPageTrController extends Controller implements ClassResourceInterface
         if(empty($language)) {
             throw new HttpException(400, "The language is mandatory");
         }
-        $webPageTr->setLanguage($language);
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:WebPage');
         $webPage = $repository->findOneById($request->request->get("webPage"));
         if(empty($webPage)) {
             throw new HttpException(400, "The webPageId is mandatory");
         }
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:WebPageTr');
+        if($repository->findOneByWebPageIdAndLanguageCode($webPage->getId(), $language->getCode())) {
+            throw new HttpException(400, "A webPage with this language already exist.");
+        }
+        $webPageTr->setLanguage($language);
         $webPageTr->setWebPage($webPage);
         $webPageTr->setActivated($request->request->get("activated"));
         $webPageTr->setTitle($request->request->get("title"));

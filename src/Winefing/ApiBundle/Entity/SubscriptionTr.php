@@ -83,30 +83,6 @@ class SubscriptionTr
     }
 
     /**
-     * Set format
-     *
-     * @param string $format
-     *
-     * @return SubscriptionTr
-     */
-    public function setFormat($format)
-    {
-        $this->format = $format;
-
-        return $this;
-    }
-
-    /**
-     * Get format
-     *
-     * @return string
-     */
-    public function getFormat()
-    {
-        return $this->format;
-    }
-
-    /**
      * Set description
      *
      * @param string $description

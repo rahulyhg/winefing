@@ -18,10 +18,12 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Winefing\ApiBundle\Entity\WineRegion;
-use Winefing\ApiBundle\Entity\WineRegionTr;
-use AppBundle\Form\WineRegionType;
+use Winefing\ApiBundle\Entity\Subscription;
+use Winefing\ApiBundle\Entity\SubscriptionFormatEnum;
+use Winefing\ApiBundle\Entity\SubscriptionTr;
+use AppBundle\Form\SubscriptionType;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use GuzzleHttp\Client;
 
 
 
@@ -44,24 +46,26 @@ class SubscriptionController extends Controller
      * @Route("/subscription/newForm/{id}", name="subscription_new_form")
      */
     public function newFormAction($id = '') {
-        if(empty($id)) {
-            $subscription = new WineRegion();
-            $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
-            $languages = $repository->findAll();
-            foreach($languages as $language) {
-                $subscriptionTr = new WineRegionTr();
-                $subscriptionTr->setLanguage($language);
-                $subscription->addWineRegionTr($subscriptionTr);
-            }
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Subscription');
+        $subscription = $repository->findOneById($id);
+        if(empty($subscription)) {
+            $subscription = new Subscription();
         }
-        else {
-            $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:WineRegion');
-            $subscription = $repository->findOneById($id);
+        $languagesId = array();
+        foreach ($subscription->getSubscriptionTrs() as $subscriptionTr) {
+            $languagesId[] = $subscriptionTr->getLanguage()->getId();
         }
-        $form = $this->createForm(WineRegionType::class, $subscription, array(
-            'action' => $this->generateUrl('wineRegion_submit'),
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
+        $missingLanguages = $repository->findMissingLanguages($languagesId);
+        foreach($missingLanguages as $language) {
+            $subscriptionTr = new SubscriptionTr();
+            $subscriptionTr->setLanguage($language);
+            $subscription->addSubscriptionTr($subscriptionTr);
+        }
+        $form = $this->createForm(SubscriptionType::class, $subscription, array(
+            'action' => $this->generateUrl('subscription_submit'),
             'method' => 'POST'));
-        return $this->render('admin/wineRegion/form.html.twig', array(
+        return $this->render('admin/subscription/form.html.twig', array(
             'form' => $form->createView()
         ));
     }
@@ -71,27 +75,27 @@ class SubscriptionController extends Controller
     public function submitAction(Request $request) {
         $api = $this->container->get('winefing.api_controller');
         $serializer = $this->container->get('winefing.serializer_controller');
-        $subscription = $request->request->all()["wine_region"];
-        $subscriptionTrs = $subscription["wineRegionTrs"];
-        unset($subscription["wineRegionTrs"]);
+        $subscription = $request->request->all()["subscription"];
+        $subscriptionTrs = $subscription["subscriptionTrs"];
+        unset($subscription["subscriptionTrs"]);
         if(empty($subscription["id"])) {
-            $response = $api->post($this->generateUrl('api_post_wine_region'), $subscription);
+            $response = $api->post($this->generateUrl('api_post_subscription'), $subscription);
         } else {
-            $response = $api->put($this->generateUrl('api_put_wine_region'), $subscription);
+            $response = $api->put($this->generateUrl('api_put_subscription'), $subscription);
         }
         $subscription = $serializer->decode($response->getBody()->getContents());
         foreach ($subscriptionTrs as $subscriptionTr) {
-            $subscriptionTr["wineRegion"] = $subscription["id"];
+            $subscriptionTr["subscription"] = $subscription["id"];
             if(empty($subscriptionTr["id"])) {
-                $api->post($this->generateUrl('api_post_wineregion_tr'), $subscriptionTr);
+                $api->post($this->generateUrl('api_post_subscription_tr'), $subscriptionTr);
             } else {
-                $api->put($this->generateUrl('api_put_wineregion_tr'), $subscriptionTr);
+                $api->put($this->generateUrl('api_put_subscription_tr'), $subscriptionTr);
             }
         }
         $request->getSession()
             ->getFlashBag()
-            ->add('success', "The wine Region is well created/modified.");
-        return $this->redirectToRoute('wine_regions');
+            ->add('success', "The subscription is well created/modified.");
+        return $this->redirectToRoute('subscriptions');
 
     }
     /**
@@ -99,10 +103,10 @@ class SubscriptionController extends Controller
      */
     public function deleteAction($id, Request $request) {
         $api = $this->container->get('winefing.api_controller');
-        $api->delete($this->get('router')->generate('api_delete_wine_region', array('id' => $id)));
+        $api->delete($this->get('router')->generate('api_delete_subscription', array('id' => $id)));
         $request->getSession()
             ->getFlashBag()
-            ->add('success', "The wine Region is well created/modified.");
-        return $this->redirectToRoute('wine_regions');
+            ->add('success', "The subscription is well created/modified.");
+        return $this->redirectToRoute('subscriptions');
     }
 }

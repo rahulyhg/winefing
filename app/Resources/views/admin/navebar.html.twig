@@ -7,6 +7,10 @@
         {% set classATechnical = '' %}
         {% set classLiTechical = 'active' %}
         {% set classDivTechical = 'in' %}
+    {% elseif app.request.attributes.get('_route') == 'countries' %}
+        {% set classATechnical = '' %}
+        {% set classLiTechical = 'active' %}
+        {% set classDivTechical = 'in' %}
     {% else %}
         {% set classATechnical = 'collapsed' %}
         {% set classLiTechical = '' %}
@@ -61,7 +65,7 @@
         <div class="collapse {{ classDivUsers }}" id="users">
             <ul class="nav nav-list admin-navbar-text-align">
                 <li class=""><a href="{{ path('users_admin') }}">Admin</a></li>
-                <li class=""><a href="{{ path('characteristics_categories', {'scopeName' : 'property'}) }}">Propriétaires</a></li>
+                <li class=""><a href="#">Propriétaires</a></li>
             </ul>
         </div>
     </li>
@@ -76,7 +80,7 @@
     {% endif %}
     <li class="{{ classLiTags }}">
         <a href="{{ path('tags') }}" class="{{ classAUsers }}">
-            <span style="margin-right: 10px;" class="glyphicon glyphicon-envelope"></span>Tags<span></span>
+            <span style="margin-right: 10px;" class="glyphicon glyphicon-pencil"></span>Tags<span></span>
         </a>
     </li>
     {% if (app.request.attributes.get('_route') == 'wine_regions')  %}
@@ -89,7 +93,7 @@
         {% set classDivWineRegions = '' %}
     {% endif %}
     <li class="{{ classLiWineRegions }}">
-        <a href="{{ path('wine_regions') }}"><span style="margin-right: 10px;" class="glyphicon glyphicon-euro"></span>Régions viticoles</a>
+        <a href="{{ path('wine_regions') }}"><span style="margin-right: 10px;" class="glyphicon glyphicon-home"></span>Régions viticoles</a>
     </li>
     {% if (app.request.attributes.get('_route') == 'subscriptions') %}
         {% set classLiSubscriptions = 'active' %}
@@ -97,7 +101,7 @@
         {% set classLiSubscriptions = '' %}
     {% endif %}
     <li class="{{ classLiSubscriptions }}">
-        <a href="{{ path('subscriptions') }}"><span style="margin-right: 10px;" class="glyphicon glyphicon-euro"></span>Abonnements</a>
+        <a href="{{ path('subscriptions') }}"><span style="margin-right: 10px;" class="glyphicon glyphicon-envelope"></span>Abonnements</a>
     {% if (app.request.attributes.get('_route') == 'promotions') %}
         {% set classLiPromo = 'active' %}
     {% else %}

@@ -47,6 +47,7 @@ class SubscriptionTrController extends Controller implements ClassResourceInterf
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
         $subscriptionTr->setLanguage($repository->findOneById($request->request->get("language")));
         $subscriptionTr->setName(ucfirst(strtolower($request->request->get("name"))));
+        $subscriptionTr->setDescription(ucfirst($request->request->get("description")));
         $validator = $this->get('validator');
         $errors = $validator->validate($subscriptionTr);
         if (count($errors) > 0) {
@@ -68,11 +69,11 @@ class SubscriptionTrController extends Controller implements ClassResourceInterf
         $serializer = $this->container->get('winefing.serializer_controller');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:SubscriptionTr');
         $subscriptionTr = $repository->findOneById($request->request->get('id'));
-        if(empty($subscription)) {
+        if(empty($subscriptionTr)) {
             throw new \BadMethodCallException('The subscriptionId is mandatory.');
         }
-        $subscriptionTr->setSubscription($subscription);
         $subscriptionTr->setName(ucfirst(strtolower($request->request->get("name"))));
+        $subscriptionTr->setDescription(ucfirst($request->request->get("description")));
         $validator = $this->get('validator');
         $errors = $validator->validate($subscriptionTr);
         if (count($errors) > 0) {
@@ -82,7 +83,6 @@ class SubscriptionTrController extends Controller implements ClassResourceInterf
         $em->persist($subscriptionTr);
         $em->flush();
         $json = $serializer->serialize($subscriptionTr);
-        return new Response($json);
         return new Response($json);
     }
 }

@@ -1,7 +1,7 @@
 {% extends 'admin/base.html.twig' %}
 {% block table %}
     <h4>Nouvel/Modifier Article</h4>
-    {{ form_start(form) }}
+    {{ form_start(form, {'attr':{'id' : 'articleTr'}}) }}
     {{ form_errors(form) }}
     <div>
         <fieldset class="form-group">
@@ -42,7 +42,11 @@
             <fieldset class="form-group">
                 {{ form_label(form.language) }}
                 <br>
-                {{ form_widget(form.language, { 'attr': {'class': 'selectpicker'}}) }}
+                {% if app.request.get('languageId') is null  %}
+                    {{ form_widget(form.language, { 'attr': {'class': 'selectpicker'}}) }}
+                {% else %}
+                    {{ form_widget(form.language, { 'attr': {'class': 'selectpicker', 'disabled': 'false'}}) }}
+                {% endif %}
             </fieldset>
         </div>
         <div class="col-md-8">
@@ -75,5 +79,10 @@
                 minHeight: null
             });
         });
-</script>
+    </script>
+    <script>
+        $('#articleTr').live('submit', function (event) {
+            $("#articleTr :disabled").removeAttr('disabled');
+        });
+    </script>
 {% endblock %}
