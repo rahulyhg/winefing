@@ -1,0 +1,21 @@
+{% extends 'host/domain/base.html.twig' %}
+{% block domain %}
+    {{ form_start(domainForm, {'attr':{'name':'domain', 'id':'domain'}}) }}
+    <div class="form-group">
+        {{ form_widget(domainForm.id,  { 'attr': {'required': 'false'} }) }}
+    </div>
+    <div class="form-group">
+        <label for="postal_code">*{% trans %}label.wine_region{% endtrans %} </label>
+        {{ form_widget(domainForm.wineRegion,  { 'attr': {'class': 'form-control'} }) }}
+    </div>
+    <div class="form-group">
+        <label for="address">*{% trans %}label.name{% endtrans %} </label>
+        {{ form_widget(domainForm.name,  { 'attr': {'class': 'form-control'} }) }}
+    </div>
+    <div class="form-group">
+        <label for="postal_code">*{% trans %}label.description{% endtrans %} </label>
+        {{ form_widget(domainForm.description,  { 'attr': {'class': 'form-control'} }) }}
+    </div>
+    <button type="submit" class="btn btn-primary pull-right">{% trans %}label.submit{% endtrans %}</button>
+    {{ form_end(domainForm) }}
+{% endblock %}

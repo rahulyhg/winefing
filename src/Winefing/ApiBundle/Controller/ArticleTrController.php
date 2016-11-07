@@ -45,18 +45,12 @@ class ArticleTrController extends Controller implements ClassResourceInterface
 
         $articleTr = new ArticleTr();
         $articleTr->setLanguage($language);
+        $articleTr->setArticle($article);
         $articleTr->setTitle($request->request->get("title"));
         $articleTr->setShortDescription($request->request->get("shortDescription"));
         $articleTr->setContent($request->request->get("content"));
         $articleTr->setActivated($request->request->get("activated"));
-        $articleTr->getArticle()->setDescription($articleTr->getTitle());
 
-        $articleCategories = $article["articleCategories"];
-        $articleTr->getArticle()->resetArticleCategories();
-        foreach($articleCategories as $articleCategory) {
-            $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:ArticleCategory');
-            $articleTr->getArticle()->addArticleCategory($repository->findOneById($articleCategory));
-        }
         $validator = $this->get('validator');
         $errors = $validator->validate($articleTr);
         if (count($errors) > 0) {
@@ -69,40 +63,19 @@ class ArticleTrController extends Controller implements ClassResourceInterface
         return new Response($json);
     }
     public function putAction(Request $request) {
-        $em = $this->getDoctrine()->getManager();
         $serializer = $this->container->get('winefing.serializer_controller');
+        $em = $this->getDoctrine()->getManager();
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:ArticleTr');
-        $articleTr = $repository->findOneById($request->request->get('id'));
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
-        $articleTr->setLanguage($repository->findOneById($request->request->get("language")));
+        $articleTr = $repository->findOneById($request->request->get("id"));
         $articleTr->setTitle($request->request->get("title"));
         $articleTr->setShortDescription($request->request->get("shortDescription"));
         $articleTr->setContent($request->request->get("content"));
         $articleTr->setActivated($request->request->get("activated"));
 
-        $article = $request->request->all()["article"];
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Article');
-        $art = $repository->findOneById($article["id"]);
-        if(!empty($art)) {
-            $articleTr->setArticle($art);
-        } else {
-            $articleTr->setArticle(new Article());
-        }
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
-        $user = $repository->findOneById($article["user"]);
-        $articleTr->getArticle()->setUser($user);
-        $articleTr->getArticle()->setDescription($articleTr->getTitle());
-
-        $articleCategories = $article["articleCategories"];
-        $articleTr->getArticle()->resetArticleCategories();
-        foreach($articleCategories as $articleCategory) {
-            $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:ArticleCategory');
-            $articleTr->getArticle()->addArticleCategory($repository->findOneById($articleCategory));
-        }
         $validator = $this->get('validator');
         $errors = $validator->validate($articleTr);
         if (count($errors) > 0) {
-            $errorsString = (string) $errors;
+            $errorsString = (string)$errors;
             return new Response(400, $errorsString);
         }
         $em->persist($articleTr);
@@ -118,6 +91,11 @@ class ArticleTrController extends Controller implements ClassResourceInterface
         if(count($articleTr->getArticle()->getArticleTrs())>1) {
             $em->remove($articleTr);
         } else {
+            if (!empty($articleTr->getArticle()->getPicture())) {
+                if(!unlink($this->getParameter('article_directory_upload') . $articleTr->getArticle()->getPicture())) {
+                    throw new HttpException("Problem on server to delete the picture.");
+                }
+            }
             $em->remove($articleTr->getArticle());
             $em->remove($articleTr);
         }

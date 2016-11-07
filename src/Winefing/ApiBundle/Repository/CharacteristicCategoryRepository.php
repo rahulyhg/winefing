@@ -10,4 +10,11 @@ namespace Winefing\ApiBundle\Repository;
  */
 class CharacteristicCategoryRepository extends \Doctrine\ORM\EntityRepository
 {
+    function findDifferentFromId($id) {
+        $query = $this->createQueryBuilder('c')
+            ->where('c.id != :id')
+            ->setParameter('id', array_values($id))
+            ->getQuery();
+        return $query->getResult();
+    }
 }

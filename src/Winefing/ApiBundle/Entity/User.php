@@ -11,6 +11,7 @@ namespace Winefing\ApiBundle\Entity;
 use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use JMS\Serializer\Annotation\Type;
 
 /**
  * @ORM\Entity
@@ -56,9 +57,24 @@ class User extends BaseUser
      */
     protected $description;
 
+    /**
+     * @ORM\Column(name="picture", type="string", length=500, nullable=true)
+     */
+    protected $picture;
+
+    /**
+     * @var domains
+     * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\Domain", mappedBy="address")
+     */
+    private $domains;
+
+    /**
+     * @Type("boolean")
+     */
     protected $deleted = false;
     /**
      * @var string
+     * @Type("string")
      */
     protected $fullName;
 
@@ -71,6 +87,7 @@ class User extends BaseUser
     {
         parent::__construct();
         $this->subscriptions = new ArrayCollection();
+        $this->domains = new ArrayCollection();
         return $this;
     }
 
@@ -216,5 +233,37 @@ class User extends BaseUser
     public function setDeleted($deleted)
     {
         $this->deleted = $deleted;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSubscriptions()
+    {
+        return $this->subscriptions;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPicture()
+    {
+        return $this->picture;
+    }
+
+    /**
+     * @param mixed $picture
+     */
+    public function setPicture($picture)
+    {
+        $this->picture = $picture;
+    }
+
+    /**
+     * @return domains
+     */
+    public function getDomains()
+    {
+        return $this->domains;
     }
 }

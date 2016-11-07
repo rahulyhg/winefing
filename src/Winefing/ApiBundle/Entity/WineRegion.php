@@ -34,6 +34,8 @@ class WineRegion
      */
     private $wineRegionTrs;
 
+    private $title;
+
 
     /**
      * Get id
@@ -78,5 +80,22 @@ class WineRegion
     public function _construct() {
         $this->wineRegionTrs = new ArrayCollection();
     }
+
+    /**
+     * @return mixed
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param mixed $title
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
+    }
+
 }
 

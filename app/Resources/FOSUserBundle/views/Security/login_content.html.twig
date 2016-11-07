@@ -14,7 +14,6 @@
                     {% if csrf_token %}
                         <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
                     {% endif %}
-
                     <label for="username">{{ 'security.login.username'|trans }}</label>
                     <input type="text" id="username" name="_username" value="{{ last_username }}" required="required" class="form-group"/>
 
@@ -23,7 +22,6 @@
 
                     <input type="checkbox" id="remember_me" name="_remember_me" value="on" class="form-group"/>
                     <label for="remember_me">{{ 'security.login.remember_me'|trans }}</label>
-
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>

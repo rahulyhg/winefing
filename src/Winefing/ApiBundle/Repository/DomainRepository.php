@@ -10,4 +10,14 @@ namespace Winefing\ApiBundle\Repository;
  */
 class DomainRepository extends \Doctrine\ORM\EntityRepository
 {
+    function findOneByUserId($userId)
+    {
+        $query = $this->createQueryBuilder('domain')
+            ->join("domain.user", "user")
+            ->where('user.id = :userId')
+            ->setParameter('userId', $userId)
+            ->setMaxResults(1)
+            ->getQuery();
+        return $query->getResult();
+    }
 }

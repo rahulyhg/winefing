@@ -4,11 +4,13 @@
         <thead>
         <tr>
             <th>
-                &nbsp;<a href="{{ path('webPageTr_new_form') }}" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span></a>
+                <a type="button" class="btn btn-default btn-circle btn-plus-admin" href="{{ path('webPageTr_new_form') }}">
+                    <i class="glyphicon glyphicon-plus glyphicon-plus-admin"></i>
+                </a>
                 WebPage
             </th>
             <th>Autheur</th>
-            <th>Catégorie(s)</th>
+            <th>Trad. manquantes</th>
         </tr>
         </thead>
         <tbody>
@@ -20,6 +22,7 @@
                 <td data-toggle="collapse" data-target="#webPage-{{ webPage.id }}" class="accordion-toggle" style="cursor:pointer">
                 </td>
                 <td>
+                    {{ webPage.missingLanguages |length }}
                 </td>
             </tr>
             <tr id="webPage-{{ webPage.id }}" class="collapse">
@@ -35,8 +38,8 @@
                                     <br><br>
                                 </td>
                                 <td>
-                                    <a href="{{ path('webPageTr_new_form', {'id':webPageTr.id, 'webPageId' : webPage.id}) }}" class="btn btn-primary">Editer</a>
-                                    <input type="button" class="btn btn-primary" value="Supprimer" onclick="setPathDeleteButton('{{ path('webPageTr_delete', {'id' : webPageTr.id}) }}')"/>
+                                    <a href="{{ path('webPageTr_new_form', {'id':webPageTr.id, 'webPageId' : webPage.id, 'languageId' : webPageTr.language.id}) }}" class="btn btn-primary">Editer</a>
+                                    <input type="button" class="btn btn-danger" value="Supprimer" onclick="setPathDeleteButton('{{ path('webPageTr_delete', {'id' : webPageTr.id}) }}')"/>
                                     {% if webPageTr.activated == 1 %}
                                         {% set checked = 'checked' %}
                                     {% else %}
@@ -49,9 +52,11 @@
                         {% for missingLanguage in webPage.missingLanguages %}
                             <tr>
                                 <td colspan="3">
-                                    <object style="float: left;" type="image/svg+xml" data="{{ languagePicturePath }}{{ missingLanguage.picture }}" height="20px">
-                                    </object>
-                                    <span style="margin-left: 10px"><a href="{{ path('webPageTr_new_form', {'id': 0, 'webPageId': webPage.id, 'languageId':missingLanguage.id}) }}" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span></a></span>
+                                    <a type="button" style="background-image: url({{ languagePicturePath }}{{ missingLanguage.picture }})" class="btn btn-default btn-circle btn-plus-admin" href="{{ path('webPageTr_new_form', {'id': 0, 'webPageId': webPage.id, 'languageId':missingLanguage.id}) }}">
+                                        <span class="glyphicon-plus-missing-languages-round">
+                                            <i class="glyphicon glyphicon-plus glyphicon-plus-admin"></i>
+                                        </span>
+                                    </a>
                                 </td>
                             </tr>
                         {% endfor %}
@@ -62,75 +67,4 @@
         {% endfor %}
         </tbody>
     </table>
-{% endblock %}
-{% block modal %}
-    <span id="modalDelete">
-        <div class="modal fade" tabindex="-1" role="dialog" id="confirmation">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">Suppression</h4>
-                    </div>
-                    <div class="modal-body">
-                        <p>Etes-vous sur de vouloir supprimer cet élément ?</p>
-                    </div><!-- /.modal-content -->
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-                        <a id="delete" type="submit" class="btn btn-primary pull-right">Valider</a>
-                    </div>
-                </div><!-- /.modal-dialog -->
-            </div><!-- /.modal -->
-        </div>
-    </span>
-    <span id="modalCreate">
-    </span>
-{% endblock %}
-{% block script %}
-    <script>
-        function setPathDeleteButton(path) {
-            console.log("in");
-            $("#delete").attr("href", path);
-            $('#confirmation').modal();
-        };
-        function loadForm(path, modalId) {
-            console.log(path);
-            console.log(modalId);
-            $.ajax({
-                url:  path,
-                type: 'GET',
-                async: false,
-                success: function (data, textStatus, jqXHR) {
-                    console.log("ifffn");
-                    $('#modalCreate').html(data);
-                    $('#'+modalId).modal();
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.log("no good");
-                }
-            });
-        }
-        function activate(path, checkBox, id){
-            var checkBoxId = checkBox+'-'+id;
-            if(document.getElementById(checkBoxId).checked){
-                activatedValue = 1;
-            } else {
-                activatedValue = 0;
-            }
-            console.log(id);
-            console.log(activatedValue);
-            $.ajax({
-                url:  path,
-                type: 'PUT',
-                data: {activated:activatedValue, id:id},
-                async: false,
-                success: function (data, textStatus, jqXHR) {
-                    console.log(data);
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.log("no good");
-                }
-            });
-        }
-    </script>
 {% endblock %}

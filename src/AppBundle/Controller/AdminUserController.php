@@ -33,14 +33,10 @@ class AdminUserController extends Controller
      * @Route("users/admin", name="users_admin")
      */
     public function cgetAdmin() {
-        $client = new Client();
-        $response = $client->request('GET', 'http://104.47.146.137/winefing/web/app_dev.php/api/admin/users', []);
-        $usersJson = $response->getBody()->getContents();
-
-        $encoders = array(new JsonEncoder());
-        $normalizers = array(new ObjectNormalizer());
-        $serializer = new Serializer($normalizers, $encoders);
-        $users = $serializer->decode($usersJson, 'json');
+        $api = $this->container->get('winefing.api_controller');
+        $serializer = $this->container->get('winefing.serializer_controller');
+        $response = $api->get($this->get('_router')->generate('api_get_admin_users'));
+        $users= $serializer->decode($response->getBody()->getContents());
         return $this->render('admin/user/index.html.twig', array(
             'users' => $users
         ));
@@ -51,41 +47,31 @@ class AdminUserController extends Controller
     public function newFormAction($id = 'user_post') {
         $userManager = $this->get('fos_user.user_manager');
         $user = $userManager->findUserBy(array('id'=>$id));
-        $action = $this->generateUrl('users_admin_put');
+        $action = $this->generateUrl('users_admin_submit');
         if(empty($user)){
             $user = new User();
-            $action = $this->generateUrl('users_admin_post');;
         }
         return $this->render('admin/user/form.html.twig', array(
             'user' => $user, 'action' => $action, 'method' => 'POST'
         ));
     }
     /**
-     * @Route("/users/admin/post", name="users_admin_post")
+     * @Route("/users/admin/submit", name="users_admin_submit")
      */
     public function postAction(Request $request)
     {
         $api = $this->container->get('winefing.api_controller');
-        $api->post("http://104.47.146.137/winefing/web/app_dev.php/api/admins/users", $request->request->all()["user"], null);
+        $user = $request->request->all()["user"];
+        if(empty($user["id"])) {
+            $api->post($this->get("_router")->generate("api_post_admin_user"), $user);
+        } else {
+            $api->put($this->get("_router")->generate("api_put_admin_user"), $user);
+        }
         $request->getSession()
             ->getFlashBag()
             ->add('success', "The user is well created.");
         return $this->redirectToRoute('users_admin');
     }
-    /**
-     * @Route("/users/admin/put", name="users_admin_put")
-     */
-    public function putAction(Request $request)
-    {
-        $api = $this->container->get('winefing.api_controller');
-        $api->put("http://104.47.146.137/winefing/web/app_dev.php/api/admin/user", $request->request->all()["user"]);
-        $request->getSession()
-            ->getFlashBag()
-            ->add('success', "The user is well modified.");
-        //return new Response();
-        return $this->redirectToRoute('users_admin');
-    }
-
     /**
      * @Route("user/admin/delete/{id}", name="user_admin_delete")
      */
@@ -109,8 +95,8 @@ class AdminUserController extends Controller
                 ->add('error', "You can't delete this user because he wrote some articles. Put this user desabled.");
             return $this->redirectToRoute('users_admin');
         }
-        $client = new Client();
-        $client->request('DELETE', 'http://104.47.146.137/winefing/web/app_dev.php/api/admins/'.$id.'/user');
+        $api = $this->container->get('winefing.api_controller');
+        $api->delete($this->get("_router")->generate("api_post_admin_user", array("id" => $id)), $request->request->all()["user"]);
         $request->getSession()
             ->getFlashBag()
             ->add('success', "The user is well deleted.");
@@ -122,7 +108,7 @@ class AdminUserController extends Controller
      */
     public function putActivatedAction(Request $request) {
         $api = $this->container->get('winefing.api_controller');
-        $api->put('http://104.47.146.137/winefing/web/app_dev.php/api/admin/user/activated', $request->request->all());
+        $api->put($this->get("_router")->generate("api_put_admin_user_activated"), $request->request->all());
         return new Response(json_encode([200, "success"]));
     }
 

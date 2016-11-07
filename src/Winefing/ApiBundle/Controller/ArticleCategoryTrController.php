@@ -37,7 +37,7 @@ class ArticleCategoryTrController extends Controller implements ClassResourceInt
         $articleCategoryTr = new ArticleCategoryTr();
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
         $articleCategoryTr->setLanguage($repository->findOneById($request->request->get("language")));
-        $articleCategoryTr->setName($request->request->get("name"));
+        $articleCategoryTr->setName(ucfirst($request->request->get("name")));
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:ArticleCategory');
         $articleCategoryTr->setArticleCategory($repository->findOneById($request->request->get("articleCategory")));
         $validator = $this->get('validator');
@@ -63,7 +63,7 @@ class ArticleCategoryTrController extends Controller implements ClassResourceInt
         $em = $this->getDoctrine()->getManager();
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:ArticleCategoryTr');
         $articleCategoryTr = $repository->findOneById($request->request->get('id'));
-        $articleCategoryTr->setName($request->request->get("name"));
+        $articleCategoryTr->setName(ucfirst($request->request->get("name")));
         $validator = $this->get('validator');
         $errors = $validator->validate($articleCategoryTr);
         if (count($errors) > 0) {

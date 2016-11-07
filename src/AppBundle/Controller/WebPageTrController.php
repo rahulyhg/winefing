@@ -57,10 +57,6 @@ class WebPageTrController extends Controller
         $form = $this->createForm(WebPageTrType::class, $webPageTr, array(
             'action' => $this->generateUrl('webPageTr_submit'),
             'method' => 'POST'));
-//        $form->get('language')->setData($language);
-//        var_dump($languageId);
-
-
         return $this->render('admin/webPage/form.html.twig', array(
             'form' => $form->createView()
         ));

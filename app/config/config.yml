@@ -11,12 +11,12 @@ parameters:
     language_directory_upload: '%kernel.root_dir%/../web/Resources/pictures/language/'
     characteristic_category_directory_upload: '%kernel.root_dir%/../web/Resources/pictures/characteristicCategory/'
     characteristic_directory_upload: '%kernel.root_dir%/../web/Resources/pictures/characteristic/'
-    article_directory_upload: '%kernel.root_dir%/../web/Resources/pictures/characteristic/'
+    article_directory_upload: '%kernel.root_dir%/../web/Resources/pictures/article/'
 
     language_directory: 'winefing/web/Resources/pictures/language/'
     characteristic_category_directory: 'winefing/web/Resources/pictures/characteristicCategory/'
     characteristic_directory: 'winefing/web/Resources/pictures/characteristic/'
-    article_directory: 'winefing/web/Resources/pictures/characteristic/'
+    article_directory: 'winefing/web/Resources/pictures/article/'
     mail_chimp_token: '82eeea1796fe25cf7d185ec3ce2af340-us14'
     mail_chimp_url: 'https://us14.api.mailchimp.com/export/1.0/'
 
@@ -110,7 +110,22 @@ assetic:
     use_controller: '%kernel.debug%'
     filters:
         cssrewrite: ~
-
+    assets:
+        bootstrap_css:
+            inputs:
+                - 'assets/vendor/bootstrap/dist/css/*'
+        arillo_css:
+            inputs:
+                - 'bundles/app/css/*'
+        bootstrap_js:
+            inputs:
+                - 'assets/vendor/bootstrap/dist/js/*'
+        arillo_js:
+            inputs:
+                - 'bundles/app/js/*'
+        jquery:
+            inputs:
+                - 'assets/vendor/jquery/dist/*'
 
 nelmio_cors:
    defaults:

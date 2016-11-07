@@ -95,16 +95,13 @@ class ArticleCategoryController extends Controller
             if(empty($articleCategoryTr["id"])) {
                 $articleCategoryTr["articleCategory"] = $articleCategory["id"];
                 $api->post($this->get('router')->generate('api_post_articlecategory_tr'), $articleCategoryTr);
-                $request->getSession()
-                    ->getFlashBag()
-                    ->add('success', "The article's category is well created.");
             } else {
                 $api->put($this->get('router')->generate('api_put_articlecategory_tr'), $articleCategoryTr);
-                $request->getSession()
-                    ->getFlashBag()
-                    ->add('success', "The article's category is well modified.");
             }
         }
+        $request->getSession()
+            ->getFlashBag()
+            ->add('success', "The article's category is well created/modified.");
         return $this->redirectToRoute('articleCategory');
     }
     /**

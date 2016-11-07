@@ -35,9 +35,7 @@ class AdminUserController extends Controller implements ClassResourceInterface
      */
     public function cgetAction()
     {
-        $encoders = array(new JsonEncoder());
-        $normalizers = array(new ObjectNormalizer());
-        $serializer = new Serializer($normalizers, $encoders);
+        $serializer = $this->container->get("winefing.serializer_controller");
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
         $users = $repository->findAdmin();
         foreach($users as $user) {
@@ -49,7 +47,7 @@ class AdminUserController extends Controller implements ClassResourceInterface
                 $user->setDeleted(false);
             }
         }
-        $json = $serializer->serialize($users, 'json');
+        $json = $serializer->serialize($users);
         return new Response($json);
     }
     /**
@@ -60,11 +58,11 @@ class AdminUserController extends Controller implements ClassResourceInterface
     public function postAction(Request $request)
     {
         $userManager = $this->get('fos_user.user_manager');
+        $serializer = $this->container->get("winefing.serializer_controller");
         $user = $userManager->findUserByEmail($request->request->get('email'));
-        var_dump($request->request->all());
         if(!empty($user)) {
             $api = $this->container->get('winefing.api_controller');
-            return $api->put("http://104.47.146.137/winefing/web/app_dev.php/api/admin/user", $request->request->all());
+            return  $api->put($this->get("_router")->generate("api_put_admin_user"), $request->request->all());
         }
         $user = $userManager->createUser();
         $user->setFirstName($request->request->get('firstName'));
@@ -85,7 +83,7 @@ class AdminUserController extends Controller implements ClassResourceInterface
         } else {
             $userManager->updateUser($user);
         }
-        return new Response(json_encode([200, "The user is well created."]));
+        return new Response($serializer->serialize($user));
     }
 
     /**
@@ -115,6 +113,36 @@ class AdminUserController extends Controller implements ClassResourceInterface
             $userManager->updateUser($user);
         }
         return new Response(json_encode([200, "The user is well modified."]));
+    }
+    public function postHostAction(Request $request)
+    {
+        $userManager = $this->get('fos_user.user_manager');
+        $em = $this->getDoctrine()->getManager();
+        $serializer = $this->container->get("winefing.serializer_controller");
+        $user = $userManager->findUserByEmail($request->request->get('email'));
+        if(!empty($user)) {
+            throw new HttpException(400, "there is already an user with this mail.");
+        }
+        $user = $userManager->createUser();
+        $user->setFirstName($request->request->get('firstName'));
+        $user->setLastName($request->request->get('lastName'));
+        $user->setPhoneNumber($request->request->get('phoneNumber'));
+        $user->setEmail($request->request->get('email'));
+        $user->setUserName($request->request->get('email'));
+        $user->setVerify(1);
+        $roles[] = UserGroupEnum::Host;
+        $user->setRoles($roles);
+        $user->setEnabled(1);
+        $user->setPlainPassword("winefing");
+        $validator = $this->get('validator');
+        $errors = $validator->validate($user);
+        if (count($errors) > 0) {
+            $errorsString = (string) $errors;
+            throw new HttpException(400, $errorsString);
+        }
+        $em->persist($user);
+        $userManager->updateUser($user);
+        return new Response($serializer->serialize($user));
     }
 
     /**

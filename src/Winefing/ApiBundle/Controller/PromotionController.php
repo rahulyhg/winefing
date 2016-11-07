@@ -34,14 +34,12 @@ class PromotionController extends Controller implements ClassResourceInterface
      */
     public function cgetAction()
     {
-        $encoders = array(new JsonEncoder());
-        $normalizers = array(new ObjectNormalizer());
-        $serializer = new Serializer($normalizers, $encoders);
+        $serializer = $this->container->get("winefing.serializer_controller");
 
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Promotion');
         $promotions = $repository->findAll();
 
-        $json = $serializer->serialize($promotions, 'json');
+        $json = $serializer->serialize($promotions);
 
         return new Response($json);
     }

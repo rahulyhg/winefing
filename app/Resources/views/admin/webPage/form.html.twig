@@ -1,44 +1,43 @@
 {% extends 'admin/base.html.twig' %}
 {% block table %}
     <h4>Nouvel/Modifier une page web</h4>
-    {{ form_start(form, {'attr':{'id' : 'webPage'}}) }}
-    {{ form_errors(form) }}
-    <div>
-        <fieldset class="form-group" hidden>
-            {{ form_widget(form.webPage.id, {'id' : 'webPage'}) }}
+    {{ form_start(form,  { 'attr': {'required': 'true', 'id' : 'webPageTr'} }) }}
+        {{ form_errors(form) }}
+        <div>
+            <fieldset class="form-group" hidden>
+                {{ form_widget(form.webPage.id) }}
+            </fieldset>
+        </div>
+        <br>
+        {{ form_widget(form.id, {'attr': {'style': 'display: none'}}) }}
+        <div class="row">
+            <div class="col-md-4">
+                <fieldset class="form-group">
+                    {{ form_label(form.language) }}
+                    <br>
+                    {% if app.request.get('languageId') is empty  %}
+                        {{ form_widget(form.language, { 'attr': {'class': 'form-control'}}) }}
+                    {% else %}
+                        {{ form_widget(form.language, { 'attr': {'class': 'form-control', 'disabled': 'false'}}) }}
+                    {% endif %}
+                </fieldset>
+            </div>
+            <div class="col-md-8">
+                <fieldset class="form-group">
+                    {{ form_label(form.title) }}
+                    {{ form_widget(form.title,  { 'attr': {'class': 'form-control', 'style': 'width: 50%;'} }) }}
+                </fieldset>
+            </div>
+        </div>
+        {{ form_label(form.content) }}
+        {{ form_widget(form.content,  {'id': 'summernote'}) }}
+        <fieldset class="form-group" id="activated">
+            <input type='hidden' value='0' name='web_page_tr[activated]'>
+            {{ form_widget(form.activated,  { 'attr': {'data-toggle':"toggle", 'data-off':"Not activated", 'data-on':"Activated", 'data-onstyle':"success"} }) }}
         </fieldset>
-    </div>
-    <br>
-    {{ form_widget(form.id, {'attr': {'style': 'display: none'}}) }}
-    <div class="row">
-        <div class="col-md-4">
-            <fieldset class="form-group">
-                {{ form_label(form.language) }}
-                <br>
-                {% if app.request.get('languageId') is null  %}
-                    {{ form_widget(form.language, { 'attr': {'class': 'form-control'}}) }}
-                {% else %}
-                    {{ form_widget(form.language, { 'attr': {'class': 'form-control', 'disabled': 'false'}}) }}
-                {% endif %}
-            </fieldset>
-        </div>
-        <div class="col-md-8">
-            <fieldset class="form-group">
-                {{ form_label(form.title) }}
-                {{ form_widget(form.title,  { 'attr': {'class': 'form-control', 'style': 'width: 50%;'} }) }}
-            </fieldset>
-        </div>
-    </div>
-    {{ form_label(form.content) }}
-    {{ form_widget(form.content,  {'id': 'summernote'}) }}
-    <fieldset class="form-group" id="activated">
-        <input type='hidden' value='0' name='web_page_tr[activated]'>
-        {{ form_widget(form.activated,  { 'attr': {'data-toggle':"toggle", 'data-off':"Not activated", 'data-on':"Activated", 'data-onstyle':"success"} }) }}
-    </fieldset>
-    <a href="{{ path('web_pages') }}" type="button" class="btn btn-default" data-dismiss="modal">Retour</a>
-    <button type="submit" class="btn btn-primary">Valider</button>
-{% endblock %}
-{% block modal %}
+        <a href="{{ path('web_pages') }}" type="button" class="btn btn-default" data-dismiss="modal">Retour</a>
+        <button type="submit" class="btn btn-primary">Valider</button>
+    {{ form_end(form)}}
 {% endblock %}
 {% block script %}
     <script>
@@ -50,8 +49,9 @@
         });
     </script>
     <script>
-        $('#webPage').live('submit', function (event) {
-            $("#webPage :disabled").removeAttr('disabled');
+        $('#webPageTr').submit(function (event) {
+            $("#webPageTr :disabled").removeAttr('disabled');
         });
     </script>
 {% endblock %}
+

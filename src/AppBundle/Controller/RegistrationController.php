@@ -22,7 +22,10 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use FOS\UserBundle\Doctrine\UserManagerInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
-use AppBundle\Entity\Property;
+use AppBundle\Form\AddressType;
+use AppBundle\Form\DomainType;
+use Winefing\ApiBundle\Entity\Address;
+use Winefing\ApiBundle\Entity\Domain;
 
 class RegistrationController extends Controller
 {
@@ -39,46 +42,31 @@ class RegistrationController extends Controller
      */
     public function host()
     {
-        return $this->render('registration/host.html.twig');
+        $addressForm = $this->createForm(AddressType::class, new Address());
+        $domainForm = $this->createForm(DomainType::class, new Domain());
+        return $this->render('host/registration.html.twig', array(
+            'addressForm' => $addressForm->createView(), 'domainForm' => $domainForm->createView()
+        ));
     }
 
     /**
-     * @Route("/registration/addHost", name="host_registration_add")
+     * @Route("/host/submit", name="host_submit")
      * @Method({"POST"})
      */
-    public function addHost(Request $request)
+    public function submitAction(Request $request)
     {
-        var_dump($request->request->all());
-        $session = new Session();
-        $userManager = $this->get('fos_user.user_manager');
-        $email = $request->request->get('email');
-        $user = $userManager->findUserByEmail($email);
-        $code = 200;
-
-        if(!empty($user)) {
-            $repository = $this->getDoctrine()->getRepository('AppBundle:Property');
-            $property = $repository->findOneByUser($user);
-            if(!empty($property)) {
-                $errors = json_encode(array('message' => 'Déjà ce mail'));
-                $code = 419;
-            } else {
-                $session->set('user', $user);
-            }
-        } else {
-            $newUser = $userManager->createUser();
-            $newUser->setFirstName($request->request->get('firstName'));
-            $newUser->setLastName($request->request->get('lastName'));
-            $newUser->setPhoneNumber($request->request->get('phoneNumber'));
-            $newUser->setEmail($email);
-            $newUser->setUsername($email);
-            $newUser->setPlainPassword($request->request->get('password'));
-            $newUser->addRole('ROLE_HOST');
-            $userManager->updateUser($newUser);
-
-            $session->set('user', $newUser);
-
-        }
-        return new Response("lol", $code);
+        $serializer = $this->container->get('winefing.serializer_controller');
+        $api = $this->container->get('winefing.api_controller');
+        $response = $api->post($this->get('_router')->generate('api_post_admin_user_host'), $request->request->all()["user"]);
+        $user = $serializer->decode($response->getBody()->getContents());
+        $response = $api->post($this->get('_router')->generate('api_post_address'), $request->request->all()["address"]);
+        $address = $serializer->decode($response->getBody()->getContents());
+        $domain = $request->request->all()["domain"];
+        $domain["user"] = $user["id"];
+        $domain["address"] = $address["id"];
+        $response = $api->post($this->get('_router')->generate('api_post_domain'), $domain);
+        $domain = $serializer->decode($response->getBody()->getContents());
+        return new Response();
     }
 
     /**

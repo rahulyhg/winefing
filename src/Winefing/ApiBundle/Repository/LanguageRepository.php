@@ -9,13 +9,13 @@ namespace Winefing\ApiBundle\Repository;
  */
 class LanguageRepository extends \Doctrine\ORM\EntityRepository
 {
-    function findMissingLanguages($id) {
-        if(empty($id)) {
+    function findMissingLanguages($ids) {
+        if(empty($ids)) {
             $languages = $this->findAll();
         } else {
             $query = $this->createQueryBuilder('language')
                 ->where('language.id not in (:languages)')
-                ->setParameter('languages', array_values($id))
+                ->setParameter('languages', array_values($ids))
                 ->getQuery();
             $languages = $query->getResult();
         }

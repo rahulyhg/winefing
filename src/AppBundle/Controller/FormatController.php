@@ -27,19 +27,15 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 class FormatController extends Controller
 {
     /**
-     * @Route("/format", name="format")
+     * @Route("/formats", name="formats")
      */
     public function cgetAction() {
-        $client = new Client();
-        $response = $client->request('GET', 'http://104.47.146.137/winefing/web/app_dev.php/api/formats', []);
-        $formatsJson = $response->getBody()->getContents();
-
-        $encoders = array(new JsonEncoder());
-        $normalizers = array(new ObjectNormalizer());
-        $serializer = new Serializer($normalizers, $encoders);
-        $formats = $serializer->decode($formatsJson, 'json');
+        $api = $this->container->get('winefing.api_controller');
+        $serializer = $this->container->get('winefing.serializer_controller');
+        $response = $api->get($this->get('router')->generate('api_get_formats'));
+        $formats = $serializer->decode($response->getBody()->getContents());
         return $this->render('admin/format/index.html.twig', array(
-            'formats' => $formats, 'entity' => 'format', 'preposition' => 'ce'
+            'formats' => $formats, 'entity' => 'format'
         ));
     }
     /**
@@ -65,6 +61,7 @@ class FormatController extends Controller
      */
     public function postAction(Request $request)
     {
+        $api = $this->container->get('winefing.api_controller');
         if(empty($request->request->all()["format"]["name"])) {
             $request->getSession()
                 ->getFlashBag()
@@ -78,12 +75,11 @@ class FormatController extends Controller
                 ->add('error', "A format with this name already exist.");
             return $this->redirectToRoute('format');
         }
-        $api = $this->container->get('winefing.api_controller');
-        $api->post("http://104.47.146.137/winefing/web/app_dev.php/api/formats", $request->request->all()["format"], null);
+        $api->post($this->get('router')->generate('api_post_format'),  $request->request->all()["format"]);
         $request->getSession()
             ->getFlashBag()
             ->add('success', "The format is well created/modified.");
-        return $this->redirectToRoute('format');
+        return $this->redirectToRoute('formats');
     }
     /**
      * @Route("/format/put", name="format_put")
@@ -98,26 +94,19 @@ class FormatController extends Controller
         }
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Format');
         $format = $repository->findOneByName($request->request->all()["format"]['name']);
-        //var_dump($request->request->all()["format"]);
         if(!empty($format) && ($format->getId() != $request->request->all()["format"]["id"])) {
             $request->getSession()
                 ->getFlashBag()
                 ->add('error', "A format with this name already exist.");
-            return $this->redirectToRoute('format');
+            return $this->redirectToRoute('formats');
         }
         $api = $this->container->get('winefing.api_controller');
-/*        try {
-            $api->put("http://104.47.146.137/winefing/web/app_dev.php/api/formats", $request->request->all()["format"], $request->files->all()["format"]["picture"]);
-        } catch(\Exception $e) {
-            error_log($e->getMessage());
-        }*/
-
-        $api->put("http://104.47.146.137/winefing/web/app_dev.php/api/format", $request->request->all()["format"]);
+        $api->put($this->get('router')->generate('api_put_format'),  $request->request->all()["format"]);
 
         $request->getSession()
             ->getFlashBag()
             ->add('success', "The format is well created/modified.");
-        return $this->redirectToRoute('format');
+        return $this->redirectToRoute('formats');
     }
 
     /**
@@ -125,15 +114,11 @@ class FormatController extends Controller
      */
     public function deleteAction($id, Request $request)
     {
-        $client = new Client();
-        try {
-            $client->request('DELETE', 'http://104.47.146.137/winefing/web/app_dev.php/api/formats/'.$id);
-        } catch (\Exception $e) {
-            error_log($e->getMessage());
-        }
+        $api = $this->container->get('winefing.api_controller');
+        $api->delete($this->get("_router")->generate('api_delete_format', array('id' => $id)));
         $request->getSession()
             ->getFlashBag()
             ->add('success', "The format is well deleted.");
-        return $this->redirectToRoute('format');
+        return $this->redirectToRoute('formats');
     }
 }

@@ -111,4 +111,13 @@ class CharacteristicController extends Controller
         return $this->redirectToRoute('characteristics_categories', ['scopeName' => $scopeName]);
     }
 
+    /**
+     * @Route("/characteristic/activated/", name="characteristic_activated")
+     */
+    public function putActivatedAction(Request $request) {
+        $api = $this->container->get('winefing.api_controller');
+        $api->put($this->get('_router')->generate('api_put_characteristic_activated'), $request->request->all());
+        return new Response(json_encode([200, "success"]));
+    }
+
 }

@@ -4,8 +4,8 @@
         <thead>
         <tr>
             <th>
-                <button type="button" class="btn btn-default" onclick="loadForm('{{ url('promotion_new_form')}}', 'promotion')">
-                    <span class="glyphicon glyphicon-plus-sign"></span>
+                <button type="button" class="btn btn-default btn-circle btn-plus-admin" onclick="loadForm('{{ url('promotion_new_form')}}', 'promotion')">
+                    <i class="glyphicon glyphicon-plus glyphicon-plus-admin"></i>
                 </button>Code
             </th>
             <th>Montant</th>
@@ -46,7 +46,7 @@
                 </td>
                 <td>
                     <input type="button"  class="btn btn-primary" value="Editer" id="update" onclick="loadForm('{{ path('promotion_new_form', {'id' : promotion.id}) }}', 'promotion')"/>
-                    <input type="button" class="btn btn-primary" value="Supprimer" onclick="setPathDeleteButton('{{ path('promotion_delete', {'id' : promotion.id}) }}')"/>
+                    <input type="button" class="btn btn-danger" value="Supprimer" onclick="setPathDeleteButton('{{ path('promotion_delete', {'id' : promotion.id}) }}')"/>
                 </td>
             </tr>
         {% endfor %}

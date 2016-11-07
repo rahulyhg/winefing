@@ -4,7 +4,9 @@
             <thead>
             <tr>
                 <th>
-                    &nbsp;<a href="{{ path('articleTr_new_form') }}" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span></a>
+                    <a type="button" class="btn btn-default btn-circle btn-plus-admin" href="{{ path('articleTr_new_form') }}" >
+                        <i class="glyphicon glyphicon-plus glyphicon-plus-admin"></i>
+                    </a>
                     Article
                 </th>
                 <th>Autheur</th>
@@ -15,7 +17,7 @@
             {% for article in articles %}
                 <tr>
                     <td data-toggle="collapse" data-target="#article-{{ article.id }}" class="accordion-toggle" style="cursor:pointer">
-                        {{ article.title }}
+                        {{ article.articleTrs[0].title }}
                     </td>
                     <td data-toggle="collapse" data-target="#article-{{ article.id }}" class="accordion-toggle" style="cursor:pointer">
                     {{ article.user.fullName }}
@@ -23,7 +25,7 @@
                     <td>
                         {% set length = article.articleCategories|length %}
                         {% for category in article.articleCategories %}
-                            {{ category.description }}
+                            {{ category.title }}
                             {% if loop.index < length %}
                                 <span>, </span>
                             {% endif %}
@@ -47,7 +49,7 @@
                                     </td>
                                     <td>
                                         <a href="{{ path('articleTr_new_form', {'id':articleTr.id, 'articleId' : article.id}) }}" class="btn btn-primary">Editer</a>
-                                        <input type="button" class="btn btn-primary" value="Supprimer" onclick="setPathDeleteButton('{{ path('articleTr_delete', {'id' : articleTr.id}) }}')"/>
+                                        <input type="button" class="btn btn-danger" value="Supprimer" onclick="setPathDeleteButton('{{ path('articleTr_delete', {'id' : articleTr.id}) }}')"/>
                                         {% if articleTr.activated == 1 %}
                                             {% set checked = 'checked' %}
                                         {% else %}

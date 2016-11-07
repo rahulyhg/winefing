@@ -8,25 +8,25 @@
             {{ form_widget(form.article.id, {'id' : 'article'}) }}
         </fieldset>
         <div class="row">
+
+
             <div class="col-md-3">
-                <fieldset class="form-group">
-                    {{ form_label(form.article.user) }}
-                    <br>
-                    {{ form_widget(form.article.user, { 'attr': {'class': 'selectpicker'}}) }}
-                </fieldset>
+                {{ form_label(form.article.user) }}
+                <br>
+                {{ form_widget(form.article.user, { 'attr': {'class': 'selectpicker', 'data-dropup-auto':"false"}}) }}
             </div>
             <div class="col-md-3">
                 <fieldset class="form-group">
                     {{ form_label(form.article.articleCategories) }}
                     <br>
-                    {{ form_widget(form.article.articleCategories, { 'attr': {'class': 'selectpicker'}}) }}
+                    {{ form_widget(form.article.articleCategories, { 'attr': {'class': 'selectpicker', 'data-dropup-auto':"false"}}) }}
                 </fieldset>
             </div>
             <div class="col-md-3">
                 <fieldset class="form-group">
                     {{ form_label(form.article.tags) }}
                     <br>
-                    {{ form_widget(form.article.tags, { 'attr': {'class': 'selectpicker'}}) }}
+                    {{ form_widget(form.article.tags, { 'attr': {'class': 'selectpicker', 'data-dropup-auto':"false"}}) }}
                 </fieldset>
             </div>
         </div>
@@ -42,10 +42,10 @@
             <fieldset class="form-group">
                 {{ form_label(form.language) }}
                 <br>
-                {% if app.request.get('languageId') is null  %}
-                    {{ form_widget(form.language, { 'attr': {'class': 'selectpicker'}}) }}
+                {% if app.request.get('languageId') is empty  %}
+                    {{ form_widget(form.language, { 'attr': {'class': 'selectpicker', 'data-dropup-auto':"false"}}) }}
                 {% else %}
-                    {{ form_widget(form.language, { 'attr': {'class': 'selectpicker', 'disabled': 'false'}}) }}
+                    {{ form_widget(form.language, { 'attr': {'class': 'selectpicker', 'data-dropup-auto':"false", 'disabled': 'false'}}) }}
                 {% endif %}
             </fieldset>
         </div>
@@ -78,11 +78,6 @@
                 height: 400,                 // set editor height
                 minHeight: null
             });
-        });
-    </script>
-    <script>
-        $('#articleTr').live('submit', function (event) {
-            $("#articleTr :disabled").removeAttr('disabled');
         });
     </script>
 {% endblock %}

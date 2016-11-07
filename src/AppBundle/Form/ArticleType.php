@@ -41,13 +41,13 @@ class ArticleType extends AbstractType
                         ->setParameter('managment', '%'.UserGroupEnum::Managment.'%');
                     }
                 ))
-            ->add('picture', FileType::class, ['required' => false])
+            ->add('picture', FileType::class, ['required' => false, 'data_class' => null])
             ->add('articleCategories', EntityType::class,  array(
                 'class' => 'WinefingApiBundle:ArticleCategory',
-                'choice_label' => 'description', 'multiple' =>true))
+                'choice_label' => 'title', 'multiple' =>true))
             ->add('tags', EntityType::class,  array(
                 'class' => 'WinefingApiBundle:Tag',
-                'choice_label' => 'id', 'multiple' =>true));
+                'choice_label' => 'title', 'multiple' =>true));
         ;
     }
     public function configureOptions(OptionsResolver $resolver)

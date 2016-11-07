@@ -1,55 +1,44 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <title>{% block title %}Winefing{% endblock %}</title>
-        {% stylesheets 'bundles/framework/css/*' filter='cssrewrite' %}
-            <link rel="stylesheet" href="{{ asset_url }}" />
-        {% endstylesheets %}
-        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
-        <meta name="description" content="arillo is responsive html real estate theme">
-        <meta name="author" content="a.carval">
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}Winefing{% endblock %}</title>
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="description" content="winefing">
+    <meta name="author" content="a.carval">
+    <link href='http://fonts.googleapis.com/css?family=Raleway:400,600,800' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.2/css/bootstrap-select.min.css">
 
-        <!-- Custom styles for this template -->
-        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
-        <link href='http://fonts.googleapis.com/css?family=Raleway:400,600,800' rel='stylesheet' type='text/css'>
+    {% stylesheets '@bootstrap_css''@arillo_css' filter='cssrewrite' %}
+    <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+    <link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.css" rel="stylesheet">
+    <!-- selectpicker -->
 
-        <!-- Bootstrap core JavaScript
-================================================== -->
-        <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
-        <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.12.4.min.js"></script>
 
-        <script src="{{ asset('bundles/framework/js/bootstrap.js') }}"></script>
+    <!-- selectpicker -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.2/js/bootstrap-select.min.js"></script>
+    <!-- START PLUGIN SUMMERNOTE -->
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.js"></script>
+    <!-- END PLUGIN SUMMERNOTE -->
+    <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
+    <!-- Menu Toggle Script -->
+    <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    {% javascripts 'bundles/app/js/custom.js' 'bundles/app/js/dropzone.js'%}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
 
-        <!-- PLUGIN SELECT -->
-        <!-- Latest compiled and minified CSS -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.2/css/bootstrap-select.min.css">
-
-        <!-- Latest compiled and minified JavaScript -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.2/js/bootstrap-select.min.js"></script>
-
-        <!-- START PLUGIN SUMMERNOTE -->
-        <!-- include summernote css/js-->
-        <link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.css" rel="stylesheet">
-        <script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.js"></script>
-        <!-- END PLUGIN SUMMERNOTE -->
-        <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
-
-
-        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-        <!--[if lt IE 9]-->
-        <script src="{{ asset('bundles/framework/js/html5shiv.js') }}"></script>
-        <script src="{{ asset('bundles/framework/js/respond.min.js') }}"></script>
-        <script src="{{ asset('bundles/framework/js/custom.js') }}"></script>
-        <!--[endif]-->
-
-    </head>
+</head>
 
     <body><!-- begin:navbar -->
         {% block nav %}
-            {{ include('navbar.html.twig') }}
+            {{ include('menu.html.twig') }}
         {% endblock %}
         <div class="container" style="margin-bottom: 40px; margin-top:40px">
             {% block body %}

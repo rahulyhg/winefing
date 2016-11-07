@@ -3,7 +3,7 @@
     <div class="container">
         <div id="wrapper">
             <!-- Sidebar -->
-            <div id="sidebar-wrapper" style="background:#fafafa">
+            <div id="sidebar-wrapper" style="background:#fafafa" class="scrollmenu">
                 {{ include('admin/navebar.html.twig') }}
             </div>
             <div id="page-content-wrapper">
@@ -37,9 +37,11 @@
     </div>
     {% block modal %}
         {{ include('admin/modal/delete.html.twig') }}
+        <span id="modalCreate">
+        </span>
     {% endblock modal %}
     <!-- Menu Toggle Script -->
-    <script>
+    <script  type="text/javascript">
         $("#menu-toggle").click(function(e) {
             e.preventDefault();
             $("#wrapper").toggleClass("toggled");

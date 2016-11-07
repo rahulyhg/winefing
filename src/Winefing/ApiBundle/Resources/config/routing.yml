@@ -53,11 +53,6 @@ promotion:
     resource: Winefing\ApiBundle\Controller\PromotionController
     name_prefix:  api_
 
-adminUser:
-    type: rest
-    resource: Winefing\ApiBundle\Controller\AdminUserController
-    name_prefix:  api_
-
 webPage:
     type: rest
     resource: Winefing\ApiBundle\Controller\WebPageController
@@ -102,3 +97,19 @@ subscriptionTr:
     type: rest
     resource: Winefing\ApiBundle\Controller\SubscriptionTrController
     name_prefix:  api_
+
+adminUser:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\AdminUserController
+    name_prefix:  api_
+
+address:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\AddressController
+    name_prefix:  api_
+
+domain:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\DomainController
+    name_prefix:  api_
+

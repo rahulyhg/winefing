@@ -2,6 +2,34 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" datatype="plaintext" original="file.ext">
         <body>
+            <trans-unit id="label_wine_region">
+                <source>label.wine_region</source>
+                <target>Wine region</target>
+            </trans-unit>
+            <trans-unit id="label_description">
+                <source>label.description</source>
+                <target>Description</target>
+            </trans-unit>
+            <trans-unit id="label_name">
+                <source>label.name</source>
+                <target>Name</target>
+            </trans-unit>
+            <trans-unit id="label_contact">
+                <source>label.contact</source>
+                <target>Contact</target>
+            </trans-unit>
+            <trans-unit id="label_the_domain">
+                <source>label.the_domain</source>
+                <target>The domain</target>
+            </trans-unit>
+            <trans-unit id="label_next">
+                <source>label.next</source>
+                <target>Next</target>
+            </trans-unit>
+            <trans-unit id="label_submit">
+                <source>label.submit</source>
+                <target>Submit</target>
+            </trans-unit>
             <trans-unit id="label_first_name">
                 <source>label.first_name</source>
                 <target>First Name</target>
@@ -9,6 +37,78 @@
             <trans-unit id="label_last_name">
                 <source>label.last_name</source>
                 <target>Last Name</target>
+            </trans-unit>
+            <trans-unit id="label_phone_number">
+                <source>label.phone_number</source>
+                <target>Phone number</target>
+            </trans-unit>
+            <trans-unit id="label_email">
+                <source>label.email</source>
+                <target>Email</target>
+            </trans-unit>
+            <trans-unit id="label_email_confirmation">
+                <source>label.email_confirmation</source>
+                <target>Confirm email</target>
+            </trans-unit>
+            <trans-unit id="label_password">
+                <source>label.password</source>
+                <target>Password</target>
+            </trans-unit>
+            <trans-unit id="label_confirmation_password">
+                <source>label.confirmation_password</source>
+                <target>Confirm password</target>
+            </trans-unit>
+            <trans-unit id="label_dashboard">
+                <source>label.dashboard</source>
+                <target>Dashboard</target>
+            </trans-unit>
+            <trans-unit id="label_my_domain">
+                <source>label.my_domain</source>
+                <target>My domain</target>
+            </trans-unit>
+            <trans-unit id="label_my_rentals">
+                <source>label.my_rentals</source>
+                <target>My rentals</target>
+            </trans-unit>
+            <trans-unit id="label_my_reservations">
+                <source>label.my_reservations</source>
+                <target>My reservations</target>
+            </trans-unit>
+            <trans-unit id="label_my_reviews">
+                <source>label.my_reviews</source>
+                <target>My reviews</target>
+            </trans-unit>
+            <trans-unit id="label_my_profil">
+                <source>label.my_profil</source>
+                <target>My profil</target>
+            </trans-unit>
+            <trans-unit id="label_pictures">
+                <source>label.pictures</source>
+                <target>Pictures</target>
+            </trans-unit>
+            <trans-unit id="label_address">
+                <source>label.address</source>
+                <target>Address</target>
+            </trans-unit>
+            <trans-unit id="label_informations">
+                <source>label.informations</source>
+                <target>Informations</target>
+            </trans-unit>
+            <trans-unit id="label_presentation">
+                <source>label.presentation</source>
+                <target>Presentation</target>
+            </trans-unit>
+            <trans-unit id="label_postal_code">
+                <source>label.postal_code</source>
+                <target>Postal code</target>
+            </trans-unit>
+            <trans-unit id="label_locality">
+                <source>label.locality</source>
+                <target>Ville</target>
+            </trans-unit>
+            <trans-unit id="label_country">
+                <source>label.country</source>
+                <target>Country</target>
             </trans-unit>
         </body>
     </file>

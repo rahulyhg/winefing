@@ -22,6 +22,24 @@ class Domain
     private $id;
 
     /**
+     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\WineRegion")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $wineRegion;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Address", inversedBy="domains")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $address;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\User", inversedBy="domains")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $user;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=60)
@@ -51,6 +69,10 @@ class Domain
     public function getId()
     {
         return $this->id;
+    }
+    public function setId($id) {
+        $this->id = $id;
+        return $this;
     }
 
     /**
@@ -124,5 +146,54 @@ class Domain
     {
         return $this->history;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getWineRegion()
+    {
+        return $this->wineRegion;
+    }
+
+    /**
+     * @param mixed $wineRegion
+     */
+    public function setWineRegion($wineRegion)
+    {
+        $this->wineRegion = $wineRegion;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAddress()
+    {
+        return $this->address;
+    }
+
+    /**
+     * @param mixed $address
+     */
+    public function setAddress($address)
+    {
+        $this->address = $address;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
+     * @param mixed $user
+     */
+    public function setUser($user)
+    {
+        $this->user = $user;
+    }
+
 }
 

@@ -34,7 +34,7 @@ class ArticleCategoryType extends AbstractType
             ->add('categoryPere', EntityType::class,  array(
                 'required' => false,
                 'class' => 'WinefingApiBundle:ArticleCategory',
-                'choice_label' => 'description',
+                'choice_label' => 'title',
                 'placeholder' => ''))
             ->add('articleCategoryTrs', CollectionType::class, array(
                 'entry_type' => ArticleCategoryTrType::class))

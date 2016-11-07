@@ -54,30 +54,23 @@ class CharacteristicCategoryController extends Controller
      * @Route("/characteristicCategory/newForm/{scopeName}/{id}", name="characteristicCategory_new_form")
      */
     public function newFormAction($scopeName, $id = '') {
-        if(empty($id)) {
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:CharacteristicCategory');
+        $characteristicCategory = $repository->findOneById($id);
+        if(empty($characteristicCategory)) {
             $characteristicCategory = new CharacteristicCategory();
-            $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
-            $languages = $repository->findAll();
-            foreach($languages as $language) {
-                $characteristicCategoryTr = new CharacteristicCategoryTr();
-                $characteristicCategoryTr->setLanguage($language);
-                $characteristicCategory->addCharacteristicCategoryTr($characteristicCategoryTr);
-            }
-        } else {
-            $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:CharacteristicCategory');
-            $characteristicCategory = $repository->findOneById($id);
-            $languagesId = array();
-            foreach ($characteristicCategory->getCharacteristicCategoryTrs() as $characteristicCategoryTr) {
-                $languagesId[] = $characteristicCategoryTr->getLanguage()->getId();
-            }
-            $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
-            $missingLanguages = $repository->findMissingLanguages($languagesId);
-            foreach($missingLanguages as $language) {
-                $characteristicCategoryTr = new CharacteristicCategoryTr();
-                $characteristicCategoryTr->setLanguage($language);
-                $characteristicCategory->addCharacteristicCategoryTr($characteristicCategoryTr);
-            }
         }
+        $languagesId = array();
+        foreach ($characteristicCategory->getCharacteristicCategoryTrs() as $characteristicCategoryTr) {
+            $languagesId[] = $characteristicCategoryTr->getLanguage()->getId();
+        }
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
+        $missingLanguages = $repository->findMissingLanguages($languagesId);
+        foreach($missingLanguages as $language) {
+            $characteristicCategoryTr = new CharacteristicCategoryTr();
+            $characteristicCategoryTr->setLanguage($language);
+            $characteristicCategory->addCharacteristicCategoryTr($characteristicCategoryTr);
+        }
+
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Scope');
         $characteristicCategory->setScope($repository->findOneByName($scopeName));
         $form = $this->createForm(CharacteristicCategoryType::class, $characteristicCategory, array(

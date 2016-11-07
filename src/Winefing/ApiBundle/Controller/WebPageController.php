@@ -45,11 +45,15 @@ class WebPageController extends Controller implements ClassResourceInterface
         $repositoryLanguage = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
 
         foreach ($webPages as $webPage) {
-            $title = $repositoryWebPageTr->findOneByWebPageIdAndLanguageCode($webPage->getId(), LanguageEnum::Français)[0]["title"];
-            if(empty($title)) {
-                $title = $repositoryWebPageTr->findOneByWebPageIdAndLanguageCode($webPage->getId(), LanguageEnum::English)[0]["title"];
+            $webPageFr = $repositoryWebPageTr->findOneByWebPageIdAndLanguageCode($webPage->getId(), LanguageEnum::Français);
+            if(!empty($webPageFr)) {
+                $webPage->setTitle($webPageFr[0]["title"]);
+            } else {
+                $webPageEn = $repositoryWebPageTr->findOneByWebPageIdAndLanguageCode($webPage->getId(), LanguageEnum::English);
+                if(!empty($webPageEn)) {
+                    $webPage->setTitle($webPageEn[0]["title"]);
+                }
             }
-            $webPage->setTitle($title);
             $languageId = array();
             foreach($webPage->getWebPageTrs() as $webPageTr) {
                 $languageId[] = $webPageTr->getLanguage()->getId();
@@ -57,7 +61,7 @@ class WebPageController extends Controller implements ClassResourceInterface
             $missingLanguages = $repositoryLanguage->findMissingLanguages($languageId);
             $webPage->setMissingLanguages(new ArrayCollection($missingLanguages));
         }
-        $json = $serializer->serialize($webPages, 'json');
+        $json = $serializer->serialize($webPages);
         return new Response($json);
     }
 

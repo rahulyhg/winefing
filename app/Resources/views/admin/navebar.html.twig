@@ -1,13 +1,5 @@
 <ul class="nav nav-pills nav-stacked" style="margin-top: 30px;">
-    {% if app.request.attributes.get('_route') == 'languages' %}
-        {% set classATechnical = '' %}
-        {% set classLiTechical = 'active' %}
-        {% set classDivTechical = 'in' %}
-    {% elseif app.request.attributes.get('_route') == 'formats' %}
-        {% set classATechnical = '' %}
-        {% set classLiTechical = 'active' %}
-        {% set classDivTechical = 'in' %}
-    {% elseif app.request.attributes.get('_route') == 'countries' %}
+    {% if app.request.attributes.get('_route') == 'languages' or app.request.attributes.get('_route') == 'formats' or app.request.attributes.get('_route') == 'countries' %}
         {% set classATechnical = '' %}
         {% set classLiTechical = 'active' %}
         {% set classDivTechical = 'in' %}
@@ -22,9 +14,9 @@
         </a>
         <div class="collapse {{ classDivTechical }}" id="techical">
             <ul class="nav nav-list admin-navbar-text-align">
-                <li class="{% if app.request.attributes.get('_route') == 'languages' %}active{% endif %}"><a class="active" href="{{ path('languages') }}">Langues</a></li>
-                <li class="{% if app.request.attributes.get('_route') == 'formats' %}active{% endif %}"><a class="active" href="{{ path('format') }}">Formats</a></li>
-                <li class="{% if app.request.attributes.get('_route') == 'countries' %}active{% endif %}"><a class="active" href="{{ path('countries') }}">Pays</a></li>
+                <li class="{% if app.request.attributes.get('_route') == 'languages' %}submenu-admin-active{% endif %}"><a class="active" href="{{ path('languages') }}">Langues</a></li>
+                <li class="{% if app.request.attributes.get('_route') == 'formats' %}submenu-admin-active{% endif %}"><a class="active" href="{{ path('formats') }}">Formats</a></li>
+                <li class="{% if app.request.attributes.get('_route') == 'countries' %}submenu-admin-active{% endif %}"><a class="active" href="{{ path('countries') }}">Pays</a></li>
             </ul>
         </div>
     </li>
@@ -43,9 +35,9 @@
         </a>
         <div class="collapse {{ classDivCharac }}" id="charac">
             <ul class="nav nav-list admin-navbar-text-align">
-                <li class=""><a href="{{ path('characteristics_categories', {'scopeName' : 'domain'}) }}">Domaine</a></li>
-                <li class=""><a href="{{ path('characteristics_categories', {'scopeName' : 'property'}) }}">Propriété</a></li>
-                <li class=""><a href="{{ path('characteristics_categories', {'scopeName' : 'rental'}) }}">Location</a></li>
+                <li class="{% if app.request.attributes.get('_route') == 'characteristics_categories' and app.request.get('scopeName') == 'domain'%}submenu-admin-active{% endif %}"><a href="{{ path('characteristics_categories', {'scopeName' : 'domain'}) }}">Domaine</a></li>
+                <li class="{% if app.request.attributes.get('_route') == 'characteristics_categories' and app.request.get('scopeName') == 'property' %}submenu-admin-active{% endif %}"><a href="{{ path('characteristics_categories', {'scopeName' : 'property'}) }}">Propriété</a></li>
+                <li class="{% if app.request.attributes.get('_route') == 'characteristics_categories' and app.request.get('scopeName') == 'rental' %}submenu-admin-active{% endif %}"><a href="{{ path('characteristics_categories', {'scopeName' : 'rental'}) }}">Location</a></li>
             </ul>
         </div>
     </li>
@@ -64,61 +56,43 @@
         </a>
         <div class="collapse {{ classDivUsers }}" id="users">
             <ul class="nav nav-list admin-navbar-text-align">
-                <li class=""><a href="{{ path('users_admin') }}">Admin</a></li>
+                <li class="{% if app.request.attributes.get('_route') == 'users_admin' %}submenu-admin-active{% endif %}"><a href="{{ path('users_admin') }}">Admin</a></li>
                 <li class=""><a href="#">Propriétaires</a></li>
             </ul>
         </div>
     </li>
-    {% if (app.request.attributes.get('_route') == 'tags')  %}
-        {% set classATags = '' %}
-        {% set classLiTags = 'active' %}
-        {% set classDivTags = 'in' %}
+    {% if (app.request.attributes.get('_route') == 'tags' or app.request.attributes.get('_route') == 'wine_regions' or app.request.attributes.get('_route') == 'subscriptions' or app.request.attributes.get('_route') == 'promotions' or app.request.attributes.get('_route') == 'web_pages')%}
+        {% set classAGestion = '' %}
+        {% set classLiGestion = 'active' %}
+        {% set classDivGestion = 'in' %}
     {% else %}
-        {% set classATags = '' %}
-        {% set classLiTags = '' %}
-        {% set classDivTags = '' %}
+        {% set classAGestion = 'collapsed' %}
+        {% set classLiGestion = '' %}
+        {% set classDivGestion = '' %}
     {% endif %}
-    <li class="{{ classLiTags }}">
-        <a href="{{ path('tags') }}" class="{{ classAUsers }}">
-            <span style="margin-right: 10px;" class="glyphicon glyphicon-pencil"></span>Tags<span></span>
+    <li class="{{ classLiGestion }}">
+        <a href="#" data-toggle="collapse" data-target="#gestion" data-parent="#sidenav01" class="{{ classAGestion }}">
+            <span style="margin-right: 10px;" class="glyphicon glyphicon-pencil"></span>Gestion site<span class="caret pull-right"></span>
         </a>
+        <div class="collapse {{ classDivGestion }}" id="gestion">
+            <ul class="nav nav-list admin-navbar-text-align">
+                <li class="{% if app.request.attributes.get('_route') == 'tags' %}submenu-admin-active{% endif %}"><a href="{{ path('tags') }}">Tags</a></li>
+                <li class="{% if app.request.attributes.get('_route') == 'wine_regions' %}submenu-admin-active{% endif %}"><a href="{{ path('wine_regions') }}">Régions viticoles</a></li>
+                <li class="{% if app.request.attributes.get('_route') == 'subscriptions' %}submenu-admin-active{% endif %}"><a href="{{ path('subscriptions') }}">Abonnements</a></li>
+                <li class="{% if app.request.attributes.get('_route') == 'promotions' %}submenu-admin-active{% endif %}"><a href="{{ path('promotions') }}">Promotions</a></li>
+                <li class="{% if app.request.attributes.get('_route') == 'web_pages' %}submenu-admin-active{% endif %}"><a href="{{ path('web_pages') }}">Web pages</a></li>
+            </ul>
+        </div>
     </li>
-    {% if (app.request.attributes.get('_route') == 'wine_regions')  %}
-        {% set classAWineRegions = '' %}
-        {% set classLiWineRegions = 'active' %}
-        {% set classDivWineRegions = 'in' %}
-    {% else %}
-        {% set classAWineRegions = '' %}
-        {% set classLiWineRegions = '' %}
-        {% set classDivWineRegions = '' %}
-    {% endif %}
-    <li class="{{ classLiWineRegions }}">
-        <a href="{{ path('wine_regions') }}"><span style="margin-right: 10px;" class="glyphicon glyphicon-home"></span>Régions viticoles</a>
-    </li>
-    {% if (app.request.attributes.get('_route') == 'subscriptions') %}
-        {% set classLiSubscriptions = 'active' %}
-    {% else %}
-        {% set classLiSubscriptions = '' %}
-    {% endif %}
-    <li class="{{ classLiSubscriptions }}">
-        <a href="{{ path('subscriptions') }}"><span style="margin-right: 10px;" class="glyphicon glyphicon-envelope"></span>Abonnements</a>
-    {% if (app.request.attributes.get('_route') == 'promotions') %}
-        {% set classLiPromo = 'active' %}
-    {% else %}
-        {% set classLiPromo = '' %}
-    {% endif %}
-    <li class="{{ classLiPromo }}">
-        <a href="{{ path('promotions') }}"><span style="margin-right: 10px;" class="glyphicon glyphicon-euro"></span>Promotions</a>
-    </li>
-    {% if (app.request.attributes.get('_route') == 'web_pages') %}
-        {% set classLiWebPage = 'active' %}
-    {% else %}
-        {% set classLiWebPage = '' %}
-    {% endif %}
-    <li class="{{ classLiWebPage }}">
-        <a href="{{ path('web_pages') }}"><span style="margin-right: 10px;" class="glyphicon glyphicon-home"></span>Web page</a>
-    </li>
-    {% if (app.request.attributes.get('_route') == 'articleCategory') or (app.request.attributes.get('_route') == 'article') %}
+    {% if (app.request.attributes.get('_route') == 'articleCategory')%}
+        {% set classABlog = '' %}
+        {% set classLiBlog = 'active' %}
+        {% set classDivBlog = 'in' %}
+    {% elseif (app.request.attributes.get('_route') == 'articles')%}
+        {% set classABlog = '' %}
+        {% set classLiBlog = 'active' %}
+        {% set classDivBlog = 'in' %}
+    {% elseif (app.request.attributes.get('_route') == 'articleTr_new_form')%}
         {% set classABlog = '' %}
         {% set classLiBlog = 'active' %}
         {% set classDivBlog = 'in' %}
@@ -133,8 +107,8 @@
         </a>
         <div class="collapse {{ classDivBlog }}" id="blog">
             <ul class="nav nav-list admin-navbar-text-align">
-                <li class=""><a href="{{ path('articleCategory') }}">Catégories</a></li>
-                <li class=""><a href="{{ path('articles') }}">Articles</a></li>
+                <li class="{% if app.request.attributes.get('_route') == 'articleCategory' %}submenu-admin-active{% endif %}"><a href="{{ path('articleCategory') }}">Catégories</a></li>
+                <li class="{% if app.request.attributes.get('_route') == 'articles' or app.request.attributes.get('_route') == 'articleTr_new_form' %}submenu-admin-active{% endif %}"><a href="{{ path('articles') }}">Articles</a></li>
             </ul>
         </div>
     </li>

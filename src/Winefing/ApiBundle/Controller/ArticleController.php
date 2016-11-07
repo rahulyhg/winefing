@@ -15,6 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use Doctrine\ORM\EntityManager;
 use Winefing\ApiBundle\Entity\LanguageEnum;
+use Winefing\ApiBundle\Entity\MediaFormatEnum;
 use Winefing\ApiBundle\Entity\Article;
 use Winefing\ApiBundle\Entity\ArticleTr;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
@@ -43,11 +44,15 @@ class ArticleController extends Controller implements ClassResourceInterface
             }
             $missingLanguages = $repository->findMissingLanguages($languageId);
             $article->setMissingLanguages(new ArrayCollection($missingLanguages));
-            $title = $repositoryArticleTr->findTitleByArticleIdAndLanguageCode($article->getId(), LanguageEnum::Français);
-            if(empty($title)) {
-                $title = $repositoryArticleTr->findTitleByArticleIdAndLanguageCode($article->getId(), LanguageEnum::English);
+            $tradFr = $repositoryArticleTr->findOneByArticleIdLanguageId($article->getId(), LanguageEnum::Français);
+            if(!empty($tradFr)) {
+                $article->setTitle($tradFr[0]["title"]);
+            } else {
+                $tradEn = $repositoryArticleTr->findOneByArticleIdLanguageId($article->getId(), LanguageEnum::English);
+                if(!empty($tradEn)) {
+                    $article->setTitle($tradEn[0]["title"]);
+                }
             }
-            $article->setTitle($title);
         }
         $serializer = $this->container->get("winefing.serializer_controller");
         $json = $serializer->serialize($articles);
@@ -66,7 +71,18 @@ class ArticleController extends Controller implements ClassResourceInterface
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
         $user = $repository->findOneById($request->request->get('user'));
         $article->setUser($user);
-        $article->setDescription($request->request->get('description'));
+        $article->resetArticleCategories();
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:ArticleCategory');
+        $articleCategories = $request->request->get('articleCategories');
+        foreach($articleCategories as $articleCategory) {
+            $article->addArticleCategory($repository->findOneById($articleCategory));
+        }
+        $article->resetTags();
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Tag');
+        $tags = $request->request->get('tags');
+        foreach($tags as $tag) {
+            $article->addTag($repository->findOneById($tag));
+        }
         $validator = $this->get('validator');
         $errors = $validator->validate($article);
         if (count($errors) > 0) {
@@ -77,16 +93,6 @@ class ArticleController extends Controller implements ClassResourceInterface
         $em->flush();
         return new Response($serializer->serialize($article));
     }
-    public function putArticleCategory(Request $request) {
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Article');
-        $article = $repository->findOneById($request->request->get('article'));
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:ArticleCategory');
-        $articleCategory = $repository->findOneById($request->request->get('id'));
-        if($article->getArticleCategories()->contains($articleCategory)) {
-
-        }
-
-    }
     public function putAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
@@ -96,7 +102,18 @@ class ArticleController extends Controller implements ClassResourceInterface
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
         $user = $repository->findOneById($request->request->get('user'));
         $article->setUser($user);
-        $article->setDescription($request->request->get('description'));
+        $article->resetArticleCategories();
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:ArticleCategory');
+        $articleCategories = $request->request->get('articleCategories');
+        foreach($articleCategories as $articleCategory) {
+            $article->addArticleCategory($repository->findOneById($articleCategory));
+        }
+        $article->resetTags();
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Tag');
+        $tags = $request->request->get('tags');
+        foreach($tags as $tag) {
+            $article->addTag($repository->findOneById($tag));
+        }
         $validator = $this->get('validator');
         $errors = $validator->validate($article);
         if (count($errors) > 0) {
@@ -130,6 +147,7 @@ class ArticleController extends Controller implements ClassResourceInterface
             $this->getParameter('article_directory_upload'),
             $fileName
         );
+        $article->setPicture($fileName);
         $em->persist($article);
         $em->flush();
         return new Response($serializer->serialize($article));
@@ -137,7 +155,7 @@ class ArticleController extends Controller implements ClassResourceInterface
 
     public function deleteAction($id)
     {
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Characteristic');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Article');
         $article = $repository->findOneById($id);
         $em = $this->getDoctrine()->getManager();
         if(!empty($article->getArtileTrs())) {

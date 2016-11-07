@@ -109,4 +109,13 @@ class SubscriptionController extends Controller
             ->add('success', "The subscription is well created/modified.");
         return $this->redirectToRoute('subscriptions');
     }
+
+    /**
+     * @Route("/subscription/activated/", name="subscription_activated")
+     */
+    public function putActivatedAction(Request $request) {
+        $api = $this->container->get('winefing.api_controller');
+        $api->put($this->get('_router')->generate('api_put_subscription_activated'), $request->request->all());
+        return new Response(json_encode([200, "success"]));
+    }
 }

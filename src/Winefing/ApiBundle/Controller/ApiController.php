@@ -32,23 +32,13 @@ class ApiController {
     }
 
     public function post($uri, $params) {
-        foreach ($params as $key => $value) {
-            $body[] = [
-                'name' => $key,
-                'contents' => $value
-            ];
-        }
         $client = new Client();
-        return $client->request('POST',  $this->getUrl($uri), ['form_params' => $params]);
+        return $client->request('POST',  $this->getUrl($uri), ['json' => $params]);
     }
 
     public function put($uri, $params){
-        $body = [];
-        foreach ($params as $key => $value){
-            $body[$key] = $value;
-        }
         $client = new Client();
-        return $client->request('PUT', $this->getUrl($uri), ['form_params' => $body]);
+        return $client->request('PUT', $this->getUrl($uri), ['json' => $params]);
     }
 
     public function get($uri){

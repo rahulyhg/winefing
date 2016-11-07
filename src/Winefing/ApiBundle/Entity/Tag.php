@@ -33,7 +33,7 @@ class Tag
      */
     private $articles;
 
-//    private $title;
+    private $title;
 
 
     /**
@@ -64,14 +64,14 @@ class Tag
         return $this->tagTrs;
     }
 
-//    public function getTitle(){
-//        foreach($this->getTagTrs() as $tagTr) {
-//            if ($tagTr->getLanguage()->getCode() == LanguageEnum::Français) {
-//                $this->title = $tagTr->getName();
-//                break;
-//            }
-//        }
-//        return $this->title;
-//    }
+    public function getTitle(){
+        foreach($this->getTagTrs() as $tagTr) {
+            if ($tagTr->getLanguage()->getCode() == LanguageEnum::Français) {
+                $this->title = $tagTr->getName();
+                break;
+            }
+        }
+        return $this->title;
+    }
 }
 

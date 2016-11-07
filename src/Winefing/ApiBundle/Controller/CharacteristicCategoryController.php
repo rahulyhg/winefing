@@ -142,6 +142,11 @@ class CharacteristicCategoryController extends Controller implements ClassResour
         if(count($characteristicCategory->getCharacteristics()) > 0) {
             throw new BadRequestHttpException("You can't delete this category because some characteristics are present.");
         } else {
+            if (!empty($characteristicCategory->getPicture())) {
+                if(!unlink($this->getParameter('characteristic_category_directory_upload') . $characteristicCategory->getPicture())) {
+                    throw new HttpException("Problem on server to delete the picture.");
+                }
+            }
             $em = $this->getDoctrine()->getManager();
             $em->remove($characteristicCategory);
             $em->flush();

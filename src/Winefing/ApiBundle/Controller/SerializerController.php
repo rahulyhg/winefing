@@ -19,7 +19,7 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 class SerializerController {
 
-    public function serialize($obj) {
+    public function serialize($obj, $format = 'json') {
         $encoder = new JsonEncoder();
         $normalizer = new ObjectNormalizer();
 
@@ -27,28 +27,28 @@ class SerializerController {
             return $object->getId();
         });
         $serializer = new Serializer(array($normalizer), array($encoder));
-        $json = $serializer->serialize($obj, 'json');
+        $json = $serializer->serialize($obj, $format);
         return $json;
     }
 
-    public function decode($json){
+    public function decode($json, $format = 'json'){
         $encoder = new JsonEncoder();
         $normalizer = new ObjectNormalizer();
         $normalizer->setCircularReferenceHandler(function ($object) {
             return $object->getId();
         });
         $serializer = new Serializer(array($normalizer), array($encoder));
-        $array = $serializer->decode($json, 'json');
+        $array = $serializer->decode($json, $format);
         return $array;
     }
-    public function deserialize($json, $pathToClass){
+    public function deserialize($json, $pathToClass, $format = 'json'){
         $encoder = new JsonEncoder();
         $normalizer = new ObjectNormalizer();
         $normalizer->setCircularReferenceHandler(function ($object) {
             return $object->getId();
         });
         $serializer = new Serializer(array($normalizer), array($encoder));
-        $object = $serializer->deserialize($json, $pathToClass, 'json');
+        $object = $serializer->deserialize($json, $pathToClass, $format);
         return $object;
 
     }

@@ -4,12 +4,11 @@
         <thead>
         <tr>
             <th>
-                <button type="button" class="btn btn-default" onclick="loadForm('{{ url('characteristicCategory_new_form', {'scopeName' : scopeName }) }}', 'characteristicCategory')">
-                    <span class="glyphicon glyphicon-plus-sign"></span>
-                </button>
-                Catégorie
+                <button type="button" class="btn btn-default btn-circle btn-plus-admin" onclick="loadForm('{{ url('characteristicCategory_new_form', {'scopeName' : scopeName }) }}', 'characteristicCategory')">
+                    <i class="glyphicon glyphicon-plus glyphicon-plus-admin"></i>
+                </button>Catégorie
             </th>
-            <th>Photo</th>
+            <th>Icon</th>
             <th>Admin description</th>
             <th>Action</th>
         </tr>
@@ -36,7 +35,7 @@
                 </td>
                 <td>
                     {% if characteristicCategory.characteristics is empty %}
-                        <input type="button" class="btn btn-primary" value="Supprimer" onclick="setPathDeleteButton('{{ path('characteristicCategory_delete', {'scopeName':scopeName, 'id' : characteristicCategory.id, 'scopeName' : scopeName }) }}')"/>
+                        <input type="button" class="btn btn-danger" value="Supprimer" onclick="setPathDeleteButton('{{ path('characteristicCategory_delete', {'scopeName':scopeName, 'id' : characteristicCategory.id, 'scopeName' : scopeName }) }}')"/>
                     {% else %}
                         {% if characteristicCategory.activated == 1 %}
                             {% set checked = 'checked' %}
@@ -73,7 +72,13 @@
                                     </td>
                                     <td>
                                         <input type="button"  class="btn btn-primary" value="Editer" id="update" onclick="loadForm('{{ path('characteristic_new_form', {'characteristicCategoryId' : characteristicCategory.id, 'scopeName': scopeName, 'id' : characteristic.id}) }}', 'characteristic')"/>
-                                        <input type="button" class="btn btn-primary" value="Suprimer" onclick="setPathDeleteButton('{{ path('characteristic_delete', {'id' : characteristic.id, 'scopeName': scopeName}) }}')"/>
+                                        <input type="button" class="btn btn-danger" value="Supprimer" onclick="setPathDeleteButton('{{ path('characteristic_delete', {'id' : characteristic.id, 'scopeName': scopeName}) }}')"/>
+                                        {% if characteristic.activated == 1 %}
+                                            {% set checked = 'checked' %}
+                                        {% else %}
+                                            {% set checked = '' %}
+                                        {% endif %}
+                                        <input {{ checked }} onchange="activate('{{ path('characteristic_activated') }}', 'characteristicActivatedToggle', '{{ characteristic.id }}')" id="characteristicActivatedToggle-{{ characteristic.id }}" type="checkbox" value="{{ characteristic.id }}" data-toggle="toggle" data-off="Not activated" data-on="Activated" data-width="126"  data-onstyle="success">
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -91,80 +96,4 @@
         {% endfor %}
         </tbody>
     </table>
-{% endblock %}
-{% block modal %}
-    <span id="modalDelete">
-        <div class="modal fade" tabindex="-1" role="dialog" id="confirmation">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">Suppression</h4>
-                    </div>
-                    <div class="modal-body">
-                        <p>Etes-vous sur de vouloir supprimer cet élément ?</p>
-                    </div><!-- /.modal-content -->
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-                        <a id="delete" type="submit" class="btn btn-primary pull-right">Valider</a>
-                    </div>
-                </div><!-- /.modal-dialog -->
-            </div><!-- /.modal -->
-        </div>
-    </span>
-    <span id="modalCreate">
-    </span>
-{% endblock %}
-{% block script %}
-    <script>
-        function setPathDeleteButton(path) {
-            $("#delete").attr("href", path);
-            $('#confirmation').modal();
-        }
-        function loadForm(path, modalId) {
-            $.ajax({
-                url:  path,
-                type: 'GET',
-                async: false,
-                success: function (data, textStatus, jqXHR) {
-                    $('#modalCreate').html(data);
-                    $('#'+modalId).modal();
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.log("no good");
-                }
-            });
-        }
-        function activate(path, checkBox, id){
-            var checkBoxId = checkBox+'-'+id;
-            if(document.getElementById(checkBoxId).checked){
-                activatedValue = 1;
-            } else {
-                activatedValue = 0;
-            }
-            $.ajax({
-                url:  path,
-                type: 'PUT',
-                data: {activated:activatedValue, id:id},
-                async: false,
-                success: function (data, textStatus, jqXHR) {
-                    console.log(data);
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.log("no good");
-                }
-            });
-        }
-        $('input[type="checkbox"]').live('change', function(){
-            this.value = (Number(this.checked));
-        });
-    </script>
-    <script>
-        $('#characteristicCategory').live('submit', function () {
-            $("#characteristicCategory :disabled").removeAttr('disabled');
-        });
-        $('#characteristic').live('submit', function (event) {
-            $("#characteristic :disabled").removeAttr('disabled');
-        });
-    </script>
 {% endblock %}

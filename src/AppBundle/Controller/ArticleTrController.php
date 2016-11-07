@@ -38,7 +38,7 @@ class ArticleTrController extends Controller
     /**
      * @Route("/articleTr/{id}/{articleId}/{languageId}", name="articleTr_new_form")
      */
-    public function newFormAction($id = '', $articleId ='', $languageId = '', Request $request) {
+    public function newFormAction($id = '', $articleId ='', $languageId = '') {
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:ArticleTr');
         $articleTr = $repository->findOneById($id);
         if(empty($articleTr)) {
@@ -51,7 +51,7 @@ class ArticleTrController extends Controller
         }
         if(!empty($languageId)) {
             $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
-            $language = $repository->findOneById($articleId);
+            $language = $repository->findOneById($languageId);
             $articleTr->setLanguage($language);
         }
         $form = $this->createForm(ArticleTrType::class, $articleTr, array('action' => $this->generateUrl('articleTr_submit'), 'method'=> 'POST'));
@@ -66,30 +66,29 @@ class ArticleTrController extends Controller
         $api = $this->container->get('winefing.api_controller');
         $serializer = $this->container->get("winefing.serializer_controller");
         $article = $request->request->all()["article_tr"]["article"];
-        if(empty($article)) {
+        if(empty($article["id"])) {
             $response = $api->post($this->get('router')->generate('api_post_article'), $article);
         } else {
-            $response = $api->post($this->get('router')->generate('api_post_article'), $article);
+            $response = $api->put($this->get('router')->generate('api_put_article'), $article);
         }
-        $article = $serializer->serialize($response->getBody()->getContents());
-        foreach($article["articlecategories"] as $articleCategory) {
-
-        }
+        $article = $serializer->decode($response->getBody()->getContents());
         $picture = $request->files->all()["article_tr"]["article"]["picture"];
+        $param["article"] = $article["id"];
         if(!empty($picture)) {
-            $api->file($this->get('router')->generate('api_post_article_file'), $articleId["id"] = $article["id"], $picture);
+            $api->file($this->get('router')->generate('api_post_article_file'), $param, $picture);
         }
         $articleTr = $request->request->all()["article_tr"];
+        unset($articleTr["article"]);
         $articleTr["article"] = $article["id"];
-        if(!empty($articleTr["id"])) {
-            $api->post($this->get('router')->generate('api_post_articlecategory_tr'), $articleTr);
+        if(empty($articleTr["id"])) {
+            $api->post($this->get('router')->generate('api_post_article_tr'), $articleTr);
         } else {
-            $api->put($this->get('router')->generate('api_put_articlecategory_tr'), $articleTr);
+            $api->put($this->get('router')->generate('api_put_article_tr'), $articleTr);
         }
         $request->getSession()
             ->getFlashBag()
             ->add('success', "The article is well created/modified.");
-        return $this->redirectToRoute('article');
+        return $this->redirectToRoute('articles');
     }
 
     /**
@@ -102,7 +101,7 @@ class ArticleTrController extends Controller
         $request->getSession()
             ->getFlashBag()
             ->add('success', "The article is well deleted.");
-        return $this->redirectToRoute('article');
+        return $this->redirectToRoute('articles');
     }
     /**
      * @Route("/activated/articleTr", name="articleTr_activated")

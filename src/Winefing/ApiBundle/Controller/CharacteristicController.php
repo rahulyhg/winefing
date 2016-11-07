@@ -133,4 +133,12 @@ class CharacteristicController extends Controller implements ClassResourceInterf
         $em->flush();
         return new Response(json_encode([200, "success"]));
     }
+    public function putActivatedAction(Request $request) {
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Characteristic');
+        $characteristicCategory = $repository->findOneById($request->request->get("id"));
+        $characteristicCategory->setActivated($request->request->get("activated"));
+        $em = $this->getDoctrine()->getManager();
+        $em->flush();
+        return new Response(json_encode([200, "success"]));
+    }
 }

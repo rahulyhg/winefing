@@ -1,0 +1,7 @@
+{% extends 'host/domain/base.html.twig' %}
+{% block domain %}
+    <form name="domain" id="name" method="post" action="{{ path('domain_pictures_submit') }}" enctype="multipart/form-data">
+        <input type="file" multiple name="pictures" id="pictures"/>
+        <input type="submit" value="submit">
+    </form>
+{% endblock %}

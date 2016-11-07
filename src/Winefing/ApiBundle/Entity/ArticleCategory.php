@@ -4,6 +4,7 @@ namespace Winefing\ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use Winefing\ApiBundle\Entity\LanguageEnum;
 
 /**
  * ArticleCategory
@@ -49,6 +50,8 @@ class ArticleCategory
     private $articleCategoryTrs;
 
     private $hierarchy;
+
+    private $title;
 
     /**
      * Get id
@@ -159,6 +162,14 @@ class ArticleCategory
         } while (!empty($this->getCategoryPere()));
 
         $this->hierarchy = $hierarchy;
+    }
+
+    public function getTitle() {
+        foreach($this->getArticleCategoryTrs() as $tr) {
+            if($tr->getLanguage()->getCode() == LanguageEnum::Français) {
+                return $tr->getName();
+            }
+        }
     }
 }
 

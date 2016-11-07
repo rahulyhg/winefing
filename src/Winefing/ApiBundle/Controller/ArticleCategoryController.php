@@ -71,6 +71,9 @@ class ArticleCategoryController extends Controller implements ClassResourceInter
         if(!empty($request->request->get('categoryPere'))){
             $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:ArticleCategory');
             $articleCategoryPere = $repository->findOneById($request->request->get('categoryPere'));
+            if($articleCategoryPere->getId() == $articleCategory->getId()) {
+                throw new BadRequestHttpException("The father category can't be the same has the current category.");
+            }
             $articleCategory->setCategoryPere($articleCategoryPere);
         } else {
             $articleCategory->setCategoryPere(NUll);
@@ -92,6 +95,9 @@ class ArticleCategoryController extends Controller implements ClassResourceInter
     {
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:ArticleCategory');
         $articleCategory = $repository->findOneById($id);
+        if(!empty($repository->findByCategoryPere($articleCategory))) {
+            throw new BadRequestHttpException("You can't delete this category because it's the Category father of others elements.");
+        }
         if(count($articleCategory->getArticles()) > 0) {
             throw new BadRequestHttpException("You can't delete this category because there is some article related.");
         } else {

@@ -1,0 +1,11 @@
+{% extends 'host/base.html.twig' %}
+{% block table %}
+    <div class="row">
+        <div class="col-md-3">
+            {{ include('host/domain/nav.html.twig') }}
+        </div>
+        <div class="col-md-9">
+            {{ include('host/address/form.html.twig') }}
+        </div>
+    </div>
+{% endblock %}

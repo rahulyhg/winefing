@@ -51,13 +51,6 @@ class Article extends Controller
     private $missingLanguages;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="description", type="string", length=255)
-     */
-    private $description;
-
-    /**
      *
      */
     private $title;
@@ -81,30 +74,6 @@ class Article extends Controller
     }
     public function setId($id){
         return $this->id = $id;
-    }
-
-    /**
-     * Set description
-     *
-     * @param string $description
-     *
-     * @return Article
-     */
-    public function setDescription($description)
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    /**
-     * Get description
-     *
-     * @return string
-     */
-    public function getDescription()
-    {
-        return $this->description;
     }
 
     /**
@@ -175,6 +144,10 @@ class Article extends Controller
     }
     public function resetArticleCategories() {
         $this->articleCategories->clear();
+        return $this;
+    }
+    public function resetTags() {
+        $this->tags->clear();
         return $this;
     }
     public function removeArticleTr(ArticleTr $articleTr)

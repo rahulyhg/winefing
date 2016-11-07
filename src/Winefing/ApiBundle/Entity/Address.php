@@ -29,6 +29,12 @@ class Address
     private $streetAddress;
 
     /**
+     * @var domains
+     * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\Domain", mappedBy="address")
+     */
+    private $domains;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="route", type="string", length=255, nullable=true)
@@ -38,7 +44,7 @@ class Address
     /**
      * @var string
      *
-     * @ORM\Column(name="political", type="string", length=255, unique=true)
+     * @ORM\Column(name="political", type="string", length=255, nullable=true)
      */
     private $political;
 
@@ -55,6 +61,13 @@ class Address
      * @ORM\Column(name="postalCode", type="string", length=255, nullable=true)
      */
     private $postalCode;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="locality", type="string", length=255, nullable=true)
+     */
+    private $locality;
 
     /**
      * @var float
@@ -82,7 +95,7 @@ class Address
      *
      * @ORM\Column(name="formatted_adAddress", type="string", length=255, nullable=true)
      */
-    private $formattedAdAddress;
+    private $formattedAddress;
 
 
     /**
@@ -288,27 +301,43 @@ class Address
     }
 
     /**
-     * Set formattedAdAddress
-     *
-     * @param string $formattedAdAddress
-     *
-     * @return Address
+     * @return string
      */
-    public function setFormattedAdAddress($formattedAdAddress)
+    public function getFormattedAddress()
     {
-        $this->formattedAdAddress = $formattedAdAddress;
-
-        return $this;
+        return $this->formattedAddress;
     }
 
     /**
-     * Get formattedAdAddress
-     *
+     * @param string $formattedAddress
+     */
+    public function setFormattedAddress($formattedAddress)
+    {
+        $this->formattedAddress = $formattedAddress;
+    }
+
+    /**
      * @return string
      */
-    public function getFormattedAdAddress()
+    public function getLocality()
     {
-        return $this->formattedAdAddress;
+        return $this->locality;
+    }
+
+    /**
+     * @param string $locality
+     */
+    public function setLocality($locality)
+    {
+        $this->locality = $locality;
+    }
+
+    /**
+     * @return CharacteristicCategoryTr
+     */
+    public function getDomains()
+    {
+        return $this->domains;
     }
 }
 

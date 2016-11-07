@@ -56,7 +56,7 @@ class TagTrController extends Controller implements ClassResourceInterface
 
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
         $tagTr->setLanguage($repository->findOneById($request->request->get("language")));
-        $tagTr->setName($request->request->get("name"));
+        $tagTr->setName(ucfirst($request->request->get("name")));
 
         $validator = $this->get('validator');
         $errors = $validator->validate($tagTr);
@@ -77,7 +77,7 @@ class TagTrController extends Controller implements ClassResourceInterface
         $em = $this->getDoctrine()->getManager();
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:TagTr');
         $tagTr = $repository->findOneById($request->request->get("id"));
-        $tagTr->setName($request->request->get("name"));
+        $tagTr->setName(ucfirst($request->request->get("name")));
 
         $validator = $this->get('validator');
         $errors = $validator->validate($tagTr);

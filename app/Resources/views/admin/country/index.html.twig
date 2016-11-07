@@ -4,8 +4,8 @@
         <thead>
         <tr>
             <th>
-                <button type="button" class="btn btn-default" onclick="loadForm('{{ url('country_new_form')}}', 'country')">
-                    <span class="glyphicon glyphicon-plus-sign"></span>
+                <button type="button" class="btn btn-default btn-circle btn-plus-admin" onclick="loadForm('{{ url('country_new_form')}}', 'country')">
+                    <i class="glyphicon glyphicon-plus glyphicon-plus-admin"></i>
                 </button> Pays
             </th>
             <th>Code</th>
@@ -19,7 +19,7 @@
                 <td>{{ country.code }}</td>
                 <td>
                     <input type="button"  class="btn btn-primary" value="Editer" id="update" onclick="loadForm('{{ path('country_new_form', {'id' : country.id}) }}', 'country')"/>
-                    <input type="button" class="btn btn-primary" value="Supprimer" onclick="setPathDeleteButton('{{ path('country_delete', {'id' : country.id}) }}')"/>
+                    <input type="button" class="btn btn-danger" value="Supprimer" onclick="setPathDeleteButton('{{ path('country_delete', {'id' : country.id}) }}')"/>
                 </td>
             </tr>
         {% endfor %}

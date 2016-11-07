@@ -34,14 +34,12 @@ class FormatController extends Controller implements ClassResourceInterface
      */
     public function cgetAction()
     {
-        $encoders = array(new JsonEncoder());
-        $normalizers = array(new ObjectNormalizer());
-        $serializer = new Serializer($normalizers, $encoders);
+        $serializer = $this->container->get('winefing.serializer_controller');
 
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Format');
         $formats = $repository->findAll();
 
-        $json = $serializer->serialize($formats, 'json');
+        $json = $serializer->serialize($formats);
 
         return new Response($json);
     }
@@ -103,6 +101,6 @@ class FormatController extends Controller implements ClassResourceInterface
         $em = $this->getDoctrine()->getManager();
         $em->remove($format);
         $em->flush();
-        return new Response(200, "success");
+        return new Response(json_encode(array(200 => "success")));
     }
 }
