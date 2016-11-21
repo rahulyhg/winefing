@@ -74,7 +74,7 @@ class AdminUserController extends Controller implements ClassResourceInterface
         $roles[] = $request->request->get('roles');
         $user->setRoles($roles);
         $user->setEnabled($request->request->get('enabled'));
-        $user->setPassword(0000);
+        $user->setPlainPassword(0000);
         $validator = $this->get('validator');
         $errors = $validator->validate($user);
         if (count($errors) > 0) {

@@ -3,6 +3,7 @@
 namespace Winefing\ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Domain
@@ -28,6 +29,18 @@ class Domain
     private $wineRegion;
 
     /**
+     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Media", inversedBy="domains", cascade={"persist", "merge", "detach"})
+     */
+    private $medias;
+
+    /**
+     * @var Properties
+     * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\Property", mappedBy="domain", fetch="EAGER", cascade="ALL")
+     */
+    private $properties;
+
+
+    /**
      * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Address", inversedBy="domains")
      * @ORM\JoinColumn(nullable=false)
      */
@@ -38,6 +51,11 @@ class Domain
      * @ORM\JoinColumn(nullable=false)
      */
     private $user;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\CharacteristicValue", inversedBy="domains")
+     */
+    private $characteristicValues;
 
     /**
      * @var string
@@ -59,6 +77,12 @@ class Domain
      * @ORM\Column(name="history", type="string", length=500, nullable=true)
      */
     private $history;
+
+    public function _construct() {
+        $this->medias = new ArrayCollection();
+        $this->characteristicValues = new ArrayCollection();
+        $this->properties = new ArrayCollection();
+    }
 
 
     /**
@@ -195,5 +219,41 @@ class Domain
         $this->user = $user;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getMedias()
+    {
+        return $this->medias;
+    }
+    public function addMedia(Media $media) {
+        $this->medias[] = $media;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getProperties()
+    {
+        return $this->properties;
+    }
+
+    public function addProperty(Property $property) {
+        $this->properties[] = $property;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCharacteristicValues()
+    {
+        return $this->characteristicValues;
+    }
+    public function addCharacteristicValue(CharacteristicValue $characteristicValue) {
+        $this->characteristicValues[] = $characteristicValue;
+        return $this;
+    }
 }
 

@@ -1,0 +1,15 @@
+<ul class="nav nav-pills nav-stacked" style="margin-top: 30px;">
+    {#{% if app.request.attributes.get('_route') == 'languages' or app.request.attributes.get('_route') == 'formats' or app.request.attributes.get('_route') == 'countries' %}#}
+        {#{% set classATechnical = '' %}#}
+        {#{% set classLiTechical = 'active' %}#}
+        {#{% set classDivTechical = 'in' %}#}
+    {#{% else %}#}
+        {#{% set classATechnical = 'collapsed' %}#}
+        {#{% set classLiTechical = '' %}#}
+        {#{% set classDivTechical = '' %}#}
+    {#{% endif %}#}
+    {#<li class="{% if app.request.attributes.get('_route') == 'domain_user' %}active{% endif %}"><a class="active" href="{{ path('domain_user') }}">{% trans %}label.presentation{% endtrans %} </a></li>#}
+    {#<li class="{% if app.request.attributes.get('_route') == 'domain_address' %}active{% endif %}"><a class="active" href="{{ path('domain_address') }}">{% trans %}label.address{% endtrans %} </a></li>#}
+    {#<li class="{% if app.request.attributes.get('_route') == 'domain_pictures' %}active{% endif %}"><a class="active" href="{{ path('domain_pictures') }}">{% trans %}label.pictures{% endtrans %} </a></li>#}
+    {#<li class="{% if app.request.attributes.get('_route') == 'languages' %}submenu-admin-active{% endif %}"><a class="active" href="{{ path('languages') }}">{% trans %}label.informations{% endtrans %} </a></li>#}
+</ul>

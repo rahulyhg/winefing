@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Repository;
+namespace Winefing\ApiBundle\Repository;
 
 /**
  * PropertyRepository
@@ -10,7 +10,4 @@ namespace AppBundle\Repository;
  */
 class PropertyRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function findPropertyByUserId($id) {
-
-    }
 }

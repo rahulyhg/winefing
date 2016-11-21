@@ -1,0 +1,26 @@
+{% extends 'host/base.html.twig' %}
+{% block table %}
+    <div class="row">
+        <div class="col-md-3">
+            {{ include('host/user/nav.html.twig') }}
+        </div>
+        <div class="col-md-9">
+            {% if app.session.flashBag.has('success') %}
+                <div class="alert alert-success">
+                    {% for msg in app.session.flashBag.get('success') %}
+                        {{ msg }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% if app.session.flashBag.has('error') %}
+                <div class="alert alert-danger">
+                    {% for msg in app.session.flashBag.get('error') %}
+                        {{ msg }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% block domain %}
+            {% endblock %}
+        </div>
+    </div>
+{% endblock %}

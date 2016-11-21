@@ -1,0 +1,153 @@
+{% extends 'host/base.html.twig' %}
+{% block table %}
+    <div class="row">
+        <div class="col-sm-3">
+            <ul class="nav nav-pills nav-stacked">
+                <li class="active"><a href="#edit-profil" data-toggle="tab">{% trans %}label.edit_profil{% endtrans %} </a></li>
+                <li><a href="#profil-picture" data-toggle="tab">{% trans %}label.profil_picture{% endtrans %} </a></li>
+                <li><a href="#edit-password" data-toggle="tab">{% trans %}label.edit_password{% endtrans %} </a></li>
+                <li><a href="#notifications" data-toggle="tab">{% trans %}label.notifications{% endtrans %} </a></li>
+            </ul>
+        </div>
+        <div class="col-sm-9">
+            <div class="tab-content">
+                {% if app.session.flashBag.has('success') %}
+                    <div class="alert alert-success">
+                        {% for msg in app.session.flashBag.get('success') %}
+                            {{ msg }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                {% if app.session.flashBag.has('error') %}
+                    <div class="alert alert-danger">
+                        {% for msg in app.session.flashBag.get('error') %}
+                            {{ msg }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <div class="tab-pane fade in active" id="edit-profil">
+                    <form name="user" method="post" action="{{ path('user_host_submit') }}">
+                        <div>
+                            <h4>Infos obligatoires</h4>
+                            <input name="id" value="{{ user.id }}" hidden>
+                            <div class="form-group">
+                                <label>{% trans %}label.first_name{% endtrans %}</label>
+                                <input name="firstName" class="form-control" value="{{ user.firstName }}">
+                            </div>
+                            <div class="form-group">
+                                <label>{% trans %}label.last_name{% endtrans %}</label>
+                                <input name="lastName" class="form-control" value="{{ user.lastName }}">
+                            </div>
+                            <div class="form-group">
+                                <label>{% trans %}label.sex{% endtrans %}</label>
+                                <select name="sex" class="form-control">
+                                    <option value="value1" selected></option>
+                                    <option value="M">{% trans %}label.male{% endtrans %}</option>
+                                    <option value="F">{% trans %}label.female{% endtrans %}</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>{% trans %}label.birth_date{% endtrans %}</label>
+                                <input type="date" name="birthDate" class="form-control" value="{{ user.birthDate }}">
+                            </div>
+                            <div class="form-group">
+                                <label>{% trans %}label.email{% endtrans %}</label>
+                                <input name="email" class="form-control" value="{{ user.email }}">
+                            </div>
+                            <div class="form-group">
+                                <label>{% trans %}label.phone_number{% endtrans %}</label>
+                                <input name="phoneNumber" class="form-control" value="{{ user.phoneNumber }}">
+                            </div>
+                        </div>
+                        <br>
+                        <div>
+                            <h4>Infos complémentaires</h4>
+                            <div class="form-group">
+                                <label>{% trans %}label.description{% endtrans %}</label>
+                                <textarea maxlength="500" style="height: 250px" name="description" class="form-control">{{ user.description }}</textarea>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary pull-right">{% trans %}label.submit{% endtrans %}</button>
+                    </form>
+                </div>
+                <div class="tab-pane fade in" id="profil-picture">
+                    {% if user.picture is null %}
+                        {% set picture = 'user.png' %}
+                    {% else %}
+                        {% set picture = user.picture %}
+                    {% endif %}
+                    <img src="{{ picturePath ~ picture}}" width="200px" height="auto">
+                    <br><br>
+                    <h4>{% trans %}label.edit_picture{% endtrans %} :</h4>
+                    <form name="picture" method="post" action="{{ path('host_picture_submit') }}" enctype='multipart/form-data'>
+                        <input name="user" value="{{ user.id }}" hidden readonly>
+                        <input name="picture" type="file" required>
+                        <button type="submit" class="btn btn-primary pull-right">{% trans %}label.submit{% endtrans %}</button>
+                    </form>
+                </div>
+                <div class="tab-pane fade in" id="edit-password">
+                    <h4>{% trans %}label.edit_password{% endtrans %}</h4>
+                    <form name="password" method="post" action="{{ path('host_password_submit') }}">
+                        <input name="user" value="{{ user.id }}" hidden readonly>
+                        <div class="form-group">
+                            <label>{% trans %}label.current_password{% endtrans %}</label>
+                            <input name="currentPassword" type="password" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>{% trans %}label.password{% endtrans %}</label>
+                            <input name="password" type="password" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>{% trans %}label.confirmation_password{% endtrans %}</label>
+                            <input name="confirmationPassword" type="password" class="form-control">
+                        </div>
+                        <button type="submit" class="btn btn-primary pull-right">{% trans %}label.submit{% endtrans %}</button>
+                    </form>
+                </div>
+                <div class="tab-pane fade in" id="notifications">
+                    <form name="subscription" method="post" action="{{ path('host_subscriptions_submit') }}">
+                        <input name="subscription[user]" value="{{ user.id }}" readonly hidden>
+                        <h4>{% trans %}label.receive_sms_when{% endtrans %} :</h4>
+                            {% set j = 0 %}
+                            {% for subscription in subscriptionsSms %}
+                                {% set checked = "" %}
+                                {% set key = subscription.id %}
+                                {% if subscriptionIds[key] is defined %}
+                                    {% set checked = "checked" %}
+                                {% endif %}
+                                <input name="subscription[subscriptions][{{ j }}][checkbox]" type="checkbox" value="0" hidden checked>
+                                <input name="subscription[subscriptions][{{ j }}][checkbox]]" type="checkbox" {{ checked }} value="1" >
+                                {{ subscription.subscriptionTrs[0].name }}
+                                <input name="subscription[subscriptions][{{ j }}][id]" value="{{ subscription.id }}" readonly hidden>
+                                {% set j = j+1%}
+                                <br>
+                            {% endfor %}
+                        <br>
+                        <h4>{% trans %}label.receive_email_when{% endtrans %} :</h4>
+                            {% for subscription in subscriptionsEmail %}
+                                {% set checked = "" %}
+                                {% set key = subscription.id %}
+                                {% if subscriptionIds[key] is defined %}
+                                    {% set checked = "checked" %}
+                                {% endif %}
+                                <input name="subscription[subscriptions][{{ j }}][checkbox]" type="checkbox" value="0" hidden checked>
+                                <input name="subscription[subscriptions][{{ j }}][checkbox]" type="checkbox" {{ checked }} value="1">
+                                {{ subscription.subscriptionTrs[0].name }}
+                                <input name="subscription[subscriptions][{{ j }}][id]" value="{{ subscription.id }}" readonly hidden>
+                                {% set j = j+1%}
+                                <br>
+                            {% endfor %}
+                        <button type="submit" class="btn btn-primary pull-right">{% trans %}label.submit{% endtrans %}</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% block script %}
+        <script>
+            $(function() {
+                $('select').find('option[value={{ user.sex }}]').attr('selected', 'selected');
+            });
+        </script>
+    {% endblock %}
+{% endblock %}

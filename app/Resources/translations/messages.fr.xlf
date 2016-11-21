@@ -58,6 +58,10 @@
                 <source>label.password_confirmation</source>
                 <target>Confirmer mot de passe</target>
             </trans-unit>
+            <trans-unit id="label_current_password">
+                <source>label.current_password</source>
+                <target>Mot de passe actuel</target>
+            </trans-unit>
             <trans-unit id="label_property_name">
                 <source>label.address</source>
                 <target>Nom</target>
@@ -117,6 +121,58 @@
             <trans-unit id="label_presentation">
                 <source>label.presentation</source>
                 <target>Présentation</target>
+            </trans-unit>
+            <trans-unit id="label_edit_profil">
+                <source>label.edit_profil</source>
+                <target>Editer le profil</target>
+            </trans-unit>
+            <trans-unit id="label_profil_picture">
+                <source>label.profil_picture</source>
+                <target>Profil de profil</target>
+            </trans-unit>
+            <trans-unit id="label_edit_password">
+                <source>label.edit_password</source>
+                <target>Modifier le mot de passe</target>
+            </trans-unit>
+            <trans-unit id="label_bank_details">
+                <source>label.bank_details</source>
+                <target>Coordonnées bancaires (RIB)</target>
+            </trans-unit>
+            <trans-unit id="label_sex">
+                <source>label.sex</source>
+                <target>Sexe</target>
+            </trans-unit>
+            <trans-unit id="label_age">
+                <source>label.age</source>
+                <target>Age</target>
+            </trans-unit>
+            <trans-unit id="label_birth_date">
+                <source>label.birth_date</source>
+                <target>Date de naissanced</target>
+            </trans-unit>
+            <trans-unit id="label_male">
+                <source>label.male</source>
+                <target>Homme</target>
+            </trans-unit>
+            <trans-unit id="label_female">
+                <source>label.female</source>
+                <target>Femme</target>
+            </trans-unit>
+            <trans-unit id="label_edit_picture">
+                <source>label.edit_picture</source>
+                <target>Modifier la photo</target>
+            </trans-unit>
+             <trans-unit id="label_notifications">
+                <source>label.notifications</source>
+                <target>Notifications</target>
+            </trans-unit>
+            <trans-unit id="label_receive_sms_when">
+                <source>label.receive_sms_when</source>
+                <target>Recevoir un sms quand</target>
+            </trans-unit>
+            <trans-unit id="label_receive_email_when">
+                <source>label.receive_email_notifications</source>
+                <target>Recevoir un email quand</target>
             </trans-unit>
         </body>
     </file>

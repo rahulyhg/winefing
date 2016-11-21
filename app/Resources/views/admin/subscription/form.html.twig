@@ -18,6 +18,20 @@
                         </fieldset>
                     </div>
                     <div class="col-md-6">
+                        <fieldset class="form-group">
+                            {{ form_label(form.userGroup) }}
+                            {{ form_widget(form.userGroup, { 'attr': {'class': 'form-control'}}) }}
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <fieldset class="form-group">
+                            {{ form_label(form.code) }}
+                            {{ form_widget(form.code, { 'attr': {'class': 'form-control'}}) }}
+                        </fieldset>
+                    </div>
+                    <div class="col-md-6">
                         <input checked hidden type="checkbox" name="subscription[activated]" value="0"/>
                         <fieldset class="form-group">
                             {{ form_label(form.activated) }}

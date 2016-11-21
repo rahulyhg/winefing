@@ -58,6 +58,10 @@
                 <source>label.confirmation_password</source>
                 <target>Confirm password</target>
             </trans-unit>
+            <trans-unit id="label_current_password">
+                <source>label.current_password</source>
+                <target>Current password</target>
+            </trans-unit>
             <trans-unit id="label_dashboard">
                 <source>label.dashboard</source>
                 <target>Dashboard</target>
@@ -109,6 +113,58 @@
             <trans-unit id="label_country">
                 <source>label.country</source>
                 <target>Country</target>
+            </trans-unit>
+            <trans-unit id="label_edit_profil">
+                <source>label.edit_profil</source>
+                <target>Edit profil</target>
+            </trans-unit>
+            <trans-unit id="label_profil_picture">
+                <source>label.profil_picture</source>
+                <target>Profil picture</target>
+            </trans-unit>
+            <trans-unit id="label_edit_password">
+                <source>label.edit_password</source>
+                <target>Edit password</target>
+            </trans-unit>
+            <trans-unit id="label_bank_details">
+                <source>label.bank_details</source>
+                <target>Bank details</target>
+            </trans-unit>
+            <trans-unit id="label_sex">
+                <source>label.sex</source>
+                <target>Sex</target>
+            </trans-unit>
+            <trans-unit id="label_age">
+                <source>label.age</source>
+                <target>Age</target>
+            </trans-unit>
+            <trans-unit id="label_birth_date">
+                <source>label.birth_date</source>
+                <target>Birth date</target>
+            </trans-unit>
+            <trans-unit id="label_male">
+                <source>label.male</source>
+                <target>Male</target>
+            </trans-unit>
+            <trans-unit id="label_female">
+                <source>label.female</source>
+                <target>Female</target>
+            </trans-unit>
+            <trans-unit id="label_edit_picture">
+                <source>label.edit_picture</source>
+                <target>Edit picture</target>
+            </trans-unit>
+            <trans-unit id="label_notifications">
+                <source>label.notifications</source>
+                <target>Notifications</target>
+            </trans-unit>
+            <trans-unit id="label_receive_sms_when">
+                <source>label.receive_sms_when</source>
+                <target>Receive a sms when</target>
+            </trans-unit>
+            <trans-unit id="label_receive_email_when">
+                <source>label.receive_email_when</source>
+                <target>Receive a email when</target>
             </trans-unit>
         </body>
     </file>

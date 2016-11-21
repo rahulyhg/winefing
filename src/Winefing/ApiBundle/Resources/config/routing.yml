@@ -113,3 +113,20 @@ domain:
     resource: Winefing\ApiBundle\Controller\DomainController
     name_prefix:  api_
 
+hostUser:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\HostUserController
+    name_prefix:  api_
+
+characteristicDomainValue:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\CharacteristicDomainValueController
+    name_prefix:  api_
+characteristicValue:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\CharacteristicValueController
+    name_prefix:  api_
+rental:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\RentalController
+    name_prefix:  api_

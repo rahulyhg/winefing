@@ -7,7 +7,7 @@
  */
 namespace Winefing\ApiBundle\Entity;
 
-abstract class MediaFormatEnum extends BasicEnum {
+class MediaFormatEnum extends BasicEnum {
     const Icon = "ICON";
     const Image = "IMAGE";
     const Video = "VIDEO";

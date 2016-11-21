@@ -25,7 +25,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 
-class DomainType extends AbstractType
+class RentalType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -34,15 +34,15 @@ class DomainType extends AbstractType
                 'required' => false))
             ->add('name', null, array('attr'=> array('maxlength'=>"60")))
             ->add('description', TextareaType::class, array('attr'=> array('maxlength'=>"60", 'required' => false, 'style' => 'height:250px')))
-            ->add('wineRegion', EntityType::class,  array(
-                'class' => 'WinefingApiBundle:WineRegion',
-                'choice_label' => 'title'))
+            ->add('rental_category', EntityType::class,  array(
+                'class' => 'WinefingApiBundle:Language',
+                'choice_label' => 'name'));
         ;
     }
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Winefing\ApiBundle\Entity\Domain',
+            'data_class' => 'Winefing\ApiBundle\Entity\Rental',
         ));
     }
 }

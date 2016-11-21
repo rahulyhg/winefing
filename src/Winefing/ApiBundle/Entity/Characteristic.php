@@ -29,7 +29,7 @@ class Characteristic
     private $format;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\CharacteristicCategory", inversedBy="characteristics")
+     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\CharacteristicCategory", inversedBy="characteristics", fetch="EAGER")
      * @ORM\JoinColumn(nullable=false)
      */
     private $characteristicCategory;

@@ -26,7 +26,6 @@ class User extends BaseUser
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
-
     /**
      * @ORM\Column(name="first_name", type="string", length=255, nullable=true)
      */
@@ -51,6 +50,11 @@ class User extends BaseUser
      * @ORM\Column(name="birth_date", type="date", length=255, nullable=true)
      */
     protected $birthDate;
+
+    /**
+     * @ORM\Column(name="sex", type="string", length=1, nullable=true)
+     */
+    protected $sex;
 
     /**
      * @ORM\Column(name="description", type="string", length=500, nullable=true)
@@ -265,5 +269,30 @@ class User extends BaseUser
     public function getDomains()
     {
         return $this->domains;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSex()
+    {
+        return $this->sex;
+    }
+
+    /**
+     * @param mixed $sex
+     */
+    public function setSex($sex)
+    {
+        $this->sex = $sex;
+    }
+
+    public function resetSubscriptions() {
+        $this->subscriptions = new ArrayCollection();
+        return $this;
+    }
+    public function addSubscription(Subscription $subscription) {
+        $this->subscriptions[] = $subscription;
+        return $this;
     }
 }

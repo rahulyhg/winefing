@@ -36,7 +36,12 @@ class SubscriptionController extends Controller implements ClassResourceInterfac
         $subscriptions = $repository->findAll();
         return new Response($serializer->serialize($subscriptions));
     }
-
+    public function cgetUserGroupFormatAction($userGroup, $format) {
+        $serializer = $this->container->get('jms_serializer');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Subscription');
+        $subscriptions = $repository->findBy(array('userGroup' => $userGroup, 'format' => $format));
+        return new Response($serializer->serialize($subscriptions, 'json'));
+    }
     public function postAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
@@ -44,6 +49,8 @@ class SubscriptionController extends Controller implements ClassResourceInterfac
         $subscription = new Subscription();
         $subscription->setFormat($request->request->get('format'));
         $subscription->setActivated($request->request->get('activated'));
+        $subscription->setCode($request->request->get('code'));
+        $subscription->setUserGroup($request->request->get('userGroup'));
         $validator = $this->get('validator');
         $errors = $validator->validate($subscription);
         if (count($errors) > 0) {
@@ -63,6 +70,8 @@ class SubscriptionController extends Controller implements ClassResourceInterfac
         $subscription = $repository->findOneById($request->request->get("id"));
         $subscription->setFormat($request->request->get('format'));
         $subscription->setActivated($request->request->get('activated'));
+        $subscription->setCode($request->request->get('code'));
+        $subscription->setUserGroup($request->request->get('userGroup'));
         $validator = $this->get('validator');
         $errors = $validator->validate($subscription);
         if (count($errors) > 0) {

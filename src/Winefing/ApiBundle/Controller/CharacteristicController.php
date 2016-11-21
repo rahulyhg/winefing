@@ -29,11 +29,7 @@ use Winefing\ApiBundle\Entity\MediaFormatEnum;
 class CharacteristicController extends Controller implements ClassResourceInterface
 {
 
-    /**
-     * Create or update a characteristicCategory from the submitted data.<br/>
-     *
-     *
-     */
+
     public function postAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();

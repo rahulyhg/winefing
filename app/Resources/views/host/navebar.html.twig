@@ -9,18 +9,15 @@
                 <span class="icon-bar"></span>
             </button>
         </div>
-
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
                 <li class=""><a href="#">{% trans %}label.dashboard{% endtrans %} <span class="sr-only">(current)</span></a></li>
-                <li class="{% if app.request.attributes.get('_route') == 'domain_user' or app.request.attributes.get('_route') == 'domain_address'
-                    or app.request.attributes.get('_route') == 'domain_pictures'
-                    %}active{% endif %}"><a href="{{ path('domain_user') }}">{% trans %}label.my_domain{% endtrans %} </a></li>
-                <li><a href="#">{% trans %}label.my_rentals{% endtrans %} </a></li>
+                <li class="{% if app.request.attributes.get('_route') == 'domain_user'%}active{% endif %}"><a href="{{ path('domain_user') }}">{% trans %}label.my_domain{% endtrans %} </a></li>
+                <li class="{% if app.request.attributes.get('_route') == 'rental_user'%}active{% endif %}"><a href="{{ path('rental_user') }}">{% trans %}label.my_rentals{% endtrans %} </a></li>
                 <li><a href="#">{% trans %}label.my_reservations{% endtrans %} </a></li>
                 <li><a href="#">{% trans %}label.my_reviews{% endtrans %} </a></li>
-                <li><a href="#">{% trans %}label.my_profil{% endtrans %} </a></li>
+                <li class="{% if app.request.attributes.get('_route') == 'user_host'%}active{% endif %}"><a href="{{ path('user_host') }}">{% trans %}label.my_profil{% endtrans %} </a></li>
             </ul>
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->

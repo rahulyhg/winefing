@@ -1,30 +1,62 @@
 <?php
 
-namespace AppBundle\Entity;
 namespace Winefing\ApiBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+
 /**
  * Property
+ *
+ * @ORM\Table(name="property")
+ * @ORM\Entity(repositoryClass="Winefing\ApiBundle\Repository\PropertyRepository")
  */
 class Property
 {
     /**
      * @var int
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
-     * @ManyToOne(targetEntity="Winefing\ApiBundle\User")
-     * @JoinColumn(name="user_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Domain")
+     * @ORM\JoinColumn(nullable=false)
      */
-    private $user;
+    private $domain;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\CharacteristicValue", inversedBy="properties")
+     */
+    private $characteristicValues;
+
+    /**
+     * @var Rentals
+     * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\Rental", mappedBy="property", fetch="EAGER", cascade="ALL")
+     */
+    private $rentals;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Media", inversedBy="properties", cascade={"persist", "merge", "detach"})
+     */
+    private $medias;
+
 
     /**
      * @var string
+     *
+     * @ORM\Column(name="name", type="string", length=60, nullable=true)
      */
     private $name;
 
+
     /**
      * @var string
+     *
+     * @ORM\Column(name="description", type="string", length=255, nullable=true)
      */
     private $description;
 
@@ -38,21 +70,27 @@ class Property
         return $this->id;
     }
 
-
-    /**
-     * @return user
-     */
-    public function getUser()
-    {
-        return $this->user;
+    public function _construct() {
+        $this->rentals = new ArrayCollection();
+        $this->characteristicValues = new ArrayCollection();
+        $this->medias = new ArrayCollection();
+        return $this;
     }
 
     /**
-     * @param $user
+     * @return mixed
      */
-    public function setUser($user)
+    public function getDomain()
     {
-        $this->user = $user;
+        return $this->domain;
+    }
+
+    /**
+     * @param mixed $domain
+     */
+    public function setDomain($domain)
+    {
+        $this->domain = $domain;
     }
 
     /**
@@ -92,164 +130,16 @@ class Property
 
         return $this;
     }
-
-    /**
-     * Get description
-     *
-     * @return string
-     */
-    public function getDescription()
-    {
-        return $this->description;
-    }
-
-    /**
-     * @return string
-     */
-    public function getAddress()
-    {
-        return $this->address;
-    }
-
-    /**
-     * @param string $address
-     */
-    public function setAddress($address)
-    {
-        $this->address = $address;
-    }
-
-    /**
-     * Set street
-     *
-     * @param string $street
-     *
-     * @return Property
-     */
-    public function setStreet($street)
-    {
-        $this->street = $street;
-
+    public function addMedia(Media $media) {
+        $this->medias[] = $media;
         return $this;
     }
 
     /**
-     * Get street
-     *
-     * @return string
+     * @return mixed
      */
-    public function getStreet()
+    public function getMedias()
     {
-        return $this->street;
-    }
-
-    /**
-     * Set postalCode
-     *
-     * @param string $postalCode
-     *
-     * @return Property
-     */
-    public function setPostalCode($postalCode)
-    {
-        $this->postalCode = $postalCode;
-
-        return $this;
-    }
-
-    /**
-     * Get postalCode
-     *
-     * @return string
-     */
-    public function getPostalCode()
-    {
-        return $this->postalCode;
-    }
-
-    /**
-     * Set locality
-     *
-     * @param string $locality
-     *
-     * @return Property
-     */
-    public function setLocality($locality)
-    {
-        $this->locality = $locality;
-
-        return $this;
-    }
-
-    /**
-     * Get locality
-     *
-     * @return string
-     */
-    public function getLocality()
-    {
-        return $this->locality;
-    }
-
-    /**
-     * Set country
-     *
-     * @param string $country
-     *
-     * @return Property
-     */
-    public function setCountry($country)
-    {
-        $this->country = $country;
-
-        return $this;
-    }
-
-    /**
-     * Get country
-     *
-     * @return string
-     */
-    public function getCountry()
-    {
-        return $this->country;
-    }
-
-    /**
-     * Set lng
-     *
-     * @param float $lng
-     *
-     * @return Property
-     */
-    public function setLng($lng)
-    {
-        $this->lng = $lng;
-
-        return $this;
-    }
-
-    /**
-     * Get lng
-     *
-     * @return float
-     */
-    public function getLng()
-    {
-        return $this->lng;
-    }
-
-    /**
-     * Set lat
-     *
-     * @param float $lat
-     *
-     * @return Property
-     */
-    public function setLat($lat)
-    {
-        $this->lat = $lat;
-
-        return $this;
+        return $this->medias;
     }
 }

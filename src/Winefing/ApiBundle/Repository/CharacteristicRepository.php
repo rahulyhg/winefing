@@ -10,4 +10,25 @@ namespace Winefing\ApiBundle\Repository;
  */
 class CharacteristicRepository extends \Doctrine\ORM\EntityRepository
 {
+    function findMissingCharacteristics($ids, $scopeName) {
+        if(empty($ids)) {
+            $query = $this->createQueryBuilder('characteristic')
+                ->join("characteristic.characteristicCategory", "characteristicCategory")
+                ->join("characteristicCategory.scope", "scope")
+                ->where('scope.name = :scopeName')
+                ->setParameter('scopeName', $scopeName)
+                ->getQuery();
+            $characteristics = $query->getResult();
+        } else {
+            $query = $this->createQueryBuilder('characteristic')
+                ->join("characteristic.characteristicCategory", "characteristicCategory")
+                ->join("characteristicCategory.scope", "scope")
+                ->where('characteristic.id not in (:ids) and scope.name = :scopeName')
+                ->setParameter('ids', array_values($ids))
+                ->setParameter('scopeName', $scopeName)
+                ->getQuery();
+            $characteristics = $query->getResult();
+        }
+        return $characteristics;
+    }
 }

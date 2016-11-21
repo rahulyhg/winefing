@@ -12,6 +12,7 @@ namespace AppBundle\Form;
 namespace AppBundle\Form;
 use AppBundle\Form\SubscriptionTrType;
 use Winefing\ApiBundle\Entity\SubscriptionFormatEnum;
+use Winefing\ApiBundle\Entity\UserGroupEnum;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -29,10 +30,13 @@ class SubscriptionType extends AbstractType
         $builder
             ->add('id',  HiddenType::class, array('required' => false))
             ->add('activated',  CheckboxType::class, array('required' => false))
+            ->add('code')
             ->add('subscriptionTrs', CollectionType::class, array(
             'entry_type' => SubscriptionTrType::class))
             ->add('format', ChoiceType::class, array('choices' => array(SubscriptionFormatEnum::Sms => SubscriptionFormatEnum::Sms,
-                SubscriptionFormatEnum::Email=>SubscriptionFormatEnum::Email)));
+                SubscriptionFormatEnum::Email=>SubscriptionFormatEnum::Email)))
+            ->add('userGroup', ChoiceType::class, array('choices' => array(UserGroupEnum::Host => UserGroupEnum::Host,
+                UserGroupEnum::User=>UserGroupEnum::User)));
     }
     public function configureOptions(OptionsResolver $resolver)
     {
