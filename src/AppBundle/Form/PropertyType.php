@@ -30,11 +30,11 @@ class PropertyType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('id',  HiddenType::class, array(
-                'required' => false))
             ->add('name', null, array('attr'=> array('maxlength'=>"60")))
             ->add('description', TextareaType::class, array('attr'=> array('maxlength'=>"60", 'required' => false, 'style' => 'height:250px')))
-            ->add('pictures', TextareaType::class, array('attr'=> array('maxlength'=>"60", 'required' => false, 'style' => 'height:250px')))
+            ->add('propertyCategory', EntityType::class,  array(
+                'class' => 'WinefingApiBundle:PropertyCategory',
+                'choice_label' => 'code'))
 //            ->add('rental_category', EntityType::class,  array(
 //                'class' => 'WinefingApiBundle:Language',
 //                'choice_label' => 'name'));

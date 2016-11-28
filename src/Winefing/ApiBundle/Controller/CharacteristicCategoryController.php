@@ -34,12 +34,12 @@ class CharacteristicCategoryController extends Controller implements ClassResour
      */
     public function cgetAction($scopeName)
     {
-        $serializer = $this->container->get('jms_serializer');
+        $serializer = $this->container->get('winefing.serializer_controller');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Scope');
         $scope = $repository->findOneByName($scopeName);
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:CharacteristicCategory');
         $characteristicCategories = $repository->findByScope($scope);
-        $json = $serializer->serialize($characteristicCategories, 'json');
+        $json = $serializer->serialize($characteristicCategories);
         return new Response($json);
     }
 

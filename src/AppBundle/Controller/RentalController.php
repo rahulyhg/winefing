@@ -6,8 +6,9 @@
  * Time: 20:38
  */
 namespace AppBundle\Controller;
+use AppBundle\Form\PropertyType;
+use AppBundle\Form\RentalType;
 use AppBundle\Form\AddressType;
-use AppBundle\Form\rentalType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -21,16 +22,27 @@ use GuzzleHttp;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Symfony\Component\HttpFoundation\File\File;
+use Winefing\ApiBundle\Entity\Address;
 use Winefing\ApiBundle\Entity\CharacteristicrentalValue;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\Common\Collections\ArrayCollection;
+use Winefing\ApiBundle\Entity\Property;
+use Winefing\ApiBundle\Entity\Rental;
 
 
 class RentalController extends Controller
 {
     /**
-     * @Route("/rental/{userId}", name="rental_user")
+     * @Route("/rentals", name="rentals")
+     *
+     */
+    public function cgetAction() {
+        return $this->render('host/rental/index.html.twig');
+    }
+
+    /**
+     * @Route("/rental/new/{userId}", name="rental_new")
      */
     public function getAction($userId = 57) {
 //        $api = $this->container->get('winefing.api_controller');
@@ -43,7 +55,13 @@ class RentalController extends Controller
 //        $this->setMissingCharacteristicsAction($rental);
 //        $characteristicCategories = $this->getCharacteristicCategory($rental);
 //        $rentalForm = $this->createForm(rentalType::class, $rental);
-//        $addressForm = $this->createForm(AddressType::class, $rental->getAddress(), array('action' => $this->generateUrl('rental_address_submit')));
+        $rental = new Rental();
+        $property = new Property();
+        $address = new Address();
+        $rentalForm = $this->createForm(RentalType::class, $rental, array('action' => $this->generateUrl('rental_address_submit')));
+        $propertyForm = $this->createForm(PropertyType::class, $property, array('action' => $this->generateUrl('rental_address_submit')));
+        $addressForm = $this->createForm(AddressType::class, $address, array('action' => $this->generateUrl('domain_address_submit')));
+
 //        $response = $api->get($this->get('_router')->generate('api_get_rentals_picture_path'));
 //        $picturePath = $serializer->decode($response->getBody()->getContents());
 //        return $this->render('host/rental/index.html.twig', array(
@@ -53,7 +71,7 @@ class RentalController extends Controller
 //            'picturePath' => $picturePath,
 //            'characteristicCategories' => $characteristicCategories)
 //        );
-                return $this->render('host/rental/new.html.twig');
+                return $this->render('host/rental/new.html.twig', array('rentalForm'=>$rentalForm->createView(), 'propertyForm' => $propertyForm->createView(), 'addressForm'=>$addressForm->createView()));
     }
 
     /**

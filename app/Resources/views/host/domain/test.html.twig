@@ -1,0 +1,29 @@
+{% extends 'host/base.html.twig' %}
+{% block table %}
+    <div class="row">
+        <!-- Three Columns -->
+            <div class="row  margin-bottom-30">
+                <div class="col-sm-4">
+                    <a href="http://placehold.it/250x250" rel="gallery1" class="fancybox" title="Image 1">
+                        <span><img class="img-responsive" src="http://placehold.it/250x250" ></span>
+                    </a>
+                </div>
+                <div class="col-sm-4">
+                    <a href="http://placehold.it/250x250" rel="gallery1" class="fancybox" title="Image 2">
+                        <span><img class="img-responsive" src="http://placehold.it/250x250" ></span>
+                    </a>
+                </div>
+                <div class="col-sm-4">
+                    <a href="http://placehold.it/250x250" rel="gallery1" class="fancybox" title="Image 3">
+                        <span><img class="img-responsive" src="http://placehold.it/250x250"></span>
+                    </a>
+                </div>
+            </div>
+        <!-- End Three Columns -->
+    </div>
+    <script>
+        jQuery(document).ready(function() {
+            FancyBox.initFancybox();
+        });
+    </script>
+{% endblock %}

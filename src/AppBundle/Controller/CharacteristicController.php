@@ -102,9 +102,8 @@ class CharacteristicController extends Controller
      */
     public function deleteAction($id, $scopeName, Request $request)
     {
-        $client = new Client();
-        $response = $client->request('DELETE', 'http://104.47.146.137/winefing/web/app_dev.php/api/characteristics/'.$id);
-        var_dump($response->getBody()->getContents());
+        $api = $this->container->get('winefing.api_controller');
+        $response = $api->delete($this->get('_router')->generate('api_delete_characteristic', array('id'=>$id)));
         $request->getSession()
             ->getFlashBag()
             ->add('success', "The Characteristic is well deleted.");

@@ -1,0 +1,47 @@
+{% set i = 0 %}
+{% for characteristicCategory,characteristicValues in characteristicCategories %}
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4>{{ characteristicCategory }}</h4>
+        </div>
+        <div class="panel-body">
+            {% for characteristicValue in characteristicValues %}
+                {% set name = "characteristicValueForm[characteristicValue]["~i~"][value]" %}
+                <div class="form-group">
+                    <input name="characteristicValueForm[characteristicValue][{{ i }}][id]" value="{{ characteristicValue.id }}" hidden>
+                    <input name="characteristicValueForm[characteristicValue][{{ i }}][characteristic]" value="{{ characteristicValue.characteristic.id }}" hidden >
+                    <label style="font-weight: normal">{{ characteristicValue.characteristic.characteristicTrs[0].name }} </label>
+                    {% if characteristicValue.characteristic.format.name == format_boolean %}
+                        {% set checked = "" %}
+                        {% if characteristicValue.value == 1 %}
+                            {% set checked = "checked" %}
+                        {% endif %}
+                        <input name="{{ name }}" type="checkbox" value="0" hidden checked>
+                        <input name="{{ name }}" type="checkbox" {{ checked }} value="1">
+                    {% elseif characteristicValue.characteristic.format.name == format_int %}
+                        <input type="number" name="{{ name }}" class="form-control" value="{{ characteristicValue.value }}">
+                    {% elseif characteristicValue.characteristic.format.name == format_float %}
+                        <input type="number" name="{{ name }}" class="form-control" value="{{ characteristicValue.value }}">
+                    {% elseif characteristicValue.characteristic.format.name == format_percentage %}
+                        <input name="{{ name }}" class="form-control" value="{{ characteristicValue.value }}">
+                    {% elseif characteristicValue.characteristic.format.name == format_varchar %}
+                        <input name="{{ name }}" class="form-control" value="{{ characteristicValue.value }}">
+                    {% elseif characteristicValue.characteristic.format.name == format_text %}
+                        <textarea name="{{ name }}" class="form-control" style="height: 150px">{{ characteristicValue.value }}</textarea>
+                    {% elseif characteristicValue.characteristic.format.name == format_monnaie %}
+                        <input name="{{ name }}" class="form-control" value="{{ characteristicValue.value }}">
+                    {% elseif characteristicValue.characteristic.format.name == format_time %}
+                        <input type="time" name="{{ name }}" class="form-control" value="{{ characteristicValue.value }}">
+                    {% elseif characteristicValue.characteristic.format.name == format_date_time %}
+                        <input type="datetime" name="{{ name }}" class="form-control" value="{{ characteristicValue.value }}">
+                    {% elseif characteristicValue.characteristic.format.name == format_date %}
+                        <input type="date" name="{{ name }}" class="form-control" value="{{ characteristicValue.value }}">
+                    {% else %}
+                        <input name="{{ name }}" value="{{ characteristicValue.value }}" class="form-control">
+                    {% endif %}
+                </div>
+                {% set i = i+1 %}
+            {% endfor %}
+        </div>
+    </div>
+{% endfor %}

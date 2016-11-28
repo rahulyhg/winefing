@@ -128,34 +128,34 @@
                     </div>
                 </div>
                 <div class="tab-pane fade in" id="informations">
-                    <form method="post" name="characteristicValue" action="{{ path('characteristic_domain_value_submit') }}">
-                        <input name="characteristicValue[domain]" value="{{ domain.id }}" hidden>
+                    <form method="post" name="characteristicDomainValue" action="{{ path('characteristic_domain_value_submit') }}">
+                        <input name="characteristicDomain[domain]" value="{{ domain.id }}" hidden>
                         {% set i = 0 %}
-                        {% for characteristicCategory,characteristicValues in characteristicCategories %}
+                        {% for characteristicCategory,characteristicDomainValues in characteristicCategories %}
                             <div class="panel panel-default">
                                 <div class="panel-heading">
                                     <h4>{{ characteristicCategory }}</h4>
                                 </div>
                                 <div class="panel-body">
-                                    {% for characteristicValue in characteristicValues %}
-                                        {% set name = "characteristicValue[characteristicValue]["~i~"][value]" %}
+                                    {% for characteristicDomainValue in characteristicDomainValues %}
+                                        {% set name = "characteristicDomain[characteristicDomainValue]["~i~"][value]" %}
                                         <div class="form-group">
-                                            <input name="characteristicValue[characteristicValue][{{ i }}][id]" value="{{ characteristicValue.id }}" hidden>
-                                            <input name="characteristicValue[characteristicValue][{{ i }}][characteristic]" value="{{ characteristicValue.characteristic.id }}" hidden >
-                                            <label style="font-weight: normal">{{ characteristicValue.characteristic.characteristicTrs[0].name }} </label>
-                                            {% if characteristicValue.characteristic.format.name == "BOOLEAN" %}
+                                            <input name="characteristicDomain[characteristicDomainValue][{{ i }}][id]" value="{{ characteristicDomainValue.id }}" hidden>
+                                            <input name="characteristicDomain[characteristicDomainValue][{{ i }}][characteristic]" value="{{ characteristicDomainValue.characteristic.id }}" hidden >
+                                            <label style="font-weight: normal">{{ characteristicDomainValue.characteristic.characteristicTrs[0].name }} </label>
+                                            {% if characteristicDomainValue.characteristic.format.name == "BOOLEAN" %}
                                                 {% set checked = "" %}
-                                                {% if characteristicValue.value == 1 %}
+                                                {% if characteristicDomainValue.value == 1 %}
                                                     {% set checked = "checked" %}
                                                 {% endif %}
                                                 <input name="{{ name }}" type="checkbox" value="0" hidden checked>
                                                 <input name="{{ name }}" type="checkbox" {{ checked }} value="1">
-                                            {% elseif characteristicValue.characteristic.format.name == "TEXT" %}
-                                                <textarea name="{{ name }}" class="form-control" style="height: 150px">{{ characteristicValue.value }}</textarea>
-                                            {% elseif characteristicValue.characteristic.format.name == "PRICE" %}
-                                                <input name="{{ name }}" class="form-control" value="{{ characteristicValue.value }}">
+                                            {% elseif characteristicDomainValue.characteristic.format.name == "TEXT" %}
+                                                <textarea name="{{ name }}" class="form-control" style="height: 150px">{{ characteristicDomainValue.value }}</textarea>
+                                            {% elseif characteristicDomainValue.characteristic.format.name == "PRICE" %}
+                                                <input name="{{ name }}" class="form-control" value="{{ characteristicDomainValue.value }}">
                                             {% else %}
-                                                <input name="{{ name }}" value="{{ characteristicValue.value }}" class="form-control">
+                                                <input name="{{ name }}" value="{{ characteristicDomainValue.value }}" class="form-control">
                                             {% endif %}
                                         </div>
                                         {% set i = i+1 %}

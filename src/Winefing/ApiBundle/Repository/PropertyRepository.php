@@ -10,4 +10,14 @@ namespace Winefing\ApiBundle\Repository;
  */
 class PropertyRepository extends \Doctrine\ORM\EntityRepository
 {
+    function findByUser($userId) {
+        $query = $this->createQueryBuilder('property')
+            ->join("property.domain", "domain")
+            ->join("domain.user", "user")
+            ->where('user.id = :userId')
+            ->setParameter('userId', $userId)
+            ->getQuery();
+        $properties = $query->getResult();
+        return $properties;
+    }
 }

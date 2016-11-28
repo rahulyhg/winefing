@@ -130,3 +130,7 @@ rental:
     type: rest
     resource: Winefing\ApiBundle\Controller\RentalController
     name_prefix:  api_
+property:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\PropertyController
+    name_prefix:  api_

@@ -14,7 +14,8 @@
             <ul class="nav navbar-nav">
                 <li class=""><a href="#">{% trans %}label.dashboard{% endtrans %} <span class="sr-only">(current)</span></a></li>
                 <li class="{% if app.request.attributes.get('_route') == 'domain_user'%}active{% endif %}"><a href="{{ path('domain_user') }}">{% trans %}label.my_domain{% endtrans %} </a></li>
-                <li class="{% if app.request.attributes.get('_route') == 'rental_user'%}active{% endif %}"><a href="{{ path('rental_user') }}">{% trans %}label.my_rentals{% endtrans %} </a></li>
+                <li class="{% if app.request.attributes.get('_route') == 'properties'%}active{% endif %}"><a href="{{ path('properties') }}">{% trans %}label.my_properties{% endtrans %} </a></li>
+                <li class="{% if app.request.attributes.get('_route') == 'rentals'%}active{% endif %}"><a href="{{ path('rentals') }}">{% trans %}label.my_rentals{% endtrans %} </a></li>
                 <li><a href="#">{% trans %}label.my_reservations{% endtrans %} </a></li>
                 <li><a href="#">{% trans %}label.my_reviews{% endtrans %} </a></li>
                 <li class="{% if app.request.attributes.get('_route') == 'user_host'%}active{% endif %}"><a href="{{ path('user_host') }}">{% trans %}label.my_profil{% endtrans %} </a></li>

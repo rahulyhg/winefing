@@ -29,6 +29,14 @@ use Winefing\ApiBundle\Entity\MediaFormatEnum;
 class CharacteristicController extends Controller implements ClassResourceInterface
 {
 
+    public function cgetAction($scopeName)
+    {
+        $serializer = $this->container->get('winefing.serializer_controller');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Characteristic');
+        $characteristics = $repository->findByScopeName($scopeName);
+        $json = $serializer->serialize($characteristics);
+        return new Response($json);
+    }
 
     public function postAction(Request $request)
     {

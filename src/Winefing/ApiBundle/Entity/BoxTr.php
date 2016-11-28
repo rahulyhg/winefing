@@ -3,15 +3,15 @@
 namespace Winefing\ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
-use Winefing\ApiBundle\Entity\FormatEnum;
+use Doctrine\Common\Collections\ArrayCollection;
+
 /**
- * Format
+ * BoxTr
  *
- * @ORM\Table(name="format")
- * @ORM\Entity(repositoryClass="Winefing\ApiBundle\Repository\FormatRepository")
+ * @ORM\Table(name="box_tr")
+ * @ORM\Entity(repositoryClass="Winefing\ApiBundle\Repository\BoxTrRepository")
  */
-class Format extends FormatEnum
+class BoxTr
 {
     /**
      * @var int
@@ -23,17 +23,28 @@ class Format extends FormatEnum
     private $id;
 
     /**
+     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Box", inversedBy="boxTrs")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $box;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Language")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $language;
+
+    /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=20, unique=true)
-     * @Assert\NotBlank()
+     * @ORM\Column(name="name", type="string", length=255)
      */
     private $name;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="description", type="string", length=255, nullable=true)
+     * @ORM\Column(name="description", type="string", length=255)
      */
     private $description;
 
@@ -53,7 +64,7 @@ class Format extends FormatEnum
      *
      * @param string $name
      *
-     * @return Format
+     * @return BoxTr
      */
     public function setName($name)
     {
@@ -77,7 +88,7 @@ class Format extends FormatEnum
      *
      * @param string $description
      *
-     * @return Format
+     * @return BoxTr
      */
     public function setDescription($description)
     {
@@ -95,5 +106,38 @@ class Format extends FormatEnum
     {
         return $this->description;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getBox()
+    {
+        return $this->box;
+    }
+
+    /**
+     * @param mixed $box
+     */
+    public function setBox($box)
+    {
+        $this->box = $box;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLanguage()
+    {
+        return $this->language;
+    }
+
+    /**
+     * @param mixed $language
+     */
+    public function setLanguage($language)
+    {
+        $this->language = $language;
+    }
+
 }
 

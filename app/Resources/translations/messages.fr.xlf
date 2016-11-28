@@ -174,6 +174,54 @@
                 <source>label.receive_email_notifications</source>
                 <target>Recevoir un email quand</target>
             </trans-unit>
+            <trans-unit id="label_property">
+                <source>label.property</source>
+                <target>Propriété</target>
+            </trans-unit>
+            <trans-unit id="label_property_category">
+                <source>label.property_category</source>
+                <target>Type de propriété</target>
+            </trans-unit>
+            <trans-unit id="label_new_property">
+                <source>label.new_property</source>
+                <target>Nouvelle propriété</target>
+            </trans-unit>
+            <trans-unit id="label_rental">
+                <source>label.rental</source>
+                <target>Location</target>
+            </trans-unit>
+            <trans-unit id="label_property_name_exemple">
+                <source>label.property_name_exemple</source>
+                <target>Ex. : Château du pâpe, Gîte des Lilas...</target>
+            </trans-unit>
+            <trans-unit id="label_rental_name_exemple">
+                <source>label.rental_name_exemple</source>
+                <target>Ex. : Chambre royal, gîte des lilas...</target>
+            </trans-unit>
+            <trans-unit id="label_new_address">
+                <source>label.new_address</source>
+                <target>Nouvelle adresse</target>
+            </trans-unit>
+            <trans-unit id="label_property_pictures_explication">
+                <source>label.property_pictures_explication</source>
+                <target>Seulement la façade de la propriété, ou les pièces communes (tel que le salon du château, ou la cuisine du gîte).</target>
+            </trans-unit>
+            <trans-unit id="label_prices">
+                <source>label.prices</source>
+                <target>Prix</target>
+            </trans-unit>
+            <trans-unit id="label_rentals">
+                <source>label.rentals</source>
+                <target>Locations</target>
+            </trans-unit>
+            <trans-unit id="label_my_properties">
+                <source>label.my_properties</source>
+                <target>Mes propriétés</target>
+            </trans-unit>
+              <trans-unit id="label_edit">
+                    <source>label.edit</source>
+                    <target>Modifier</target>
+                </trans-unit>
         </body>
     </file>
 </xliff>

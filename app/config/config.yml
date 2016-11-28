@@ -14,6 +14,7 @@ parameters:
     article_directory_upload: '%kernel.root_dir%/../web/Resources/pictures/article/'
     domain_directory_upload: '%kernel.root_dir%/../web/Resources/pictures/domain/'
     user_directory_upload: '%kernel.root_dir%/../web/Resources/pictures/user/'
+    property_directory_upload: '%kernel.root_dir%/../web/Resources/pictures/property/'
 
     language_directory: 'winefing/web/Resources/pictures/language/'
     characteristic_category_directory: 'winefing/web/Resources/pictures/characteristicCategory/'
@@ -21,6 +22,7 @@ parameters:
     article_directory: 'winefing/web/Resources/pictures/article/'
     domain_directory: 'winefing/web/Resources/pictures/domain/'
     user_directory: 'winefing/web/Resources/pictures/user/'
+    property_directory: 'winefing/web/Resources/pictures/property/'
     mail_chimp_token: '82eeea1796fe25cf7d185ec3ce2af340-us14'
     mail_chimp_url: 'https://us14.api.mailchimp.com/export/1.0/'
 
@@ -54,6 +56,16 @@ twig:
     strict_variables: "%kernel.debug%"
     globals:
         language_directory: '%language_directory%'
+        format_boolean: 'BOOLEAN'
+        format_monnaie: 'MONNAIE'
+        format_percentage: 'PERCENTAGE'
+        format_text: 'TEXT'
+        format_float: 'FLOAT'
+        format_int: 'INT'
+        format_time: 'TIME'
+        format_date_time: 'DATETIME'
+        format_date: 'DATE'
+        format_varchar: 'VARCHAR'
 
 # Doctrine Configuration
 doctrine:

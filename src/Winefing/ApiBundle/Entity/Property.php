@@ -44,6 +44,21 @@ class Property
      */
     private $medias;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Address", inversedBy="properties")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $address;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\PropertyCategory", inversedBy="properties")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $propertyCategory;
+
+    private $mediaPresentation;
+
+
 
     /**
      * @var string
@@ -130,6 +145,15 @@ class Property
 
         return $this;
     }
+
+    /**
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
     public function addMedia(Media $media) {
         $this->medias[] = $media;
         return $this;
@@ -142,4 +166,84 @@ class Property
     {
         return $this->medias;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getAddress()
+    {
+        return $this->address;
+    }
+
+    /**
+     * @param mixed $address
+     */
+    public function setAddress($address)
+    {
+        $this->address = $address;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPropertyCategory()
+    {
+        return $this->propertyCategory;
+    }
+
+    /**
+     * @param mixed $propertyCategory
+     */
+    public function setPropertyCategory($propertyCategory)
+    {
+        $this->propertyCategory = $propertyCategory;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCharacteristicValues()
+    {
+        return $this->characteristicValues;
+    }
+
+    /**
+     * @param mixed $characteristicValue
+     */
+    public function addCharacteristicValue(CharacteristicValue $characteristicValue)
+    {
+        $this->characteristicValues[] = $characteristicValue;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMediaPresentation()
+    {
+        if(count($this->medias) > 0) {
+            foreach ($this->medias as $media) {
+                if ($media->getPresentation() == 1) {
+                    $this->mediaPresentation = $media->getName();
+                    break;
+
+                }
+            }
+            if(empty($this->mediaPresentation)) {
+                $this->mediaPresentation = $this->medias[0]->getName();
+
+            }
+        } else {
+            $this->mediaPresentation = 'default.png';
+        }
+        return $this->mediaPresentation;
+    }
+
+    /**
+     * @param mixed $mediaPresentation
+     */
+    public function setMediaPresentation($mediaPresentation)
+    {
+        $this->mediaPresentation = $mediaPresentation;
+    }
+
 }

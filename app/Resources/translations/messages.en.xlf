@@ -166,6 +166,55 @@
                 <source>label.receive_email_when</source>
                 <target>Receive a email when</target>
             </trans-unit>
+            <trans-unit id="label_property">
+                <source>label.property</source>
+                <target>Property</target>
+            </trans-unit>
+            <trans-unit id="label_property_category">
+                <source>label.property_category</source>
+                <target>Property's category</target>
+            </trans-unit>
+            <trans-unit id="label_new_property">
+                <source>label.new_property</source>
+                <target>New property</target>
+            </trans-unit>
+            <trans-unit id="label_rental">
+                <source>label.rental</source>
+                <target>Rental</target>
+            </trans-unit>
+            <trans-unit id="label_property_name_exemple">
+                <source>label.property_name_exemple</source>
+                <target>Ex. : Château du pâpe, Gîte des Lilas...</target>
+            </trans-unit>
+            <trans-unit id="label_rental_name_exemple">
+                <source>label.rental_name_exemple</source>
+                <target>Ex. : Chambre royal, gîte des lilas...</target>
+            </trans-unit>
+            <trans-unit id="label_new_address">
+                <source>label.new_address</source>
+                <target>New address</target>
+            </trans-unit>
+            <trans-unit id="label_property_pictures_explication">
+                <source>label.property_pictures_explication</source>
+                <target>Only property frontage or commun room (such as the castel's living room).</target>
+            </trans-unit>
+            <trans-unit id="label_prices">
+                <source>label.prices</source>
+                <target>Prices</target>
+            </trans-unit>
+            <trans-unit id="label_rentals">
+                <source>label.rentals</source>
+                <target>Rentals</target>
+            </trans-unit>
+            <trans-unit id="label_my_properties">
+                <source>label.my_properties</source>
+                <target>My properties</target>
+            </trans-unit>
+            <trans-unit id="label_edit">
+                <source>label.edit</source>
+                <target>Edit</target>
+            </trans-unit>
+
         </body>
     </file>
 </xliff>

@@ -1,0 +1,31 @@
+{% extends 'host/base.html.twig' %}
+{% block table %}
+    <div class="row">
+        {% set length = properties|length %}
+        {% set i = 0 %}
+        {% for j in 0..(length/3)|round %}
+            <div class="col-sm-12">
+                <ul class="nav nav-pills nav-stacked">
+                    {% for property in i..(i+3) if (i < length) %}
+                        <div class="col-sm-4">
+                            <div class="card">
+                                <img style="width: 318px;height: 180px" class="card-img-top" src="{{ mediaPath ~ properties[i].mediaPresentation }}" alt="{{ properties[i].name }}">
+                                <div class="card-block">
+                                    <h4 class="card-title">{{ properties[i].name }}</h4>
+                                    <p class="card-text">{{ properties[i].description }}</p>
+                                    <a href="{{ path('property_edit', {'id': properties[i].id }) }}" class="btn btn-primary">{% trans %}label.edit{% endtrans %}</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% set i = i+1 %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endfor %}
+    </div>
+    <script>
+        jQuery(document).ready(function() {
+            FancyBox.initFancybox();
+        });
+    </script>
+{% endblock %}

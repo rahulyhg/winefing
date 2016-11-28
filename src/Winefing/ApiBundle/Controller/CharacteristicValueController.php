@@ -78,4 +78,30 @@ class CharacteristicValueController extends Controller implements ClassResourceI
         $em->flush();
         return new Response($serializer->serialize($characteristicValue));
     }
+
+    public function putPropertyAction(Request $request) {
+        $em = $this->getDoctrine()->getManager();
+        $serializer = $this->container->get('winefing.serializer_controller');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Property');
+        $property = $repository->findOneById($request->request->get('property'));
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:CharacteristicValue');
+        $characteristicValue = $repository->findOneById($request->request->get('characteristicValue'));
+        $characteristicValue->addProperty($property);
+        $em->persist($characteristicValue);
+        $em->flush();
+        return new Response($serializer->serialize($characteristicValue));
+    }
+
+    public function putRentalAction(Request $request) {
+        $em = $this->getDoctrine()->getManager();
+        $serializer = $this->container->get('winefing.serializer_controller');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Rental');
+        $rental = $repository->findOneById($request->request->get('rental'));
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:CharacteristicValue');
+        $characteristicValue = $repository->findOneById($request->request->get('characteristicValue'));
+        $characteristicValue->addRental($rental);
+        $em->persist($characteristicValue);
+        $em->flush();
+        return new Response($serializer->serialize($characteristicValue));
+    }
 }

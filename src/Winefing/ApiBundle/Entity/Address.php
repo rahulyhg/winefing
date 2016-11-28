@@ -35,6 +35,12 @@ class Address
     private $domains;
 
     /**
+     * @var domains
+     * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\Property", mappedBy="address")
+     */
+    private $properties;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="route", type="string", length=255, nullable=true)
@@ -338,6 +344,14 @@ class Address
     public function getDomains()
     {
         return $this->domains;
+    }
+
+    /**
+     * @return domains
+     */
+    public function getProperties()
+    {
+        return $this->properties;
     }
 }
 

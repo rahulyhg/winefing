@@ -31,4 +31,14 @@ class CharacteristicRepository extends \Doctrine\ORM\EntityRepository
         }
         return $characteristics;
     }
+    function findByScopeName($scopeName) {
+        $query = $this->createQueryBuilder('characteristic')
+            ->join("characteristic.characteristicCategory", "characteristicCategory")
+            ->join("characteristicCategory.scope", "scope")
+            ->where('scope.name = :scopeName')
+            ->setParameter('scopeName', $scopeName)
+            ->getQuery();
+        $characteristics = $query->getResult();
+        return $characteristics;
+    }
 }
