@@ -40,27 +40,32 @@ class HostUserController extends Controller
         $response = $api->get($this->get('_router')->generate('api_get_host_user', array('id'=>$id)));
         $user= $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\User', 'json');
 
-        $response = $api->get($this->get('router')->generate('api_get_subscriptions_user_group_format', array('userGroup'=> UserGroupEnum::Host, 'format' => SubscriptionFormatEnum::Sms)));
-        $subscriptionsSms = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\Subscription>', 'json');
+        $response = $api->get($this->get('router')->generate('api_get_subscriptions_user_group', array('userGroup'=> UserGroupEnum::Host)));
+        $subscriptions = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\Subscription>', 'json');
+        $subscriptionFormatList = $this->subscriptionsByFormat($user, $subscriptions);
 
-        $response = $api->get($this->get('router')->generate('api_get_subscriptions_user_group_format', array('userGroup'=> UserGroupEnum::Host, 'format' => SubscriptionFormatEnum::Email)));
-        $subscriptionsEmail = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\Subscription>', 'json');
 
-        $subscriptionIds = array();
-        foreach($user->getSubscriptions() as $subscription) {
-            $subscriptionIds[$subscription->getId()] = $subscription->getId();
-        }
         $response = $api->get($this->get('_router')->generate('api_get_host_users_picture_path'));
         $serializer = $this->container->get('winefing.serializer_controller');
         $picturePath = $serializer->decode($response->getBody()->getContents());
 
+
         return $this->render('host/user/index.html.twig', array(
-            'user' => $user, 'picturePath' => $picturePath,
-            'subscriptionsSms' => $subscriptionsSms,
-            'subscriptionsEmail' => $subscriptionsEmail,
-            'subscriptionIds' => $subscriptionIds,
+            'user' => $user,
+            'picturePath' => $picturePath,
+            'subscriptionFormatList' => $subscriptionFormatList,
             'anchor' => $anchor
         ));
+    }
+    public function subscriptionsByFormat($user, $subscriptions) {
+        $subscriptionFormatList = array();
+        foreach($subscriptions as $subscription) {
+            $subscriptionFormatList[$subscription->getFormat()][] = $subscriptions;
+            if($user->getSubscriptions()->contains($subscription)) {
+
+            }
+        }
+        return $subscriptionFormatList;
     }
 
     /**
@@ -69,13 +74,30 @@ class HostUserController extends Controller
     public function submitAction(Request $request)
     {
         $api = $this->container->get('winefing.api_controller');
-        $serializer = $this->container->get('winefing.serializer_controller');
-        $response =  $api->put($this->get('router')->generate('api_put_host_user'), $request->request->all());
-        $host = $serializer->decode($response->getBody()->getContents());
-        $request->getSession()
-            ->getFlashBag()
-            ->add('success', "The user is well modified.");
+        $serializer = $this->container->get("winefing.serializer_controller");
+
+        $user = $request->request->all()["user"];
+        $response =  $api->post($this->get('router')->generate('api_post_host_user'), $user);
+        $user = $serializer->decode($response->getBody()->getContents());
+
+        $address = $request->request->all()["address"];
+        $response =  $api->post($this->get('router')->generate('api_post_address'), $address);
+        $address = $serializer->decode($response->getBody()->getContents());
+
+        $domain = $request->request->all()["domain"];
+        $domain["user"] = $user["id"];
+        $domain["address"] = $address["id"];
+        $api->post($this->get('router')->generate('api_post_domain'), $domain);
+
+
         return $this->redirectToRoute('user_host');
+//        $serializer = $this->container->get('winefing.serializer_controller');
+//        $response =  $api->put($this->get('router')->generate('api_put_host_user'), $request->request->all());
+//        $host = $serializer->decode($response->getBody()->getContents());
+//        $request->getSession()
+//            ->getFlashBag()
+//            ->add('success', "The user is well modified.");
+//        return $this->redirectToRoute('user_host');
     }
     /**
      * @Route("/submit/pictures/host", name="host_picture_submit")

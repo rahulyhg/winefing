@@ -105,38 +105,32 @@
                     </form>
                 </div>
                 <div class="tab-pane fade in" id="notifications">
-                    <form name="subscription" method="post" action="{{ path('host_subscriptions_submit') }}">
-                        <input name="subscription[user]" value="{{ user.id }}" readonly hidden>
-                        <h4>{% trans %}label.receive_sms_when{% endtrans %} :</h4>
-                            {% set j = 0 %}
-                            {% for subscription in subscriptionsSms %}
-                                {% set checked = "" %}
-                                {% set key = subscription.id %}
-                                {% if subscriptionIds[key] is defined %}
-                                    {% set checked = "checked" %}
-                                {% endif %}
-                                <input name="subscription[subscriptions][{{ j }}][checkbox]" type="checkbox" value="0" hidden checked>
-                                <input name="subscription[subscriptions][{{ j }}][checkbox]]" type="checkbox" {{ checked }} value="1" >
-                                {{ subscription.subscriptionTrs[0].name }}
-                                <input name="subscription[subscriptions][{{ j }}][id]" value="{{ subscription.id }}" readonly hidden>
-                                {% set j = j+1%}
-                                <br>
-                            {% endfor %}
-                        <br>
-                        <h4>{% trans %}label.receive_email_when{% endtrans %} :</h4>
-                            {% for subscription in subscriptionsEmail %}
-                                {% set checked = "" %}
-                                {% set key = subscription.id %}
-                                {% if subscriptionIds[key] is defined %}
-                                    {% set checked = "checked" %}
-                                {% endif %}
-                                <input name="subscription[subscriptions][{{ j }}][checkbox]" type="checkbox" value="0" hidden checked>
-                                <input name="subscription[subscriptions][{{ j }}][checkbox]" type="checkbox" {{ checked }} value="1">
-                                {{ subscription.subscriptionTrs[0].name }}
-                                <input name="subscription[subscriptions][{{ j }}][id]" value="{{ subscription.id }}" readonly hidden>
-                                {% set j = j+1%}
-                                <br>
-                            {% endfor %}
+                    <form name="subscriptionForm" method="post" action="{{ path('host_subscriptions_submit') }}">
+                        <input name="subscriptionForm[user]" value="{{ user.id }}" readonly hidden>
+                        {% set i = 0 %}
+                        {% for format,subscriptions in subscriptionFormatList %}
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h4>{{ format }}</h4>
+                                </div>
+                                <div class="panel-body">
+                                    {% for subscription in subscriptions %}
+                                        {% set name = "subscriptionForm[subscription]["~i~"][value]" %}
+                                        <div class="form-group">
+                                            <input name="subscriptionForm[subscription][{{ i }}][id]" value="{{ subscription.id }}" hidden>
+                                            {% set checked = "" %}
+                                            {#{% if subscription.value == 1 %}#}
+                                                {#{% set checked = "checked" %}#}
+                                            {#{% endif %}#}
+                                            {{ subscription.subscriptionTrs[0].name }}
+                                            <input name="{{ name }}" type="checkbox" value="0" hidden checked>
+                                            <input name="{{ name }}" type="checkbox" {{ checked }} value="1">
+                                        </div>
+                                        {% set i = i+1 %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endfor %}
                         <button type="submit" class="btn btn-primary pull-right">{% trans %}label.submit{% endtrans %}</button>
                     </form>
                 </div>

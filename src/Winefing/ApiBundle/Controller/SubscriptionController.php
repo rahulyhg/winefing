@@ -36,10 +36,10 @@ class SubscriptionController extends Controller implements ClassResourceInterfac
         $subscriptions = $repository->findAll();
         return new Response($serializer->serialize($subscriptions));
     }
-    public function cgetUserGroupFormatAction($userGroup, $format) {
+    public function cgetUserGroupAction($userGroup) {
         $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Subscription');
-        $subscriptions = $repository->findBy(array('userGroup' => $userGroup, 'format' => $format));
+        $subscriptions = $repository->findBy(array('userGroup' => $userGroup));
         return new Response($serializer->serialize($subscriptions, 'json'));
     }
     public function postAction(Request $request)

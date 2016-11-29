@@ -15,6 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use Doctrine\ORM\EntityManager;
 use Winefing\ApiBundle\Entity\MediaFormatEnum;
+use Winefing\ApiBundle\Entity\UserGroupEnum;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
@@ -48,6 +49,39 @@ class HostUserController extends Controller implements ClassResourceInterface
         $webPath = $this->container->get('winefing.webpath_controller');
         $picturePath = $webPath->getPath($this->getParameter('user_directory'));
         return new Response($serializer->serialize($picturePath));
+    }
+
+    /**
+     * New a user
+     * @param Request $request
+     * @return Response
+     */
+    public function postAction(Request $request)
+    {
+        $userManager = $this->get('fos_user.user_manager');
+        $user = $userManager->createUser();
+        $em = $this->getDoctrine()->getManager();
+        $serializer = $this->container->get("jms_serializer");
+        $user->setFirstName($request->request->get('firstName'));
+        $user->setLastName(strtoupper($request->request->get('lastName')));
+        $user->setPhoneNumber($request->request->get('phoneNumber'));
+        $user->setEmail($request->request->get('email'));
+        $user->setUserName($request->request->get('email'));
+        $user->setPlainPassword("winefing");
+        $role[0] = UserGroupEnum::Host;
+        $user->setRoles($role);
+        if(!empty($request->request->get('birthDate'))) {
+            $user->setBirthDate($request->request->get('birthDate'));
+        }
+        $validator = $this->get('validator');
+        $errors = $validator->validate($user);
+        if (count($errors) > 0) {
+            $errorsString = (string)$errors;
+            throw new HttpException(400, $errorsString);
+        }
+        $em->persist($user);
+        $userManager->updateUser($user);
+        return new Response($serializer->serialize($user, 'json'));
     }
 
     /**
