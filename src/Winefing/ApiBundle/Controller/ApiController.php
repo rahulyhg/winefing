@@ -62,7 +62,7 @@ class ApiController {
         }
 
         $body[] = [
-            'name'     => 'picture',
+            'name'     => 'media',
             'contents' => fopen($file->getRealPath(), "r"),
             'filename' => $file->getClientOriginalName(),
             'Content-type' => 'multipart/form-data'

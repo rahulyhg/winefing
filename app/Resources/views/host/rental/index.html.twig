@@ -1,7 +1,44 @@
 {% extends 'host/base.html.twig' %}
 {% block table %}
     <div class="row">
-        <a class="btn-default" href="{{ path('rental_new') }}">Ajouter</a>
+        <div style="text-align: center">
+            <a href="{{ path('property_new') }}">
+                <button class="btn btn-primary">Ajouter</button>
+            </a>
+        </div>
+        <br>
+        <div>
+            {% set length = rentals|length %}
+            {% set i = 0 %}
+            {% for j in 0..(length/3)|round %}
+                <div class="row container-realestate">
+                    {% for property in i..(i+3) if (i < length) %}
+                        <div class="col-md-4 col-sm-6 col-xs-12">
+                            <div class="property-container">
+                                <div class="property-image">
+                                    <img src="{{ mediaPath ~ rentals[i].mediaPresentation }}" alt="{{ rentals[i].name }}" alt="mikha real estate theme">
+                                    <div class="property-status">
+                                        <span>For Rent</span>
+                                    </div>
+                                </div>
+                                <div class="property-features">
+                                    <span><i class="fa fa-home"></i> 5,000 m<sup>2</sup></span>
+                                    <span><i class="fa fa-hdd-o"></i> 2 Bed</span>
+                                    <span><i class="fa fa-male"></i> 2 Bath</span>
+                                </div>
+                                <div class="property-content">
+                                    <h3><a href="{{ path('property_edit', {'id': rentals[i].id }) }}">{{ rentals[i].name }}</a> <small>{{ rentals[i].description }}</small></h3>
+                                    <a href="{{ path('property_edit', {'id': rentals[i].id }) }}">
+                                        <button class="btn btn-primary pull-right">Modifier</button>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% set i = i+1 %}
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
     </div>
     <script>
         jQuery(document).ready(function() {

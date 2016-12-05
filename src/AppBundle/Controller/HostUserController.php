@@ -60,10 +60,7 @@ class HostUserController extends Controller
     public function subscriptionsByFormat($user, $subscriptions) {
         $subscriptionFormatList = array();
         foreach($subscriptions as $subscription) {
-            $subscriptionFormatList[$subscription->getFormat()][] = $subscriptions;
-            if($user->getSubscriptions()->contains($subscription)) {
-
-            }
+            $subscriptionFormatList[$subscription->getFormat()][] = $subscription;
         }
         return $subscriptionFormatList;
     }

@@ -1,8 +1,6 @@
 /**
  * Created by audreycarval on 25/10/2016.
  */
-
-
 function setPathDeleteButton(path) {
     $("#delete").attr("href", path);
     $('#confirmation').modal();
@@ -116,6 +114,10 @@ $(document).ready(function () {
 
     var url = document.location.toString();
     if (url.match('#')) {
-        $('.nav-pills a[href="#' + url.split('#')[1] + '"]').tab('show');
+        console.log('in');
+        $('.nav-pills a[href="#' + url.split('#')[1] + '"]').tab('show', function() {
+            console.log('test');
+            $('html,body').animate({scrollTop: $(this).offset().top}, 500);
+        });
     }
 });

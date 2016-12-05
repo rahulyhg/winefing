@@ -24,17 +24,21 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Winefing\ApiBundle\Entity\ScopeEnum;
+use FOS\RestBundle\Controller\Annotations\Get;
 
 
 class RentalController extends Controller implements ClassResourceInterface
 {
-
+    /**
+     * GET Route annotation.
+     * @Get("api/property/{id}")
+     */
     public function getAction($id)
     {
-        $serializer = $this->container->get('winefing.serializer_controller');
+        $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Rental');
         $rental = $repository->findOneById($id);
-        $json = $serializer->serialize($rental);
+        $json = $serializer->serialize($rental, 'json');
         return new Response($json);
     }
 
@@ -45,8 +49,8 @@ class RentalController extends Controller implements ClassResourceInterface
         $rental = $repository->findOneById($rentalId);
 
         $ids = array();
-        foreach($rental->getCharacteristicRentalValues() as $characteristicRentalValue) {
-            $ids[] = $characteristicRentalValue->getCharacteristic()->getId();
+        foreach($rental->getCharacteristicValues() as $characteristicValue) {
+            $ids[] = $characteristicValue->getCharacteristic()->getId();
         }
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Characteristic');
         $characteristics = $repository->findMissingCharacteristics($ids, ScopeEnum::Rental);
@@ -54,19 +58,19 @@ class RentalController extends Controller implements ClassResourceInterface
 
     }
 
-    public function cgetPicturePathAction()
+    public function getMediaPathAction()
     {
         $serializer = $this->container->get('winefing.serializer_controller');
         $webPath = $this->container->get('winefing.webpath_controller');
-        $picturePath = $webPath->getPath($this->getParameter('rental_directory'));
-        return new Response($serializer->serialize($picturePath));
+        $mediaPath = $webPath->getPath($this->getParameter('rental_directory'));
+        return new Response($serializer->serialize($mediaPath));
     }
 
-    public function getByUserAction($userId) {
+    public function cgetByUserAction($userId) {
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Rental');
-        $rental = $repository->findOneByUser($userId);
+        $rentals = $repository->findByUser($userId);
         $serializer = $this->container->get('jms_serializer');
-        $json = $serializer->serialize($rental, 'json');
+        $json = $serializer->serialize($rentals, 'json');
         return new Response($json);
     }
     public function postPictureAction(Request $request) {
@@ -97,16 +101,11 @@ class RentalController extends Controller implements ClassResourceInterface
     public function postAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $serializer = $this->container->get('winefing.serializer_controller');
+        $serializer = $this->container->get('jms_serializer');
         $rental = new Rental();
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:WineRegion');
-        $rental->setWineRegion($repository->findOneById($request->request->get('wineRegion')));
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Address');
-        $rental->setAddress($repository->findOneById($request->request->get('address')));
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
-        $rental->setUser($repository->findOneById($request->request->get('user')));
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Property');
+        $rental->setProperty($repository->findOneById($request->request->get('property')));
         $rental->setName($request->request->get('name'));
-        $rental->setDescription($request->request->get('description'));
         $validator = $this->get('validator');
         $errors = $validator->validate($rental);
         if (count($errors) > 0) {
@@ -115,17 +114,17 @@ class RentalController extends Controller implements ClassResourceInterface
         }
         $em->persist($rental);
         $em->flush();
-        $json = $serializer->serialize($rental);
+        $json = $serializer->serialize($rental, 'json');
         return new Response($json);
     }
     public function putAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $serializer = $this->container->get('winefing.serializer_controller');
+        $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Rental');
         $rental = $repository->findOneById($request->request->get('id'));
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:WineRegion');
-        $rental->setWineRegion($repository->findOneById($request->request->get('wineRegion')));
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Property');
+        $rental->setProperty($repository->findOneById($request->request->get('property')));
         $rental->setName($request->request->get('name'));
         $rental->setDescription($request->request->get('description'));
         $validator = $this->get('validator');
@@ -136,7 +135,7 @@ class RentalController extends Controller implements ClassResourceInterface
         }
         $em->persist($rental);
         $em->flush();
-        $json = $serializer->serialize($rental);
+        $json = $serializer->serialize($rental, 'json');
         return new Response($json);
     }
     public function putAddressAction(Request $request)

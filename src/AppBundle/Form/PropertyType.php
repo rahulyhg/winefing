@@ -35,9 +35,6 @@ class PropertyType extends AbstractType
             ->add('propertyCategory', EntityType::class,  array(
                 'class' => 'WinefingApiBundle:PropertyCategory',
                 'choice_label' => 'code'))
-//            ->add('rental_category', EntityType::class,  array(
-//                'class' => 'WinefingApiBundle:Language',
-//                'choice_label' => 'name'));
         ;
     }
     public function configureOptions(OptionsResolver $resolver)

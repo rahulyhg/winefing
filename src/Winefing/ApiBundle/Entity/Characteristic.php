@@ -4,6 +4,7 @@ namespace Winefing\ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * Characteristic
@@ -19,18 +20,21 @@ class Characteristic
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"default"})
      */
     private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Format")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"format"})
      */
     private $format;
 
     /**
      * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\CharacteristicCategory", inversedBy="characteristics", fetch="EAGER")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"category"})
      */
     private $characteristicCategory;
 
@@ -38,20 +42,21 @@ class Characteristic
     /**
      * @var CharacteristicTr
      * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\CharacteristicTr", mappedBy="characteristic", fetch="EAGER", cascade="ALL")
+     * @Groups({"trs"})
      */
     private $characteristicTrs;
 
     /**
      * @var string
-     *
      * @ORM\Column(name="description", type="string", length=255, nullable=true)
+     * @Groups({"default"})
      */
     private $description;
 
     /**
      * @var string
-     *
      * @ORM\Column(name="picture", type="string", length=255, nullable=true)
+     * @Groups({"default"})
      */
     private $picture;
 
@@ -59,6 +64,7 @@ class Characteristic
      * @var bool
      *
      * @ORM\Column(name="activated", type="boolean")
+     * @Groups({"default"})
      */
     private $activated;
 

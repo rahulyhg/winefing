@@ -30,11 +30,10 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\Common\Collections\ArrayCollection;
 use Winefing\ApiBundle\Entity\CharacteristicValue;
-use Winefing\ApiBundle\Entity\Scope;
 use Winefing\ApiBundle\Entity\ScopeEnum;
 use Winefing\ApiBundle\Entity\Property;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-
+use FOS\RestBundle\Controller\Annotations\RequestParam;
 
 class PropertyController extends Controller
 {
@@ -44,114 +43,250 @@ class PropertyController extends Controller
     public function cgetAction() {
         $userId = 57;
         $api = $this->container->get('winefing.api_controller');
-        $serializer = $this->container->get('winefing.serializer_controller');
-//        $response = $response = $api->get($this->get('_router')->generate('api_get_properties', array('userId' => $userId)));
-//        $properties = $serializer->decode($response->getBody()->getContents());
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Property');
-        $properties = $repository->findByUser($userId);
-        var_dump(count($properties));
-        $response = $api->get($this->get('_router')->generate('api_get_properties_picture_path'));
+        $serializer = $this->container->get('jms_serializer');
+        $response = $api->get($this->get('_router')->generate('api_get_properties_by_user', array('userId' => $userId)));
+        $properties = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\Property>', 'json');
+        $response = $api->get($this->get('_router')->generate('api_get_property_media_path'));
         $serializer = $this->container->get('winefing.serializer_controller');
         $mediaPath = $serializer->decode($response->getBody()->getContents());
         return $this->render('host/property/index.html.twig', array(
             'properties' => $properties,
             'mediaPath' => $mediaPath));
+        return new Response();
 
     }
     /**
      * @Route("/property/edit/{id}", name="property_edit")
      */
-    public function putAction($id) {
-        $userId = 57;
-        return $this->render('host/property/edit.html.twig');
+    public function putAction($id, Request $request) {
+        $return = array();
+        $property = $this->getProperty($id);
 
-    }
-    /**
-     * @Route("/property/new/{id}", name="property_new")
-     */
-    public function newAction($id = '') {
-        $userId = 57;
-        $api = $this->container->get('winefing.api_controller');
-        $serializer = $this->container->get('winefing.serializer_controller');
-        if(!empty($id)) {
-            $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Property');
-            $property = $repository->findOneById($id);
-        } else {
-            $property = new Property();
-            $response = $response = $api->get($this->get('_router')->generate('api_get_domain_by_user', array('userId' => $userId)));
-            $domain = $serializer->decode($response->getBody()->getContents());
-            $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Domain');
-            $domain = $repository->findOneById($domain["id"]);
-            $domain = $this->getDoctrine()->getEntityManager()->merge($domain);
-            $property->setAddress($domain->getAddress());
+        $property = $this->getDoctrine()->getEntityManager()->merge($property);
+        $propertyForm =  $this->createForm(PropertyType::class, $property);
+        $propertyForm->handleRequest($request);
+        if ($propertyForm->isSubmitted()) {
+            if($propertyForm->isValid()) {
+                $propertyForm = $request->request->all()['property'];
+                $propertyForm["id"] = $property->getId();
+                $property = $this->submit($propertyForm);
+            }
+            return $this->redirect($this->generateUrl('property_edit', array('id'=> $property->getId())). '#presentation');
         }
-        $propertyForm = $this->createForm(PropertyType::class, $property, array('action' => $this->generateUrl('property_address_submit')));
-        $propertyForm->add('address', ChoiceType::class,
-                array('choices' => array($this->get('translator')->trans('label.new_address') => '', $property->getAddress()->getFormattedAddress() => $property->getAddress()->getId()),
-            'preferred_choices' => array($property->getAddress()->getId()),
-            'data' => $property->getAddress()->getId()));
-        $address = new Address();
-        $addressForm = $this->createForm(AddressType::class, $address, array('action' => $this->generateUrl('domain_address_submit')));
+        $return['propertyForm'] = $propertyForm->createView();
+
+
+        $address = $this->getAddress($property);
+        $addressForm = $this->createForm(AddressType::class, $address);
+        if (empty($address->getId())) {
+            $addressListChoice = $this->createAddressListChoice($property);
+            $return['addressListChoice'] = $addressListChoice->createView();
+        }
+
         $this->setMissingCharacteristicsAction($property);
         $characteristicCategories = $this->getCharacteristicCategories($property);
-        return $this->render('host/property/new.html.twig', array(
-            'propertyForm' => $propertyForm->createView(),
-            'addressForm'=>$addressForm->createView(),
-            'characteristicCategories' => $characteristicCategories));
+
+        $mediaPath = $this->getMediaPath();
+        $rentalMediaPath = $this->getRentalMediaPath();
+
+        $addressForm->handleRequest($request);
+        if ($addressForm->isSubmitted()) {
+            if ($addressForm->isValid()) {
+                $addressForm = $request->request->all()['address'];
+                $addressForm["property"] = $property->getId();
+                $addressForm["id"] = $address->getId();
+                $this->submitAddress($addressForm);
+            }
+            return $this->redirect($this->generateUrl('property_edit', array('id' => $property->getId())) . '#address');
+        }
+        if ($request->isMethod('POST')) {
+            $media = $request->files->get('media');
+            $characteristicValueForm = $request->request->get("characteristicValueForm");
+            if (!empty($media)) {
+                $media["property"] = $property->getId();
+                $this->submitPictures($media);
+                return $this->redirect($this->generateUrl('property_edit', array('id' => $property->getId())) . '#medias');
+            } elseif (!empty($characteristicValueForm)) {
+                $characteristicValueForm["property"] = $property->getId();
+                $this->submitCharacteristicPropertyValues($characteristicValueForm);
+                return $this->redirect($this->generateUrl('property_edit', array('id' => $property->getId())) . '#informations');
+            }
+        }
+        $return['addressForm'] = $addressForm->createView();
+        $return['characteristicCategories'] = $characteristicCategories;
+        $return['medias'] = $property->getMedias();
+        $return['rentals'] = $property->getRentals();
+        $return['mediaPath'] = $mediaPath;
+        $return['rentalMediaPath'] = $rentalMediaPath;
+        return $this->render('host/property/edit.html.twig', $return);
+        return new Response();
+
+    }
+    /**
+     * @Route("/property/new/{step}/{id}", name="property_new")
+     */
+    public function newAction($step, $id = '', Request $request) {
+        $return = array();
+        if(empty($id)) {
+            $property = new Property();
+        } else {
+            $property = $this->getProperty($id);
+        }
+        $property = $this->getDoctrine()->getEntityManager()->merge($property);
+
+        if($step == "step-1") {
+            $propertyForm = $this->createForm(PropertyType::class, $property);
+            $propertyForm->handleRequest($request);
+            if ($propertyForm->isSubmitted()) {
+                if ($propertyForm->isValid()) {
+                    $propertyForm = $request->request->all()['property'];
+                    $propertyForm["id"] = $property->getId();
+                    $property = $this->submit($propertyForm);
+                }
+                return $this->redirect($this->generateUrl('property_new', array('step' => 'step-2', 'id' => $property->getId())) . '#step-2');
+
+            }
+            $return['propertyForm'] = $propertyForm->createView();
+        }
+        if($step == 'step-3') {
+            $address = $this->getAddress($property);
+            $addressForm = $this->createForm(AddressType::class, $address);
+            if (empty($address->getId())) {
+                $addressListChoice = $this->createAddressListChoice($property);
+                $return['addressListChoice'] = $addressListChoice->createView();
+            }
+            $addressForm->handleRequest($request);
+            if ($addressForm->isSubmitted()) {
+                if ($addressForm->isValid()) {
+                    $addressForm = $request->request->all()['address'];
+                    $addressForm["property"] = $property->getId();
+                    $addressForm["id"] = $address->getId();
+                    $this->submitAddress($addressForm);
+                }
+                return $this->redirect($this->generateUrl('property_new', array('step' => 'step-3', 'id' => $property->getId())) . '#step-3');
+
+            }
+            $return['addressForm'] = $addressForm->createView();
+        }
+        if($step == 'step-4') {
+            if ($request->isMethod('POST')) {
+                $media = $request->files->get('media');
+                if (!empty($media)) {
+                    $media["property"] = $property->getId();
+                    $this->submitPictures($media);
+                    return $this->redirect($this->generateUrl('property_edit', array('id' => $property->getId())) . '#presentation');
+
+                }
+            }
+        }
+        if($step == 'step-2') {
+            $this->setMissingCharacteristicsAction($property);
+            $characteristicCategories = $this->getCharacteristicCategories($property);
+            $characteristicValueForm = $request->request->get("characteristicValueForm");
+            if (!empty($characteristicValueForm)) {
+                $characteristicValueForm["property"] = $property->getId();
+                $this->submitCharacteristicPropertyValues($characteristicValueForm);
+                return $this->redirect($this->generateUrl('property_new', array('step' => 'step-4', 'id' => $property->getId())) . '#step-4');
+
+            }
+            $return['characteristicCategories'] = $characteristicCategories;
+        }
+        return $this->render('host/property/new.html.twig', $return);
+    }
+    public function getProperty($id) {
+        $api = $this->container->get('winefing.api_controller');
+        $serializer = $this->container->get('jms_serializer');
+        $response = $api->get($this->get('_router')->generate('api_get_property', array('id' => $id)));
+        $property = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Property', 'json');
+        return $property;
+    }
+    /**
+     *
+     * @param $property
+     * @return mixed
+     */
+    public function getAddress($property) {
+        if($property->isAddressDomain()) {
+            $address = new Address();
+        } else {
+            $address = $property->getAddress();
+        }
+        return $address;
+    }
+    public function createAddressListChoice($property) {
+        $data = array();
+        return $form = $this->createFormBuilder($data)->add('address', ChoiceType::class,
+                array('choices' => array($this->get('translator')->trans('label.new_address') => '', $property->getAddress()->getFormattedAddress() => $property->getAddress()->getId()),
+                    'preferred_choices' => array($property->getAddress()->getId()),
+                    'data' => $property->getAddress()->getId()))
+            ->getForm();
     }
 
-    /**
-     * @Route("/submit/property", name="property_submit")
-     */
-    public function submitAction(Request $request)
-    {
+    public function getMediaPath() {
         $api = $this->container->get('winefing.api_controller');
         $serializer = $this->container->get('winefing.serializer_controller');
-        $response =  $api->post($this->get('router')->generate('api_post_property'), $request->request->all()["property"]);
-        $property = $serializer->decode($response->getBody()->getContents());
-        $request->getSession()
-            ->getFlashBag()
-            ->add('success', "The property is well modified.");
-        return $this->redirect($this->generateUrl('property_new', array('id' => $property["id"])). '#step-2');
+        $response = $api->get($this->get('_router')->generate('api_get_property_media_path'));
+        $mediaPath = $serializer->decode($response->getBody()->getContents());
+        return $mediaPath;
     }
-    /**
-     * @Route("/submit/pictures/property", name="property_pictures_submit")
-     */
-    public function submitPictureAction(Request $request)
+    public function getRentalMediaPath() {
+        $api = $this->container->get('winefing.api_controller');
+        $serializer = $this->container->get('winefing.serializer_controller');
+        $response = $api->get($this->get('_router')->generate('api_get_rental_media_path'));
+        $rentalMediaPath = $serializer->decode($response->getBody()->getContents());
+        return $rentalMediaPath;
+    }
+    public function submit($property)
     {
         $api = $this->container->get('winefing.api_controller');
-        $property["property"] = $request->request->all()["property"];
-        var_dump($request->files->all());
-        foreach($request->files->all()["medias"] as $media) {
-            var_dump("o");
-            $api->file($this->get('router')->generate('api_post_property_picture'), $property, $media);
+        $serializer = $this->container->get('jms_serializer');
+        if(empty($property["id"])) {
+            $response = $api->post($this->get('router')->generate('api_post_property'), $property);
+        } else {
+            $response = $api->put($this->get('router')->generate('api_put_property'), $property);
         }
-        return $this->redirect($this->generateUrl('property_user'). '#pictures');
+        $property = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Property', 'json');
+        return $property;
+    }
+
+    public function submitPictures($media)
+    {
+        $api = $this->container->get('winefing.api_controller');
+        $serializer = $this->container->get('jms_serializer');
+        $body["property"] = $media["property"];
+        foreach($media["medias"] as $media) {
+            $uploadDirectory["upload_directory"] = $this->getParameter('property_directory_upload');
+            $response = $api->file($this->get('router')->generate('api_post_media'), $uploadDirectory, $media);
+            $media = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Media', "json");
+            $body["media"] = $media->getId();
+            $api->put($this->get('router')->generate('api_put_media_property'), $body);
+        }
     }
     /**
      * @Route("/submit/address/property", name="property_address_submit")
      */
-    public function submitAddressAction(Request $request) {
+    public function submitAddress($address) {
         $api = $this->container->get('winefing.api_controller');
-        $serializer = $this->container->get('winefing.serializer_controller');
-        $property = $request->request->all()['address']['property'];
-        $response =  $api->post($this->get('router')->generate('api_post_address'), $request->request->all()['address']);
-        $address = $serializer->decode($response->getBody()->getContents());
-        $body["address"] = $address["id"];
-        $body["property"] = $property;
-        $api->put($this->get('router')->generate('api_put_property_address'), $body);
-        return $this->redirect($this->generateUrl('property_new', array('id' => $property)). '#step-4');
+        $serializer = $this->container->get('jms_serializer');
+        $property = $address['property'];
+        if(empty($address["id"])) {
+            $response =  $api->post($this->get('router')->generate('api_post_address'), $address);
+            $address = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Address', 'json');
+            $body["address"] = $address->getId();
+            $body["property"] = $property;
+            $api->put($this->get('router')->generate('api_put_property_address'), $body);
+        } else {
+            $response = $api->put($this->get('router')->generate('api_put_address'), $address);
+            $address = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Address', 'json');
+        }
+        return $address;
     }
-    /**
-     * @Route("/submit/characteristicpropertyValues", name="characteristic_property_value_submit")
-     */
-    public function submitCharacteristicPropertyValues(Request $request) {
+    public function submitCharacteristicPropertyValues($characteristicValueForm) {
         $api = $this->container->get('winefing.api_controller');
         $serializer = $this->container->get('winefing.serializer_controller');
-        $property = $request->request->all()["characteristicValueForm"]["property"];
-        foreach($request->request->all()["characteristicValueForm"]["characteristicValue"] as $characteristicValue) {
+        $property = $characteristicValueForm["property"];
+        foreach($characteristicValueForm["characteristicValue"] as $characteristicValue) {
             if (empty($characteristicValue["id"])) {
-                var_dump("empty");
                 $response = $api->post($this->get('router')->generate('api_post_characteristic_value'), $characteristicValue);
                 $characteristicValue = $serializer->decode($response->getBody()->getContents());
                 $characteristicValueProperty["property"] = $property;
@@ -161,7 +296,6 @@ class PropertyController extends Controller
                 $api->put($this->get('router')->generate('api_put_characteristic_value'), $characteristicValue);
             }
         }
-        return $this->redirect($this->generateUrl('property_new', array('id'=>$property)). '#step-3');
     }
 
     /**
@@ -176,26 +310,6 @@ class PropertyController extends Controller
             ->add('success', "The property is well deleted.");
         return $this->redirectToRoute('property_user');
     }
-    /**
-     * @Route("/address/property/{userId}", name="property_address")
-     */
-    public function getAddressAction($userId = 57) {
-        return $this->render('host/property/test.html.twig');
-    }
-    /**
-     * @Route("/pictures/property/submit", name="property_pictures_submit")
-     */
-    public function getPictureAction() {
-        $api = $this->container->get('winefing.api_controller');
-//        $response = $api->get($this->get('_router')->generate('api_get_property_by_user', array('userId' => $userId)));
-//        $serializer = $this->container->get('jms_serializer');
-//        $property = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\property', 'json');
-//        $address = $property->getAddress();
-//        $propertyForm = $this->createForm(AddressType::class, $address, array(
-//            'action' => $this->generateUrl('property_submit')));
-        return $this->redirectToRoute('properties');
-    }
-
     /**
      * @return array ["characteristicCateory"]["characteristicValueForms"]
      */

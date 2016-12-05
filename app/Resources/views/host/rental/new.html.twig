@@ -1,83 +1,101 @@
 {% extends 'host/base.html.twig' %}
 {% block table %}
+    {% set id = app.request.get('id') %}
+    {% set redirectRoute = url('rental_new', {'id' : id}) %}
     <div class="container">
         <div class="stepwizard col-md-offset-3">
             <div class="stepwizard-row setup-panel">
                 <div class="stepwizard-step">
-                    <a href="#step-1" type="button" class="btn btn-primary btn-circle">1</a>
-                    <p>{% trans %}label.property{% endtrans %}</p>
+                    <a id="anchor-step-1" href="#step-1" type="button" class="btn btn-primary btn-circle" disabled="disabled">1</a>
+                    <p>{% trans %}label.rental{% endtrans %}</p>
                 </div>
                 <div class="stepwizard-step">
-                    <a href="#step-2" type="button" class="btn btn-default btn-circle" disabled="disabled">2</a>
-                    <p>{% trans %}label.pictures{% endtrans %}</p>
-                </div>
-                <div class="stepwizard-step">
-                    <a href="#step-3" type="button" class="btn btn-default btn-circle" disabled="disabled">3</a>
+                    <a id="anchor-step-2" href="#step-2" type="button" class="btn btn-default btn-circle" disabled="disabled">2</a>
                     <p>{% trans %}label.informations{% endtrans %}</p>
                 </div>
                 <div class="stepwizard-step">
-                    <a href="#step-4" type="button" class="btn btn-default btn-circle" disabled="disabled">4</a>
+                    <a id="anchor-step-3" href="#step-3" type="button" class="btn btn-default btn-circle" disabled="disabled">3</a>
                     <p>{% trans %}label.prices{% endtrans %}</p>
+                </div>
+                <div class="stepwizard-step">
+                    <a id="anchor-step-4" href="#step-4" type="button" class="btn btn-default btn-circle" disabled="disabled">4</a>
+                    <p>{% trans %}label.pictures{% endtrans %}</p>
                 </div>
             </div>
         </div>
-        <form role="form" action="{{ path('host_submit') }}" method="post">
-            <div class="row setup-content" id="step-1">
-                <div class="col-xs-6 col-md-offset-3">
-                    <div class="col-md-12">
-                        <h3> {% trans %}label.property{% endtrans %} </h3>
-                        {{ form_start(rentalForm) }}
-                            <div class="form-group">
-                                {{ form_widget(rentalForm.id,  { 'attr': {'required': 'false'} }) }}
-                            </div>
-                            <div class="form-group">
-                                <label for="address">{% trans %}label.name{% endtrans %} </label>
-                                {{ form_widget(rentalForm.name,  { 'attr': {'class': 'form-control'} }) }}
-                            </div>
-                            <p style="font-style: italic">{% trans %}label.property_name_exemple{% endtrans %}</p>
-                            <div class="form-group">
-                                <label for="address">{% trans %}label.property{% endtrans %} </label>
-                                {{ form_widget(rentalForm.property,  { 'attr': {'class': 'form-control', 'id' :'property'} }) }}
-                            </div>
-                            <button onclick="test('{{ path('property_new') }}')" class="btn btn-primary nextBtn btn-lg pull-right" type="button" >{% trans %}label.next{% endtrans %}</button>
-                        {{ form_end(rentalForm) }}
-                    </div>
+        <div class="row setup-content" id="step-1">
+            <div class="col-xs-6 col-md-offset-3">
+                <div class="col-md-12">
+                    <h3> {% trans %}label.rental{% endtrans %} </h3>
+                    <form method="post" action="{{ path('rental_submit') }}">
+                        <input hidden value="{{ redirectRoute ~'#step-2' }}" name="rental[redirectRoute]">
+                        <div class="form-group">
+                            {{ form_widget(rentalForm.id,  { 'attr': {'required': 'false'} }) }}
+                        </div>
+                        <div class="form-group">
+                            <label for="address">{% trans %}label.name{% endtrans %} </label>
+                            {{ form_widget(rentalForm.name,  { 'attr': {'class': 'form-control'} }) }}
+                        </div>
+                        <p style="font-style: italic">{% trans %}label.property_name_exemple{% endtrans %}</p>
+                        <div class="form-group">
+                            <label for="address">{% trans %}label.property{% endtrans %} </label>
+                            {{ form_widget(rentalForm.property,  { 'attr': {'class': 'form-control', 'id' :'property'} }) }}
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg pull-right" type="button" >{% trans %}label.next{% endtrans %}</button>
+                    </form>
                 </div>
             </div>
-            <div class="row setup-content" id="step-2">
-                <div class="col-xs-6 col-md-offset-3">
-                    <div class="col-md-12">
-                        <h3>{% trans %}label.the_domain{% endtrans %}</h3>
-                        {#{{ include('host/domain/form.html.twig') }}#}
-                        <button class="btn btn-primary nextBtn btn-lg pull-right" type="button" >{% trans %}label.next{% endtrans %}</button>
-                    </div>
+        </div>
+        <div class="row setup-content" id="step-2">
+            <div class="col-xs-6 col-md-offset-3">
+                <div class="col-md-12">
+                    <h3>{% trans %}label.informations{% endtrans %}</h3>
+                    <form name="characteristicValue" action="{{ path('characteristic_rental_value_submit') }}" method="post">
+                        <input type="hidden" name="characteristicValueForm[rental]" value="{{ id }}">
+                        <input name="characteristicValueForm[redirectRoute]" value="{{ redirectRoute ~ '#step-3' }}" hidden>
+                        {% include('host/characteristic/valueForm.html.twig') %}
+                        <button class="btn btn-primary btn-lg pull-right" type="submit" >{% trans %}label.submit{% endtrans %}</button>
+                    </form>
                 </div>
             </div>
-            <div class="row setup-content" id="step-3">
-                <div class="col-xs-6 col-md-offset-3">
-                    <div class="col-md-12">
-                        <h3>{% trans %}label.address{% endtrans %}</h3>
-                        {#{{ include('host/address/form.html.twig') }}#}
+        </div>
+        <div class="row setup-content" id="step-3">
+            <div class="col-xs-6 col-md-offset-3">
+                <div class="col-md-12">
+                    <h3>{% trans %}label.prices{% endtrans %}</h3>
+                    <form name="price" method="post" action="#">
+                        <input type="hidden" name="characteristicValueForm[rental]" value="{{ id }}">
                         <input type="submit" class="btn btn-success btn-lg pull-right" value="{% trans %}label.submit{% endtrans %}" >
-                    </div>
+                    </form>
                 </div>
             </div>
-            <div class="row setup-content" id="step-4">
-                <div class="col-xs-6 col-md-offset-3">
-                    <div class="col-md-12">
-                        <h3>{% trans %}label.prices{% endtrans %}</h3>
-                        {#{{ include('host/address/form.html.twig') }}#}
-                        <input type="submit" class="btn btn-success btn-lg pull-right" value="{% trans %}label.submit{% endtrans %}" >
-                    </div>
+        </div>
+        <div class="row setup-content" id="step-4">
+            <div class="col-xs-6 col-md-offset-3">
+                <div class="col-md-12">
+                    <h3>{% trans %}label.pictures{% endtrans %}</h3>
+                    {% if id|length > 0 %}
+                        <form name="media" method="post" action="{{ path('rental_pictures_submit') }}" enctype="multipart/form-data">
+                            <input name="media[redirectRoute]" value="{{ url('rental_edit', {'id' : id}) ~'#presentation' }}" hidden>
+                            <input hidden name="media[rental]" value="{{ id }}">
+                            <input name="media[medias][]" type="file" multiple="true" class="form-control">
+                            <input type="submit" class="btn btn-success btn-lg pull-right" value="{% trans %}label.submit{% endtrans %}" >
+                        </form>
+                    {% endif %}
                 </div>
             </div>
-        </form>
+        </div>
     </div>
-    <script>
-        function test(url) {
-            if($('#property').find(":selected").text().length == 0) {
-                $(location).attr('href', url);
+    <script type="text/javascript">
+        $(document).ready(function() {
+            url = document.location.toString();
+            id = {{  id }};
+            step = url.split('#')[1];
+            if((step == 'strep-2' || step == 'step-3' || step == 'step-4') && id == '' ) {
+                step = 'step-1';
             }
-        }
+            document.getElementById("anchor-" + step).removeAttribute("disabled");
+            $("#anchor-" + step)[0].click();
+        });
     </script>
 {% endblock %}

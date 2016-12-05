@@ -32,11 +32,13 @@ class RentalType extends AbstractType
         $builder
             ->add('id',  HiddenType::class, array(
                 'required' => false))
-            ->add('name', null, array('attr'=> array('maxlength'=>"60")))
+            ->add('name', null, array('attr'=> array('maxlength'=>"60", 'required'=> true)))
+            ->add('description', null, array('attr'=> array('maxlength'=>"255", 'required'=> false)))
             ->add('property', EntityType::class,  array(
                 'class' => 'WinefingApiBundle:Property',
-                'choice_label' => 'name', 'multiple' =>false,
-                'placeholder' => 'Nouvel propriété'))
+                'choice_label' => 'name',
+                'placeholder' => 'Nouvel propriété',
+                'required' => false))
         ;
     }
     public function configureOptions(OptionsResolver $resolver)

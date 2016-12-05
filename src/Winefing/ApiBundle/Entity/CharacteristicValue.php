@@ -22,17 +22,17 @@ class CharacteristicValue
     private $id;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Domain", mappedBy="characteristicValues", cascade={"persist", "merge", "detach"})
+     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Domain", mappedBy="characteristicValues", fetch="EXTRA_LAZY", cascade={"persist", "merge", "detach"})
      */
     private $domains;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Property", mappedBy="characteristicValues", cascade={"persist", "merge", "detach"})
+     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Property", mappedBy="characteristicValues", fetch="EXTRA_LAZY", cascade={"persist", "merge", "detach"})
      */
     private $properties;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Rental", mappedBy="characteristicValues", cascade={"persist", "merge", "detach"})
+     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Rental", mappedBy="characteristicValues", fetch="EXTRA_LAZY", cascade={"persist", "merge", "detach"})
      */
     private $rentals;
 
@@ -116,7 +116,7 @@ class CharacteristicValue
     }
 
     public function addRental(Rental $rental) {
-        $rental->addCharacteristicRentalValue($this);
+        $rental->addCharacteristicValue($this);
         $this->rentals[] = $rental;
         return $this;
     }

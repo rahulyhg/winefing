@@ -117,7 +117,7 @@
                                     {% for subscription in subscriptions %}
                                         {% set name = "subscriptionForm[subscription]["~i~"][value]" %}
                                         <div class="form-group">
-                                            <input name="subscriptionForm[subscription][{{ i }}][id]" value="{{ subscription.id }}" hidden>
+                                            <input name="subscriptionForm[subscription][{{ i }}][id]" value="{{ subscription.activated }}" hidden>
                                             {% set checked = "" %}
                                             {#{% if subscription.value == 1 %}#}
                                                 {#{% set checked = "checked" %}#}

@@ -122,7 +122,7 @@ class HostUserController extends Controller implements ClassResourceInterface
     public function postPictureAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
         $serializer = $this->container->get('winefing.serializer_controller');
-        $uploadedFile = $request->files->get('picture');
+        $uploadedFile = $request->files->get('media');
         $fileName = md5(uniqid()) . '.' . $uploadedFile->getClientOriginalExtension();
         $mediaFormat = $this->container->get('winefing.media_format_controller');
         $extentionCorrect = $mediaFormat->checkFormat($uploadedFile->getClientOriginalExtension(), MediaFormatEnum::Image);

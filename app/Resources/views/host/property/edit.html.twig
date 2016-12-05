@@ -1,10 +1,171 @@
 {% extends 'host/base.html.twig' %}
 {% block table %}
     <div class="row">
+        <div class="col-sm-3">
+            <ul class="nav nav-pills nav-stacked" id="nav">
+                <li class="active"><a href="#presentation" data-toggle="tab"><i class="glyphicon glyphicon-home"></i> {% trans %}label.presentation{% endtrans %}</a></li>
+                <li><a href="#rentals" data-toggle="tab"><i class="glyphicon glyphicon-home"></i> {% trans %}label.rentals{% endtrans %}</a></li>
+                <li><a href="#medias" data-toggle="tab"><i class="glyphicon glyphicon-picture"></i> {% trans %}label.pictures{% endtrans %}</a></li>
+                <li><a href="#address" data-toggle="tab"><i class="glyphicon glyphicon-zoom-in"></i> {% trans %}label.address{% endtrans %}</a></li>
+                <li><a href="#informations" data-toggle="tab"><i class="glyphicon glyphicon-info-sign"></i> {% trans %}label.informations{% endtrans %}</a></li>
+            </ul>
+        </div>
+        <div class="col-sm-9">
+            <div class="tab-content">
+                <div class="tab-pane fade in active" id="presentation">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4>{% trans %}label.presentation{% endtrans %}</h4>
+                        </div>
+                        <div class="panel-body">
+                            {{ form_start(propertyForm) }}
+                                <div class="form-group">
+                                    <label for="postal_code">*{% trans %}label.property_category{% endtrans %} </label>
+                                    {{ form_errors(propertyForm.propertyCategory)}}
+                                    {{ form_widget(propertyForm.propertyCategory,  { 'attr': {'class': 'form-control'} }) }}
+                                </div>
+                                <div class="form-group">
+                                    <label for="address">*{% trans %}label.name{% endtrans %} </label>
+                                    {{ form_errors(propertyForm.name)}}
+                                    {{ form_widget(propertyForm.name,  { 'attr': {'class': 'form-control'} }) }}
+                                </div>
+                                <div class="form-group">
+                                    <label for="postal_code">*{% trans %}label.description{% endtrans %} </label>
+                                    {{ form_errors(propertyForm.description)}}
+                                    {{ form_widget(propertyForm.description,  { 'attr': {'class': 'form-control'} }) }}
+                                </div>
+                                <button type="submit" class="btn btn-primary pull-right">{% trans %}label.submit{% endtrans %}</button>
+                            {{ form_end(propertyForm) }}
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade in" id="rentals">
+                    <h4>{% trans %}label.rentals{% endtrans %}</h4>
+                    {% set length = rentals|length %}
+                    {% if length == 0 %}
+                        <p>{% trans %}label.no_rental_for_property{% endtrans %}.</p>
+                    {% endif %}
+                    <a href="{{ path('rental_new') }}">
+                        <button class="btn btn-primary ">
+                            {% trans %}label.new_rental{% endtrans %}
+                        </button>
+                    </a>
+                    {% set i = 0 %}
+                    {% for j in 0..(length/4)|round %}
+                        <div class="col-sm-12">
+                            <ul class="nav nav-pills nav-stacked">
+                                {% for property in i..(i+4) if (i < length) %}
+                                    <div class="col-sm-3">
+                                        <div class="card">
+                                            <img style="width:auto;" class="card-img-top" src="{{ rentalMediaPath ~ rentals[i].mediaPresentation }}" alt="{{ rentals[i].name }}">
+                                            <div class="card-block">
+                                                <h4 class="card-title">{{ rentals[i].name }}</h4>
+                                                <p class="card-text">{{ rentals[i].description }}</p>
+                                                <a href="{{ path('rental_edit', {'id': rentals[i].id }) }}" class="btn btn-primary">{% trans %}label.edit{% endtrans %}</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% set i = i+1 %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="tab-pane fade in" id="medias">
+                    <h4>{% trans %}label.pictures{% endtrans %}</h4>
+                    {% set imagePerSlide = 3 %}
+                    {% set totalRow =  ((medias|length)/imagePerSlide)|round(0, 'ceil') %}
+                    {% if totalRow > 0 %}
+                        <div id="Carousel" class="carousel slide">
+                            <ol class="carousel-indicators">
+                                {% for i in 0..totalRow -1 %}
+                                    {% set class ="" %}
+                                    {% if loop.first %}
+                                        {% set class ="active" %}
+                                    {% endif %}
+                                    <li data-target="#Carousel" data-slide-to="{{ i }}" class="{{ class }}"></li>
+                                {% endfor %}
+                            </ol>
+                            <!-- Carousel items -->
+                            <div class="carousel-inner">
+                                {% set j = 0 %}
+                                {% for i in 0..totalRow - 1 %}
+                                    {% set class = "item"%}
+                                    {% if loop.first %}
+                                        {% set class ="item active" %}
+                                    {% endif %}
+                                    <div class="{{ class }}">
+                                        <div class="row">
+                                            {% for f in 0..imagePerSlide - 1 if j <= medias|length - 1%}
+                                                <div class="col-md-4">
+                                                    <a href="{{ mediaPath ~ medias[j].name }}" rel="gallery2" class="fancybox img-hover-v1">
+                                                        <img src="{{ mediaPath ~ medias[j].name }}" style="max-width:100%;">
+                                                    </a>
+                                                </div>
+                                                {% set j = j + 1 %}
+                                            {% endfor %}
+                                        </div><!--.row-->
+                                    </div><!--.item-->
+                                {% endfor %}
+                            </div><!--.carousel-inner-->
+                            {% if totalRow > 1 %}
+                                <a data-slide="prev" href="#Carousel" class="left carousel-control">‹</a>
+                                <a data-slide="next" href="#Carousel" class="right carousel-control">›</a>
+                            {% endif %}
+                        </div><!--.Carousel-->
+                    {% endif %}
+                    <br>
+                    <p>Ajouter des photos :</p>
+                    <form name="media" method="post" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <input type="file" name="media[medias][]" multiple class="form-control">
+                        </div>
+                        <button type="submit" class="btn btn-primary pull-right">{% trans %}label.submit{% endtrans %}</button>
+                    </form>
+                </div>
+                <div class="tab-pane fade in" id="address">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4>{% trans %}label.address{% endtrans %}</h4>
+                        </div>
+                        <div class="panel-body">
+                            {% set hidden = '' %}
+                            {% if addressListChoice is defined %}
+                                {{ form_start(addressListChoice) }}
+                                    {{ form_widget(addressListChoice.address) }}
+                                {{ form_end(addressListChoice) }}
+                                {% set hidden = 'hidden' %}
+                            {% endif %}
+                            <br>
+                            <div id="addressDiv" {{ hidden }}>
+                                {{ form_start(addressForm) }}
+                                    {% include('host/address/form.html.twig') %}
+                                    <button type="submit" class="btn btn-primary pull-right">{% trans %}label.submit{% endtrans %}</button>
+                                {{ form_end(addressForm) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade in" id="informations">
+                    <form method="post" name="characteristicValueForm" >
+                        {% include('host/characteristic/valueForm.html.twig') %}
+                        <button type="submit" class="btn btn-primary pull-right">{% trans %}label.submit{% endtrans %}</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
     <script>
-        jQuery(document).ready(function() {
-            FancyBox.initFancybox();
+        $('#form_address').on('change', function() {
+            console.log('in');
+            if($(this).val() == '') {
+                $('#addressDiv').show();
+                console.log('in');
+//                $('#buttonNextAddress').hide();
+            } else {
+                $('#addressDiv').hide();
+//                $('#buttonNextAddress').show();
+            }
         });
     </script>
 {% endblock %}

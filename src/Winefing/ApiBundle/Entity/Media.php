@@ -4,6 +4,7 @@ namespace Winefing\ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * Media
@@ -19,6 +20,8 @@ class Media
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"default"})
+     *
      */
     private $id;
 
@@ -26,37 +29,48 @@ class Media
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
+     * @Groups({"default"})
      */
     private $name;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="format", type="string", length=255)
-     */
-    private $format;
 
     /**
      * @var boolean
      *
      * @ORM\Column(name="presentation", type="boolean")
+     * @Groups({"default"})
      */
     private $presentation = 0;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Domain", mappedBy="medias")
+     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Domain", mappedBy="medias", fetch="EXTRA_LAZY")
      */
     private $domains;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Property", mappedBy="medias")
+     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Property", mappedBy="medias", fetch="EXTRA_LAZY")
      */
     private $properties;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Rental", mappedBy="medias")
+     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Rental", mappedBy="medias", fetch="EXTRA_LAZY")
      */
     private $rentals;
+
+    public function addDomain(Domain $domain) {
+        $this->domains[] = $domain;
+        $domain->addMedia($this);
+        return $this;
+    }
+    public function addProperty(Property $property) {
+        $this->properties[] = $property;
+        $property->addMedia($this);
+        return $this;
+    }
+    public function addRental(Rental $rental) {
+        $this->rentals[] = $rental;
+        $rental->addMedia($this);
+        return $this;
+    }
 
 
     /**
@@ -83,22 +97,6 @@ class Media
     public function setName($name)
     {
         $this->name = $name;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFormat()
-    {
-        return $this->format;
-    }
-
-    /**
-     * @param string $format
-     */
-    public function setFormat($format)
-    {
-        $this->format = $format;
     }
 
     /**

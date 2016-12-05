@@ -3,6 +3,7 @@
 namespace Winefing\ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * Address
@@ -18,15 +19,9 @@ class Address
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"default"})
      */
     private $id;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="streetAddress", type="string", length=255, nullable=true)
-     */
-    private $streetAddress;
 
     /**
      * @var domains
@@ -35,7 +30,7 @@ class Address
     private $domains;
 
     /**
-     * @var domains
+     * @var properties
      * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\Property", mappedBy="address")
      */
     private $properties;
@@ -43,7 +38,24 @@ class Address
     /**
      * @var string
      *
+     * @ORM\Column(name="streetAddress", type="string", length=255, nullable=true)
+     * @Groups({"default"})
+     */
+    private $streetAddress;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="name", type="string", length=255, nullable=true)
+     * @Groups({"default"})
+     */
+    private $name;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="route", type="string", length=255, nullable=true)
+     * @Groups({"default"})
      */
     private $route;
 
@@ -51,6 +63,7 @@ class Address
      * @var string
      *
      * @ORM\Column(name="political", type="string", length=255, nullable=true)
+     * @Groups({"default"})
      */
     private $political;
 
@@ -58,6 +71,7 @@ class Address
      * @var string
      *
      * @ORM\Column(name="country", type="string", length=255)
+     * @Groups({"default"})
      */
     private $country;
 
@@ -65,6 +79,7 @@ class Address
      * @var string
      *
      * @ORM\Column(name="postalCode", type="string", length=255, nullable=true)
+     * @Groups({"default"})
      */
     private $postalCode;
 
@@ -72,34 +87,31 @@ class Address
      * @var string
      *
      * @ORM\Column(name="locality", type="string", length=255, nullable=true)
+     * @Groups({"default"})
      */
     private $locality;
 
     /**
      * @var float
      *
-     * @ORM\Column(name="lat", type="float")
+     * @ORM\Column(name="lat", type="float", nullable=true)
+     * @Groups({"default"})
      */
     private $lat;
 
     /**
      * @var float
      *
-     * @ORM\Column(name="lng", type="float")
+     * @ORM\Column(name="lng", type="float", nullable=true)
+     * @Groups({"default"})
      */
     private $lng;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=60, nullable=true)
-     */
-    private $name;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="formatted_adAddress", type="string", length=255, nullable=true)
+     * @ORM\Column(name="formattedAddress", type="string", length=255)
+     * @Groups({"default"})
      */
     private $formattedAddress;
 
@@ -235,6 +247,30 @@ class Address
     }
 
     /**
+     * Set locality
+     *
+     * @param string $locality
+     *
+     * @return Address
+     */
+    public function setLocality($locality)
+    {
+        $this->locality = $locality;
+
+        return $this;
+    }
+
+    /**
+     * Get locality
+     *
+     * @return string
+     */
+    public function getLocality()
+    {
+        return $this->locality;
+    }
+
+    /**
      * Set lat
      *
      * @param float $lat
@@ -283,30 +319,22 @@ class Address
     }
 
     /**
-     * Set name
+     * Set formattedAddress
      *
-     * @param string $name
+     * @param string $formattedAddress
      *
      * @return Address
      */
-    public function setName($name)
+    public function setFormattedAddress($formattedAddress)
     {
-        $this->name = $name;
+        $this->formattedAddress = $formattedAddress;
 
         return $this;
     }
 
     /**
-     * Get name
+     * Get formattedAddress
      *
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
      * @return string
      */
     public function getFormattedAddress()
@@ -315,31 +343,7 @@ class Address
     }
 
     /**
-     * @param string $formattedAddress
-     */
-    public function setFormattedAddress($formattedAddress)
-    {
-        $this->formattedAddress = $formattedAddress;
-    }
-
-    /**
-     * @return string
-     */
-    public function getLocality()
-    {
-        return $this->locality;
-    }
-
-    /**
-     * @param string $locality
-     */
-    public function setLocality($locality)
-    {
-        $this->locality = $locality;
-    }
-
-    /**
-     * @return CharacteristicCategoryTr
+     * @return domains
      */
     public function getDomains()
     {
@@ -347,11 +351,28 @@ class Address
     }
 
     /**
-     * @return domains
+     * @return properties
      */
     public function getProperties()
     {
         return $this->properties;
     }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
 }
 

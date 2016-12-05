@@ -24,36 +24,45 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Winefing\ApiBundle\Entity\ScopeEnum;
+use FOS\RestBundle\Controller\Annotations\Get;
+use JMS\Serializer\SerializationContext;
 
 
 class PropertyController extends Controller implements ClassResourceInterface
 {
-    public function cgetAction($userId) {
-        $serializer = $this->container->get('winefing.serializer_controller');
+    public function cgetByUserAction($userId) {
+        $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Property');
         $properties = $repository->findByUser($userId);
-        return $serializer->serialize($properties);
+        foreach($properties as $property) {
+            $property->setMediaPresentation();
+        }
+        return new Response($serializer->serialize($properties, 'json', SerializationContext::create()->setGroups(array('default'))));
     }
 
-    public function cgetPicturePathAction()
+    public function getMediaPathAction()
     {
         $serializer = $this->container->get('winefing.serializer_controller');
         $webPath = $this->container->get('winefing.webpath_controller');
-        $picturePath = $webPath->getPath($this->getParameter('property_directory'));
-        return new Response($serializer->serialize($picturePath));
+        $mediaPath = $webPath->getPath($this->getParameter('property_directory'));
+        return new Response($serializer->serialize($mediaPath));
     }
-
+    /**
+     * GET Route annotation.
+     * @Get("/property/{id}")
+     */
     public function getAction($id)
     {
-        $serializer = $this->container->get('winefing.serializer_controller');
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Domain');
-        $domain = $repository->findOneById($id);
-        $json = $serializer->serialize($domain);
+        $serializer = $this->container->get('jms_serializer');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Property');
+        $property = $repository->findOneById($id);
+        $property->setIsAddressDomain();
+        $json = $serializer->serialize($property, 'json', SerializationContext::create()->setGroups(array('default', 'medias', 'address')));
         return new Response($json);
     }
 
     public function getMissingCharacteristicsAction($propertyId) {
-        $serializer = $this->container->get('winefing.serializer_controller');
+        $serializer = $this->container->get('jms_serializer');
 
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Property');
         $property = $repository->findOneById($propertyId);
@@ -64,42 +73,10 @@ class PropertyController extends Controller implements ClassResourceInterface
         }
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Characteristic');
         $characteristics = $repository->findMissingCharacteristics($ids, ScopeEnum::Property);
-        return new Response($serializer->serialize($characteristics));
+        return new Response($serializer->serialize($characteristics, 'json', SerializationContext::create()->setGroups(array('default', 'format', 'trs'))));
 
     }
 
-    public function getByUserAction($userId) {
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Domain');
-        $domain = $repository->findOneByUser($userId);
-        $serializer = $this->container->get('jms_serializer');
-        $json = $serializer->serialize($domain, 'json');
-        return new Response($json);
-    }
-    public function postPictureAction(Request $request) {
-        $em = $this->getDoctrine()->getManager();
-        $serializer = $this->container->get('winefing.serializer_controller');
-        $uploadedFile = $request->files->get('picture');
-        $fileName = md5(uniqid()) . '.' . $uploadedFile->getClientOriginalExtension();
-        $mediaFormat = $this->container->get('winefing.media_format_controller');
-        $extentionCorrect = $mediaFormat->checkFormat($uploadedFile->getClientOriginalExtension(), MediaFormatEnum::Image);
-        if($extentionCorrect != 1) {
-            throw new BadRequestHttpException($extentionCorrect);
-        }
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Domain');
-        $domain = $repository->findOneById($request->request->get('domain'));
-        $media = new Media();
-        $media->setName($fileName);
-        $media->setFormat(MediaFormatEnum::Image);
-        $media->setPresentation(false);
-        $domain->addMedia($media);
-        $uploadedFile->move(
-            $this->getParameter('domain_directory_upload'),
-            $fileName
-        );
-        $em->persist($domain);
-        $em->flush();
-        return new Response($serializer->serialize($domain));
-    }
     public function postAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
@@ -122,29 +99,29 @@ class PropertyController extends Controller implements ClassResourceInterface
         }
         $em->persist($property);
         $em->flush();
-        $json = $serializer->serialize($property, 'json');
+        $json = $serializer->serialize($property, 'json', SerializationContext::create()->setGroups(array('default')));
         return new Response($json);
     }
     public function putAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $serializer = $this->container->get('winefing.serializer_controller');
+        $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Property');
-        $property = $repository->findOneById($request->request->all()["property"]["id"]);
-        $property->setName($request->request->all()["property"]["name"]);
+        $property = $repository->findOneById($request->request->all()["id"]);
+        $property->setName($request->request->all()["name"]);
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:PropertyCategory');
-        $propertyCategory = $repository->findOneById($request->request->all()["property"]["propertyCategory"]);
+        $propertyCategory = $repository->findOneById($request->request->all()["propertyCategory"]);
         $property->setPropertyCategory($propertyCategory);
-        $property->setDescription($request->request->all()["property"]["description"]);
+        $property->setDescription($request->request->all()["description"]);
         $em->persist($property);
         $em->flush();
-        $json = $serializer->serialize($property);
+        $json = $serializer->serialize($property, 'json', SerializationContext::create()->setGroups(array('default')));
         return new Response($json);
     }
     public function putAddressAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $serializer = $this->container->get('winefing.serializer_controller');
+        $serializer = $this->container->get('jms_serializers');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Property');
         $property = $repository->findOneById($request->request->get('property'));
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Address');
@@ -157,7 +134,7 @@ class PropertyController extends Controller implements ClassResourceInterface
         }
         $em->persist($property);
         $em->flush();
-        $json = $serializer->serialize($property);
+        $json = $serializer->serialize($property, 'json', SerializationContext::create()->setGroups(array('default')));
         return new Response($json);
     }
 

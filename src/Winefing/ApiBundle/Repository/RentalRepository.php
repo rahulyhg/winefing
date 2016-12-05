@@ -10,4 +10,17 @@ namespace Winefing\ApiBundle\Repository;
  */
 class RentalRepository extends \Doctrine\ORM\EntityRepository
 {
+    function findByUser($userId)
+    {
+        if (empty($ids)) {
+            $query = $this->createQueryBuilder('rental')
+                ->join("rental.property", "property")
+                ->join("property.domain", "domain")
+                ->join("domain.user", "user")
+                ->where('user.id = :userId')
+                ->setParameter('userId', $userId)
+                ->getQuery();
+            return $query->getResult();
+        }
+    }
 }

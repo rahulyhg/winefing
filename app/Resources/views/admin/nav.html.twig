@@ -1,0 +1,59 @@
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+        {% set route = app.request.attributes.get('_route') %}
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li class="dropdown {% if route == 'languages' or route =='formats' or route == 'countries'%}active{% endif %}">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Technique<span class="caret"></span></a>
+                    <ul class="dropdown-menu active">
+                        <li class="{% if route == 'languages' %}submenu-admin-active{% endif %}"><a class="active" href="{{ path('languages') }}">Langues</a></li>
+                        <li class="{% if route == 'formats' %}submenu-admin-active{% endif %}"><a class="active" href="{{ path('formats') }}">Formats</a></li>
+                        <li class="{% if route == 'countries' %}submenu-admin-active{% endif %}"><a class="active" href="{{ path('countries') }}">Pays</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown {% if route == 'characteristics_categories'%}active{% endif %}">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Charactéristiques<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li class="{% if route == 'characteristics_categories' and app.request.get('scopeName') == 'domain'%}submenu-admin-active{% endif %}"><a href="{{ path('characteristics_categories', {'scopeName' : 'domain'}) }}">Domaine</a></li>
+                        <li class="{% if route == 'characteristics_categories' and app.request.get('scopeName') == 'property' %}submenu-admin-active{% endif %}"><a href="{{ path('characteristics_categories', {'scopeName' : 'property'}) }}">Propriété</a></li>
+                        <li class="{% if route == 'characteristics_categories' and app.request.get('scopeName') == 'rental' %}submenu-admin-active{% endif %}"><a href="{{ path('characteristics_categories', {'scopeName' : 'rental'}) }}">Location</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown {% if route == 'users_admin' or route =='' %}active{% endif %}">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Utilisateurs<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li class="{% if route == 'users_admin' %}submenu-admin-active{% endif %}"><a href="{{ path('users_admin') }}">Admin</a></li>
+                        <li class=""><a href="#">Propriétaires</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown {% if route == 'tags' or route =='wine_regions' or route == 'subscriptions' or route =='promotions' or route == 'web_pages'%}active{% endif %}">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Gestion du site<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li class="{% if route == 'tags' %}submenu-admin-active{% endif %}"><a href="{{ path('tags') }}">Tags</a></li>
+                        <li class="{% if route == 'wine_regions' %}submenu-admin-active{% endif %}"><a href="{{ path('wine_regions') }}">Régions viticoles</a></li>
+                        <li class="{% if route == 'subscriptions' %}submenu-admin-active{% endif %}"><a href="{{ path('subscriptions') }}">Abonnements</a></li>
+                        <li class="{% if route == 'promotions' %}submenu-admin-active{% endif %}"><a href="{{ path('promotions') }}">Promotions</a></li>
+                        <li class="{% if route == 'web_pages' %}submenu-admin-active{% endif %}"><a href="{{ path('web_pages') }}">Web pages</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown {% if route == 'articleCategory' or route =='articles'%}active{% endif %}">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Blog<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li class="{% if route == 'articleCategory' %}submenu-admin-active{% endif %}"><a href="{{ path('articleCategory') }}">Catégories</a></li>
+                        <li class="{% if route == 'articles' or route == 'articleTr_new_form' %}submenu-admin-active{% endif %}"><a href="{{ path('articles') }}">Articles</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>

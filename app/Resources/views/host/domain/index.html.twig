@@ -40,45 +40,47 @@
                 </div>
                 <div class="tab-pane fade in" id="pictures">
                     <h4>{% trans %}label.pictures{% endtrans %}</h4>
-                    <div id="Carousel" class="carousel slide">
-                        {% set imagePerSlide = 3 %}
-                        {% set totalRow =  ((domain.medias|length)/imagePerSlide)|round %}
-                        <ol class="carousel-indicators">
-                            {% for i in 0..totalRow -1 %}
-                                {% set class ="" %}
-                                {% if loop.first %}
-                                    {% set class ="active" %}
-                                {% endif %}
-                                <li data-target="#Carousel" data-slide-to="{{ i }}" class="{{ class }}"></li>
-                            {% endfor %}
-                        </ol>
-                        <!-- Carousel items -->
-                        <div class="carousel-inner">
-                            {% set j = 0 %}
-                            {% for i in 0..totalRow - 1 %}
-                                {% set class = "item"%}
-                                {% if loop.first %}
-                                    {% set class ="item active" %}
-                                {% endif %}
-                                <div class="{{ class }}">
-                                    <div class="row">
-                                        {% for f in 0..imagePerSlide - 1%}
-                                            {% if j <= domain.medias|length - 1 %}
-                                                <div class="col-md-4">
-                                                    <a href="{{ picturePath ~ domain.medias[j].name }}" rel="gallery2" class="fancybox img-hover-v1">
-                                                        <img src="{{ picturePath ~ domain.medias[j].name }}" style="max-width:100%;">
-                                                    </a>
-                                                </div>
-                                                {% set j = j + 1 %}
-                                            {% endif %}
-                                        {% endfor %}
-                                    </div><!--.row-->
-                                </div><!--.item-->
-                            {% endfor %}
-                        </div><!--.carousel-inner-->
-                        <a data-slide="prev" href="#Carousel" class="left carousel-control">‹</a>
-                        <a data-slide="next" href="#Carousel" class="right carousel-control">›</a>
-                    </div><!--.Carousel-->
+                    {% set imagePerSlide = 3 %}
+                    {% set totalRow =  ((domain.medias|length)/imagePerSlide)|round %}
+                    {% if totalRow > 0 %}
+                        <div id="Carousel" class="carousel slide">
+                            <ol class="carousel-indicators">
+                                {% for i in 0..totalRow -1 %}
+                                    {% set class ="" %}
+                                    {% if loop.first %}
+                                        {% set class ="active" %}
+                                    {% endif %}
+                                    <li data-target="#Carousel" data-slide-to="{{ i }}" class="{{ class }}"></li>
+                                {% endfor %}
+                            </ol>
+                            <!-- Carousel items -->
+                            <div class="carousel-inner">
+                                {% set j = 0 %}
+                                {% for i in 0..totalRow - 1 %}
+                                    {% set class = "item"%}
+                                    {% if loop.first %}
+                                        {% set class ="item active" %}
+                                    {% endif %}
+                                    <div class="{{ class }}">
+                                        <div class="row">
+                                            {% for f in 0..imagePerSlide - 1%}
+                                                {% if j <= domain.medias|length - 1 %}
+                                                    <div class="col-md-4">
+                                                        <a href="{{ picturePath ~ domain.medias[j].name }}" rel="gallery2" class="fancybox img-hover-v1">
+                                                            <img src="{{ picturePath ~ domain.medias[j].name }}" style="max-width:100%;">
+                                                        </a>
+                                                    </div>
+                                                    {% set j = j + 1 %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div><!--.row-->
+                                    </div><!--.item-->
+                                {% endfor %}
+                            </div><!--.carousel-inner-->
+                            <a data-slide="prev" href="#Carousel" class="left carousel-control">‹</a>
+                            <a data-slide="next" href="#Carousel" class="right carousel-control">›</a>
+                        </div><!--.Carousel-->
+                    {% endif %}
                     <p>Ajouter des photos :</p>
                     <form name="domain" method="post" action="{{ path('domain_pictures_submit') }}" enctype="multipart/form-data">
                         <div class="form-group">

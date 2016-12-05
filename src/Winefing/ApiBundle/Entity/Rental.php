@@ -4,6 +4,7 @@ namespace Winefing\ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * Rental
@@ -19,6 +20,7 @@ class Rental
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"default"})
      */
     private $id;
 
@@ -29,12 +31,14 @@ class Rental
 
     /**
      * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Media", inversedBy="rentals", cascade={"persist", "merge", "detach"})
+     * @Groups({"medias"})
      */
     private $medias;
 
     /**
      * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Property")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"property"})
      */
     private $property;
 
@@ -42,8 +46,22 @@ class Rental
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=60, nullable=true)
+     * @Groups({"default"})
      */
     private $name;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="description", type="string", length=255, nullable=true)
+     * @Groups({"default"})
+     */
+    private $description;
+    /**
+     * @var
+     * @Groups({"default"})
+     */
+    private $mediaPresentation;
 
     public function _construct() {
         $this->characteristicValues = new ArrayCollection();
@@ -110,8 +128,7 @@ class Rental
     }
 
     public function addCharacteristicValue(CharacteristicValue $characteristicValue) {
-        $this->characteristicValue[] = $characteristicValue;
-        return $this;
+        $this->characteristicValues[] = $characteristicValue;
     }
 
     public function addMedia(Media $media) {
@@ -122,9 +139,50 @@ class Rental
     /**
      * @return mixed
      */
-    public function getMedias()
+    public function setMediaPresentation()
     {
-        return $this->medias;
+        if(count($this->medias) > 0) {
+            foreach ($this->medias as $media) {
+                if ($media->isPresentation()) {
+                    $this->mediaPresentation = $media->getName();
+                    break;
+
+                }
+            }
+            if(empty($this->mediaPresentation)) {
+                $this->mediaPresentation = $this->medias[0]->getName();
+
+            }
+        } else {
+            $this->mediaPresentation = 'default.png';
+        }
+        return $this->mediaPresentation;
     }
+
+    /**
+     * @param mixed $mediaPresentation
+     */
+    public function getMediaPresentation()
+    {
+        return $this->mediaPresentation;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param string $description
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
+
+
 }
 

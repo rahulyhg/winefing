@@ -17,12 +17,8 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Winefing\ApiBundle\Entity\CharacteristicCategory;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManager;
-use AppBundle\Form\LanguageType;
-use AppBundle\Form\ArticleType;
-use Winefing\ApiBundle\Entity\Language;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
@@ -32,14 +28,12 @@ class AddressType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('id',  HiddenType::class, array(
-                'required' => false))
-            ->add('formattedAddress', null, array('attr'=> array('maxlength'=>"60")))
+            ->add('formattedAddress')
             ->add('postalCode', null, array('attr'=> array('maxlength'=>"60")))
             ->add('locality', null, array('attr'=> array('maxlength'=>"60")))
             ->add('country', null, array('attr'=> array('maxlength'=>"155")))
         ;
-    }
+    } 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(

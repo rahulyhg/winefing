@@ -1,45 +1,29 @@
-{% extends 'baseAdmin.html.twig' %}
-{% block container %}
-    <div class="container">
-        <div id="wrapper">
-            <!-- Sidebar -->
-            <div id="sidebar-wrapper" style="background:#fafafa" class="scrollmenu">
-                {{ include('admin/navebar.html.twig') }}
-            </div>
-            <div id="page-content-wrapper">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <button style="margin-top: 10px;" onclick="location.href='#menu-toggle';" id="menu-toggle" type="button" class="btn btn-default" aria-label="Left Align">
-                                <span class="glyphicon glyphicon-align-left" aria-hidden="true"></span>
-                            </button>
-                            <br><br>
-                            {% if app.session.flashBag.has('success') %}
-                                <div class="alert alert-success">
-                                    {% for msg in app.session.flashBag.get('success') %}
-                                        {{ msg }}
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                            {% if app.session.flashBag.has('error') %}
-                                <div class="alert alert-danger">
-                                    {% for msg in app.session.flashBag.get('error') %}
-                                        {{ msg }}
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                            {% block table %}{% endblock %}
-                        </div>
-                    </div>
-                </div>
-            </div>
+{% extends 'base.html.twig' %}
+{% block body %}
+    {{ include('admin/nav.html.twig') }}
+    {% if app.session.flashBag.has('success') %}
+        <div class="alert alert-success">
+            {% for msg in app.session.flashBag.get('success') %}
+                {{ msg }}
+            {% endfor %}
         </div>
-    </div>
+    {% endif %}
+    {% if app.session.flashBag.has('error') %}
+        <div class="alert alert-danger">
+            {% for msg in app.session.flashBag.get('error') %}
+                {{ msg }}
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% block table %}
+    {% endblock %}
     {% block modal %}
         {{ include('admin/modal/delete.html.twig') }}
         <span id="modalCreate">
         </span>
     {% endblock modal %}
+{% endblock %}
+{% block script %}
     <!-- Menu Toggle Script -->
     <script  type="text/javascript">
         $("#menu-toggle").click(function(e) {
@@ -47,6 +31,4 @@
             $("#wrapper").toggleClass("toggled");
         });
     </script>
-{% endblock %}
-{% block script %}
 {% endblock %}

@@ -214,7 +214,38 @@
                 <source>label.edit</source>
                 <target>Edit</target>
             </trans-unit>
-
+            <trans-unit id="label_no_rental_for_property">
+                <source>label.no_rental_for_property</source>
+                <target>You have no rental for this property</target>
+            </trans-unit>
+            <trans-unit id="label_new_rental">
+                <source>label.new_rental</source>
+                <target>New rental</target>
+            </trans-unit>
+            <trans-unit id="label_budget">
+                <source>label.budget</source>
+                <target>Budget</target>
+            </trans-unit>
+            <trans-unit id="label_people_number">
+                <source>label.people_number</source>
+                <target>People number</target>
+            </trans-unit>
+            <trans-unit id="label_from">
+                <source>label.from</source>
+                <target>From</target>
+            </trans-unit>
+            <trans-unit id="label_to">
+                <source>label.to</source>
+                <target>To</target>
+            </trans-unit>
+            <trans-unit id="label_duration">
+                <source>label.duration</source>
+                <target>Duration</target>
+            </trans-unit>
+           <trans-unit id="label_event_category">
+                <source>label.event_ctageory</source>
+                <target>Kind of event</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

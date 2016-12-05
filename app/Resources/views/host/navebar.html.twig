@@ -9,16 +9,23 @@
                 <span class="icon-bar"></span>
             </button>
         </div>
+        {% set route = app.request.attributes.get('_route') %}
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-                <li class=""><a href="#">{% trans %}label.dashboard{% endtrans %} <span class="sr-only">(current)</span></a></li>
-                <li class="{% if app.request.attributes.get('_route') == 'domain_user'%}active{% endif %}"><a href="{{ path('domain_user') }}">{% trans %}label.my_domain{% endtrans %} </a></li>
-                <li class="{% if app.request.attributes.get('_route') == 'properties'%}active{% endif %}"><a href="{{ path('properties') }}">{% trans %}label.my_properties{% endtrans %} </a></li>
-                <li class="{% if app.request.attributes.get('_route') == 'rentals'%}active{% endif %}"><a href="{{ path('rentals') }}">{% trans %}label.my_rentals{% endtrans %} </a></li>
+                <li class="{% if route == 'domain_user'%}active{% endif %}">
+                    <a href="{{ path('domain_user') }}">{% trans %}label.my_domain{% endtrans %} </a>
+                </li>
+                <li class="{% if route == 'properties' or route == 'new_property' or route == 'property_edit' %}active{% endif %}">
+                    <a href="{{ path('properties') }}">{% trans %}label.my_properties{% endtrans %} </a>
+                </li>
+                <li class="{% if route == 'rentals' or route == 'rental_new' or route == 'rental_edit' %}active{% endif %}">
+                    <a href="{{ path('rentals') }}">{% trans %}label.my_rentals{% endtrans %}
+                    </a>
+                </li>
                 <li><a href="#">{% trans %}label.my_reservations{% endtrans %} </a></li>
                 <li><a href="#">{% trans %}label.my_reviews{% endtrans %} </a></li>
-                <li class="{% if app.request.attributes.get('_route') == 'user_host'%}active{% endif %}"><a href="{{ path('user_host') }}">{% trans %}label.my_profil{% endtrans %} </a></li>
+                <li class="{% if route == 'user_host'%}active{% endif %}"><a href="{{ path('user_host') }}">{% trans %}label.my_profil{% endtrans %} </a></li>
             </ul>
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->

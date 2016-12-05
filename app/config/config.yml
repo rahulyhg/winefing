@@ -15,14 +15,16 @@ parameters:
     domain_directory_upload: '%kernel.root_dir%/../web/Resources/pictures/domain/'
     user_directory_upload: '%kernel.root_dir%/../web/Resources/pictures/user/'
     property_directory_upload: '%kernel.root_dir%/../web/Resources/pictures/property/'
+    rental_directory_upload: '%kernel.root_dir%/../web/Resources/pictures/rental/'
 
-    language_directory: 'winefing/web/Resources/pictures/language/'
-    characteristic_category_directory: 'winefing/web/Resources/pictures/characteristicCategory/'
-    characteristic_directory: 'winefing/web/Resources/pictures/characteristic/'
-    article_directory: 'winefing/web/Resources/pictures/article/'
-    domain_directory: 'winefing/web/Resources/pictures/domain/'
-    user_directory: 'winefing/web/Resources/pictures/user/'
-    property_directory: 'winefing/web/Resources/pictures/property/'
+    language_directory: 'test-prod/web/Resources/pictures/language/'
+    characteristic_category_directory: 'test-prod/web/Resources/pictures/characteristicCategory/'
+    characteristic_directory: 'test-prod/web/Resources/pictures/characteristic/'
+    article_directory: 'test-prod/web/Resources/pictures/article/'
+    domain_directory: 'test-prod/web/Resources/pictures/domain/'
+    user_directory: 'test-prod/web/Resources/pictures/user/'
+    property_directory: 'test-prod/web/Resources/pictures/property/'
+    rental_directory: 'test-prod/web/Resources/pictures/rental/'
     mail_chimp_token: '82eeea1796fe25cf7d185ec3ce2af340-us14'
     mail_chimp_url: 'https://us14.api.mailchimp.com/export/1.0/'
 
@@ -161,9 +163,9 @@ nelmio_cors:
                    max_age: 3600
                    hosts: ['^api\.']
 
-#fos_rest:
- #   routing_loader:
- #       default_format: json
+jms_serializer:
+    metadata:
+        auto_detection: true
 
 fos_rest:
     param_fetcher_listener: true

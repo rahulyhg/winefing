@@ -218,10 +218,42 @@
                 <source>label.my_properties</source>
                 <target>Mes propriétés</target>
             </trans-unit>
-              <trans-unit id="label_edit">
+            <trans-unit id="label_edit">
                     <source>label.edit</source>
                     <target>Modifier</target>
-                </trans-unit>
+            </trans-unit>
+            <trans-unit id="label_no_rental_for_property">
+                <source>label.no_rental_for_property</source>
+                <target>Vous n'avez pas de location pour cette propriété.</target>
+            </trans-unit>
+            <trans-unit id="label_new_rental">
+                <source>label.new_rental</source>
+                <target>Nouvelle location</target>
+            </trans-unit>
+            <trans-unit id="label_budget">
+                <source>label.budget</source>
+                <target>Budget</target>
+            </trans-unit>
+            <trans-unit id="label_people_number">
+                <source>label.people_number</source>
+                <target>Nombre de personne</target>
+            </trans-unit>
+            <trans-unit id="label_from">
+                <source>label.from</source>
+                <target>De</target>
+            </trans-unit>
+            <trans-unit id="label_to">
+                <source>label.to</source>
+                <target>A</target>
+            </trans-unit>
+            <trans-unit id="label_duration">
+                <source>label.duration</source>
+                <target>Durée</target>
+            </trans-unit>
+           <trans-unit id="label_event_category">
+                <source>label.event_ctageory</source>
+                <target>Type d'évênement</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

@@ -4,6 +4,9 @@ namespace Winefing\ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use JMS\Serializer\Annotation\Type;
+use JMS\Serializer\Annotation\Expose;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * Property
@@ -19,51 +22,70 @@ class Property
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"default"})
      */
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Domain")
+     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Domain", inversedBy="properties")
      * @ORM\JoinColumn(nullable=false)
+     * @Type("Winefing\ApiBundle\Entity\Domain")
+     * @Expose
+     * @Groups({"domain"})
      */
     private $domain;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\CharacteristicValue", inversedBy="properties")
+     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\CharacteristicValue", inversedBy="properties", fetch="LAZY")
+     * @Groups({"characteristicValues"})
      */
     private $characteristicValues;
 
     /**
      * @var Rentals
-     * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\Rental", mappedBy="property", fetch="EAGER", cascade="ALL")
+     * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\Rental", mappedBy="property", fetch="LAZY", cascade="ALL")
+     * @Groups({"rentals"})
      */
     private $rentals;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Media", inversedBy="properties", cascade={"persist", "merge", "detach"})
+     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Media", inversedBy="properties", fetch="LAZY", cascade={"persist", "merge", "detach"})
+     * @Groups({"medias"})
      */
     private $medias;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Address", inversedBy="properties")
+     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Address", inversedBy="properties", fetch="LAZY")
      * @ORM\JoinColumn(nullable=false)
+     * @Type("Winefing\ApiBundle\Entity\Address")
+     * @Groups({"address"})
      */
     private $address;
 
     /**
      * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\PropertyCategory", inversedBy="properties")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"propertyCategory"})
      */
     private $propertyCategory;
 
+    /**
+     * @Groups({"default"})
+     * @Type("string")
+     */
     private $mediaPresentation;
 
-
+    /**
+     * @Groups({"default"})
+     * @Type("boolean")
+     *
+     */
+    private $isAddressDomain = false;
 
     /**
      * @var string
-     *
      * @ORM\Column(name="name", type="string", length=60, nullable=true)
+     * @Groups({"default"})
      */
     private $name;
 
@@ -72,6 +94,7 @@ class Property
      * @var string
      *
      * @ORM\Column(name="description", type="string", length=255, nullable=true)
+     * @Groups({"default"})
      */
     private $description;
 
@@ -218,11 +241,11 @@ class Property
     /**
      * @return mixed
      */
-    public function getMediaPresentation()
+    public function setMediaPresentation()
     {
         if(count($this->medias) > 0) {
             foreach ($this->medias as $media) {
-                if ($media->getPresentation() == 1) {
+                if ($media->isPresentation()) {
                     $this->mediaPresentation = $media->getName();
                     break;
 
@@ -241,9 +264,36 @@ class Property
     /**
      * @param mixed $mediaPresentation
      */
-    public function setMediaPresentation($mediaPresentation)
+    public function getMediaPresentation()
     {
-        $this->mediaPresentation = $mediaPresentation;
+        return $this->mediaPresentation;
     }
 
+    /**
+     * @return Rentals
+     */
+    public function getRentals()
+    {
+        return $this->rentals;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function isAddressDomain()
+    {
+
+        return $this->isAddressDomain;
+    }
+
+    /**
+     * @param mixed $isAddressDomain
+     */
+    public function setIsAddressDomain()
+    {
+        if($this->address->getId() == $this->domain->getAddress()->getId()) {
+            $this->isAddressDomain = true;
+        }
+        return $this;
+    }
 }

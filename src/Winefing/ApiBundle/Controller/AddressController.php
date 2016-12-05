@@ -51,7 +51,7 @@ class AddressController extends Controller implements ClassResourceInterface
     public function postAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $serializer = $this->container->get('winefing.serializer_controller');
+        $serializer = $this->container->get('jms_serializer');
         $address = new Address();
         $address->setStreetAddress($request->request->get('streetAddress'));
         $address->setRoute($request->request->get('route'));
@@ -71,16 +71,25 @@ class AddressController extends Controller implements ClassResourceInterface
         }
         $em->persist($address);
         $em->flush();
-        $json = $serializer->serialize($address);
+        $json = $serializer->serialize($address, 'json');
         return new Response($json);
     }
     public function putAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $serializer = $this->container->get('winefing.serializer_controller');
+        $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Address');
         $address = $repository->findOneById($request->request->get('id'));
-
+        $address->setStreetAddress($request->request->get('streetAddress'));
+        $address->setRoute($request->request->get('route'));
+        $address->setPolitical($request->request->get('political'));
+        $address->setCountry($request->request->get('country'));
+        $address->setPostalCode($request->request->get('postalCode'));
+        $address->setLocality($request->request->get('locality'));
+        $address->setLat(1.0);
+        $address->setLng(1.0);
+        $address->setName($request->request->get('name'));
+        $address->setFormattedAddress($request->request->get('formattedAddress'));
         $validator = $this->get('validator');
         $errors = $validator->validate($address);
         if (count($errors) > 0) {
@@ -89,7 +98,7 @@ class AddressController extends Controller implements ClassResourceInterface
         }
         $em->persist($address);
         $em->flush();
-        $json = $serializer->serialize($address);
+        $json = $serializer->serialize($address, 'json');
         return new Response($json);
     }
     /**

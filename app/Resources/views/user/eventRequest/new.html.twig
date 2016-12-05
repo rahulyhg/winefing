@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <div class="row">
+        <div class="col-sm-4">
+        </div>
+        <div class="col-sm-4" style="text-align: center">
+            {{ form_start(eventRequestForm) }}
+                <fieldset class="form-group">
+                    <label>{{ form_label(eventRequestForm.budget)}} </label>
+                    {{ form_errors(eventRequestForm.budget) }}
+                    {{ form_widget(eventRequestForm.budget, {'attr': {'class': 'form-control'}}) }}
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>{{ form_label(eventRequestForm.startDate)}} </label>
+                    {{ form_errors(eventRequestForm.startDate) }}
+                    {{ form_widget(eventRequestForm.startDate, {'attr': {'class': 'form-control'}}) }}
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>{{ form_label(eventRequestForm.endDate)}} </label>
+                    {{ form_errors(eventRequestForm.endDate) }}
+                    {{ form_widget(eventRequestForm.endDate, {'attr': {'class': 'form-control'}}) }}
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>{{ form_label(eventRequestForm.duration)}} </label>
+                    {{ form_errors(eventRequestForm.duration) }}
+                    {{ form_widget(eventRequestForm.duration, {'attr': {'class': 'form-control'}}) }}
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>{{ form_label(eventRequestForm.email)}} </label>
+                    {{ form_errors(eventRequestForm.email) }}
+                    {{ form_widget(eventRequestForm.email, {'attr': {'class': 'form-control'}}) }}
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>{{ form_label(eventRequestForm.phoneNumber)}} </label>
+                    {{ form_errors(eventRequestForm.phoneNumber) }}
+                    {{ form_widget(eventRequestForm.phoneNumber, {'attr': {'class': 'form-control'}}) }}
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>{{ form_label(eventRequestForm.description)}} </label>
+                    {{ form_errors(eventRequestForm.description) }}
+                    {{ form_widget(eventRequestForm.description, {'attr': {'class': 'form-control'}}) }}
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>{{ form_label(eventRequestForm.eventCategory)}} </label>
+                    {{ form_errors(eventRequestForm.eventCategory) }}
+                    {{ form_widget(eventRequestForm.eventCategory, {'attr': {'class': 'form-control'}}) }}
+                </fieldset>
+                <fieldset class="form-group">
+                    <label>{{ form_label(eventRequestForm.peopleNumber)}} </label>
+                    {{ form_errors(eventRequestForm.peopleNumber) }}
+                    {{ form_widget(eventRequestForm.peopleNumber, {'attr': {'class': 'form-control'}}) }}
+                </fieldset>
+                <input type="submit" class="btn btn-primary pull-right" value="{% trans %}label.submit{% endtrans %}">
+            {{ form_end(eventRequestForm) }}
+        </div>
+        <div class="col-sm-4">
+        </div>
+    </div>
+{% endblock %}

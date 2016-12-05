@@ -134,3 +134,12 @@ property:
     type: rest
     resource: Winefing\ApiBundle\Controller\PropertyController
     name_prefix:  api_
+media:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\MediaController
+    name_prefix:  api_
+
+eventRequest:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\EventRequestController
+    name_prefix:  api_
