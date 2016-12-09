@@ -47,16 +47,38 @@ class RentalController extends Controller
     /**
      * @Route("/rental/edit/{id}", name="rental_edit")
      */
-    public function putAction($id ='') {
-
+    public function putAction($id ='', Request $request) {
         $rental = $this->getRental($id);
         $this->getDoctrine()->getEntityManager()->persist($rental->getProperty());
 
         $this->setMissingCharacteristicsAction($rental);
         $characteristicCategories = $this->getCharacteristicCategories($rental);
+        $mediaPath = $this->getMediaPath();
 
         $rentalForm =  $this->createForm(RentalType::class, $rental);
-        $mediaPath = $this->getMediaPath();
+        $rentalForm->handleRequest($request);
+        if ($rentalForm->isSubmitted()) {
+            if($rentalForm->isValid()) {
+                $rentalForm = $request->request->all()['rental'];
+                $rentalForm["id"] = $rental->getId();
+                $rentalForm["property"] = $rental->getProperty()->getId();
+                $rental = $this->submit($rentalForm);
+                return $this->redirect($this->generateUrl('rental_edit', array('id'=> $rental->getId())). '#presentation');
+            }
+        }
+        if ($request->isMethod('POST')) {
+            $characteristicValueForm = $request->request->get("characteristicValueForm");
+            $media = $request->files->get('media');
+            if (!empty($media)) {
+                $media["property"] = $rental->getId();
+                $this->submitPictures($media);
+                return $this->redirect($this->generateUrl('rental_edit', array('id' => $rental->getId())) . '#presentation');
+            } elseif (!empty($characteristicValueForm)) {
+                $characteristicValueForm["rental"] = $rental->getId();
+                $this->submitCharacteristicValues($characteristicValueForm);
+                return $this->redirect($this->generateUrl('rental_edit', array('id' => $rental->getId())) . '#informations');
+            }
+        }
 
         return $this->render('host/rental/edit.html.twig', array(
             'rentalForm' => $rentalForm->createView(),
@@ -64,20 +86,20 @@ class RentalController extends Controller
             'medias' => $rental->getMedias(),
             'mediaPath' => $mediaPath
         ));
-        return new Response();
     }
     public function getMediaPath() {
         $api = $this->container->get('winefing.api_controller');
         $serializer = $this->container->get('winefing.serializer_controller');
-        $response = $api->get($this->get('_router')->generate('api_get_rentals_media_path'));
+        $response = $api->get($this->get('_router')->generate('api_get_rental_media_path'));
         $mediaPath = $serializer->decode($response->getBody()->getContents());
         return $mediaPath;
     }
 
     /**
-     * @Route("/rental/new/{id}", name="rental_new")
+     * @Route("/rental/new/{step}/{id}", name="rental_new")
      */
-    public function newAction($id ='') {
+    public function newAction($step, $id ='', Request $request) {
+        $return = array();
         if(!empty($id)) {
             $rental = $this->getRental($id);
             $this->getDoctrine()->getEntityManager()->merge($rental);
@@ -85,12 +107,44 @@ class RentalController extends Controller
         } else {
             $rental = new Rental();
         }
-        $rentalForm = $this->createForm(RentalType::class, $rental);
-        $this->setMissingCharacteristicsAction($rental);
-        $characteristicCategories = $this->getCharacteristicCategories($rental);
-        return $this->render('host/rental/new.html.twig', array(
-            'rentalForm' => $rentalForm->createView(),
-            'characteristicCategories' => $characteristicCategories));
+        switch($step) {
+            case 'step-1' :
+                $rentalForm = $this->createForm(RentalType::class, $rental);
+                $return['rentalForm'] = $rentalForm->createView();
+                $rentalForm->handleRequest($request);
+                if ($rentalForm->isSubmitted()) {
+                    if($rentalForm->isValid()) {
+                        $rentalForm = $request->request->all()['rental'];
+                        $rentalForm["id"] = $rental->getId();
+                        $rental = $this->submit($rentalForm);
+                        return $this->redirect($this->generateUrl('property_new', array('step' => 'step-2', 'id'=> $rental->getId())). '#step-2');
+                    }
+                }
+            case 'step-2':
+                $this->setMissingCharacteristicsAction($rental);
+                $characteristicCategories = $this->getCharacteristicCategories($rental);
+                $return['characteristicCategories'] = $characteristicCategories->createView();
+                if ($request->isMethod('POST')) {
+                    $characteristicValueForm = $request->request->get("characteristicValueForm");
+                    if (!empty($characteristicValueForm)) {
+                        $characteristicValueForm["rental"] = $rental->getId();
+                        $this->submitCharacteristicValues($characteristicValueForm);
+                        return $this->redirect($this->generateUrl('property_new', array('id' => $rental->getId())) . '#step-3');
+                    }
+                }
+            case 'step-3':
+                if ($request->isMethod('POST')) {
+                    $media = $request->files->get('media');
+                    if (!empty($media)) {
+                        $media["property"] = $rental->getId();
+                        $this->submitPictures($media);
+                        return $this->redirect($this->generateUrl('rental_edit', array('id' => $rental->getId())) . '#presentation');
+                    }
+                }
+
+        }
+
+        return $this->render('host/rental/new.html.twig', $return);
     }
     public function getRental($id) {
         $api = $this->container->get('winefing.api_controller');
@@ -100,29 +154,23 @@ class RentalController extends Controller
         return $rental;
     }
 
-    /**
-     * @Route("/submit/rental", name="rental_submit")
-     */
-    public function submitAction(Request $request)
+
+    public function submit($rental)
     {
-        if(empty($request->request->all()["rental"]["property"])) {
+        if(empty($rental["property"])) {
             return $this->redirect($this->generateUrl('property_new'));
         }
-        $route = $request->request->all()["rental"]["redirectRoute"];
         $api = $this->container->get('winefing.api_controller');
         $serializer = $this->container->get('jms_serializer');
-        if(empty($request->request->all()["rental"]["id"])) {
-            $response = $api->post($this->get('router')->generate('api_post_rental'), $request->request->all()["rental"]);
-            $rental = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Rental', 'json');
-            return $this->redirect($this->generateUrl('rental_new', array('id'=> $rental->getId())). '#step-2');
+        if(empty($rental["id"])) {
+            $response = $api->post($this->get('router')->generate('api_post_rental'), $rental);
         } else {
-            $api->put($this->get('router')->generate('api_put_rental'), $request->request->all()["rental"]);
+            $response = $api->put($this->get('router')->generate('api_put_rental'), $rental);
         }
-        return $this->redirect($route);
+        $rental = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Rental', 'json');
+        return $rental;
     }
-    /**
-     * @Route("/submit/pictures/rental", name="rental_pictures_submit")
-     */
+
     public function submitPictureAction(Request $request)
     {
         $route = $request->request->all()["media"]["redirectRoute"];
@@ -138,15 +186,12 @@ class RentalController extends Controller
         }
         return $this->redirect($route);
     }
-    /**
-     * @Route("/submit/characteristic/rental/values", name="characteristic_rental_value_submit")
-     */
-    public function submitCharacteristicRentalValues(Request $request) {
-        $route = $request->request->all()["characteristicValueForm"]["redirectRoute"];
+
+    public function submitCharacteristicValues($characteristicValueForm) {
         $api = $this->container->get('winefing.api_controller');
         $serializer = $this->container->get('winefing.serializer_controller');
-        $rental = $request->request->all()["characteristicValueForm"]["rental"];
-        foreach($request->request->all()["characteristicValueForm"]["characteristicValue"] as $characteristicValue) {
+        $rental = $characteristicValueForm["rental"];
+        foreach($characteristicValueForm["characteristicValue"] as $characteristicValue) {
             if (empty($characteristicValue["id"])) {
                 $response = $api->post($this->get('router')->generate('api_post_characteristic_value'), $characteristicValue);
                 $characteristicValue = $serializer->decode($response->getBody()->getContents());
@@ -157,7 +202,6 @@ class RentalController extends Controller
                 $api->put($this->get('router')->generate('api_put_characteristic_value'), $characteristicValue);
             }
         }
-        return $this->redirect($route);
     }
 
     /**

@@ -252,6 +252,9 @@ class User extends BaseUser
      */
     public function getPicture()
     {
+        if(empty($this->picture)) {
+            $this->picture = 'default.png';
+        }
         return $this->picture;
     }
 

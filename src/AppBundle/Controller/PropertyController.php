@@ -52,8 +52,6 @@ class PropertyController extends Controller
         return $this->render('host/property/index.html.twig', array(
             'properties' => $properties,
             'mediaPath' => $mediaPath));
-        return new Response();
-
     }
     /**
      * @Route("/property/edit/{id}", name="property_edit")
@@ -119,8 +117,6 @@ class PropertyController extends Controller
         $return['mediaPath'] = $mediaPath;
         $return['rentalMediaPath'] = $rentalMediaPath;
         return $this->render('host/property/edit.html.twig', $return);
-        return new Response();
-
     }
     /**
      * @Route("/property/new/{step}/{id}", name="property_new")
@@ -262,9 +258,7 @@ class PropertyController extends Controller
             $api->put($this->get('router')->generate('api_put_media_property'), $body);
         }
     }
-    /**
-     * @Route("/submit/address/property", name="property_address_submit")
-     */
+
     public function submitAddress($address) {
         $api = $this->container->get('winefing.api_controller');
         $serializer = $this->container->get('jms_serializer');

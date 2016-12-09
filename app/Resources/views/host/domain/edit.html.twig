@@ -2,11 +2,11 @@
 {% block table %}
     <div class="row">
         <div class="col-sm-3">
-            <ul class="nav nav-pills nav-stacked">
-                <li class="active"><a href="#presentation" data-toggle="tab"><i class="glyphicon glyphicon-home"></i>{% trans %}label.presentation{% endtrans %}</a></li>
-                <li><a href="#pictures" data-toggle="tab"><i class="glyphicon glyphicon-picture"></i>{% trans %}label.pictures{% endtrans %}</a></li>
-                <li><a href="#address" data-toggle="tab"><i class="glyphicon glyphicon-zoom-in"></i>{% trans %}label.address{% endtrans %}</a></li>
-                <li><a href="#informations" data-toggle="tab"><i class="glyphicon glyphicon-info-sign"></i>{% trans %}label.informations{% endtrans %}</a></li>
+            <ul class="nav nav-pills nav-stacked" id="nav">
+                <li class="active"><a href="#presentation" data-toggle="tab"><i class="glyphicon glyphicon-home"></i> {% trans %}label.presentation{% endtrans %}</a></li>
+                <li><a href="#pictures" data-toggle="tab"><i class="glyphicon glyphicon-picture"></i> {% trans %}label.pictures{% endtrans %}</a></li>
+                <li><a href="#address" data-toggle="tab"><i class="glyphicon glyphicon-zoom-in"></i> {% trans %}label.address{% endtrans %}</a></li>
+                <li><a href="#informations" data-toggle="tab"><i class="glyphicon glyphicon-info-sign"></i> {% trans %}label.informations{% endtrans %}</a></li>
             </ul>
         </div>
         <div class="col-sm-9">
@@ -17,31 +17,31 @@
                             <h4>{% trans %}label.presentation{% endtrans %}</h4>
                         </div>
                         <div class="panel-body">
-                            <form name="domain" method="post" action="{{ path('domain_submit') }}">
-                                <div class="form-group">
-                                    {{ form_widget(domainForm.id,  { 'attr': {'required': 'false'} }) }}
-                                </div>
+                            {{ form_start(domainForm) }}
                                 <div class="form-group">
                                     <label for="postal_code">*{% trans %}label.wine_region{% endtrans %} </label>
+                                    {{ form_errors(domainForm.wineRegion) }}
                                     {{ form_widget(domainForm.wineRegion,  { 'attr': {'class': 'form-control'} }) }}
                                 </div>
                                 <div class="form-group">
                                     <label for="address">*{% trans %}label.name{% endtrans %} </label>
+                                    {{ form_errors(domainForm.name) }}
                                     {{ form_widget(domainForm.name,  { 'attr': {'class': 'form-control'} }) }}
                                 </div>
                                 <div class="form-group">
                                     <label for="postal_code">*{% trans %}label.description{% endtrans %} </label>
+                                    {{ form_errors(domainForm.description) }}
                                     {{ form_widget(domainForm.description,  { 'attr': {'class': 'form-control'} }) }}
                                 </div>
                                 <button type="submit" class="btn btn-primary pull-right">{% trans %}label.submit{% endtrans %}</button>
-                            </form>
+                            {{ form_end(domainForm) }}
                         </div>
                     </div>
                 </div>
                 <div class="tab-pane fade in" id="pictures">
                     <h4>{% trans %}label.pictures{% endtrans %}</h4>
                     {% set imagePerSlide = 3 %}
-                    {% set totalRow =  ((domain.medias|length)/imagePerSlide)|round %}
+                    {% set totalRow =  ((medias|length)/imagePerSlide)|round(0, 'ceil') %}
                     {% if totalRow > 0 %}
                         <div id="Carousel" class="carousel slide">
                             <ol class="carousel-indicators">
@@ -64,10 +64,10 @@
                                     <div class="{{ class }}">
                                         <div class="row">
                                             {% for f in 0..imagePerSlide - 1%}
-                                                {% if j <= domain.medias|length - 1 %}
+                                                {% if j <= medias|length - 1 %}
                                                     <div class="col-md-4">
-                                                        <a href="{{ picturePath ~ domain.medias[j].name }}" rel="gallery2" class="fancybox img-hover-v1">
-                                                            <img src="{{ picturePath ~ domain.medias[j].name }}" style="max-width:100%;">
+                                                        <a href="{{ mediaPath ~ medias[j].name }}" rel="gallery2" class="fancybox img-hover-v1">
+                                                            <img src="{{ mediaPath ~ medias[j].name }}" style="max-width:100%;">
                                                         </a>
                                                     </div>
                                                     {% set j = j + 1 %}
@@ -82,12 +82,9 @@
                         </div><!--.Carousel-->
                     {% endif %}
                     <p>Ajouter des photos :</p>
-                    <form name="domain" method="post" action="{{ path('domain_pictures_submit') }}" enctype="multipart/form-data">
+                    <form name="media" method="post" enctype="multipart/form-data">
                         <div class="form-group">
-                            <input hidden name="domain" value="{{ domain.id }}">
-                        </div>
-                        <div class="form-group">
-                            <input type="file" name="medias[]" multiple class="form-control">
+                            <input type="file" name="media[medias][]" multiple class="form-control">
                         </div>
                         <button type="submit" class="btn btn-primary pull-right">{% trans %}label.submit{% endtrans %}</button>
                     </form>
@@ -99,39 +96,14 @@
                         </div>
                         <div class="panel-body">
                             {{ form_start(addressForm) }}
-                            <div class="form-group">
-                                {{ form_widget(addressForm.id,  { 'attr': {'required': 'false'} }) }}
-                            </div>
-                            <div class="form-group">
-                                <label for="address">*{% trans %}label.address{% endtrans %} </label>
-                                {{ form_widget(addressForm.formattedAddress,  { 'attr': {'class': 'form-control'} }) }}
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="postal_code">*{% trans %}label.postal_code{% endtrans %} </label>
-                                        {{ form_widget(addressForm.postalCode,  { 'attr': {'class': 'form-control'} }) }}
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="locality">*{% trans %}label.locality{% endtrans %} </label>
-                                        {{ form_widget(addressForm.locality,  { 'attr': {'class': 'form-control'} }) }}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="country">*{% trans %}label.country{% endtrans %} </label>
-                                {{ form_widget(addressForm.country,  { 'attr': {'class': 'form-control'} }) }}
-                            </div>
-                            <button type="submit" class="btn btn-primary pull-right">{% trans %}label.submit{% endtrans %}</button>
+                                {% include('host/address/form.html.twig') %}
+                                <button type="submit" class="btn btn-primary pull-right">{% trans %}label.submit{% endtrans %}</button>
                             {{ form_end(addressForm) }}
                         </div>
                     </div>
                 </div>
                 <div class="tab-pane fade in" id="informations">
-                    <form method="post" name="characteristicDomainValue" action="{{ path('characteristic_domain_value_submit') }}">
-                        <input name="characteristicDomain[domain]" value="{{ domain.id }}" hidden>
+                    <form method="post" name="characteristicDomainValue">
                         {% set i = 0 %}
                         {% for characteristicCategory,characteristicDomainValues in characteristicCategories %}
                             <div class="panel panel-default">

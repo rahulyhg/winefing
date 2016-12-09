@@ -1,0 +1,124 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    {% set id = app.request.get('id') %}
+    <div class="container">
+        <div class="stepwizard col-md-offset-3">
+            <div class="stepwizard-row setup-panel">
+                <div class="stepwizard-step">
+                    <a id="anchor-contact" href="#contact" type="button" class="btn btn-primary btn-circle" disabled="disabled">1</a>
+                    <p>{% trans %}label.contact{% endtrans %} </p>
+                </div>
+                <div class="stepwizard-step">
+                    <a id="anchor-domain" href="#domain" type="button" class="btn btn-default btn-circle" disabled="disabled">2</a>
+                    <p>{% trans %}label.domain{% endtrans %} </p>
+                </div>
+            </div>
+        </div>
+        <form role="form" method="post">
+            <div class="row setup-content" id="contact">
+                <div class="col-xs-6 col-md-offset-3">
+                    <div class="col-md-12">
+                        {% if userForm is defined %}
+                            {% if app.session.flashBag.has('contactSuccess') %}
+                                <div class="alert alert-success">
+                                    {% for msg in app.session.flashBag.get('contactSuccess') %}
+                                        {{ msg }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            {% if app.session.flashBag.has('contactError') %}
+                                <div class="alert alert-danger">
+                                    {% for msg in app.session.flashBag.get('contactError') %}
+                                        {{ msg }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <h3> {% trans %}label.contact{% endtrans %} </h3>
+                            {{ form_start(userForm) }}
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            {{ form_row(userForm.firstName) }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            {{ form_row(userForm.lastName) }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    {{ form_row(userForm.phoneNumber) }}
+                                </div>
+                                <div class="form-group">
+                                    {{ form_row(userForm.email.first) }}
+                                </div>
+                                <div id="emailRepeatFieldset">
+                                    {{ form_row(userForm.email.second) }}
+                                </div>
+                                <div class="form-group">
+                                    {{ form_row(userForm.password.first) }}
+                                </div>
+                                <div class="form-group">
+                                    {{ form_row(userForm.password.second) }}
+                                </div>
+                            {{ form_end(userForm) }}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="row setup-content" id="domain">
+                <div class="col-xs-6 col-md-offset-3">
+                    <div class="col-md-12">
+                        {% if domainForm is defined %}
+                            {% if app.session.flashBag.has('domainSuccess') %}
+                                <div class="alert alert-success">
+                                    {% for msg in app.session.flashBag.get('domainSuccess') %}
+                                        {{ msg }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            {% if app.session.flashBag.has('domainError') %}
+                                <div class="alert alert-danger">
+                                    {% for msg in app.session.flashBag.get('domainError') %}
+                                        {{ msg }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <h3>{% trans %}label.the_domain{% endtrans %}</h3>
+                            {{ form_start(domainForm) }}
+                                {{ form_row(domainForm.name) }}
+                                {{ form_row(domainForm.wineRegion) }}
+                                <br>
+                                {{ form_row(domainForm.address.formattedAddress) }}
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        {{ form_row(domainForm.address.postalCode) }}
+                                    </div>
+                                    <div class="col-sm-6">
+                                        {{ form_row(domainForm.address.locality) }}
+                                    </div>
+                                </div>
+                                {{ form_row(domainForm.address.country) }}
+                                <br>
+                                {{ form_row(domainForm.submit) }}
+                            {{ form_end(domainForm) }}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <script>
+        $(document).ready(function() {
+            url = document.location.toString();
+            id = {{  id }};
+            step = url.split('#')[1];
+            if((step == 'domain') && id == '' ) {
+                step = 'contact';
+            }
+            document.getElementById("anchor-" + step).removeAttribute("disabled");
+            $("#anchor-" + step)[0].click();
+        });
+    </script>
+{% endblock %}

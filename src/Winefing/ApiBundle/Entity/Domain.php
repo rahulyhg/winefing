@@ -4,6 +4,7 @@ namespace Winefing\ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * Domain
@@ -19,23 +20,27 @@ class Domain
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"default"})
      */
     private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\WineRegion")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"default"})
      */
     private $wineRegion;
 
     /**
      * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Media", inversedBy="domains", cascade={"persist", "merge", "detach"})
+     * @Groups({"medias"})
      */
     private $medias;
 
     /**
      * @var Properties
      * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\Property", mappedBy="domain", cascade="ALL")
+     * @Groups({"properties"})
      */
     private $properties;
 
@@ -43,17 +48,21 @@ class Domain
     /**
      * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Address", inversedBy="domains")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"address"})
      */
     private $address;
 
     /**
      * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\User", inversedBy="domains")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"user"})
+     *
      */
     private $user;
 
     /**
      * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\CharacteristicValue", inversedBy="domains")
+     * @Groups({"characteristicValues"})
      */
     private $characteristicValues;
 
@@ -61,6 +70,7 @@ class Domain
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=60)
+     * @Groups({"default"})
      */
     private $name;
 
@@ -68,6 +78,7 @@ class Domain
      * @var string
      *
      * @ORM\Column(name="description", type="string", length=500, nullable=true)
+     * @Groups({"default"})
      */
     private $description;
 
@@ -75,6 +86,7 @@ class Domain
      * @var string
      *
      * @ORM\Column(name="history", type="string", length=500, nullable=true)
+     * @Groups({"default"})
      */
     private $history;
 

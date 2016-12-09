@@ -143,3 +143,8 @@ eventRequest:
     type: rest
     resource: Winefing\ApiBundle\Controller\EventRequestController
     name_prefix:  api_
+
+rentalPromotions:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\EventRequestController
+    name_prefix:  api_

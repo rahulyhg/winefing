@@ -17,7 +17,10 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManager;
 use AppBundle\Form\AddressType;
@@ -30,10 +33,11 @@ class RentalType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('id',  HiddenType::class, array(
-                'required' => false))
             ->add('name', null, array('attr'=> array('maxlength'=>"60", 'required'=> true)))
-            ->add('description', null, array('attr'=> array('maxlength'=>"255", 'required'=> false)))
+            ->add('description', TextareaType::class, array('attr'=> array('maxlength'=>"255", 'required'=> false)))
+            ->add('price', MoneyType::class)
+            ->add('peopleNumber', IntegerType::class, array('attr' => array('min'=> 1)))
+            ->add('minimumRentalPeriod', IntegerType::class, array('attr'=> array('required'=> false,'min'=> 1)))
             ->add('property', EntityType::class,  array(
                 'class' => 'WinefingApiBundle:Property',
                 'choice_label' => 'name',

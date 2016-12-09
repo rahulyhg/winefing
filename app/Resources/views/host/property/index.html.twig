@@ -10,7 +10,7 @@
         <div>
             {% set length = properties|length %}
             {% set i = 0 %}
-            {% for j in 0..(length/3)|round %}
+            {% for j in 0..(length/3)|round(0, 'ceil') %}
                 <div class="row container-realestate">
                     {% for property in i..(i+2) if (i < length) %}
                         <div class="col-md-4 col-sm-6 col-xs-12">

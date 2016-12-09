@@ -2,7 +2,7 @@
 {% block table %}
     <div class="row">
         <div style="text-align: center">
-            <a href="{{ path('property_new') }}">
+            <a href="{{ path('rental_new', {'step' : 'step-1'}) }}">
                 <button class="btn btn-primary">Ajouter</button>
             </a>
         </div>
@@ -10,9 +10,9 @@
         <div>
             {% set length = rentals|length %}
             {% set i = 0 %}
-            {% for j in 0..(length/3)|round %}
+            {% for j in 0..(length/3)|round(0, 'ceil') %}
                 <div class="row container-realestate">
-                    {% for property in i..(i+3) if (i < length) %}
+                    {% for property in i..(i+2) if (i < length) %}
                         <div class="col-md-4 col-sm-6 col-xs-12">
                             <div class="property-container">
                                 <div class="property-image">
@@ -27,8 +27,8 @@
                                     <span><i class="fa fa-male"></i> 2 Bath</span>
                                 </div>
                                 <div class="property-content">
-                                    <h3><a href="{{ path('property_edit', {'id': rentals[i].id }) }}">{{ rentals[i].name }}</a> <small>{{ rentals[i].description }}</small></h3>
-                                    <a href="{{ path('property_edit', {'id': rentals[i].id }) }}">
+                                    <h3><a href="{{ path('rental_edit', {'id': rentals[i].id }) }}">{{ rentals[i].name }}</a> <small>{{ rentals[i].description }}</small></h3>
+                                    <a href="{{ path('rental_edit', {'id': rentals[i].id }) }}">
                                         <button class="btn btn-primary pull-right">Modifier</button>
                                     </a>
                                 </div>

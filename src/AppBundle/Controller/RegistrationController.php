@@ -50,26 +50,6 @@ class RegistrationController extends Controller
     }
 
     /**
-     * @Route("/host/submit", name="host_submit")
-     * @Method({"POST"})
-     */
-    public function submitAction(Request $request)
-    {
-        $serializer = $this->container->get('winefing.serializer_controller');
-        $api = $this->container->get('winefing.api_controller');
-        $response = $api->post($this->get('_router')->generate('api_post_admin_user_host'), $request->request->all()["user"]);
-        $user = $serializer->decode($response->getBody()->getContents());
-        $response = $api->post($this->get('_router')->generate('api_post_address'), $request->request->all()["address"]);
-        $address = $serializer->decode($response->getBody()->getContents());
-        $domain = $request->request->all()["domain"];
-        $domain["user"] = $user["id"];
-        $domain["address"] = $address["id"];
-        $response = $api->post($this->get('_router')->generate('api_post_domain'), $domain);
-        $domain = $serializer->decode($response->getBody()->getContents());
-        return new Response();
-    }
-
-    /**
      * @Route("/registration/addProperty", name="property_registration_add")
      * @Method({"POST"})
      */

@@ -17,30 +17,34 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManager;
-use AppBundle\Form\AddressType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 
-class DomainType extends AbstractType
+class UserType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('name', null, array('attr'=> array('maxlength'=>"60")))
+            ->add('firstName', null, array('attr'=> array('maxlength'=>"60")))
+            ->add('lastName', null, array('attr'=> array('maxlength'=>"60")))
+            ->add('birthDate', DateType::class, array('required' => false))
+            ->add('phoneNumber', null, array('attr'=> array('maxlength'=>"10")))
+            ->add('email', EmailType::class)
             ->add('description', TextareaType::class, array('attr'=> array('maxlength'=>"60", 'required' => false, 'style' => 'height:250px')))
-            ->add('wineRegion', EntityType::class,  array(
-                'class' => 'WinefingApiBundle:WineRegion',
-                'choice_label' => 'title'))
-        ;
+            ->add('sex', ChoiceType::class,  array(
+                'choices' => array('label.female' => 'F', 'label.male' => 'M'), 'required'    => false, 'empty_data'  => null));
     }
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Winefing\ApiBundle\Entity\Domain',
+            'data_class' => 'Winefing\ApiBundle\Entity\User',
         ));
     }
 }

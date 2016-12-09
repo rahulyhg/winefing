@@ -30,6 +30,12 @@ use FOS\UserBundle\Doctrine\UserManagerInterface;
 
 class HostUserController extends Controller implements ClassResourceInterface
 {
+    public function getByEmailAction($email) {
+        $userManager = $this->get('fos_user.user_manager');
+        $serializer = $this->container->get("jms_serializer");
+        $user = $userManager->findUserBy(array('email'=>$email));
+        return new Response($serializer->serialize($user, 'json'));
+    }
     /**
      * Liste de tout les users possible en base
      * @return Response
@@ -43,7 +49,7 @@ class HostUserController extends Controller implements ClassResourceInterface
         return new Response($json);
     }
 
-    public function cgetPicturePathAction()
+    public function getMediaPathAction()
     {
         $serializer = $this->container->get('winefing.serializer_controller');
         $webPath = $this->container->get('winefing.webpath_controller');
@@ -106,7 +112,7 @@ class HostUserController extends Controller implements ClassResourceInterface
         $user->setUserName($request->request->get('email'));
         $user->setDescription($request->request->get('description'));
         if(!empty($request->request->get('birthDate'))) {
-            $user->setBirthDate($request->request->get('birthDate'));
+            $user->setBirthDate(date_create_from_format('U', $request->request->get('birthDate')));
         }
         $user->setSex($request->request->get('sex'));
         $validator = $this->get('validator');

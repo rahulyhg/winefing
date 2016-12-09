@@ -6,42 +6,66 @@
             <ul class="nav nav-pills nav-stacked" id="nav">
                 <li class="active"><a href="#presentation" data-toggle="tab"><i class="glyphicon glyphicon-home"></i> {% trans %}label.presentation{% endtrans %}</a></li>
                 <li><a href="#informations" data-toggle="tab"><i class="glyphicon glyphicon-home"></i> {% trans %}label.informations{% endtrans %}</a></li>
-                <li><a href="#prices" data-toggle="tab"><i class="glyphicon glyphicon-picture"></i> {% trans %}label.prices{% endtrans %}</a></li>
                 <li><a href="#medias" data-toggle="tab"><i class="glyphicon glyphicon-zoom-in"></i> {% trans %}label.pictures{% endtrans %}</a></li>
             </ul>
         </div>
         <div class="col-sm-9">
             <div class="tab-content">
                 <div class="tab-pane fade in active" id="presentation">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h4>{% trans %}label.presentation{% endtrans %}</h4>
-                        </div>
-                        <div class="panel-body">
-                            <form name="rental" method="post" action="{{ path('rental_submit') }}">
-                                <input hidden value="{{ redirectRoute ~'#presentation' }}" name="rental[redirectRoute]">
+                    {{ form_start(rentalForm) }}
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4>{% trans %}label.presentation{% endtrans %}</h4>
+                            </div>
+                            <div class="panel-body">
                                 <div class="form-group">
-                                    {{ form_widget(rentalForm.id,  { 'attr': {'required': 'false'} }) }}
-                                </div>
-                                <div class="form-group">
-                                    <label for="postal_code">*{% trans %}label.property{% endtrans %} </label>
+                                    <label>*{% trans %}label.property{% endtrans %} </label>
+                                    {{ form_errors(rentalForm.property) }}
                                     {{ form_widget(rentalForm.property,  { 'attr': {'class': 'form-control'} }) }}
                                 </div>
                                 <div class="form-group">
-                                    <label for="address">*{% trans %}label.name{% endtrans %} </label>
+                                    <label>*{% trans %}label.name{% endtrans %} </label>
+                                    {{ form_errors(rentalForm.name) }}
                                     {{ form_widget(rentalForm.name,  { 'attr': {'class': 'form-control'} }) }}
                                 </div>
                                 <div class="form-group">
-                                    <label for="postal_code">*{% trans %}label.description{% endtrans %} </label>
+                                    <label >*{% trans %}label.description{% endtrans %} </label>
+                                    {{ form_errors(rentalForm.description) }}
                                     {{ form_widget(rentalForm.description,  { 'attr': {'class': 'form-control'} }) }}
                                 </div>
-                                <button type="submit" class="btn btn-primary pull-right">{% trans %}label.submit{% endtrans %}</button>
-                            </form>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div class="tab-pane fade in" id="prices">
-                    <h4>{% trans %}label.prices{% endtrans %}</h4>
+                        <br>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4>{% trans %}label.price{% endtrans %}</h4>
+                            </div>
+                            <div class="panel-body">
+                                <div class="form-group">
+                                    <label>{% trans %}label.minimum_rental_period{% endtrans %} </label>
+                                    {{ form_errors(rentalForm.minimumRentalPeriod) }}
+                                    {{ form_widget(rentalForm.minimumRentalPeriod,  { 'attr': {'class': 'form-control'} }) }}
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label>*{% trans %}label.price{% endtrans %} </label>
+                                            {{ form_errors(rentalForm.price) }}
+                                            {{ form_widget(rentalForm.price,  { 'attr': {'class': 'form-control'} }) }}
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label>*{% trans %}label.people_number{% endtrans %} </label>
+                                            {{ form_errors(rentalForm.peopleNumber) }}
+                                            {{ form_widget(rentalForm.peopleNumber,  { 'attr': {'class': 'form-control', 'step' : 1} }) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <button type="submit" class="btn btn-primary pull-right">{% trans %}label.submit{% endtrans %}</button>
+                    {{ form_end(rentalForm) }}
                 </div>
                 <div class="tab-pane fade in" id="medias">
                     <h4>{% trans %}label.pictures{% endtrans %}</h4>
@@ -88,9 +112,7 @@
                     {% endif %}
                     <br>
                     <p>Ajouter des photos :</p>
-                    <form name="media" method="post" action="{{ path('rental_pictures_submit') }}" enctype="multipart/form-data">
-                        <input hidden name="media[rental]" value="{{ app.request.get('id') }}">
-                        <input hidden name="media[redirectRoute]" value="{{ redirectRoute ~'#medias' }}">
+                    <form name="media" method="post" enctype="multipart/form-data">
                         <div class="form-group">
                             <input type="file" name="media[medias][]" multiple class="form-control">
                         </div>
@@ -98,9 +120,7 @@
                     </form>
                 </div>
                 <div class="tab-pane fade in" id="informations">
-                    <form method="post" name="characteristicValueForm" action="{{ path('characteristic_rental_value_submit') }}">
-                        <input name="characteristicValueForm[rental]" value="{{ app.request.get('id') }}" hidden>
-                        <input name="characteristicValueForm[redirectRoute]" value="{{ redirectRoute ~ '#informations' }}" hidden>
+                    <form method="post" name="characteristicValueForm">
                         {% include('host/characteristic/valueForm.html.twig') %}
                         <button type="submit" class="btn btn-primary pull-right">{% trans %}label.submit{% endtrans %}</button>
                     </form>
@@ -109,5 +129,22 @@
         </div>
     </div>
     <script>
+        $(document).ready(function() {
+            $("#rental_price").keydown(function (e) {
+                // Allow: backspace, delete, tab, escape, enter and .
+                if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190, 188]) !== -1 ||
+                        // Allow: Ctrl+A, Command+A
+                        (e.keyCode === 65 && (e.ctrlKey === true || e.metaKey === true)) ||
+                        // Allow: home, end, left, right, down, up
+                        (e.keyCode >= 35 && e.keyCode <= 40)) {
+                    // let it happen, don't do anything
+                    return;
+                }
+                // Ensure that it is a number and stop the keypress
+                if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+                    e.preventDefault();
+                }
+            });
+        });
     </script>
 {% endblock %}

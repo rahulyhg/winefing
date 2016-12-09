@@ -31,75 +31,96 @@ use Winefing\ApiBundle\Entity\CharacteristicValue;
 class DomainController extends Controller
 {
     /**
-     * @Route("/domain/{userId}", name="domain_user")
+     * @Route("/domain/edit/{userId}", name="domain_edit")
      */
-    public function getAction($userId = 57) {
+    public function getAction($userId = 57, Request $request) {
+
         $api = $this->container->get('winefing.api_controller');
-        $serializer = $this->container->get('winefing.serializer_controller');
+        $serializer = $this->container->get('jms_serializer');
         $response = $response = $api->get($this->get('_router')->generate('api_get_domain_by_user', array('userId' => $userId)));
-        $domain = $serializer->decode($response->getBody()->getContents());
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Domain');
-        $domain = $repository->findOneById($domain["id"]);
-        $domain = $this->getDoctrine()->getEntityManager()->merge($domain);
+        $domain = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Domain', 'json');
+        $this->getDoctrine()->getEntityManager()->persist($domain->getWineRegion());
+        $domainForm = $this->createForm(DomainType::class, $domain);
+        $domainForm->handleRequest($request);
+        if($domainForm->isSubmitted() && $domainForm->isValid()) {
+            $domainForm = $request->request->get('domain');
+            $domainForm["id"] = $domain->getId();
+            $this->submit($domainForm);
+            return $this->redirect($this->generateUrl('domain_edit', array('id' => $domain->getId())) . '#presentation');
+        }
+        $addressForm = $this->createForm(AddressType::class, $domain->getAddress());
+        $addressForm->handleRequest($request);
+        if($addressForm->isSubmitted() && $addressForm->isValid()) {
+            $addressForm = $request->request->get('address');
+            $addressForm["id"] = $domain->getAddress()->getId();
+            $addressForm["domain"] = $domain->getId();
+            $this->submitAddress($addressForm);
+            return $this->redirect($this->generateUrl('domain_edit', array('id' => $domain->getId())) . '#address');
+        }
         $this->setMissingCharacteristicsAction($domain);
         $characteristicCategories = $this->getCharacteristicCategory($domain);
-        $domainForm = $this->createForm(DomainType::class, $domain);
-        $addressForm = $this->createForm(AddressType::class, $domain->getAddress(), array('action' => $this->generateUrl('domain_address_submit')));
-        $response = $api->get($this->get('_router')->generate('api_get_domains_picture_path'));
-        $picturePath = $serializer->decode($response->getBody()->getContents());
-        return $this->render('host/domain/index.html.twig', array(
+        if ($request->isMethod('POST')) {
+            $media = $request->files->get('media');
+            $characteristicValueForm = $request->request->get("characteristicValueForm");
+            if (!empty($media)) {
+                $media["domain"] = $domain->getId();
+                $this->submitPictures($media);
+                return $this->redirect($this->generateUrl('domain_edit', array('id' => $domain->getId())) . '#medias');
+            } elseif (!empty($characteristicValueForm)) {
+                $characteristicValueForm["domain"] = $domain->getId();
+                $this->submitCharacteristicPropertyValues($characteristicValueForm);
+                return $this->redirect($this->generateUrl('domain_edit', array('id' => $domain->getId())) . '#informations');
+            }
+        }
+        $response = $api->get($this->get('_router')->generate('api_get_domain_media_path'));
+        $serializer = $this->container->get('winefing.serializer_controller');
+        $mediaPath = $serializer->decode($response->getBody()->getContents());
+        return $this->render('host/domain/edit.html.twig', array(
             'domainForm' => $domainForm->createView(),
             'addressForm'=>$addressForm->createView(),
-            'domain' => $domain,
-            'picturePath' => $picturePath,
-            'characteristicCategories' => $characteristicCategories)
+            'mediaPath' => $mediaPath,
+            'characteristicCategories' => $characteristicCategories,
+            'medias' => $domain->getMedias())
         );
     }
 
-    /**
-     * @Route("/submit/domain", name="domain_submit")
-     */
-    public function submitAction(Request $request)
+
+    public function submit($domain)
     {
         $api = $this->container->get('winefing.api_controller');
-        $serializer = $this->container->get('winefing.serializer_controller');
-        $response =  $api->put($this->get('router')->generate('api_put_domain'), $request->request->all()['domain']);
-        $serializer->decode($response->getBody()->getContents());
-        $request->getSession()
-            ->getFlashBag()
-            ->add('success', "The domain is well modified.");
-        return $this->redirectToRoute('domain_user');
+        $api->put($this->get('router')->generate('api_put_domain'), $domain);
     }
-    /**
-     * @Route("/submit/pictures/domain", name="domain_pictures_submit")
-     */
-    public function submitPictureAction(Request $request)
+    public function submitPictures($media)
     {
         $api = $this->container->get('winefing.api_controller');
-        $domain["domain"] = $request->request->all()["domain"];
-        var_dump($request->files->all());
-        foreach($request->files->all()["medias"] as $media) {
-            var_dump("o");
-            $api->file($this->get('router')->generate('api_post_domain_picture'), $domain, $media);
+        $serializer = $this->container->get('jms_serializer');
+        $body["domain"] = $media["domain"];
+        foreach($media["medias"] as $media) {
+            $uploadDirectory["upload_directory"] = $this->getParameter('domain_directory_upload');
+            $response = $api->file($this->get('router')->generate('api_post_media'), $uploadDirectory, $media);
+            $media = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Media', "json");
+            $body["media"] = $media->getId();
+            $api->put($this->get('router')->generate('api_put_media_domain'), $body);
         }
-        return $this->redirect($this->generateUrl('domain_user'). '#pictures');
     }
-    /**
-     * @Route("/submit/address/domain", name="domain_address_submit")
-     */
-    public function submitAddressAction(Request $request) {
+
+    public function submitAddress($address) {
         $api = $this->container->get('winefing.api_controller');
-        $domain["domain"] = $request->request->all()["domain"];
-        var_dump($request->files->all());
-        foreach($request->files->all()["medias"] as $media) {
-            var_dump("o");
-            $api->file($this->get('router')->generate('api_post_domain_picture'), $domain, $media);
+        $serializer = $this->container->get('jms_serializer');
+        $domain = $address['domain'];
+        if(empty($address["id"])) {
+            $response =  $api->post($this->get('router')->generate('api_post_address'), $address);
+            $address = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Address', 'json');
+            $body["address"] = $address->getId();
+            $body["domain"] = $domain;
+            $api->put($this->get('router')->generate('api_put_property_address'), $body);
+        } else {
+            $response = $api->put($this->get('router')->generate('api_put_address'), $address);
+            $address = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Address', 'json');
         }
-        return $this->redirect($this->generateUrl('domain_user'). '#pictures');
+        return $address;
     }
-    /**
-     * @Route("/submit/characteristicDomainValues", name="characteristic_domain_value_submit")
-     */
+
     public function submitCharacteristicDomainValues(Request $request) {
         $api = $this->container->get('winefing.api_controller');
         $serializer = $this->container->get('jms_serializer');
@@ -130,25 +151,6 @@ class DomainController extends Controller
             ->getFlashBag()
             ->add('success', "The domain is well deleted.");
         return $this->redirectToRoute('domain_user');
-    }
-    /**
-     * @Route("/address/domain/{userId}", name="domain_address")
-     */
-    public function getAddressAction($userId = 57) {
-        return $this->render('host/domain/test.html.twig');
-    }
-    /**
-     * @Route("/pictures/domain/{userId}", name="domain_pictures")
-     */
-    public function getPictureAction($userId = 57) {
-        $api = $this->container->get('winefing.api_controller');
-//        $response = $api->get($this->get('_router')->generate('api_get_domain_by_user', array('userId' => $userId)));
-//        $serializer = $this->container->get('jms_serializer');
-//        $domain = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Domain', 'json');
-//        $address = $domain->getAddress();
-//        $domainForm = $this->createForm(AddressType::class, $address, array(
-//            'action' => $this->generateUrl('domain_submit')));
-        return $this->render('host/domain/picture.html.twig');
     }
 
     public function setMissingCharacteristicsAction($domain)

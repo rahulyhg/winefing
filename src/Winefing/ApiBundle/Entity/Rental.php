@@ -5,6 +5,7 @@ namespace Winefing\ApiBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\Type;
 
 /**
  * Rental
@@ -26,6 +27,7 @@ class Rental
 
     /**
      * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\CharacteristicValue", inversedBy="rentals")
+     * @Groups({"characteristicValues"})
      */
     private $characteristicValues;
 
@@ -60,8 +62,32 @@ class Rental
     /**
      * @var
      * @Groups({"default"})
+     * @Type("string")
      */
     private $mediaPresentation;
+
+    /**
+     * @var float
+     * @ORM\Column(name="price", type="decimal", precision=6, scale=2, nullable=true)
+     * @Groups({"default"})
+     */
+    private $price;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="peopleNumber", type="integer", nullable=true)
+     * @Groups({"default"})
+     */
+    private $peopleNumber;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="minimumRentalPeriod", type="integer", nullable=true)
+     * @Groups({"default"})
+     */
+    private $minimumRentalPeriod;
 
     public function _construct() {
         $this->characteristicValues = new ArrayCollection();
@@ -183,6 +209,61 @@ class Rental
         $this->description = $description;
     }
 
+    /**
+     * @return float
+     */
+    public function getPrice()
+    {
+        return $this->price;
+    }
+
+    /**
+     * @param float $price
+     */
+    public function setPrice($price)
+    {
+        $this->price = $price;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPeopleNumber()
+    {
+        return $this->peopleNumber;
+    }
+
+    /**
+     * @param int $peopleNumber
+     */
+    public function setPeopleNumber($peopleNumber)
+    {
+        $this->peopleNumber = $peopleNumber;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMinimumRentalPeriod()
+    {
+        return $this->minimumRentalPeriod;
+    }
+
+    /**
+     * @param int $minimumRentalPeriod
+     */
+    public function setMinimumRentalPeriod($minimumRentalPeriod)
+    {
+        $this->minimumRentalPeriod = $minimumRentalPeriod;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMedias()
+    {
+        return $this->medias;
+    }
 
 }
 

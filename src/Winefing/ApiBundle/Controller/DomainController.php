@@ -24,6 +24,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Winefing\ApiBundle\Entity\ScopeEnum;
+use JMS\Serializer\SerializationContext;
 
 
 class DomainController extends Controller implements ClassResourceInterface
@@ -31,15 +32,15 @@ class DomainController extends Controller implements ClassResourceInterface
 
     public function getAction($id)
     {
-        $serializer = $this->container->get('winefing.serializer_controller');
+        $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Domain');
         $domain = $repository->findOneById($id);
-        $json = $serializer->serialize($domain);
+        $json = $serializer->serialize($domain, 'json', SerializationContext::create()->setGroups(array('characteristicValues', 'default', 'medias', 'address')));
         return new Response($json);
     }
 
     public function getMissingCharacteristicsAction($domainId) {
-        $serializer = $this->container->get('winefing.serializer_controller');
+        $serializer = $this->container->get('jms_serializer');
 
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Domain');
         $domain = $repository->findOneById($domainId);
@@ -50,11 +51,11 @@ class DomainController extends Controller implements ClassResourceInterface
         }
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Characteristic');
         $characteristics = $repository->findMissingCharacteristics($ids, ScopeEnum::Domain);
-        return new Response($serializer->serialize($characteristics));
+        return new Response($serializer->serialize($characteristics, 'json', SerializationContext::create()->setGroups(array('default'))));
 
     }
 
-    public function cgetPicturePathAction()
+    public function getMediaPathAction()
     {
         $serializer = $this->container->get('winefing.serializer_controller');
         $webPath = $this->container->get('winefing.webpath_controller');
@@ -63,41 +64,16 @@ class DomainController extends Controller implements ClassResourceInterface
     }
 
     public function getByUserAction($userId) {
+        $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Domain');
         $domain = $repository->findOneByUser($userId);
-        $serializer = $this->container->get('jms_serializer');
-        $json = $serializer->serialize($domain, 'json');
+        $json = $serializer->serialize($domain, 'json', SerializationContext::create()->setGroups(array('characteristicValues', 'default', 'medias', 'address')));
         return new Response($json);
-    }
-    public function postPictureAction(Request $request) {
-        $em = $this->getDoctrine()->getManager();
-        $serializer = $this->container->get('winefing.serializer_controller');
-        $uploadedFile = $request->files->get('picture');
-        $fileName = md5(uniqid()) . '.' . $uploadedFile->getClientOriginalExtension();
-        $mediaFormat = $this->container->get('winefing.media_format_controller');
-        $extentionCorrect = $mediaFormat->checkFormat($uploadedFile->getClientOriginalExtension(), MediaFormatEnum::Image);
-        if($extentionCorrect != 1) {
-            throw new BadRequestHttpException($extentionCorrect);
-        }
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Domain');
-        $domain = $repository->findOneById($request->request->get('domain'));
-        $media = new Media();
-        $media->setName($fileName);
-        $media->setFormat(MediaFormatEnum::Image);
-        $media->setPresentation(false);
-        $domain->addMedia($media);
-        $uploadedFile->move(
-            $this->getParameter('domain_directory_upload'),
-            $fileName
-        );
-        $em->persist($domain);
-        $em->flush();
-        return new Response($serializer->serialize($domain));
     }
     public function postAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $serializer = $this->container->get('winefing.serializer_controller');
+        $serializer = $this->container->get('jms_serializer');
         $domain = new Domain();
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:WineRegion');
         $domain->setWineRegion($repository->findOneById($request->request->get('wineRegion')));
@@ -115,13 +91,13 @@ class DomainController extends Controller implements ClassResourceInterface
         }
         $em->persist($domain);
         $em->flush();
-        $json = $serializer->serialize($domain);
+        $json = $serializer->serialize($domain, 'json', SerializationContext::create()->setGroups(array('default')));
         return new Response($json);
     }
     public function putAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $serializer = $this->container->get('winefing.serializer_controller');
+        $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Domain');
         $domain = $repository->findOneById($request->request->get('id'));
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:WineRegion');
@@ -136,13 +112,13 @@ class DomainController extends Controller implements ClassResourceInterface
         }
         $em->persist($domain);
         $em->flush();
-        $json = $serializer->serialize($domain);
+        $json = $serializer->serialize($domain, 'json', SerializationContext::create()->setGroups(array('default')));
         return new Response($json);
     }
     public function putAddressAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $serializer = $this->container->get('winefing.serializer_controller');
+        $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Domain');
         $domain = $repository->findOneById($request->request->get('id'));
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Address');
@@ -155,7 +131,7 @@ class DomainController extends Controller implements ClassResourceInterface
         }
         $em->persist($domain);
         $em->flush();
-        $json = $serializer->serialize($domain);
+        $json = $serializer->serialize($domain, 'json', SerializationContext::create()->setGroups(array('default')));
         return new Response($json);
     }
 

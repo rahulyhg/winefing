@@ -250,9 +250,37 @@
                 <source>label.duration</source>
                 <target>Durée</target>
             </trans-unit>
-           <trans-unit id="label_event_category">
+            <trans-unit id="label_event_category">
                 <source>label.event_ctageory</source>
                 <target>Type d'évênement</target>
+            </trans-unit>
+            <trans-unit id="label_price">
+                <source>label.price</source>
+                <target>Prix</target>
+            </trans-unit>
+            <trans-unit id="label_domain">
+                <source>label.domain</source>
+                <target>Domaine</target>
+            </trans-unit>
+            <trans-unit id="label_price_explanation">
+                <source>label.price_explanation</source>
+                <target>Le prix par nuit</target>
+            </trans-unit>
+            <trans-unit id="label_people_number_explanation">
+                <source>label.people_number_explanation</source>
+                <target>Le nombre de personne que peut contenir la chambre</target>
+            </trans-unit>
+                <trans-unit id="label_minimum_rental_period">
+                <source>label.minimum_rental_period</source>
+                <target>Période de location minimum</target>
+            </trans-unit>
+            <trans-unit id="label_minimum_rental_period_explanation">
+                <source>label.minimum_rental_period_explanation</source>
+                <target>Nombre de jours que le client doit réserver minimum. Ex: 2 jours</target>
+            </trans-unit>
+            <trans-unit id="error_email_already_exist">
+                <source>error.email_already_exist</source>
+                <target>Un compte avec ce mail existe déjà.</target>
             </trans-unit>
         </body>
     </file>

@@ -242,9 +242,61 @@
                 <source>label.duration</source>
                 <target>Duration</target>
             </trans-unit>
-           <trans-unit id="label_event_category">
+            <trans-unit id="label_event_category">
                 <source>label.event_ctageory</source>
                 <target>Kind of event</target>
+            </trans-unit>
+            <trans-unit id="label_price">
+                <source>label.price</source>
+                <target>Price</target>
+            </trans-unit>
+            <trans-unit id="label_domain">
+                <source>label.domain</source>
+                <target>Domain</target>
+            </trans-unit>
+            <trans-unit id="label_price_explanation">
+                <source>label.price_explanation</source>
+                <target>The price has to be per night day.</target>
+            </trans-unit>
+            <trans-unit id="label_people_number_explanation">
+                <source>label.people_number_explanation</source>
+                <target>The number of people that the room contain</target>
+            </trans-unit>
+            <trans-unit id="label_minimum_rental_period">
+                <source>label.minimum_rental_period</source>
+                <target>Minimum rental period</target>
+            </trans-unit>
+            <trans-unit id="label_minimum_rental_period_explanation">
+                <source>label.minimum_rental_period_explanation</source>
+                <target>Minimum rental period that has to be order</target>
+            </trans-unit>
+            <trans-unit id="success_profil_edit">
+                <source>success.profil_edit</source>
+                <target>The profil is well modified.</target>
+            </trans-unit>
+            <trans-unit id="success_picture_edit">
+                <source>success.picture_edit</source>
+                <target>The picture is well modified.</target>
+            </trans-unit>
+            <trans-unit id="success_password_edit">
+                <source>success.password_edit</source>
+                <target>The password is well modified.</target>
+            </trans-unit>
+            <trans-unit id="success_modifications_saved">
+                <source>success.modifications_saved</source>
+                <target>The changes have been succefully saved.</target>
+            </trans-unit>
+            <trans-unit id="error.not_current_password">
+                <source>error.not_current_password</source>
+                <target>The password is not the current one.</target>
+            </trans-unit>
+            <trans-unit id="error_email_already_exist">
+                <source>error.email_already_exist</source>
+                <target>A account with this email already exist.</target>
+            </trans-unit>
+            <trans-unit id="error_domain_already_exist">
+                <source>error.domain_already_exist</source>
+                <target>You can't create two domain per account. Create a new account for this domain.</target>
             </trans-unit>
         </body>
     </file>
