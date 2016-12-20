@@ -1,0 +1,19 @@
+{% extends 'host/base.html.twig' %}
+{% block table %}
+    <div class="row">
+        {{ form_start(rentalPromotionForm) }}
+            <div class="form-group">
+                <label>{{ form_label(rentalPromotionForm.startDate) }}</label>
+                {{ form_widget(rentalPromotionForm.startDate) }}
+            </div>
+            <div class="form-group">
+                <label>{{ form_label(rentalPromotionForm.endDate) }}</label>
+                {{ form_widget(rentalPromotionForm.endDate) }}
+            </div>
+            <div class="form-group">
+                <label>{{ form_label(rentalPromotionForm.reduction) }}</label>
+                {{ form_widget(rentalPromotionForm.reduction) }}
+            </div>
+        {{ form_end(rentalPromotionForm) }}
+    </div>
+{% endblock %}

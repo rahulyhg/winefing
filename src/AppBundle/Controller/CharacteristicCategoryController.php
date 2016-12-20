@@ -46,7 +46,8 @@ class CharacteristicCategoryController extends Controller
         $response = $api->get($this->get('_router')->generate('api_get_characteristic_picture_path'));
         $characteristicPicturePath = $serializer->decode($response->getBody()->getContents());
         return $this->render('admin/characteristic/index.html.twig', array(
-            'characteristicCategories' => $characteristicCategories, 'scopeName' => $scopeName, 'languagePicturePath' => $languagePicturePath,
+            'characteristicCategories' => $characteristicCategories, 'scopeName' => $scopeName,
+            'languagePicturePath' => $languagePicturePath,
             'characteristicCategoryPicturePath' => $characteristicCategoryPicturePath,
             'characteristicPicturePath' => $characteristicPicturePath));
     }

@@ -2,6 +2,7 @@
  * Created by audreycarval on 25/10/2016.
  */
 function setPathDeleteButton(path) {
+    console.log(path);
     $("#delete").attr("href", path);
     $('#confirmation').modal();
 }
@@ -62,6 +63,15 @@ $(document)
     })
     .on('submit','#characteristic', function(){
         $("#characteristic :disabled").removeAttr('disabled');
+    })
+    .on('submit','#box', function(){
+        $("#box :disabled").removeAttr('disabled');
+    })
+    .on('submit','#boxItem', function(){
+        $("#boxItem :disabled").removeAttr('disabled');
+    })
+    .on('submit','#boxItemChoice', function(){
+        $("#boxItemChoice :disabled").removeAttr('disabled');
     });
 
 $(document).ready(function () {

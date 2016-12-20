@@ -108,7 +108,7 @@ class RentalController extends Controller
             $rental = new Rental();
         }
         switch($step) {
-            case 'step-1' :
+            case "step-1" :
                 $rentalForm = $this->createForm(RentalType::class, $rental);
                 $return['rentalForm'] = $rentalForm->createView();
                 $rentalForm->handleRequest($request);
@@ -117,10 +117,11 @@ class RentalController extends Controller
                         $rentalForm = $request->request->all()['rental'];
                         $rentalForm["id"] = $rental->getId();
                         $rental = $this->submit($rentalForm);
-                        return $this->redirect($this->generateUrl('property_new', array('step' => 'step-2', 'id'=> $rental->getId())). '#step-2');
+                        return $this->redirect($this->generateUrl('property_new', array('step' => 'step-2', 'id'=> $rental->getId())) . '#step-2');
                     }
                 }
-            case 'step-2':
+                break;
+            case "step-2" :
                 $this->setMissingCharacteristicsAction($rental);
                 $characteristicCategories = $this->getCharacteristicCategories($rental);
                 $return['characteristicCategories'] = $characteristicCategories->createView();
@@ -129,9 +130,10 @@ class RentalController extends Controller
                     if (!empty($characteristicValueForm)) {
                         $characteristicValueForm["rental"] = $rental->getId();
                         $this->submitCharacteristicValues($characteristicValueForm);
-                        return $this->redirect($this->generateUrl('property_new', array('id' => $rental->getId())) . '#step-3');
+                        return $this->redirect($this->generateUrl('property_new', array('step' => 'step-3', 'id' => $rental->getId())) . '#step-3');
                     }
                 }
+                break;
             case 'step-3':
                 if ($request->isMethod('POST')) {
                     $media = $request->files->get('media');
@@ -141,9 +143,8 @@ class RentalController extends Controller
                         return $this->redirect($this->generateUrl('rental_edit', array('id' => $rental->getId())) . '#presentation');
                     }
                 }
-
+                break;
         }
-
         return $this->render('host/rental/new.html.twig', $return);
     }
     public function getRental($id) {

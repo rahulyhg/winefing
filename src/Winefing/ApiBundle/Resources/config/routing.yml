@@ -146,5 +146,35 @@ eventRequest:
 
 rentalPromotions:
     type: rest
-    resource: Winefing\ApiBundle\Controller\EventRequestController
+    resource: Winefing\ApiBundle\Controller\RentalPromotionController
+    name_prefix:  api_
+
+box:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\BoxController
+    name_prefix:  api_
+
+boxTr:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\BoxTrController
+    name_prefix:  api_
+
+boxItem:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\BoxItemController
+    name_prefix:  api_
+
+boxItemTr:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\BoxItemTrController
+    name_prefix:  api_
+
+boxItemChoice:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\BoxItemChoiceController
+    name_prefix:  api_
+
+boxItemChoiceTr:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\BoxItemChoiceTrController
     name_prefix:  api_

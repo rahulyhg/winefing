@@ -103,6 +103,26 @@ class MediaController extends Controller implements ClassResourceInterface
         $json = $serializer->serialize($media, 'json');
         return new Response($json);
     }
+    public function putBoxAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $serializer = $this->container->get('jms_serializer');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Media');
+        $media = $repository->findOneById($request->request->get('media'));
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Box');
+        $box = $repository->findOneById($request->request->get('box'));
+        $media->addBox($box);
+        $validator = $this->get('validator');
+        $errors = $validator->validate($media);
+        if (count($errors) > 0) {
+            $errorsString = (string) $errors;
+            return new Response(400, $errorsString);
+        }
+        $em->persist($media);
+        $em->flush();
+        $json = $serializer->serialize($media, 'json');
+        return new Response($json);
+    }
 
     /**
      * Delete a web page

@@ -4,7 +4,9 @@ namespace Winefing\ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
-
+use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\Type;
 /**
  * BoxItemChoice
  *
@@ -19,27 +21,23 @@ class BoxItemChoice
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"id", "default"})
      */
     private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\BoxItem")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"boxItem"})
      */
     private $boxItem;
 
     /**
      * @var CharacteristicCategoryTr
      * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\BoxItemChoiceTr", mappedBy="boxItemChoice", fetch="EAGER", cascade="ALL")
+     * @Groups({"default"})
      */
     private $boxItemChoiceTrs;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="number", type="integer")
-     */
-    private $number;
 
     public function _construct(){
         $this->boxItemChoiceTrs[] = new ArrayCollection();
@@ -56,31 +54,6 @@ class BoxItemChoice
     {
         return $this->id;
     }
-
-    /**
-     * Set number
-     *
-     * @param integer $number
-     *
-     * @return BoxItemChoice
-     */
-    public function setNumber($number)
-    {
-        $this->number = $number;
-
-        return $this;
-    }
-
-    /**
-     * Get number
-     *
-     * @return int
-     */
-    public function getNumber()
-    {
-        return $this->number;
-    }
-
     /**
      * @return mixed
      */

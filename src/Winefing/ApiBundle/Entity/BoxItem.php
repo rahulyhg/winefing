@@ -4,7 +4,9 @@ namespace Winefing\ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
-
+use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\Type;
 /**
  * BoxItem
  *
@@ -19,30 +21,34 @@ class BoxItem
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"id", "default"})
      */
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Box")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Box", inversedBy="boxItems")
+     * @Groups({"boxes"})
      */
-    private $box;
+    private $boxes;
 
     /**
      * @var CharacteristicCategoryTr
      * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\BoxItemTr", mappedBy="boxItem", fetch="EAGER", cascade="ALL")
+     * @Groups({"boxItemTrs"})
      */
     private $boxItemTrs;
 
     /**
      * @var CharacteristicCategoryTr
      * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\BoxItemChoice", mappedBy="boxItem", fetch="EAGER", cascade="ALL")
+     * @Groups({"boxItemChoices"})
      */
     private $boxItemChoices;
 
     public function _construct(){
         $this->boxItemChoices[] = new ArrayCollection();
         $this->boxItemTrs[] = new ArrayCollection();
+        $this->boxes[] = new ArrayCollection();
         return $this;
     }
 
@@ -68,21 +74,17 @@ class BoxItem
         $this->boxItemChoices[]=$boxItemChoice;
         return $this;
     }
+    public function addBox(Box $box) {
+        $this->boxes[]=$box;
+        return $this;
+    }
 
     /**
      * @return mixed
      */
-    public function getBox()
+    public function getBoxes()
     {
-        return $this->box;
-    }
-
-    /**
-     * @param mixed $box
-     */
-    public function setBox($box)
-    {
-        $this->box = $box;
+        return $this->boxes;
     }
 
     /**

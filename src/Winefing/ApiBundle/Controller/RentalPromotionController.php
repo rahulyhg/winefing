@@ -13,8 +13,10 @@ use Winefing\ApiBundle\Entity\RentalPromotion;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use JMS\Serializer\SerializationContext;
+use FOS\RestBundle\Routing\ClassResourceInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
-class RentalPromotionController
+class RentalPromotionController extends Controller implements ClassResourceInterface
 {
     public function cgetAction(){
 

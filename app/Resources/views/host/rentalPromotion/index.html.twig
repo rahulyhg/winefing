@@ -1,0 +1,15 @@
+{% extends 'host/base.html.twig' %}
+{% block table %}
+    <div class="row">
+         <a href="{{ path('rentals_promotion_new') }}">
+             <input type="button" class="btn btn-primary" value="Add">
+         </a>
+        {% for rentalPromotion in rentalsPromotions %}
+        {% endfor %}
+    </div>
+    <script>
+        jQuery(document).ready(function() {
+            FancyBox.initFancybox();
+        });
+    </script>
+{% endblock %}

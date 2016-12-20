@@ -46,8 +46,8 @@
                 <source>label.email</source>
                 <target>Email</target>
             </trans-unit>
-            <trans-unit id="label_email_confirmation">
-                <source>label.email_confirmation</source>
+            <trans-unit id="label_confirmation_email">
+                <source>label.confirmation_email</source>
                 <target>Confirm email</target>
             </trans-unit>
             <trans-unit id="label_password">
@@ -269,6 +269,10 @@
             <trans-unit id="label_minimum_rental_period_explanation">
                 <source>label.minimum_rental_period_explanation</source>
                 <target>Minimum rental period that has to be order</target>
+            </trans-unit>
+            <trans-unit id="label_promotions">
+                <source>label.promotions</source>
+                <target>Promotions</target>
             </trans-unit>
             <trans-unit id="success_profil_edit">
                 <source>success.profil_edit</source>

@@ -1,0 +1,45 @@
+{% extends 'admin/base.html.twig' %}
+{% block table %}
+    <table class="table table-striped table-responsive">
+        <thead>
+        <tr>
+            <th>
+                <a href="{{ path('box_new') }}">
+                    <button type="button" class="btn btn-default btn-circle btn-plus-admin">
+                        <i class="glyphicon glyphicon-plus glyphicon-plus-admin"></i>
+                    </button>Box
+                </a>
+            </th>
+            <th>Price</th>
+            <th>Picture</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for box in boxes %}
+            <tr>
+                <td>
+                    {% for boxTr in box.boxTrs %}
+                        <object style="float: left;" type="image/svg+xml" data="{{ mediaPath }}{{ boxTr.language.picture }}" height="20px">
+                        </object>
+                        <span style="margin-left: 10px">{{ boxTr.name }}</span>
+                        <br><br>
+                    {% endfor %}
+                </td>
+                <td>
+                    {{ box.price }}
+                </td>
+                <td style="width: 25%">
+                    <img class="img-responsive" src="{{ mediaPath ~ box.mediaPresentation }}">
+                </td>
+                <td>
+                    <a href="{{ path('box_edit', {'id' : box.id}) }}">
+                        <input type="button"  class="btn btn-primary" value="Editer"/>
+                    </a>
+                    <input type="button" class="btn btn-danger" value="Supprimer" onclick="setPathDeleteButton('{{ path('box_delete', {'id' : box.id}) }}')"/>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

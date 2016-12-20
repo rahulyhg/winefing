@@ -4,7 +4,7 @@ namespace Winefing\ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
-
+use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Address
  *
@@ -112,6 +112,7 @@ class Address
      *
      * @ORM\Column(name="formattedAddress", type="string", length=255)
      * @Groups({"default"})
+     * @Assert\NotBlank()
      */
     private $formattedAddress;
 

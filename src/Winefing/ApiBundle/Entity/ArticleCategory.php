@@ -5,7 +5,7 @@ namespace Winefing\ApiBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Winefing\ApiBundle\Entity\LanguageEnum;
-
+use Symfony\Component\Validator\Constraints as Assert;
 /**
  * ArticleCategory
  *

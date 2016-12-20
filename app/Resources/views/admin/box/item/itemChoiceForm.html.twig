@@ -1,0 +1,37 @@
+<div class="modal fade" tabindex="-1" role="dialog" id="boxItemChoice">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            {{ form_start(boxItemChoiceForm,  { 'attr': {'required': 'true', 'id' : 'boxItemChoice'} }) }}
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Ajouter/modifier un choix</h4>
+                </div>
+                <div class="modal-body">
+                    <fieldset class="form-group" id="id" style="display: none">
+                        {{ form_widget(boxItemChoiceForm.id,  { 'attr': {'required': 'false'} }) }}
+                    </fieldset>
+                    {% for boxItemTr in boxItemChoiceForm.boxItemChoiceTrs %}
+                        <fieldset class="form-group">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    {{ form_widget(boxItemTr.language, {'attr' : {'disabled': 'false'} }) }}
+                                </div>
+                                <div class="col-md-10">
+                                    {{ form_widget(boxItemTr.id, {'attr': {'style': 'display: none'}}) }}
+                                    {{ form_row(boxItemTr.name)}}
+                                    <div class="form-group">
+                                        {{ form_row(boxItemTr.description) }}
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    {% endfor %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+                    {{ form_row(boxItemChoiceForm.submit) }}
+                </div>
+            {{ form_end(boxItemChoiceForm) }}
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>

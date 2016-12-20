@@ -46,8 +46,8 @@
                 <source>label.email</source>
                 <target>Email</target>
             </trans-unit>
-            <trans-unit id="label_email_confirmation">
-                <source>label.email_confirmation</source>
+            <trans-unit id="label_confirmation_email">
+                <source>label.confirmation_email</source>
                 <target>Confirmer email</target>
             </trans-unit>
             <trans-unit id="label_password">
@@ -261,6 +261,10 @@
             <trans-unit id="label_domain">
                 <source>label.domain</source>
                 <target>Domaine</target>
+            </trans-unit>
+            <trans-unit id="label_promotions">
+                <source>label.promotions</source>
+                <target>Promotions</target>
             </trans-unit>
             <trans-unit id="label_price_explanation">
                 <source>label.price_explanation</source>

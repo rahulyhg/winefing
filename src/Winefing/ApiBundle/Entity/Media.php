@@ -56,6 +56,11 @@ class Media
      */
     private $rentals;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Box", mappedBy="medias", fetch="EXTRA_LAZY")
+     */
+    private $boxes;
+
     public function addDomain(Domain $domain) {
         $this->domains[] = $domain;
         $domain->addMedia($this);
@@ -69,6 +74,11 @@ class Media
     public function addRental(Rental $rental) {
         $this->rentals[] = $rental;
         $rental->addMedia($this);
+        return $this;
+    }
+    public function addBox(Box $box) {
+        $this->boxes[] = $box;
+        $box->addMedia($this);
         return $this;
     }
 
