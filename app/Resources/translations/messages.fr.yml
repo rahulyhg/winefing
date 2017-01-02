@@ -1,0 +1,81 @@
+label.wine_region: Wine region
+label.description: Description
+label.name: Name
+label.contact: Contact
+label.the_domain: The domain
+label.next: Next
+label.submit: Submit
+label.first_name: First Name
+label.last_name: Last Name
+label.phone_number: Phone number
+label.email: Email
+label.confirmation_email: Confirm email
+label.password: Password
+label.confirmation_password: Confirm password
+label.current_password: Current password
+label.dashboard: Dashboard
+label.my_domain: My domain
+label.my_rentals: Mes locations
+label.my_reservations: Mes réservations
+label.my_reviews: Mes avis
+label.my_profil: Mon profil
+label.pictures: Photos
+label.address: Address
+label.informations: Informations
+label.presentation: Présentation
+label.postal_code: Code postale
+label.locality: Ville
+label.country: Country
+label.edit_profil: Edit profil
+label.profil_picture: Profil picture
+label.edit_password: Edit password
+label.bank_details: Bank details
+label.sex: Sex
+label.age: Age
+label.birth_date: Birth date
+label.male: Male
+label.female: Female
+label.edit_picture: Edit picture
+label.notifications: Notifications
+label.receive_sms_when: Receive a sms when
+label.receive_email_when: Receive a email when
+label.property: Property
+label.property_category: Property's category
+label.new_property: New property
+label.rental: Rental
+label.property_name_exemple: Château du pâpe, Gîte des Lilas...
+label.rental_name_exemple: Chambre royal, gîte des lilas...
+label.new_address: New address
+label.property_pictures_explication: Only property frontage or commun room (such as the castel's living room).
+label.prices: Prices
+label.rentals: Rentals
+label.my_properties: Mes propriétés
+label.edit: Edit
+label.no_rental_for_property: You have no rental for this property
+label.new_rental: New rental
+label.budget: Budget
+label.people_number: People number
+label.from: From
+label.to: To
+label.duration: Duration
+label.event_ctageory: Kind of event
+label.price: Price
+label.domain: Domain
+label.price_explanation: The price has to be per night day.
+label.people_number_explanation: The number of people that the room contain
+label.minimum_rental_period: Minimum rental period
+label.minimum_rental_period_explanation: Minimum rental period that has to be order
+label.promotions: Promotions
+label.date: Date
+label.reduction: Reduction
+success.profil_edit: The profil is well modified.
+success.picture_edit: The picture is well modified.
+success.password_edit: The password is well modified.
+success.modifications_saved: The changes have been succefully saved.
+error.not_current_password: The password is not the current one
+error.email_already_exist: A account with this email already exist. 
+error.domain_already_exist: You can't create two domain per account. Create a new account for this domain. 
+label.card_type : Type de carte
+label.card_number : Numéro de carte
+label.card_code : Pyctograme
+label.card_expiration_date : Date d'expiration

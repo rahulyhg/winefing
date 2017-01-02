@@ -1,0 +1,52 @@
+{% extends 'host/base.html.twig' %}
+{% block table %}
+    {% set id = app.request.get('id') %}
+    <div class="container">
+        <div class="stepwizard col-md-offset-3">
+            <div class="stepwizard-row setup-panel">
+                <div class="stepwizard-step">
+                    <a type="button" class="btn btn-primary btn-circle" disabled="disabled">1</a>
+                    <p>{% trans %}label.property{% endtrans %}</p>
+                </div>
+                <div class="stepwizard-step">
+                    <a type="button" class="btn btn-default btn-circle" disabled="disabled">2</a>
+                    <p>{% trans %}label.informations{% endtrans %}</p>
+                </div>
+                <div class="stepwizard-step">
+                    <a type="button" class="btn btn-default btn-circle" disabled="disabled">3</a>
+                    <p>{% trans %}label.address{% endtrans %}</p>
+                </div>
+                <div class="stepwizard-step">
+                    <a type="button" class="btn btn-default btn-circle" disabled="disabled">4</a>
+                    <p>{% trans %}label.pictures{% endtrans %}</p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 col-md-offset-3">
+                <div class="col-md-12">
+                    {% block newProperty %}
+                    {% if propertyForm is defined %}
+                        {{ form_start(propertyForm) }}
+                            <div class="form-group">
+                                <label>*{% trans %}label.property_category{% endtrans %} </label>
+                                {{ form_widget(propertyForm.propertyCategory,  { 'attr': {'class': 'form-control'} }) }}
+                            </div>
+                            <div class="form-group">
+                                <label>*{% trans %}label.name{% endtrans %} </label>
+                                {{ form_widget(propertyForm.name,  { 'attr': {'class': 'form-control'} }) }}
+                            </div>
+                            <p style="font-style: italic"> {% trans %}label.property_name_exemple{% endtrans %}</p>
+                            <div class="form-group">
+                                <label>{% trans %}label.description{% endtrans %} </label>
+                                {{ form_widget(propertyForm.description,  { 'attr': {'class': 'form-control'} }) }}
+                            </div>
+                            <button class="btn btn-primary btn-lg pull-right" type="submit" onclick="recordProperty()">{% trans %}label.submit{% endtrans %}</button>
+                        {{ form_end(propertyForm) }}
+                    {% endif %}
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

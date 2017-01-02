@@ -25,6 +25,7 @@ use FOS\RestBundle\Controller\Annotations\FileParam;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use JMS\Serializer\SerializationContext;
 
 
 
@@ -39,7 +40,7 @@ class CharacteristicTrController extends Controller implements ClassResourceInte
     public function postAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $serializer = $this->container->get('winefing.serializer_controller');
+        $serializer = $this->container->get('jms_serializer');
 
         $characteristicTr = new CharacteristicTr();
 
@@ -59,7 +60,7 @@ class CharacteristicTrController extends Controller implements ClassResourceInte
         }
         $em->persist($characteristicTr);
         $em->flush();
-        $json = $serializer->serialize($characteristicTr);
+        $json = $serializer->serialize($characteristicTr, 'json', SerializationContext::create()->setGroups(array('id')));
         return new Response($json);
     }
 
@@ -84,8 +85,7 @@ class CharacteristicTrController extends Controller implements ClassResourceInte
         }
         $em->persist($characteristicTr);
         $em->flush();
-        $json = $serializer->serialize($characteristicTr);
-        return new Response($json);
+        return new Response();
     }
 
     public function deleteAction($id)

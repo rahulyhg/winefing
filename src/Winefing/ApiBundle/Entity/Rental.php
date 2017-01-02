@@ -21,7 +21,7 @@ class Rental
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"default"})
+     * @Groups({"id", "default"})
      */
     private $id;
 
@@ -38,7 +38,7 @@ class Rental
     private $medias;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Property")
+     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Property", inversedBy="rentals")
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"property"})
      */
@@ -89,9 +89,20 @@ class Rental
      */
     private $minimumRentalPeriod;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\RentalPromotion", mappedBy="rentals", fetch="EXTRA_LAZY", cascade={"persist", "merge", "detach"})
+     */
+    private $rentalPromotions;
+
+
+    public function addRentalPromotion(RentalPromotion $rentalPromotion) {
+        $this->rentalPromotions[] = $rentalPromotion;
+    }
+
     public function _construct() {
         $this->characteristicValues = new ArrayCollection();
         $this->medias = new ArrayCollection();
+        $this->rentalPromotions = new ArrayCollection();
         return $this;
     }
 

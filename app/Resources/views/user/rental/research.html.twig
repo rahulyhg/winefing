@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <div class="row">
+        {% for rental in rentals %}
+            {{ rental.name }}
+            {{ rental.id }}
+            <a href="{{ path('rental', {'id' : rental.id}) }}">
+                <input type="button" value="see">
+            </a>
+            <br>
+        {% endfor %}
+    </div>
+{% endblock %}

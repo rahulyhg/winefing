@@ -1,3 +1,16 @@
+user:
+    resource: "@WinefingUserBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+paiement:
+    resource: "@PaiementBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+fos_user:
+    resource: "@FOSUserBundle/Resources/config/routing/all.xml"
+
 winefing_api:
     type: rest
     prefix: /api
@@ -6,6 +19,9 @@ winefing_api:
 app:
     resource: "@AppBundle/Controller/"
     type:     annotation
+    prefix:   /{_locale}
+    requirements:
+        _locale: en|fr
 
 fos_user:
     resource: "@FOSUserBundle/Resources/config/routing/all.xml"

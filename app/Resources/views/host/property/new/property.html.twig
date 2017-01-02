@@ -1,0 +1,19 @@
+{% extends 'host/property/new/base.html.twig' %}
+{% block new %}
+    {{ form_start(propertyForm) }}
+        <div class="form-group">
+            <label>*{% trans %}label.property_category{% endtrans %} </label>
+            {{ form_widget(propertyForm.propertyCategory,  { 'attr': {'class': 'form-control'} }) }}
+        </div>
+        <div class="form-group">
+            <label>*{% trans %}label.name{% endtrans %} </label>
+            {{ form_widget(propertyForm.name,  { 'attr': {'class': 'form-control'} }) }}
+        </div>
+        <p style="font-style: italic"> {% trans %}label.property_name_exemple{% endtrans %}</p>
+        <div class="form-group">
+            <label>{% trans %}label.description{% endtrans %} </label>
+            {{ form_widget(propertyForm.description,  { 'attr': {'class': 'form-control'} }) }}
+        </div>
+        <button class="btn btn-primary btn-lg pull-right" type="submit" onclick="recordProperty()">{% trans %}label.submit{% endtrans %}</button>
+    {{ form_end(propertyForm) }}
+{% endblock %}

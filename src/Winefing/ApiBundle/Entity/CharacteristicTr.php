@@ -3,7 +3,8 @@
 namespace Winefing\ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
+use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 /**
  * CharacteristicTr
  *
@@ -18,18 +19,21 @@ class CharacteristicTr
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"id", "default"})
      */
     private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Characteristic", inversedBy="characteristicTrs")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"characteristic"})
      */
     private $characteristic;
 
     /**
      * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Language")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"language"})
      */
     private $language;
 
@@ -37,6 +41,7 @@ class CharacteristicTr
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=50)
+     * @Groups({"default"})
      */
     private $name;
 

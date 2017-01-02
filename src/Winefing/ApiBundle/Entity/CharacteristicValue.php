@@ -4,6 +4,8 @@ namespace Winefing\ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\Type;
 /**
  * CharacteristicValue
  *
@@ -18,33 +20,39 @@ class CharacteristicValue
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"id", "default"})
      */
     private $id;
 
     /**
      * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Domain", mappedBy="characteristicValues", fetch="EXTRA_LAZY", cascade={"persist", "merge", "detach"})
+     * @Groups({"domains"})
      */
     private $domains;
 
     /**
      * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Property", mappedBy="characteristicValues", fetch="EXTRA_LAZY", cascade={"persist", "merge", "detach"})
+     * @Groups({"properties"})
      */
     private $properties;
 
     /**
      * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Rental", mappedBy="characteristicValues", fetch="EXTRA_LAZY", cascade={"persist", "merge", "detach"})
+     * @Groups({"properties"})
      */
     private $rentals;
 
     /**
      * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Characteristic")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"default"})
      */
     private $characteristic;
 
     /**
      * @var string
      * @ORM\Column(name="value", type="string", length=255, nullable=true)
+     * @Groups({"default"})
      */
     private $value;
 

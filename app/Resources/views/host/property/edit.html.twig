@@ -59,7 +59,7 @@
                     {% if length == 0 %}
                         <p>{% trans %}label.no_rental_for_property{% endtrans %}.</p>
                     {% endif %}
-                    <a href="{{ path('rental_new', {'step' : 'step-1'}) }}">
+                    <a href="{{ path('rental_new') }}">
                         <button class="btn btn-primary ">
                             {% trans %}label.new_rental{% endtrans %}
                         </button>
@@ -164,7 +164,6 @@
                                 {{ form_end(addressListChoice) }}
                                 {% set hidden = 'hidden' %}
                             {% endif %}
-                            <br>
                             <div id="addressDiv" {{ hidden }}>
                                 {{ form_start(addressForm) }}
                                     {% include('host/address/form.html.twig') %}
@@ -185,14 +184,10 @@
     </div>
     <script>
         $('#form_address').on('change', function() {
-            console.log('in');
             if($(this).val() == '') {
                 $('#addressDiv').show();
-                console.log('in');
-//                $('#buttonNextAddress').hide();
             } else {
                 $('#addressDiv').hide();
-//                $('#buttonNextAddress').show();
             }
         });
     </script>

@@ -39,7 +39,7 @@ class Domain
 
     /**
      * @var Properties
-     * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\Property", mappedBy="domain", cascade="ALL")
+     * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\Property", mappedBy="domain", fetch="EXTRA_LAZY", cascade="ALL")
      * @Groups({"properties"})
      */
     private $properties;

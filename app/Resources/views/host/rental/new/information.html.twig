@@ -1,0 +1,7 @@
+{% extends 'host/rental/new/base.html.twig' %}
+{% block new %}
+    <form name="characteristicValue" method="post">
+        {% include('host/characteristic/valueForm.html.twig') %}
+        <button class="btn btn-primary btn-lg pull-right" type="submit" >{% trans %}label.submit{% endtrans %}</button>
+    </form>
+{% endblock %}

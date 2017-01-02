@@ -31,14 +31,11 @@ use Winefing\ApiBundle\Entity\CharacteristicValue;
 class DomainController extends Controller
 {
     /**
-     * @Route("/domain/edit/{userId}", name="domain_edit")
+     * @Route("/domain/edit", name="domain_edit")
      */
-    public function getAction($userId = 57, Request $request) {
-
+    public function getAction(Request $request) {
         $api = $this->container->get('winefing.api_controller');
-        $serializer = $this->container->get('jms_serializer');
-        $response = $response = $api->get($this->get('_router')->generate('api_get_domain_by_user', array('userId' => $userId)));
-        $domain = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Domain', 'json');
+        $domain = $this->getDomain();
         $this->getDoctrine()->getEntityManager()->persist($domain->getWineRegion());
         $domainForm = $this->createForm(DomainType::class, $domain);
         $domainForm->handleRequest($request);
@@ -83,8 +80,14 @@ class DomainController extends Controller
             'medias' => $domain->getMedias())
         );
     }
-
-
+    public function getDomain() {
+        $userId = $this->getUser()->getId();
+        $api = $this->container->get('winefing.api_controller');
+        $serializer = $this->container->get('jms_serializer');
+        $response = $response = $api->get($this->get('_router')->generate('api_get_domain_by_user', array('userId' => $userId)));
+        $domain = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Domain', 'json');
+        return $domain;
+    }
     public function submit($domain)
     {
         $api = $this->container->get('winefing.api_controller');

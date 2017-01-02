@@ -5,6 +5,10 @@
              <input type="button" class="btn btn-primary" value="Add">
          </a>
         {% for rentalPromotion in rentalsPromotions %}
+            {{ rentalPromotion.startDate|date("m/d/Y")}}
+            {{ rentalPromotion.endDate|date("m/d/Y")}}
+            {{ rentalPromotion.reduction }}
+            <br><br>
         {% endfor %}
     </div>
     <script>

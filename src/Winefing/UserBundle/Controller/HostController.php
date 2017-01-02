@@ -6,10 +6,7 @@
  * Time: 19:17
  */
 
-namespace AppBundle\Controller;
-
-namespace AppBundle\Controller;
-use AppBundle\Form\AddressType;
+namespace Winefing\UserBundle\Controller;
 use AppBundle\Form\UserType;
 use AppBundle\Form\DomainNewType;
 use AppBundle\Form\HostUserRegistrationType;
@@ -29,24 +26,30 @@ use GuzzleHttp\RequestOptions;
 use Symfony\Component\HttpFoundation\File\File;
 use Winefing\ApiBundle\Entity\UserForm;
 use Winefing\ApiBundle\Entity\User;
-use Winefing\ApiBundle\Entity\Address;
 use Winefing\ApiBundle\Entity\Domain;
 use Winefing\ApiBundle\Entity\UserGroupEnum;
-use Winefing\ApiBundle\Entity\SubscriptionFormatEnum;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-class HostUserController extends Controller
+class HostController extends Controller
 {
+
     /**
-     * @Route("/user/host/edit/{id}", name="user_host_edit")
+     * @Route("wallet/create/{id}", name="wallet_create")
      */
-    public function getHost($id = 57, Request $request) {
+    public function createWallet($id){
+        $lemonWay = $this->container->get('winefing.lemonway_controller');
+        $lemonWay->addWallet($id);
+        return new Response();
+    }
+    /**
+     * @Route("/user/host/edit", name="user_host_edit")
+     */
+    public function getHost(Request $request) {
         $api = $this->container->get('winefing.api_controller');
         $serializer = $this->container->get('jms_serializer');
 
-        $response = $api->get($this->get('_router')->generate('api_get_host_user', array('id'=>$id)));
-        $user= $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\User', 'json');
+        $user = $this->getUser();
         $userForm =  $this->createForm(UserType::class, $user);
         $userForm->handleRequest($request);
         if($userForm->isSubmitted() && $userForm->isValid()) {

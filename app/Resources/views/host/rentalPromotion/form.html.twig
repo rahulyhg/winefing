@@ -1,19 +1,73 @@
 {% extends 'host/base.html.twig' %}
 {% block table %}
-    <div class="row">
-        {{ form_start(rentalPromotionForm) }}
-            <div class="form-group">
-                <label>{{ form_label(rentalPromotionForm.startDate) }}</label>
-                {{ form_widget(rentalPromotionForm.startDate) }}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3">
+                {{ app.request.getLocale() }}
+                {% if app.session.flashBag.has('success') %}
+                    <div class="alert alert-success">
+                        {% for msg in app.session.flashBag.get('success') %}
+                            {{ msg }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                {% if app.session.flashBag.has('error') %}
+                    <div class="alert alert-danger">
+                        {% for msg in app.session.flashBag.get('error') %}
+                            {{ msg }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                    {#{{ form_start(domainForm) }}#}
+                    {#{% for property in domainForm.properties %}#}
+                        {#<label>{{ property.name.vars.value }}</label>#}
+                        {#{{ form_widget(property.rentals) }}#}
+                        {#{{ form_widget(property.name) }}#}
+                        {#<br>#}
+                    {#{% endfor %}#}
+                {#{{ form_end(domainForm) }}#}
+            {{ form_start(rentalPromotionForm) }}
+                <label>{% trans %}label.date{% endtrans %}</label>
+                <div id="sandbox-container">
+                    <div class="input-daterange input-group" id="datepicker">
+                        {{ form_row(rentalPromotionForm.startDate) }}
+                        <span class="input-group-addon">{% trans %}label.to{% endtrans %}</span>
+                        {{ form_row(rentalPromotionForm.endDate) }}
+                    </div>
+                </div>
+                <br>
+                <div class="form-group">
+                    <label>{% trans %}label.reduction{% endtrans %}</label>
+                    <div class="input-group">
+                        {{ form_row(rentalPromotionForm.reduction) }}
+                        <div class="input-group-addon">%</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>{% trans %}label.rentals{% endtrans %}</label>
+                    <br>
+                    {{ form_row(rentalPromotionForm.rentals) }}
+                </div>
+            {{ form_end(rentalPromotionForm) }}
             </div>
-            <div class="form-group">
-                <label>{{ form_label(rentalPromotionForm.endDate) }}</label>
-                {{ form_widget(rentalPromotionForm.endDate) }}
-            </div>
-            <div class="form-group">
-                <label>{{ form_label(rentalPromotionForm.reduction) }}</label>
-                {{ form_widget(rentalPromotionForm.reduction) }}
-            </div>
-        {{ form_end(rentalPromotionForm) }}
+        </div>
     </div>
+    <script>
+        console.log(getFormattedDate(new Date));
+        function getFormattedDate(date) {
+            var year = date.getFullYear();
+            var month = (1 + date.getMonth()).toString();
+            month = month.length > 1 ? month : '0' + month;
+            var day = date.getDate().toString();
+            day = day.length > 1 ? day : '0' + day;
+            return day  + '-' + month + '-' + year;
+        }
+        $(document).ready(function() {
+            $('#sandbox-container .input-daterange').datepicker({
+                startDate: ""+getFormattedDate(new Date)+"'",
+                format: 'dd-mm-yyyy'
+            });
+        });
+
+    </script>
 {% endblock %}

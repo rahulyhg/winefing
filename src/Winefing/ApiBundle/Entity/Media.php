@@ -20,7 +20,7 @@ class Media
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"default"})
+     * @Groups({"id", "default"})
      *
      */
     private $id;
@@ -43,21 +43,25 @@ class Media
 
     /**
      * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Domain", mappedBy="medias", fetch="EXTRA_LAZY")
+     * @Groups({"domains"})
      */
     private $domains;
 
     /**
      * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Property", mappedBy="medias", fetch="EXTRA_LAZY")
+     * @Groups({"properties"})
      */
     private $properties;
 
     /**
      * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Rental", mappedBy="medias", fetch="EXTRA_LAZY")
+     * @Groups({"rentals"})
      */
     private $rentals;
 
     /**
      * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Box", mappedBy="medias", fetch="EXTRA_LAZY")
+     * @Groups({"boxes"})
      */
     private $boxes;
 

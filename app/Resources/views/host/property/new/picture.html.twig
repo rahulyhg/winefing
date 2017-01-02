@@ -1,0 +1,10 @@
+{% extends 'host/property/new/base.html.twig' %}
+{% block new %}
+    <br>
+    <p style="font-style: italic"> {% trans %}label.property_pictures_explication{% endtrans %}</p>
+    <br>
+    <form name="media" method="post" enctype="multipart/form-data">
+        <input name="media[medias][]" type="file" multiple="true" class="form-control">
+        <input type="submit" class="btn btn-success btn-lg pull-right" value="{% trans %}label.submit{% endtrans %}" >
+    </form>
+{% endblock %}

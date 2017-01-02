@@ -31,7 +31,7 @@ class Box
     private $boxItems;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Media", cascade={"persist", "merge", "detach"})
+     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Media", inversedBy="boxes", cascade={"persist", "merge", "detach"})
      */
     private $medias;
 

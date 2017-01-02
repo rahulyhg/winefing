@@ -12,6 +12,8 @@ use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use JMS\Serializer\Annotation\Type;
+use JMS\Serializer\Annotation\Groups;
+
 
 /**
  * @ORM\Entity
@@ -24,66 +26,85 @@ class User extends BaseUser
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"id", "default"})
      */
     protected $id;
     /**
      * @ORM\Column(name="first_name", type="string", length=255, nullable=true)
+     * @Groups({"default"})
      */
     protected $firstName;
 
     /**
+     * @ORM\Column(name="wallet", type="string", length=255, nullable=true)
+     * @Groups({"default"})
+     */
+    protected $wallet;
+
+    /**
      * @ORM\Column(name="last_name", type="string", length=255, nullable=true)
+     * @Groups({"default"})
      */
     protected $lastName;
 
     /**
      * @ORM\Column(name="phone_number", type="string", length=50, nullable=true)
+     * @Groups({"default"})
      */
     protected $phoneNumber;
 
     /**
      * @ORM\Column(name="verify", type="string", length=255, nullable=true)
+     * @Groups({"default"})
      */
     protected $verify;
 
     /**
      * @ORM\Column(name="birth_date", type="date", length=255, nullable=true)
+     * @Groups({"default"})
      */
     protected $birthDate;
 
     /**
      * @ORM\Column(name="sex", type="string", length=1, nullable=true)
+     * @Groups({"default"})
      */
     protected $sex;
 
     /**
      * @ORM\Column(name="description", type="string", length=500, nullable=true)
+     * @Groups({"default"})
      */
     protected $description;
 
     /**
      * @ORM\Column(name="picture", type="string", length=500, nullable=true)
+     * @Groups({"default"})
      */
     protected $picture;
 
     /**
      * @var domains
-     * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\Domain", mappedBy="address")
+     * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\Domain", mappedBy="user", fetch="EXTRA_LAZY")
+     * @Groups({"domains"})
      */
     private $domains;
 
     /**
      * @Type("boolean")
+     * @Groups({"default"})
      */
     protected $deleted = false;
     /**
      * @var string
      * @Type("string")
+     * @Groups({"default"})
      */
     protected $fullName;
 
     /**
      * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Subscription", inversedBy="users", cascade={"persist", "merge", "detach"})
+     * @Groups({"default"})
      */
     private $subscriptions;
 
@@ -297,5 +318,28 @@ class User extends BaseUser
     public function addSubscription(Subscription $subscription) {
         $this->subscriptions[] = $subscription;
         return $this;
+    }
+    public function isHost() {
+        $success = false;
+        if(in_array(UserGroupEnum::Host, $this->roles)) {
+            $success = true;
+        }
+        return $success;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getWallet()
+    {
+        return $this->wallet;
+    }
+
+    /**
+     * @param mixed $wallet
+     */
+    public function setWallet($wallet)
+    {
+        $this->wallet = $wallet;
     }
 }

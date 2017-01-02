@@ -27,10 +27,13 @@
                     {% else %}
                         {% set checked = '' %}
                     {% endif %}
-                    <input {{ checked }} onchange="activate('{{ path('user_activated') }}', 'userActivatedToggle', '{{ user.id }}')" id="userActivatedToggle-{{ user.id }}" type="checkbox" value="" data-toggle="toggle" data-off="Not activated" data-on="Activated" data-onstyle="success">
-                    {% if user.deleted == 1 %}
-                        <input type="button" class="btn btn-danger" value="Supprimer" onclick="setPathDeleteButton('{{ path('user_admin_delete', {'id' : user.id}) }}')"/>
-                    {% endif %}
+                    {#<input {{ checked }} onchange="activate('{{ path('user_activated') }}', 'userActivatedToggle', '{{ user.id }}')" id="userActivatedToggle-{{ user.id }}" type="checkbox" value="" data-toggle="toggle" data-off="Not activated" data-on="Activated" data-onstyle="success">#}
+                    {#{% if user.deleted == 1 %}#}
+                        {#<input type="button" class="btn btn-danger" value="Supprimer" onclick="setPathDeleteButton('{{ path('user_admin_delete', {'id' : user.id}) }}')"/>#}
+                    {#{% endif %}#}
+                    <a href="{{ path('wallet_create', {'id' :user.id })}}">
+                        <input type="button" class="btn btn-danger" value="Activer"/>
+                    </a>
                     <input type="button"  class="btn btn-primary" value="Editer" id="update" onclick="loadForm('{{ path('user_new_form', {'id' : user.id}) }}', 'user')"/>
                 </td>
             </tr>

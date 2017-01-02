@@ -4,7 +4,8 @@ namespace Winefing\ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
-
+use JMS\Serializer\Annotation\Expose;
+use JMS\Serializer\Annotation\Groups;
 /**
  * EventCategoryTr
  *
@@ -19,18 +20,21 @@ class EventCategoryTr
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"id", "default"})
      */
     private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\EventCategory", inversedBy="eventCategoryTrs")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"default"})
      */
     private $eventCategory;
 
     /**
      * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Language")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"default"})
      */
     private $language;
 
@@ -38,6 +42,7 @@ class EventCategoryTr
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
+     * @Groups({"default"})
      */
     private $name;
 

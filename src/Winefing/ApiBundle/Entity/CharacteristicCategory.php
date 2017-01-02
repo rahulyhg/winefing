@@ -5,6 +5,7 @@ namespace Winefing\ApiBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation\Groups;
 /**
  * CharacteristicCategory
  *
@@ -19,24 +20,28 @@ class CharacteristicCategory
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"id", "default"})
      */
     private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Scope", inversedBy="characteristicCategories", fetch="EXTRA_LAZY")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"scope"})
      */
     private $scope;
 
     /**
      * @var Characteristic
      * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\Characteristic", mappedBy="characteristicCategory", fetch="EAGER")
+     *
      */
     private $characteristics;
 
     /**
      * @var CharacteristicCategoryTr
      * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\CharacteristicCategoryTr", mappedBy="characteristicCategory", fetch="EAGER", cascade="ALL")
+     * @Groups({"default"})
      */
     private $characteristicCategoryTrs;
 

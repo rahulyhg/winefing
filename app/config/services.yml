@@ -16,3 +16,6 @@ services:
         class: Winefing\ApiBundle\Controller\MediaFormatController
     winefing.missing_characteristic_controller:
         class: Winefing\ApiBundle\Controller\MissingCharacteristicController
+    winefing.lemonway_controller:
+        class: PaiementBundle\Controller\LemonWayController
+        arguments: ["@fos_user.user_manager" ]

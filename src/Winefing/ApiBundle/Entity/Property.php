@@ -22,7 +22,7 @@ class Property
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"default"})
+     * @Groups({"id", "default"})
      */
     private $id;
 
@@ -36,14 +36,14 @@ class Property
     private $domain;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\CharacteristicValue", inversedBy="properties", fetch="LAZY")
+     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\CharacteristicValue", inversedBy="properties", fetch="EXTRA_LAZY")
      * @Groups({"characteristicValues"})
      */
     private $characteristicValues;
 
     /**
      * @var Rentals
-     * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\Rental", mappedBy="property", fetch="LAZY", cascade="ALL")
+     * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\Rental", mappedBy="property", fetch="EXTRA_LAZY", cascade="ALL")
      * @Groups({"rentals"})
      */
     private $rentals;

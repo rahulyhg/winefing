@@ -60,6 +60,14 @@ class PropertyController extends Controller implements ClassResourceInterface
         $json = $serializer->serialize($property, 'json', SerializationContext::create()->setGroups(array('default', 'medias', 'address')));
         return new Response($json);
     }
+    public function getCharacteristicValuesAction($propertyId)
+    {
+        $serializer = $this->container->get('jms_serializer');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Property');
+        $property = $repository->findOneById($propertyId);
+        $json = $serializer->serialize($property->getCharacteristicValues(), 'json', SerializationContext::create()->setGroups(array('default', 'medias', 'address')));
+        return new Response($json);
+    }
 
     public function getMissingCharacteristicsAction($propertyId) {
         $serializer = $this->container->get('jms_serializer');
@@ -76,6 +84,13 @@ class PropertyController extends Controller implements ClassResourceInterface
         return new Response($serializer->serialize($characteristics, 'json', SerializationContext::create()->setGroups(array('default', 'format', 'trs'))));
 
     }
+    public function getDomainAddressAction($propertyId) {
+        $serializer = $this->container->get('jms_serializer');
+
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Property');
+        $property = $repository->findOneById($propertyId);
+        return new Response($serializer->serialize($property->getDomain()->getAddress(), 'json', SerializationContext::create()->setGroups(array('default'))));
+    }
 
     public function postAction(Request $request)
     {
@@ -83,7 +98,7 @@ class PropertyController extends Controller implements ClassResourceInterface
         $serializer = $this->container->get('jms_serializer');
         $property = new Property();
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Domain');
-        $domain = $repository->findOneByUser(57);
+        $domain = $repository->findOneById($request->request->get('domain'));
         $property->setDomain($domain);
         $property->setAddress($domain->getAddress());
         $property->setName($request->request->get("name"));
@@ -99,13 +114,12 @@ class PropertyController extends Controller implements ClassResourceInterface
         }
         $em->persist($property);
         $em->flush();
-        $json = $serializer->serialize($property, 'json', SerializationContext::create()->setGroups(array('default')));
+        $json = $serializer->serialize($property, 'json', SerializationContext::create()->setGroups(array('id')));
         return new Response($json);
     }
     public function putAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Property');
         $property = $repository->findOneById($request->request->all()["id"]);
         $property->setName($request->request->all()["name"]);
@@ -115,13 +129,11 @@ class PropertyController extends Controller implements ClassResourceInterface
         $property->setDescription($request->request->all()["description"]);
         $em->persist($property);
         $em->flush();
-        $json = $serializer->serialize($property, 'json', SerializationContext::create()->setGroups(array('default')));
-        return new Response($json);
+        return new Response();
     }
     public function putAddressAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $serializer = $this->container->get('jms_serializers');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Property');
         $property = $repository->findOneById($request->request->get('property'));
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Address');
@@ -134,8 +146,7 @@ class PropertyController extends Controller implements ClassResourceInterface
         }
         $em->persist($property);
         $em->flush();
-        $json = $serializer->serialize($property, 'json', SerializationContext::create()->setGroups(array('default')));
-        return new Response($json);
+        return new Response();
     }
 
     /**

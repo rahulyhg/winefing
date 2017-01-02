@@ -22,6 +22,8 @@ class AppKernel extends Kernel
             new FOS\RestBundle\FOSRestBundle(),
             new Winefing\ApiBundle\WinefingApiBundle(),
             new JMS\SerializerBundle\JMSSerializerBundle(),
+            new PaiementBundle\PaiementBundle(),
+            new Winefing\UserBundle\WinefingUserBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

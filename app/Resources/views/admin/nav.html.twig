@@ -32,8 +32,8 @@
                 <li class="dropdown {% if route == 'users_admin' or route =='' %}active{% endif %}">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Utilisateurs<span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li class="{% if route == 'users_admin' %}submenu-admin-active{% endif %}"><a href="{{ path('users_admin') }}">Admin</a></li>
-                        <li class=""><a href="#">Propriétaires</a></li>
+                        <li class="{% if route == 'users_by_group' and app.request.get('group') == role_admin%}submenu-admin-active{% endif %}"><a href="{{ path('users_by_group', {'group' : role_admin}) }}">Admin</a></li>
+                        <li class="{% if route == 'users_by_group'and app.request.get('group') == role_host %}submenu-admin-active{% endif %}"><a href="{{ path('users_by_group', {'group' : role_host}) }}">Propriétaires</a></li>
                     </ul>
                 </li>
                 <li class="dropdown {% if route == 'tags' or route =='wine_regions' or route == 'subscriptions' or route =='promotions' or route == 'web_pages'%}active{% endif %}">

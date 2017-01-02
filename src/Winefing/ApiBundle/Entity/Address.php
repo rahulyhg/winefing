@@ -19,19 +19,19 @@ class Address
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"default"})
+     * @Groups({"id", "default"})
      */
     private $id;
 
     /**
      * @var domains
-     * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\Domain", mappedBy="address")
+     * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\Domain", mappedBy="address", fetch="EXTRA_LAZY")
      */
     private $domains;
 
     /**
      * @var properties
-     * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\Property", mappedBy="address")
+     * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\Property", mappedBy="address", fetch="EXTRA_LAZY")
      */
     private $properties;
 

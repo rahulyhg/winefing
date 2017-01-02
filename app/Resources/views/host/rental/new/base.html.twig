@@ -1,0 +1,30 @@
+{% extends 'host/base.html.twig' %}
+{% block table %}
+    {% set route = app.request.attributes.get('_route') %}
+    <div class="container">
+        <div class="stepwizard col-md-offset-3">
+            <div class="stepwizard-row setup-panel">
+                <div class="stepwizard-step">
+                    <a type="button" class="btn btn-circle {% if route != 'rental_new' %}{{ 'disabled btn-default' }}{% else %}{{  'btn-primary' }}{% endif %}">1</a>
+                    <p>{% trans %}label.rental{% endtrans %}</p>
+                </div>
+                <div class="stepwizard-step">
+                    <a type="button" class="btn btn-circle {% if route != 'rental_characteristics' %}{{ 'disabled btn-default' }}{% else %}{{  'btn-primary' }}{% endif %}">2</a>
+                    <p>{% trans %}label.informations{% endtrans %}</p>
+                </div>
+                <div class="stepwizard-step">
+                    <a type="button" class="btn btn-circle {% if route != 'rental_pictures' %}{{ 'disabled btn-default' }}{% else %}{{  'btn-primary' }}{% endif %}">2</a>
+                    <p>{% trans %}label.pictures{% endtrans %}</p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 col-md-offset-3">
+                <div class="col-md-12">
+                    {% block new %}
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

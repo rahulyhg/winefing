@@ -75,6 +75,16 @@ class RentalController extends Controller implements ClassResourceInterface
         $json = $serializer->serialize($rentals, 'json', SerializationContext::create()->setGroups(array('default')));
         return new Response($json);
     }
+    public function cgetAction() {
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Rental');
+        $rentals = $repository->findAll();
+        foreach($rentals as $rental) {
+            $rental->setMediaPresentation();
+        }
+        $serializer = $this->container->get('jms_serializer');
+        $json = $serializer->serialize($rentals, 'json', SerializationContext::create()->setGroups(array('default')));
+        return new Response($json);
+    }
     public function postAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
@@ -95,7 +105,7 @@ class RentalController extends Controller implements ClassResourceInterface
         }
         $em->persist($rental);
         $em->flush();
-        $json = $serializer->serialize($rental, 'json', SerializationContext::create()->setGroups(array('default')));
+        $json = $serializer->serialize($rental, 'json', SerializationContext::create()->setGroups(array('id')));
         return new Response($json);
     }
     public function putAction(Request $request)
@@ -119,7 +129,7 @@ class RentalController extends Controller implements ClassResourceInterface
         }
         $em->persist($rental);
         $em->flush();
-        $json = $serializer->serialize($rental, 'json', SerializationContext::create()->setGroups(array('default')));
+        $json = $serializer->serialize($rental, 'json', SerializationContext::create()->setGroups(array('id')));
         return new Response($json);
     }
 

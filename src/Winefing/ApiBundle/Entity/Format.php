@@ -4,7 +4,7 @@ namespace Winefing\ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use Winefing\ApiBundle\Entity\FormatEnum;
+use JMS\Serializer\Annotation\Groups;
 /**
  * Format
  *
@@ -19,6 +19,7 @@ class Format extends FormatEnum
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"id", "default"})
      */
     private $id;
 
@@ -27,6 +28,7 @@ class Format extends FormatEnum
      *
      * @ORM\Column(name="name", type="string", length=20, unique=true)
      * @Assert\NotBlank()
+     * @Groups({"default"})
      */
     private $name;
 
@@ -34,6 +36,7 @@ class Format extends FormatEnum
      * @var string
      *
      * @ORM\Column(name="description", type="string", length=255, nullable=true)
+     * @Groups({"default"})
      */
     private $description;
 

@@ -17,6 +17,12 @@
     {% endstylesheets %}
     <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
     <link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.css" rel="stylesheet">
+
+    <!-- datepicker -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css.map" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker3.min.css.map" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.standalone.min.css" rel="stylesheet">
     <!-- selectpicker -->
 
     <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.12.4.min.js"></script>
@@ -31,6 +37,11 @@
     <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
+    <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
+    <script type="text/javascript">
+        Stripe.setPublishableKey('pk_test_9Ap0mXJ0cPLJoQzpA7y4bgwl');
+    </script>
     {% javascripts 'bundles/app/js/custom.js' 'bundles/app/js/dropzone.js' 'bundles/app/js/jquery.fancybox.pack.js' 'bundles/app/js/jquery.fancybox.js'
     'bundles/app/js/fancy-box.js'%}
     <script type="text/javascript" src="{{ asset_url }}"></script>
@@ -40,7 +51,17 @@
 
     <body><!-- begin:navbar -->
         {% block nav %}
-            {{ include('menu.html.twig') }}
+            {% if app.user %}
+                {% if is_granted("ROLE_HOST") %}
+                    {{ include('nav/host.html.twig') }}
+                {% elseif is_granted("ROLE_USER") %}
+                    {{ include('nav/user.html.twig') }}
+                {% elseif is_granted("ROLE_MANAGMENT") or is_granted("ROLE_BLOG") or is_granted("ROLE_TECHNIQUE") %}
+                    {{ include('nav/admin.html.twig') }}
+                {% endif %}
+            {% else %}
+                {{ include('nav/notConnected.html.twig') }}
+            {% endif %}
         {% endblock %}
         <div class="container" style="margin-bottom: 40px; margin-top:40px">
             {% block body %}

@@ -24,6 +24,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Winefing\ApiBundle\Entity\MediaFormatEnum;
+use JMS\Serializer\SerializationContext;
 
 
 class CharacteristicController extends Controller implements ClassResourceInterface
@@ -41,7 +42,7 @@ class CharacteristicController extends Controller implements ClassResourceInterf
     public function postAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $serializer = $this->container->get('winefing.serializer_controller');
+        $serializer = $this->container->get('jms_serializer');
         $characteristic = new Characteristic();
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:CharacteristicCategory');
         $characteristic->setChacarteristicCategory($repository->findOneById($request->request->get('characteristicCategory')));
@@ -57,13 +58,12 @@ class CharacteristicController extends Controller implements ClassResourceInterf
         }
         $em->persist($characteristic);
         $em->flush();
-        $json = $serializer->serialize($characteristic);
+        $json = $serializer->serialize($characteristic, 'json', SerializationContext::create()->setGroups(array('id')));
         return new Response($json);
     }
 
     public function putAction(Request $request){
         $em = $this->getDoctrine()->getManager();
-        $serializer = $this->container->get('winefing.serializer_controller');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Characteristic');
         $characteristic = $repository->findOneById($request->request->get('id'));
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Format');
@@ -78,8 +78,7 @@ class CharacteristicController extends Controller implements ClassResourceInterf
         }
         $em->persist($characteristic);
         $em->flush();
-        $json = $serializer->serialize($characteristic);
-        return new Response($json);
+        return new Response();
     }
 
     public function getPicturePathAction() {

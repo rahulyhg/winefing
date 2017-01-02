@@ -8,7 +8,6 @@
 
 namespace Winefing\ApiBundle\Controller;
 use Winefing\ApiBundle\Entity\Media;
-use Winefing\ApiBundle\Entity\MediaFormatEnum;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,6 +21,7 @@ use FOS\RestBundle\Controller\Annotations\FileParam;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use JMS\Serializer\SerializationContext;
 
 
 class MediaController extends Controller implements ClassResourceInterface
@@ -41,12 +41,11 @@ class MediaController extends Controller implements ClassResourceInterface
         );
         $em->persist($media);
         $em->flush();
-        return new Response($serializer->serialize($media, 'json'));
+        return new Response($serializer->serialize($media, 'json', SerializationContext::create()->setGroups(array('id'))));
     }
     public function putPropertyAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Media');
         $media = $repository->findOneById($request->request->get('media'));
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Property');
@@ -60,13 +59,11 @@ class MediaController extends Controller implements ClassResourceInterface
         }
         $em->persist($media);
         $em->flush();
-        $json = $serializer->serialize($media, 'json');
-        return new Response($json);
+        return new Response();
     }
     public function putDomainAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Media');
         $media = $repository->findOneById($request->request->get('media'));
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Domain');
@@ -80,13 +77,11 @@ class MediaController extends Controller implements ClassResourceInterface
         }
         $em->persist($media);
         $em->flush();
-        $json = $serializer->serialize($media, 'json');
-        return new Response($json);
+        return new Response();
     }
     public function putRentalAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Media');
         $media = $repository->findOneById($request->request->get('media'));
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Rental');
@@ -100,13 +95,11 @@ class MediaController extends Controller implements ClassResourceInterface
         }
         $em->persist($media);
         $em->flush();
-        $json = $serializer->serialize($media, 'json');
-        return new Response($json);
+        return new Response();
     }
     public function putBoxAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Media');
         $media = $repository->findOneById($request->request->get('media'));
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Box');
@@ -120,8 +113,7 @@ class MediaController extends Controller implements ClassResourceInterface
         }
         $em->persist($media);
         $em->flush();
-        $json = $serializer->serialize($media, 'json');
-        return new Response($json);
+        return new Response();
     }
 
     /**

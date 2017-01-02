@@ -6,9 +6,8 @@
  * Time: 19:17
  */
 
-namespace AppBundle\Controller;
+namespace Winefing\UserBundle\Controller;
 
-namespace AppBundle\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -27,20 +26,8 @@ use Winefing\ApiBundle\Entity\UserGroupEnum;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-class AdminUserController extends Controller
+class AdminController extends Controller
 {
-    /**
-     * @Route("users/admin", name="users_admin")
-     */
-    public function cgetAdmin() {
-        $api = $this->container->get('winefing.api_controller');
-        $serializer = $this->container->get('winefing.serializer_controller');
-        $response = $api->get($this->get('_router')->generate('api_get_admin_users'));
-        $users= $serializer->decode($response->getBody()->getContents());
-        return $this->render('admin/user/index.html.twig', array(
-            'users' => $users
-        ));
-    }
     /**
      * @Route("/user/newForm/{id}", name="user_new_form")
      */

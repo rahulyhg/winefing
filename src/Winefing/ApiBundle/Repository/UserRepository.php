@@ -21,5 +21,14 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
         $users = $query->getResult();
         return $users;
     }
+    public function findHost()
+    {
+        $query = $this->createQueryBuilder('user')
+            ->where('user.roles like :host')
+            ->setParameter('host', '%'.UserGroupEnum::Host.'%')
+            ->getQuery();
+        $users = $query->getResult();
+        return $users;
+    }
 
 }

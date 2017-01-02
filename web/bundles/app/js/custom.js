@@ -124,7 +124,6 @@ $(document).ready(function () {
 
     var url = document.location.toString();
     if (url.match('#')) {
-        console.log('in');
         $('.nav-pills a[href="#' + url.split('#')[1] + '"]').tab('show', function() {
             console.log('test');
             $('html,body').animate({scrollTop: $(this).offset().top}, 500);

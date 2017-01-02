@@ -14,10 +14,11 @@ namespace AppBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\PercentType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManager;
-use AppBundle\Form\AddressType;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
@@ -26,16 +27,34 @@ class RentalPromotionType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $userId = $options['user'];
         $builder
-            ->add('startDate', DateType::class)
-            ->add('endDate', DateType::class)
-            ->add('reduction', PercentType::class)
+            ->add('startDate', DateType::class, ['label'=>false, 'format'=>'dd-MM-yyyy', 'widget' => 'single_text', 'html5'=> false, 'attr'=>['class'=>'input-sm form-control']])
+            ->add('endDate', DateType::class, ['label'=>false, 'format'=>'dd-MM-yyyy', 'widget' => 'single_text', 'html5'=> false, 'attr'=>['class'=>'input-sm form-control']])
+            ->add('reduction', IntegerType::class, array('label'=> false, 'attr' => array('min'=> 1, 'max'=>100, 'scale'=> 2, 'class'=>'form-control', 'step'=>0.01)))
+            ->add('rentals', EntityType::class,  array(
+                'class' => 'WinefingApiBundle:Rental',
+                'query_builder' => function (EntityRepository $er) use ($userId){
+                    return $er->createQueryBuilder('rental')
+                        ->join('rental.property', 'property')
+                        ->join('property.domain', 'domain')
+                        ->join('domain.user', 'user')
+                        ->where('user.id = :userId')
+                        ->setParameter('userId', $userId)
+                        ->orderBy('rental.name', 'ASC');
+                },
+                'choice_label' => 'name',
+                'multiple' =>true,
+                'label'=>false,
+                 'attr'=>array('class'=>'selectpicker')))
+            ->add('submit', SubmitType::class, array('attr'=>array('class'=>'btn btn-primary pull-right')))
         ;
     }
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
             'data_class' => 'Winefing\ApiBundle\Entity\RentalPromotion',
+            'user' => '',
         ));
     }
 }

@@ -7,8 +7,6 @@
  */
 
 namespace Winefing\ApiBundle\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -16,14 +14,9 @@ use FOS\RestBundle\Routing\ClassResourceInterface;
 use Doctrine\ORM\EntityManager;
 use Doctrine\Common\Collections\ArrayCollection;
 use Winefing\ApiBundle\Entity\Address;
-use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use FOS\RestBundle\Controller\Annotations\RequestParam;
-use FOS\RestBundle\Controller\Annotations\FileParam;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use JMS\Serializer\SerializationContext;
 
 
 class AddressController extends Controller implements ClassResourceInterface
@@ -71,13 +64,12 @@ class AddressController extends Controller implements ClassResourceInterface
         }
         $em->persist($address);
         $em->flush();
-        $json = $serializer->serialize($address, 'json');
+        $json = $serializer->serialize($address, 'json', SerializationContext::create()->setGroups(array('id')));
         return new Response($json);
     }
     public function putAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Address');
         $address = $repository->findOneById($request->request->get('id'));
         $address->setStreetAddress($request->request->get('streetAddress'));
@@ -98,8 +90,7 @@ class AddressController extends Controller implements ClassResourceInterface
         }
         $em->persist($address);
         $em->flush();
-        $json = $serializer->serialize($address, 'json');
-        return new Response($json);
+        return new Response();
     }
     /**
      * Delete a web page

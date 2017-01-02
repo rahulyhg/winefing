@@ -3,7 +3,10 @@
 namespace Winefing\ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\Type;
 /**
  * RentalPromotion
  *
@@ -18,6 +21,7 @@ class RentalPromotion
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"id", "default"})
      */
     private $id;
 
@@ -25,6 +29,7 @@ class RentalPromotion
      * @var \DateTime
      *
      * @ORM\Column(name="startDate", type="date")
+     * @Groups({"default"})
      */
     private $startDate;
 
@@ -32,16 +37,41 @@ class RentalPromotion
      * @var \DateTime
      *
      * @ORM\Column(name="endDate", type="date")
+     * @Groups({"default"})
      */
     private $endDate;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="reduction", type="decimal", precision=2, scale=2)
+     * @ORM\Column(name="reduction", type="decimal", precision=4, scale=2)
+     * @Groups({"default"})
      */
     private $reduction;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Rental", inversedBy="rentalPromotions", fetch="EXTRA_LAZY", cascade={"persist", "merge", "detach"})
+     */
+    private $rentals;
+
+    public function _construct() {
+        $this->rentals = new ArrayCollection();
+        return $this;
+    }
+    public function addRental(Rental $rental) {
+        $rental->addRentalPromotion($this);
+        $this->rentals[] = $rental;
+    }
+    /**
+     * @return mixed
+     */
+    public function getRentals()
+    {
+        return $this->rentals;
+    }
+    public function setRentals($rentals) {
+        $this->rentals = $rentals;
+    }
 
     /**
      * Get id
@@ -123,6 +153,11 @@ class RentalPromotion
     public function getReduction()
     {
         return $this->reduction;
+    }
+
+    public function resetRentals() {
+        $this->rentals = new ArrayCollection();
+        return $this;
     }
 }
 

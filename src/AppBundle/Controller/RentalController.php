@@ -7,6 +7,8 @@
  */
 namespace AppBundle\Controller;
 use AppBundle\Form\RentalType;
+use PaiementBundle\Entity\CreditCard;
+use PaiementBundle\Form\CreditCardType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -30,12 +32,68 @@ use Winefing\ApiBundle\Entity\CharacteristicValue;
 
 class RentalController extends Controller
 {
+    const DATE_FORMAT = 'd-m-Y';
+    /**
+     * @Route("users/rentals", name="rentals_users")
+     *
+     */
+    public function cgetForUserAction() {
+        $api = $this->container->get('winefing.api_controller');
+        $serializer = $this->container->get('jms_serializer');
+        $response = $api->get($this->get('_router')->generate('api_get_rentals'));
+        $rentals = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\Rental>', 'json');
+        $mediaPath = $this->getMediaPath();
+        return $this->render('user/rental/research.html.twig', array('rentals' => $rentals, 'mediaPath'=>$mediaPath));
+    }
+
+    /**
+     * @param $order
+     * @return mixed
+     * @Route("users/rental/paiement", name="rental_paiement")
+     */
+    public function paiement($order){
+        $creditCard = new CreditCard();
+        $creditCardForm = $this->createForm(CreditCardType::class, $creditCard);
+        return $this->render('user/rental/paiement.html.twig', ['creditCardForm'=>$creditCardForm->createView()]);
+    }
+    /**
+     * @Route("users/rental/{id}", name="rental")
+     *
+     */
+    public function getOneAction($id, Request $request) {
+        $rental = $this->getRental($id);
+        $serializer = $this->container->get('jms_serializer');
+        $rentalPromotions = $this->getRentalPromotions($id);
+        $rentalPromotionsArray = $this->formateDate($rental, $rentalPromotions);
+        if($request->isMethod('POST')) {
+            return $this->redirectToRoute('rental_paiement', array('order'=>$request));
+        }
+        return $this->render('user/rental/singleCard.html.twig', array('rental' => $rental, 'rentalPromotions'=>$rentalPromotionsArray));
+    }
+    public function getRentalPromotions($rentalId) {
+        $api = $this->container->get('winefing.api_controller');
+        $serializer = $this->container->get('jms_serializer');
+        $response = $api->get($this->get('_router')->generate('api_get_rental_promotions_by_rental', array('rentalId'=>$rentalId)));
+        $rentalPromotions = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\RentalPromotion>', 'json');
+        return $rentalPromotions;
+    }
+    public function formateDate($rental, $rentalPromotions) {
+        $rentalPromotionsArray = array();
+        foreach($rentalPromotions as $rentalPromotion) {
+            $rentalPromotionArray = array();
+            $rentalPromotionArray["price"] = $rental->getPrice() * ((100-$rentalPromotion->getReduction())/100);
+            $rentalPromotionArray['startDate'] = strtotime(date_format($rentalPromotion->getStartDate(), $this::DATE_FORMAT));
+            $rentalPromotionArray['endDate'] = strtotime(date_format($rentalPromotion->getEndDate(), $this::DATE_FORMAT));
+            array_push($rentalPromotionsArray, $rentalPromotionArray);
+        }
+        return $rentalPromotionsArray;
+    }
     /**
      * @Route("/rentals", name="rentals")
      *
      */
     public function cgetAction() {
-        $userId = 57;
+        $userId = $this->getUser()->getId();
         $api = $this->container->get('winefing.api_controller');
         $serializer = $this->container->get('jms_serializer');
         $response = $api->get($this->get('_router')->generate('api_get_rentals_by_user', array('userId' => $userId)));
@@ -96,56 +154,61 @@ class RentalController extends Controller
     }
 
     /**
-     * @Route("/rental/new/{step}/{id}", name="rental_new")
+     * @Route("/rental/new", name="rental_new")
      */
-    public function newAction($step, $id ='', Request $request) {
-        $return = array();
-        if(!empty($id)) {
-            $rental = $this->getRental($id);
-            $this->getDoctrine()->getEntityManager()->merge($rental);
-            $this->getDoctrine()->getEntityManager()->persist($rental->getProperty());
-        } else {
-            $rental = new Rental();
+    public function newAction(Request $request) {
+        $rental = new Rental();
+        $rental->setPrice(1.1);
+        $options['user'] = $this->getUser()->getId();
+        $rentalForm = $this->createForm(RentalType::class, $rental, $options);
+        $return['rentalForm'] = $rentalForm->createView();
+        $rentalForm->handleRequest($request);
+        if ($rentalForm->isSubmitted()) {
+            if($rentalForm->isValid()) {
+                $rentalForm = $request->request->all()['rental'];
+                if(empty($rentalForm["property"])) {
+                    return $this->redirect($this->generateUrl('property_new'));
+                }
+                $rentalForm["id"] = $rental->getId();
+                $rental = $this->submit($rentalForm);
+                $rentalId = $rental->getId();
+                return $this->redirect($this->generateUrl('rental_characteristics', array('idRental'=> $rentalId)));
+            }
         }
-        switch($step) {
-            case "step-1" :
-                $rentalForm = $this->createForm(RentalType::class, $rental);
-                $return['rentalForm'] = $rentalForm->createView();
-                $rentalForm->handleRequest($request);
-                if ($rentalForm->isSubmitted()) {
-                    if($rentalForm->isValid()) {
-                        $rentalForm = $request->request->all()['rental'];
-                        $rentalForm["id"] = $rental->getId();
-                        $rental = $this->submit($rentalForm);
-                        return $this->redirect($this->generateUrl('property_new', array('step' => 'step-2', 'id'=> $rental->getId())) . '#step-2');
-                    }
-                }
-                break;
-            case "step-2" :
-                $this->setMissingCharacteristicsAction($rental);
-                $characteristicCategories = $this->getCharacteristicCategories($rental);
-                $return['characteristicCategories'] = $characteristicCategories->createView();
-                if ($request->isMethod('POST')) {
-                    $characteristicValueForm = $request->request->get("characteristicValueForm");
-                    if (!empty($characteristicValueForm)) {
-                        $characteristicValueForm["rental"] = $rental->getId();
-                        $this->submitCharacteristicValues($characteristicValueForm);
-                        return $this->redirect($this->generateUrl('property_new', array('step' => 'step-3', 'id' => $rental->getId())) . '#step-3');
-                    }
-                }
-                break;
-            case 'step-3':
-                if ($request->isMethod('POST')) {
-                    $media = $request->files->get('media');
-                    if (!empty($media)) {
-                        $media["property"] = $rental->getId();
-                        $this->submitPictures($media);
-                        return $this->redirect($this->generateUrl('rental_edit', array('id' => $rental->getId())) . '#presentation');
-                    }
-                }
-                break;
+        return $this->render('host/rental/new/rental.html.twig', $return);
+    }
+    /**
+     * @Route("/rental/{idRental}/characteristics", name="rental_characteristics")
+     */
+    public function putPropertyCharacteristics($idRental, Request $request){
+        $rental = $this->getRental($idRental);
+        $this->setMissingCharacteristicsAction($rental);
+        $characteristicCategories = $this->getCharacteristicCategories($rental);
+        $return['characteristicCategories'] = $characteristicCategories;
+        if ($request->isMethod('POST')) {
+            $characteristicValueForm = $request->request->get("characteristicValueForm");
+            if (!empty($characteristicValueForm)) {
+                $characteristicValueForm["rental"] = $rental->getId();
+                $this->submitCharacteristicValues($characteristicValueForm);
+                return $this->redirect($this->generateUrl('rental_pictures', array('idRental'=> $idRental)));
+            }
         }
-        return $this->render('host/rental/new.html.twig', $return);
+        return $this->render('host/rental/new/information.html.twig', $return);
+    }
+    /**
+     * @Route("/rental/{idRental}/pictures", name="rental_pictures")
+     */
+    public function putPropertyPictures($idRental, Request $request) {
+        if ($request->isMethod('POST')) {
+            $media = $request->files->get('media');
+            var_dump($media['medias'][0]);
+            if (count($media['medias']) > 0 || $media['medias'][0] != 'null') {
+                $media["rental"] = $idRental;
+                $this->submitPictures($media);
+                return $this->redirect($this->generateUrl('rental_edit', array('id' => $idRental)));
+            }
+        }
+        return $this->render('host/rental/new/picture.html.twig');
     }
     public function getRental($id) {
         $api = $this->container->get('winefing.api_controller');
@@ -158,9 +221,6 @@ class RentalController extends Controller
 
     public function submit($rental)
     {
-        if(empty($rental["property"])) {
-            return $this->redirect($this->generateUrl('property_new'));
-        }
         $api = $this->container->get('winefing.api_controller');
         $serializer = $this->container->get('jms_serializer');
         if(empty($rental["id"])) {
@@ -233,7 +293,19 @@ class RentalController extends Controller
             $rental->addCharacteristicValue($characteristicValue);
         }
     }
-
+    public function submitPictures($media)
+    {
+        $api = $this->container->get('winefing.api_controller');
+        $serializer = $this->container->get('jms_serializer');
+        $body["rental"] = $media["rental"];
+        foreach($media["medias"] as $media) {
+            $uploadDirectory["upload_directory"] = $this->getParameter('rental_directory_upload');
+            $response = $api->file($this->get('router')->generate('api_post_media'), $uploadDirectory, $media);
+            $media = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Media', "json");
+            $body["media"] = $media->getId();
+            $api->put($this->get('router')->generate('api_put_media_rental'), $body);
+        }
+    }
     public function getCharacteristicCategories($rental) {
         $list = array();
         foreach($rental->getCharacteristicValues() as $characteristicValue) {

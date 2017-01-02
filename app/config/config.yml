@@ -3,11 +3,12 @@ imports:
     - { resource: security.yml }
     - { resource: services.yml }
     - { resource: doctrine_extensions.yml }
+    - { resource: "@PaiementBundle/Resources/config/services.yml" }
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
-    locale:  en
+    locale:  fr
     language_directory_upload: '%kernel.root_dir%/../web/Resources/pictures/language/'
     characteristic_category_directory_upload: '%kernel.root_dir%/../web/Resources/pictures/characteristicCategory/'
     characteristic_directory_upload: '%kernel.root_dir%/../web/Resources/pictures/characteristic/'
@@ -32,7 +33,7 @@ parameters:
 
 framework:
     #esi:             ~
-    translator: { fallbacks: [en] }
+    translator: { fallbacks: [%locale%] }
     secret:          "%secret%"
     router:
         resource: "%kernel.root_dir%/config/routing.yml"
@@ -70,6 +71,11 @@ twig:
         format_date_time: 'DATETIME'
         format_date: 'DATE'
         format_varchar: 'VARCHAR'
+        user_directory: '%kernel.root_dir%/test-prod/web/Resources/pictures/user/'
+        role_host : 'ROLE_HOST'
+        role_admin : 'ROLE_ADMIN'
+        role_user : 'ROLE_USER'
+
 
 # Doctrine Configuration
 doctrine:
@@ -122,7 +128,7 @@ fos_user:
     db_driver: orm
     firewall_name: dev
     user_class: Winefing\ApiBundle\Entity\User
-    use_listener: false
+#    use_listener: false
 
 
 assetic:
@@ -137,6 +143,7 @@ assetic:
         arillo_css:
             inputs:
                 - 'bundles/app/css/*'
+
         bootstrap_js:
             inputs:
                 - 'assets/vendor/bootstrap/dist/js/*'

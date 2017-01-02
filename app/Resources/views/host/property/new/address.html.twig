@@ -1,0 +1,31 @@
+{% extends 'host/property/new/base.html.twig' %}
+{% block new %}
+    {% set hidden = '' %}
+    {% if addressListChoice is defined %}
+        {{ form_start(addressListChoice) }}
+        {{ form_widget(addressListChoice.address) }}
+        {{ form_end(addressListChoice) }}
+        {% set hidden = 'hidden' %}
+        <div id="buttonNextAddress">
+            <a class="btn btn-primary btn-lg pull-right" href="{{ path('property_pictures', {'idProperty' : app.request.get('idProperty')}) }}">{% trans %}label.next{% endtrans %}</a>
+        </div>
+    {% endif %}
+    <br>
+    <div id="addressDiv" {{ hidden }}>
+        {{ form_start(addressForm) }}
+        {% include('host/address/form.html.twig') %}
+        <button type="submit" class="btn btn-primary pull-right">{% trans %}label.submit{% endtrans %}</button>
+        {{ form_end(addressForm) }}
+    </div>
+    {% block script %}
+        <script>
+            $('#form_address').on('change', function() {
+                if($(this).val() == '') {
+                    $('#addressDiv').show();
+                } else {
+                    $('#addressDiv').hide();
+                }
+            });
+        </script>
+    {% endblock %}
+{% endblock %}

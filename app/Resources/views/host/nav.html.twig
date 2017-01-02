@@ -17,7 +17,7 @@
                     <a href="{{ path('domain_edit') }}">{% trans %}label.my_domain{% endtrans %} </a>
                 </li>
                 <li class="{% if route == 'properties' or route == 'new_property' or route == 'property_edit' %}active{% endif %}">
-                    <a href="{{ path('properties') }}">{% trans %}label.my_properties{% endtrans %} </a>
+                    <a href="{{ path('properties') }}">{{ 'label.my_properties'|trans }} </a>
                 </li>
                 <li class="{% if route == 'rentals' or route == 'rental_new' or route == 'rental_edit' %}active{% endif %}">
                     <a href="{{ path('rentals') }}">{% trans %}label.my_rentals{% endtrans %}
