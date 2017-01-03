@@ -5,6 +5,7 @@ namespace Winefing\ApiBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use JMS\Serializer\Annotation\Type;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * Subscription
@@ -20,17 +21,20 @@ class Subscription
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"id", "default"})
      */
     private $id;
 
     /**
      * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\User", mappedBy="subscriptions")
+     * @Groups({"users"})
      */
     private $users;
 
     /**
      * @var SubscriptionTr
      * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\SubscriptionTr", mappedBy="subscription", fetch="EAGER", cascade="ALL")
+     * @Groups({"trs"})
      */
     private $subscriptionTrs;
 
@@ -38,6 +42,7 @@ class Subscription
      * @var bool
      *
      * @ORM\Column(name="activated", type="boolean")
+     * @Groups({"artivated"})
      */
     private $activated;
 
@@ -45,6 +50,7 @@ class Subscription
      * @var string
      *
      * @ORM\Column(name="code", type="string", length=255)
+     * @Groups({"code"})
      */
     private $code;
 
@@ -52,6 +58,7 @@ class Subscription
      * @var string
      *
      * @ORM\Column(name="userGroup", type="string", length=255)
+     * @Groups({"userGroup"})
      */
     private $userGroup;
 
@@ -59,6 +66,7 @@ class Subscription
      * @var string
      *
      * @ORM\Column(name="format", type="string", length=60)
+     * @Groups({"format"})
      */
     private $format;
 

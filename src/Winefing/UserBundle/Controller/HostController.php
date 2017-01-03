@@ -53,9 +53,8 @@ class HostController extends Controller
         $userForm =  $this->createForm(UserType::class, $user);
         $userForm->handleRequest($request);
         if($userForm->isSubmitted() && $userForm->isValid()) {
-            $birthDate = $userForm->get('birthDate')->getData()->format('U');
             $userEdit = $request->request->get('user');
-            $userEdit["birthDate"] = $birthDate;
+            $userEdit["birthDate"] = strtotime($userEdit["birthDate"]);
             $userEdit["id"] = $user->getId();
             $this->submit($userEdit);
             $this->addFlash('userSuccess', $this->get('translator')->trans('success.profil_edit'));
@@ -80,7 +79,7 @@ class HostController extends Controller
         $subscriptionFormatList = $this->subscriptionsByFormat($subscriptions);
 
 
-        $response = $api->get($this->get('_router')->generate('api_get_host_user_media_path'));
+        $response = $api->get($this->get('_router')->generate('api_get_user_media_path'));
         $serializer = $this->container->get('winefing.serializer_controller');
         $picturePath = $serializer->decode($response->getBody()->getContents());
 
@@ -178,7 +177,7 @@ class HostController extends Controller
     public function emailExist($email) {
         $result = false;
         $api = $this->container->get('winefing.api_controller');
-        $response =  $api->get($this->get('router')->generate('api_get_host_user_by_email', array('email' => $email)));
+        $response =  $api->get($this->get('router')->generate('api_get_user_by_email', array('email' => $email)));
         if($response->getBody()->getContents() != 'null') {
             $result = true;
         }
@@ -198,9 +197,9 @@ class HostController extends Controller
         $api = $this->container->get('winefing.api_controller');
         $serializer = $this->container->get("jms_serializer");
         if(!empty($user["id"])) {
-            $response =  $api->put($this->get('router')->generate('api_put_host_user'), $user);
+            $response =  $api->put($this->get('router')->generate('api_put_user'), $user);
         } else {
-            $response =  $api->post($this->get('router')->generate('api_post_host_user'), $user);
+            $response =  $api->post($this->get('router')->generate('api_post_user'), $user);
         }
         $user = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\User', 'json');
         return $user;
@@ -209,18 +208,18 @@ class HostController extends Controller
     public function submitPicture($picture, $user)
     {
         $api = $this->container->get('winefing.api_controller');
-        $api->file($this->get('router')->generate('api_post_host_user_picture'), $user, $picture);
+        $api->file($this->get('router')->generate('api_post_user_picture'), $user, $picture);
     }
 
     public function submitPassword($password)
     {
         $api = $this->container->get('winefing.api_controller');
-        $api->put($this->get('router')->generate('api_put_host_user_password'), $password);
+        $api->put($this->get('router')->generate('api_put_user_password'), $password);
     }
 
     public function submitSubscriptions($subscription)
     {
         $api = $this->container->get('winefing.api_controller');
-        $api->put($this->get('router')->generate('api_put_host_user_subscriptions'), $subscription);
+        $api->put($this->get('router')->generate('api_put_user_subscriptions'), $subscription);
     }
 }

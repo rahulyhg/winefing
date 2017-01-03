@@ -152,4 +152,25 @@ class RentalController extends Controller implements ClassResourceInterface
         return new Response(json_encode([200, "success"]));
     }
 
+    public function getPricesByDateAction($rental, $start, $end) {
+        $serializer = $this->container->get('jms_serializer');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Rental');
+        $rental = $repository->findOneById($rental);
+        $allDates = array();
+        $date = strtotime($start);
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:RentalPromotion');
+        while($date < strtotime($end)){
+            $rentalPromotion = $repository->findPromotionByDate($date, $rental->getId());
+            if(empty($rentalPromotion) || $rentalPromotion == NULL) {
+                $price = $rental->getPrice();
+            } else {
+                $price =  $rental->getPrice() * ((100-$rentalPromotion->getReduction())/100);
+            }
+            $allDates[$date] = $price;
+            $date = strtotime('+1 days', $date);
+        }
+        $json = $serializer->serialize($allDates, 'json');
+        return new Response($json);
+    }
+
 }

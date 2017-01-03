@@ -3,6 +3,7 @@
 namespace Winefing\ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * WineRegionTr
@@ -18,18 +19,21 @@ class WineRegionTr
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"id", "default"})
      */
     private $id;
 
     /**
      * @var
      * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\WineRegion", inversedBy="wineRegionTrs")
+     * @Groups({"wineRegion"})
      */
     private $wineRegion;
 
     /**
      * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Language")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"language"})
      */
     private $language;
 
@@ -37,6 +41,7 @@ class WineRegionTr
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
+     * @Groups({"default"})
      */
     private $name;
 

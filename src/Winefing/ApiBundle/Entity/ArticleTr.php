@@ -5,6 +5,8 @@ namespace Winefing\ApiBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation\Groups;
+
 /**
  * ArticleTr
  *
@@ -19,18 +21,21 @@ class ArticleTr
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"id", "default"})
      */
     private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Language")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"language"})
      */
     private $language;
 
     /**
      * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Article", inversedBy="articleTrs", cascade={"persist", "merge"})
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"article"})
      */
     private $article;
 
@@ -38,6 +43,7 @@ class ArticleTr
      * @var string
      *
      * @ORM\Column(name="title", type="string", length=60)
+     * @Groups({"title"})
      */
     private $title;
 
@@ -45,6 +51,7 @@ class ArticleTr
      * @var string
      *
      * @ORM\Column(name="shortDescription", type="string", length=155)
+     * @Groups({"default"})
      */
     private $shortDescription;
 
@@ -52,6 +59,7 @@ class ArticleTr
      * @var text
      *
      * @ORM\Column(name="content", type="text")
+     * @Groups({"default"})
      */
     private $content;
 
@@ -59,6 +67,7 @@ class ArticleTr
      * @var bool
      *
      * @ORM\Column(name="activated", type="boolean")
+     * @Groups({"default"})
      */
     private $activated;
 
@@ -67,6 +76,7 @@ class ArticleTr
      *
      * @Gedmo\Timestampable(on="create")
      * @ORM\Column(type="datetime")
+     * @Groups({"default"})
      */
     private $created;
 
@@ -75,6 +85,7 @@ class ArticleTr
      *
      * @Gedmo\Timestampable(on="update")
      * @ORM\Column(type="datetime")
+     * @Groups({"default"})
      */
     private $updated;
 

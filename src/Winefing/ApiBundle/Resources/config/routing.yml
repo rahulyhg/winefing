@@ -98,11 +98,6 @@ subscriptionTr:
     resource: Winefing\ApiBundle\Controller\SubscriptionTrController
     name_prefix:  api_
 
-adminUser:
-    type: rest
-    resource: Winefing\ApiBundle\Controller\AdminUserController
-    name_prefix:  api_
-
 address:
     type: rest
     resource: Winefing\ApiBundle\Controller\AddressController
@@ -113,9 +108,9 @@ domain:
     resource: Winefing\ApiBundle\Controller\DomainController
     name_prefix:  api_
 
-hostUser:
+user:
     type: rest
-    resource: Winefing\ApiBundle\Controller\HostUserController
+    resource: Winefing\ApiBundle\Controller\UserController
     name_prefix:  api_
 
 characteristicDomainValue:

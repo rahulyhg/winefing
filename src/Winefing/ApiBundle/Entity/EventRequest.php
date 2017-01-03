@@ -3,6 +3,7 @@
 namespace Winefing\ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * EventRequest
@@ -18,12 +19,14 @@ class EventRequest
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"id", "default"})
      */
     private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\EventCategory")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"default"})
      */
     private $eventCategory;
 
@@ -31,6 +34,7 @@ class EventRequest
      * @var float
      *
      * @ORM\Column(name="budget", type="float")
+     * @Groups({"default"})
      */
     private $budget;
 
@@ -38,6 +42,7 @@ class EventRequest
      * @var int
      *
      * @ORM\Column(name="peopleNumber", type="integer")
+     * @Groups({"default"})
      */
     private $peopleNumber;
 
@@ -45,6 +50,7 @@ class EventRequest
      * @var \DateTime
      *
      * @ORM\Column(name="startDate", type="date")
+     * @Groups({"default"})
      */
     private $startDate;
 
@@ -52,6 +58,7 @@ class EventRequest
      * @var \DateTime
      *
      * @ORM\Column(name="endDate", type="date")
+     * @Groups({"default"})
      */
     private $endDate;
 
@@ -59,6 +66,7 @@ class EventRequest
      * @var int
      *
      * @ORM\Column(name="duration", type="integer")
+     * @Groups({"default"})
      */
     private $duration;
 
@@ -66,6 +74,7 @@ class EventRequest
      * @var string
      *
      * @ORM\Column(name="email", type="string", length=255)
+     * @Groups({"default"})
      */
     private $email;
 
@@ -73,6 +82,7 @@ class EventRequest
      * @var string
      *
      * @ORM\Column(name="phoneNumber", type="string", length=255)
+     * @Groups({"default"})
      */
     private $phoneNumber;
 
@@ -80,6 +90,7 @@ class EventRequest
      * @var string
      *
      * @ORM\Column(name="description", type="string", length=255)
+     * @Groups({"default"})
      */
     private $description;
 

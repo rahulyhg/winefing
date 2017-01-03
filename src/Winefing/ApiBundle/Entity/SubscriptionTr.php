@@ -3,6 +3,7 @@
 namespace Winefing\ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * SubscriptionTr
@@ -18,18 +19,21 @@ class SubscriptionTr
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"id", "default"})
      */
     private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Subscription", inversedBy="subscriptionTrs")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"subscription"})
      */
     private $subscription;
 
     /**
      * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Language")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"language"})
      */
     private $language;
 
@@ -37,6 +41,7 @@ class SubscriptionTr
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=60)
+     * @Groups({"default"})
      */
     private $name;
 
@@ -44,6 +49,7 @@ class SubscriptionTr
      * @var string
      *
      * @ORM\Column(name="description", type="string", length=255)
+     * @Groups({"default"})
      */
     private $description;
 

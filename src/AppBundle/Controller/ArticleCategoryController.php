@@ -37,6 +37,7 @@ use Winefing\ApiBundle\Entity\ArticleTr;
 class ArticleCategoryController extends Controller
 {
     /**
+     * Display all article's categories for the admin users.
      * @Route("/articleCategory/", name="articleCategory")
      */
     public function cgetAction() {
@@ -51,6 +52,7 @@ class ArticleCategoryController extends Controller
     }
 
     /**
+     * Create a new form for the article category. If the id is empty -> create a new article cateroy, else, get the article category.
      * @Route("/articleCategory/newForm/{id}", name="articleCategory_new_form")
      */
     public function newFormAction($id = '') {
@@ -76,6 +78,7 @@ class ArticleCategoryController extends Controller
         ));
     }
     /**
+     * Create a new article category.
      * @Route("/articleCategory/submit", name="articleCategory_submit")
      */
     public function postAction(Request $request)
@@ -91,6 +94,20 @@ class ArticleCategoryController extends Controller
             $response = $api->put($this->get('router')->generate('api_put_article_category'), $articleCategory);
         }
         $articleCategory = $serializer->decode($response->getBody()->getContents());
+        $this->submitArticleCategoryTrs($articleCategoryTrs, $articleCategory);
+        $request->getSession()
+            ->getFlashBag()
+            ->add('success', "The article's category is well created/modified.");
+        return $this->redirectToRoute('articleCategory');
+    }
+
+    /**
+     * Foreach traduction, create or update the traduction.
+     * @param $articleCategoryTrs
+     * @param $articleCategory
+     */
+    public function submitArticleCategoryTrs($articleCategoryTrs, $articleCategory) {
+        $api = $this->container->get('winefing.api_controller');
         foreach($articleCategoryTrs as $articleCategoryTr) {
             if(empty($articleCategoryTr["id"])) {
                 $articleCategoryTr["articleCategory"] = $articleCategory["id"];
@@ -99,12 +116,9 @@ class ArticleCategoryController extends Controller
                 $api->put($this->get('router')->generate('api_put_articlecategory_tr'), $articleCategoryTr);
             }
         }
-        $request->getSession()
-            ->getFlashBag()
-            ->add('success', "The article's category is well created/modified.");
-        return $this->redirectToRoute('articleCategory');
     }
     /**
+     * Delete an article ctegory, and so the relation between the articleCategory and the article.
      * @Route("/articleCategory/delete/{id}", name="articleCategory_delete")
      */
     public function deleteAction($id, Request $request)

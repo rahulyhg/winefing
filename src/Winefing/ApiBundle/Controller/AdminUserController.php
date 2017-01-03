@@ -54,37 +54,7 @@ class AdminUserController extends Controller implements ClassResourceInterface
      * Create or update a user from the submitted data.<br/>
      *
      *
-     */
-    public function postAction(Request $request)
-    {
-        $userManager = $this->get('fos_user.user_manager');
-        $serializer = $this->container->get("winefing.serializer_controller");
-        $user = $userManager->findUserByEmail($request->request->get('email'));
-        if(!empty($user)) {
-            $api = $this->container->get('winefing.api_controller');
-            return  $api->put($this->get("_router")->generate("api_put_admin_user"), $request->request->all());
-        }
-        $user = $userManager->createUser();
-        $user->setFirstName($request->request->get('firstName'));
-        $user->setLastName($request->request->get('lastName'));
-        $user->setPhoneNumber($request->request->get('phoneNumber'));
-        $user->setEmail($request->request->get('email'));
-        $user->setUserName($request->request->get('email'));
-        $user->setVerify(1);
-        $roles[] = $request->request->get('roles');
-        $user->setRoles($roles);
-        $user->setEnabled($request->request->get('enabled'));
-        $user->setPlainPassword(0000);
-        $validator = $this->get('validator');
-        $errors = $validator->validate($user);
-        if (count($errors) > 0) {
-            $errorsString = (string) $errors;
-            throw new HttpException(400, $errorsString);
-        } else {
-            $userManager->updateUser($user);
-        }
-        return new Response($serializer->serialize($user));
-    }
+
 
     /**
      * Edit a user
@@ -94,7 +64,7 @@ class AdminUserController extends Controller implements ClassResourceInterface
     public function putAction(Request $request)
     {
         $userManager = $this->get('fos_user.user_manager');
-        $user = $userManager->findUserBy(array('email'=>$request->request->get('email')));
+        $user = $userManager->findBy(array('email'=>$request->request->get('email')));
         $user->setFirstName($request->request->get('firstName'));
         $user->setLastName(strtoupper($request->request->get('lastName')));
         $user->setPhoneNumber($request->request->get('phoneNumber'));
@@ -119,7 +89,7 @@ class AdminUserController extends Controller implements ClassResourceInterface
         $userManager = $this->get('fos_user.user_manager');
         $em = $this->getDoctrine()->getManager();
         $serializer = $this->container->get("winefing.serializer_controller");
-        $user = $userManager->findUserByEmail($request->request->get('email'));
+        $user = $userManager->findByEmail($request->request->get('email'));
         if(!empty($user)) {
             throw new HttpException(400, "there is already an user with this mail.");
         }
@@ -152,7 +122,7 @@ class AdminUserController extends Controller implements ClassResourceInterface
     public function deleteAction($id)
     {
         $userManager = $this->get('fos_user.user_manager');
-        $user = $userManager->findUserBy(array("id" => $id));
+        $user = $userManager->findBy(array("id" => $id));
         $em = $this->getDoctrine()->getManager();
         $em->remove($user);
         $em->flush();
@@ -161,10 +131,12 @@ class AdminUserController extends Controller implements ClassResourceInterface
 
     public function putActivatedAction(Request $request) {
         $userManager = $this->get('fos_user.user_manager');
-        $user = $userManager->findUserBy(array("id" => $request->request->get("id")));
+        $user = $userManager->findBy(array("id" => $request->request->get("id")));
         $user->setEnabled($request->request->get("activated"));
         $em = $this->getDoctrine()->getManager();
         $em->flush();
         return new Response(json_encode([200, "success"]));
     }
+
+
 }

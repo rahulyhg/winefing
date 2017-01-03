@@ -20,7 +20,7 @@ use Doctrine\ORM\EntityManager;
 class LemonWayController
 {
     protected $userManager;
-    const DIRECTKIT_WS = 'https://sandbox-api.lemonway.fr/mb/winefing/dev/directkitxml/service.asmx';
+    const DIRECTKIT_WS = 'https://sandbox-api.lemonway.fr/mb/demo/dev/directkitxml/service.asmx';
     const INFORMATIONS = ["wlLogin"=> 'society', "wlPass" => "123456", "language" => 'fr', "version"=>1.0, "walletIp"=> '82.228.78.5', 'walletUa'=> 'ua'];
 
     public function __construct(UserManager $userManager){
@@ -30,21 +30,32 @@ class LemonWayController
      *
      */
     public function addWallet($userId) {
-        $user = $this->getUser($userId);
-        $client = new \Soapclient($this::DIRECTKIT_WS."?wsdl", array('exceptions'=>true, 'trace' => true));
-        var_dump($user->getId());
-        $wallet['wallet'] = rand();
-        $wallet['clientMail'] = $user->getEmail();
-        $wallet['clientFirstName'] = $user->getFirstName();
-        $wallet['clientLastName'] = $user->getLastName().'www';
-        $response = $client->RegisterWallet(array_merge($this::INFORMATIONS, $wallet));
-        $array = json_decode(json_encode($response), True);
-        if(!empty(array_key_exists("WALLET", $array))) {
-            $wallet = $array['RegisterWalletResult']['WALLET'];
-            $this->updateUser($user, $wallet['ID']);
-        } else {
-            return $array['RegisterWalletResult']['E'];
-        }
+        $opts = array(
+            'http'=>array(
+                'user_agent' => 'PHPSoapClient'
+            )
+        );
+
+        $context = stream_context_create($opts);
+        $client = new \SoapClient($this::DIRECTKIT_WS."?wsdl",
+            array('stream_context' => $context,
+                'cache_wsdl' => WSDL_CACHE_NONE));
+//        $user = $this->getUser($userId);
+////        libxml_disable_entity_loader(false);
+//        $client = new \Soapclient($this::DIRECTKIT_WS."?wsdl");
+//        var_dump($user->getId());
+//        $wallet['wallet'] = rand();
+//        $wallet['clientMail'] = $user->getEmail();
+//        $wallet['clientFirstName'] = $user->getFirstName();
+//        $wallet['clientLastName'] = $user->getLastName().'www';
+//        $response = $client->RegisterWallet(array_merge($this::INFORMATIONS, $wallet));
+//        $array = json_decode(json_encode($response), True);
+//        if(!empty(array_key_exists("WALLET", $array))) {
+//            $wallet = $array['RegisterWalletResult']['WALLET'];
+//            $this->updateUser($user, $wallet['ID']);
+//        } else {
+//            return $array['RegisterWalletResult']['E'];
+//        }
     }
     public function getUser($id) {
         $user = $this->userManager->findUserBy(array('id'=>$id));

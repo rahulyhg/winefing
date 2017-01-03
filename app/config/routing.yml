@@ -1,12 +1,12 @@
 user:
     resource: "@WinefingUserBundle/Controller/"
     type:     annotation
-    prefix:   /
+    prefix:   /{_locale}
 
 paiement:
     resource: "@PaiementBundle/Controller/"
     type:     annotation
-    prefix:   /
+    prefix:   /{_locale}
 
 fos_user:
     resource: "@FOSUserBundle/Resources/config/routing/all.xml"
@@ -25,3 +25,6 @@ app:
 
 fos_user:
     resource: "@FOSUserBundle/Resources/config/routing/all.xml"
+
+logout:
+    path: /logout

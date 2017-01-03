@@ -45,4 +45,15 @@ class RentalPromotionRepository extends \Doctrine\ORM\EntityRepository
             ->getQuery();
         return $query->getResult();
     }
+    function findPromotionByDate($date, $rentalId){
+        $date = date("Y-m-d", strtotime($date));
+        $query = $this->createQueryBuilder('rentalPromotion')
+            ->join("rentalPromotion.rentals", "rental")
+            ->where('rental.id = :rentalId and (:date BETWEEN rentalPromotion.startDate and rentalPromotion.endDate)')
+            ->setParameter('date', $date)
+            ->setParameter('rentalId', $rentalId)
+            ->setMaxResults(1)
+            ->getQuery();
+        return $query->getResult();
+    }
 }

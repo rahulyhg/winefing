@@ -3,6 +3,7 @@
 namespace Winefing\ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * WebPageTr
@@ -18,18 +19,21 @@ class WebPageTr
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"id", "default"})
      */
     private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\WebPage", inversedBy="webPageTrs", cascade={"persist", "merge"})
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"webPage"})
      */
     private $webPage;
 
     /**
      * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Language")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"language"})
      */
     private $language;
 
@@ -37,6 +41,7 @@ class WebPageTr
      * @var string
      *
      * @ORM\Column(name="title", type="string", length=60)
+     * @Groups({"default"})
      */
     private $title;
 
@@ -44,6 +49,7 @@ class WebPageTr
      * @var string
      *
      * @ORM\Column(name="content", type="text")
+     * @Groups({"default"})
      */
     private $content;
 
@@ -51,6 +57,7 @@ class WebPageTr
      * @var string
      *
      * @ORM\Column(name="activated", type="boolean")
+     * @Groups({"default"})
      */
     private $activated;
 

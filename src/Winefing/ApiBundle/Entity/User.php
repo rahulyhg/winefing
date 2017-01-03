@@ -8,7 +8,7 @@
 
 namespace Winefing\ApiBundle\Entity;
 
-use FOS\UserBundle\Model\User as BaseUser;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use JMS\Serializer\Annotation\Type;
@@ -20,7 +20,7 @@ use JMS\Serializer\Annotation\Groups;
  * @ORM\Entity(repositoryClass="Winefing\ApiBundle\Repository\UserRepository")
  * @ORM\Table(name="fos_user")
  */
-class User extends BaseUser
+class User implements UserInterface, \Serializable
 {
     /**
      * @ORM\Id
@@ -29,17 +29,59 @@ class User extends BaseUser
      * @Groups({"id", "default"})
      */
     protected $id;
+
+
     /**
-     * @ORM\Column(name="first_name", type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=25, unique=true)
+     */
+    private $username;
+
+    /**
+     * @ORM\Column(name="is_active", type="boolean")
+     */
+    private $isActive;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=false)
+     * @Groups({"default"})
+     */
+    private $password;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=false)
+     * @Groups({"default"})
+     */
+    private $roles;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=false)
+     * @Groups({"default"})
+     */
+    private $email;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=false)
+     * @Groups({"default"})
+     */
+    private $enabled = 1;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     * @Groups({"default"})
+     */
+    private $lastLogin = 1;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"default"})
+     */
+    private $token;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @Groups({"default"})
      */
     protected $firstName;
-
-    /**
-     * @ORM\Column(name="wallet", type="string", length=255, nullable=true)
-     * @Groups({"default"})
-     */
-    protected $wallet;
 
     /**
      * @ORM\Column(name="last_name", type="string", length=255, nullable=true)
@@ -110,10 +152,35 @@ class User extends BaseUser
 
     public function __construct()
     {
-        parent::__construct();
         $this->subscriptions = new ArrayCollection();
         $this->domains = new ArrayCollection();
+        $this->isActive = true;
+
         return $this;
+    }
+
+    public function getUsername()
+    {
+        return $this->username;
+    }
+
+    /**
+     * @param mixed $username
+     */
+    public function setUsername($username)
+    {
+        $this->username = $username;
+    }
+
+    public function eraseCredentials()
+    {
+    }
+
+    public function getSalt()
+    {
+        // you *may* need a real salt depending on your encoder
+        // see section on salt below
+        return null;
     }
 
     /**
@@ -125,11 +192,99 @@ class User extends BaseUser
     }
 
     /**
-     * @param mixed $id
+     * @return mixed
      */
-    public function setId($id)
+    public function getPassword()
     {
-        $this->id = $id;
+        return $this->password;
+    }
+
+    /**
+     * @param mixed $password
+     */
+    public function setPassword($password)
+    {
+        $this->password = $password;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRoles()
+    {
+        return str_split($this->roles, strlen($this->roles)+1);
+    }
+
+    /**
+     * @param mixed $roles
+     */
+    public function setRoles($roles)
+    {
+        $this->roles = $roles;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    /**
+     * @param mixed $email
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getEnabled()
+    {
+        return $this->enabled;
+    }
+
+    /**
+     * @param mixed $enabled
+     */
+    public function setEnabled($enabled)
+    {
+        $this->enabled = $enabled;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLastLogin()
+    {
+        return $this->lastLogin;
+    }
+
+    /**
+     * @param mixed $lastLogin
+     */
+    public function setLastLogin(\DateTime $lastLogin)
+    {
+        $this->lastLogin = $lastLogin;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getToken()
+    {
+        return $this->token;
+    }
+
+    /**
+     * @param mixed $token
+     */
+    public function setToken($token)
+    {
+        $this->token = $token;
     }
 
     /**
@@ -341,5 +496,28 @@ class User extends BaseUser
     public function setWallet($wallet)
     {
         $this->wallet = $wallet;
+    }
+    /** @see \Serializable::serialize() */
+    public function serialize()
+    {
+        return serialize(array(
+            $this->id,
+            $this->email,
+            $this->password,
+            // see section on salt below
+            // $this->salt,
+        ));
+    }
+
+    /** @see \Serializable::unserialize() */
+    public function unserialize($serialized)
+    {
+        list (
+            $this->id,
+            $this->email,
+            $this->password,
+            // see section on salt below
+            // $this->salt
+            ) = unserialize($serialized);
     }
 }

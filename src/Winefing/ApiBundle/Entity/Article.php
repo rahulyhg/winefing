@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation\Groups;
 /**
  * Article
  *
@@ -20,28 +21,33 @@ class Article extends Controller
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"id", "default"})
      */
     private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\User")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"user"})
      */
     private $user;
 
     /**
      * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\ArticleCategory", inversedBy="articles", cascade={"persist", "merge", "detach"})
+     * @Groups({"articleCategories"})
      */
     private $articleCategories;
 
     /**
      * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Tag", inversedBy="articles", cascade={"persist", "merge", "detach"})
+     * @Groups({"tags"})
      */
     private $tags;
 
     /**
      * @var ArticleTrs
      * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\ArticleTr", mappedBy="article", fetch="EAGER", cascade="ALL")
+     * @Groups({"trs"})
      */
     private $articleTrs;
 
@@ -59,6 +65,7 @@ class Article extends Controller
      * @var string
      *
      * @ORM\Column(name="picture", type="string", length=255, nullable=true)
+     * @Groups({"default"})
      */
     private $picture;
 

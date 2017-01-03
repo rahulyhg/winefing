@@ -4,7 +4,7 @@ namespace Winefing\ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
-use Winefing\ApiBundle\Entity\LanguageEnum;
+use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 /**
  * ArticleCategory
@@ -20,6 +20,7 @@ class ArticleCategory
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"id", "default"})
      */
     private $id;
 
@@ -27,6 +28,7 @@ class ArticleCategory
      * @var string
      *
      * @ORM\Column(name="description", type="string", length=255)
+     * @Groups({"default"})
      */
     private $description;
 
@@ -34,11 +36,13 @@ class ArticleCategory
     /**
      * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\ArticleCategory")
      * @ORM\JoinColumn(nullable=true)
+     * @Groups({"categoryPere"})
      */
     private $categoryPere;
 
     /**
      * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Article", mappedBy="articleCategories")
+     * @Groups({"articles"})
      */
     private $articles;
 
@@ -46,6 +50,7 @@ class ArticleCategory
     /**
      * @var ArticleCategoryTrs
      * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\ArticleCategoryTr", mappedBy="articleCategory", fetch="EAGER", cascade="ALL")
+     * @Groups({"trs"})
      */
     private $articleCategoryTrs;
 

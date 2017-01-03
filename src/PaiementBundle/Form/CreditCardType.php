@@ -9,10 +9,11 @@
 namespace PaiementBundle\Form;
 
 
+use PaiementBundle\Entity\CardTypeEnum;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -21,7 +22,7 @@ class CreditCardType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('cardType', null, array('label'=>'label.card_type', 'attr'=> array('maxlength'=>"60", 'class'=>'form-control')))
+            ->add('cardType', ChoiceType::class, array('choices' => array('CB' => CardTypeEnum::CB, 'MASTERCARD' => CardTypeEnum::Mastercard, 'VISA' => CardTypeEnum::VISA), 'label'=>'label.card_type', 'attr'=> array('maxlength'=>"60", 'class'=>'form-control')))
             ->add('cardNumber', null, array('label'=>'label.card_number','attr'=> array('minlength'=>"11", 'maxlength'=>"19", 'required' => true, 'class'=>'form-control')))
             ->add('cardCode', null, array('label'=>'label.card_code','attr'=> array('minlength'=>"3", 'maxlength'=>"3", 'required' => true, 'class'=>'form-control')))
             ->add('cardDate', null, ['label'=>'label.card_expiration_date', 'attr'=>['class'=>'input-sm form-control']])

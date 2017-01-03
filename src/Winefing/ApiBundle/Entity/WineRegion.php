@@ -4,6 +4,7 @@ namespace Winefing\ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * WineRegion
@@ -19,18 +20,21 @@ class WineRegion
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"id", "default"})
      */
     private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Country")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"country"})
      */
     private $country;
 
     /**
      * @var
      * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\WineRegionTr", mappedBy="wineRegion", fetch="EAGER", cascade={"all"})
+     * @Groups({"trs"})
      */
     private $wineRegionTrs;
 

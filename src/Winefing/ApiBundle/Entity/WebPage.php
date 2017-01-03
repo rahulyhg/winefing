@@ -4,6 +4,7 @@ namespace Winefing\ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * WebPage
@@ -19,12 +20,14 @@ class WebPage
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"id", "default"})
      */
     private $id;
 
     /**
      * @var WebPageTrs
      * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\WebPageTr", mappedBy="webPage", fetch="EAGER", cascade="ALL")
+     * @Groups({"trs"})
      */
     private $webPageTrs;
 

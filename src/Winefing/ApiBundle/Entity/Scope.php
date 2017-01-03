@@ -4,7 +4,7 @@ namespace Winefing\ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
-use Winefing\ApiBundle\Entity\CharacteristicCategory;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * Scope
@@ -20,6 +20,7 @@ class Scope
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"id", "default"})
      */
     private $id;
 
@@ -27,6 +28,7 @@ class Scope
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=25, unique=true)
+     * @Groups({"default"})
      */
     private $name;
 
@@ -34,12 +36,14 @@ class Scope
      * @var string
      *
      * @ORM\Column(name="description", type="string", length=255, nullable=true)
+     * @Groups({"default"})
      */
     private $description;
 
     /**
      * @var CharacteristicCategory
      * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\CharacteristicCategory", mappedBy="scope", fetch="EXTRA_LAZY")
+     * @Groups({"characteristicCategories"})
      */
     private $characteristicCategories;
 

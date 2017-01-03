@@ -3,7 +3,7 @@
     <div class="row">
         Réservation pour la location : {{ rental.name }}
         <br><br>
-        <form method="post">
+        <form method="post" name="order">
             <div id="sandbox-container">
                 <div class="input-daterange input-group" id="datepicker">
                     <input type="text" class="input-sm form-control" id="start" name="start" />
@@ -12,6 +12,7 @@
                 </div>
             </div>
             <br>
+            <input name="rental" value="{{ app.request.get('id') }}" hidden>
             <div id="bill" hidden>
                 <label>Prix par nuit <spam class="glyphicon glyphicon-question-sign"></spam></label>
                 <label for="averagePrice"></label><br>
@@ -57,6 +58,7 @@
             var price = {{ rental.price }};
             for(var i = 0; i<rentalPromotionsArray.length; ++i){
                 if((date.getTime() >= rentalPromotionsArray[i].startDate.getTime()) && (date.getTime() <= rentalPromotionsArray[i].endDate.getTime())){
+                    console.log(date);
                     price = rentalPromotionsArray[i].price;
                     break;
                 }

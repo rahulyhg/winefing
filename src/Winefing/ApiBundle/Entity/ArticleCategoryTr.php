@@ -4,6 +4,8 @@ namespace Winefing\ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation\Groups;
+
 /**
  * ArticleCategoryTr
  *
@@ -18,18 +20,21 @@ class ArticleCategoryTr
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"id", "default"})
      */
     private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\ArticleCategory", inversedBy="articleCategoryTrs")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"articleCategory"})
      */
     private $articleCategory;
 
     /**
      * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Language")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"language"})
      */
     private $language;
 
@@ -37,6 +42,7 @@ class ArticleCategoryTr
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=60)
+     * @Groups({"default"})
      */
     private $name;
 

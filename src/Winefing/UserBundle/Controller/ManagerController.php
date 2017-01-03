@@ -21,7 +21,7 @@ class ManagerController extends Controller
     public function cget($group) {
         $api = $this->container->get('winefing.api_controller');
         $serializer = $this->container->get('jms_serializer');
-        $response = $api->get($this->get('_router')->generate('api_get_host_users'));
+        $response = $api->get($this->get('_router')->generate('api_get_users', array('role' => $group)));
         $users= $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\User>', 'json');
         return $this->render('admin/user/index.html.twig', array(
             'users' => $users

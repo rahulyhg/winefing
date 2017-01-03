@@ -3,6 +3,7 @@
 namespace Winefing\ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * Country
@@ -18,6 +19,7 @@ class Country
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"id", "default"})
      */
     private $id;
 
@@ -25,6 +27,7 @@ class Country
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=60)
+     * @Groups({"default"})
      */
     private $name;
 
@@ -32,6 +35,7 @@ class Country
      * @var string
      *
      * @ORM\Column(name="code", type="integer")
+     * @Groups({"default"})
      */
     private $code;
 

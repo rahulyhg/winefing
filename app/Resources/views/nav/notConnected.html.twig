@@ -17,17 +17,10 @@
                 <li class="{% if app.request.attributes.get('_route') == 'user_host_new' %}active{% endif %}"><a href="{{ path("user_host_new", {'step' : 'contact'}) }}">Viticulteur</a></li>
                 <li><a href="#" class="signin" data-toggle="modal" data-target="#modal-signin">Aide</a></li>
                 <li><a href="#modal-signin" class="signin" data-toggle="modal" data-target="#modal-signin">Inscription</a></li>
-                {% if app.user %}
-                    {% if is_granted("ROLE_HOST") %}
-                        <p>host</p>
-                    {% elseif is_granted("ROLE_USER") %}
-                        <p>host</p>
-                    {% elseif is_granted("ROLE_MANAGMENT") or is_granted("ROLE_BLOG") or is_granted("ROLE_TECHNIQUE") %}
-                        <p>admin</p>
-                    {% endif %}
-                {% else %}
-                    <button type="button" value="Connexion" class="btn signup" onclick="loadForm('{{ path('fos_user_security_login')}}', 'login')">Connexion</button>
-                {% endif %}
+                {#<button type="button" value="Connexion" class="btn signup" onclick="loadForm('{{ path('fos_user_security_login')}}', 'login')">Connexion</button>#}
+                <a href="{{ path('login') }}">
+                    <button type="button" value="Connexion" class="btn signup">Connexion</button>
+                </a>
             </ul>
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container -->

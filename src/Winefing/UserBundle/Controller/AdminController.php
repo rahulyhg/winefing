@@ -32,8 +32,8 @@ class AdminController extends Controller
      * @Route("/user/newForm/{id}", name="user_new_form")
      */
     public function newFormAction($id = 'user_post') {
-        $userManager = $this->get('fos_user.user_manager');
-        $user = $userManager->findUserBy(array('id'=>$id));
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Article');
+        $user = $repository->findBy(array('id'=>$id));
         $action = $this->generateUrl('users_admin_submit');
         if(empty($user)){
             $user = new User();

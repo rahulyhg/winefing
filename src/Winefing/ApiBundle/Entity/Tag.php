@@ -4,6 +4,7 @@ namespace Winefing\ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Winefing\ApiBundle\Entity\LanguageEnum;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * Tag
@@ -19,17 +20,20 @@ class Tag
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"id", "default"})
      */
     private $id;
 
     /**
      * @var
      * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\TagTr", mappedBy="tag", fetch="EAGER", cascade={"all"})
+     * @Groups({"trs"})
      */
     private $tagTrs;
 
     /**
      * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Article", mappedBy="tags")
+     * @Groups({"articles"})
      */
     private $articles;
 
