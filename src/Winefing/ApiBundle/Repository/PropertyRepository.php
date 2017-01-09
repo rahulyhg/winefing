@@ -20,4 +20,14 @@ class PropertyRepository extends \Doctrine\ORM\EntityRepository
         $properties = $query->getResult();
         return $properties;
     }
+    function findOneByPropertyCategory($propertyCategoryId) {
+        $query = $this->createQueryBuilder('property')
+            ->join("property.propertyCategory", "propertyCategory")
+            ->where('propertyCategory.id = :id')
+            ->setParameter('id', $propertyCategoryId)
+            ->setMaxResults(1)
+            ->getQuery();
+        $properties = $query->getResult();
+        return $properties;
+    }
 }

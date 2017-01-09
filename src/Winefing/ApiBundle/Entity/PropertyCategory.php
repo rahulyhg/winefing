@@ -4,6 +4,7 @@ namespace Winefing\ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * PropertyCategory
@@ -19,6 +20,7 @@ class PropertyCategory
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"id", "default"})
      */
     private $id;
 
@@ -26,18 +28,21 @@ class PropertyCategory
      * @var string
      *
      * @ORM\Column(name="code", type="string", length=255, nullable=true)
+     * @Groups({"default"})
      */
     private $code;
 
     /**
      * @var PropertyCategoryTrs
      * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\PropertyCategoryTr", mappedBy="propertyCategory", fetch="EAGER", cascade="ALL")
+     * @Groups({"trs"})
      */
     private $propertyCategoryTrs;
 
     /**
      * @var PropertyCategoryTrs
      * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\Property", mappedBy="propertyCategory", fetch="EAGER", cascade="ALL")
+     * @Groups({"properties"})
      */
     private $properties;
 
@@ -87,6 +92,17 @@ class PropertyCategory
     public function getProperties()
     {
         return $this->properties;
+    }
+
+    /**
+     * @return PropertyCategoryTrs
+     */
+    public function getPropertyCategoryTrs()
+    {
+        return $this->propertyCategoryTrs;
+    }
+    public function addPropertyCategoryTr(PropertyCategoryTr $propertyCategoryTr) {
+        $this->propertyCategoryTrs[] = $propertyCategoryTr;
     }
 }
 

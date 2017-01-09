@@ -26,10 +26,11 @@ class BoxItem
     private $id;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Box", inversedBy="boxItems")
-     * @Groups({"boxes"})
+     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Box", inversedBy="boxItems", cascade={"persist", "merge"})
+     * @ORM\JoinColumn(nullable=false)
+     * @Groups({"box"})
      */
-    private $boxes;
+    private $box;
 
     /**
      * @var CharacteristicCategoryTr
@@ -45,10 +46,16 @@ class BoxItem
      */
     private $boxItemChoices;
 
+    /**
+     * @var
+     * @Groups({"default"})
+     * @Type("string")
+     */
+    private $name;
+
     public function _construct(){
         $this->boxItemChoices[] = new ArrayCollection();
         $this->boxItemTrs[] = new ArrayCollection();
-        $this->boxes[] = new ArrayCollection();
         return $this;
     }
 
@@ -74,17 +81,21 @@ class BoxItem
         $this->boxItemChoices[]=$boxItemChoice;
         return $this;
     }
-    public function addBox(Box $box) {
-        $this->boxes[]=$box;
-        return $this;
-    }
 
     /**
      * @return mixed
      */
-    public function getBoxes()
+    public function getBox()
     {
-        return $this->boxes;
+        return $this->box;
+    }
+
+    /**
+     * @param mixed $box
+     */
+    public function setBox($box)
+    {
+        $this->box = $box;
     }
 
     /**
@@ -98,6 +109,33 @@ class BoxItem
     public function addBoxItemTr(BoxItemTr $boxItemTr) {
         $this->boxItemTrs[] = $boxItemTr;
         return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param mixed $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+    public function setTr($language) {
+        foreach($this->boxItemTrs as $boxItemTr) {
+            if($boxItemTr->getLanguage()->getCode() == $language) {
+                $this->name = $boxItemTr->getName();
+                break;
+            }
+        }
+    }
+    public function resetBoxes(){
+        $this->boxes = new ArrayCollection();
     }
 }
 

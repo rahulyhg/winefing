@@ -14,14 +14,12 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use Doctrine\ORM\EntityManager;
-use Winefing\ApiBundle\Entity\ArticleCategory;
 use Winefing\ApiBundle\Entity\ArticleCategoryTr;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\Annotations\FileParam;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Winefing\ApiBundle\WinefingApiBundle;
 
 
 class ArticleCategoryTrController extends Controller implements ClassResourceInterface

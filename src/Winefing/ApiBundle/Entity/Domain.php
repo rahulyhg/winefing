@@ -267,5 +267,10 @@ class Domain
         $this->characteristicValues[] = $characteristicValue;
         return $this;
     }
+    public function setTr($language) {
+        foreach($this->getCharacteristicValues() as $characteristicValue) {
+            $characteristicValue->setTr($language);
+        }
+    }
 }
 

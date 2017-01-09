@@ -1,72 +1,43 @@
 <div class="modal fade" tabindex="-1" role="dialog" id="user">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <form name="user"action="{{ action }}" method="{{ method }}">
+            {{ form_start(user) }}
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title">Ajouter/modifier un utilisateur</h4>
             </div>
             <div class="modal-body">
                 <fieldset class="form-group" hidden>
-                    <label>Id</label>
-                    <input name="user[id]" value="{{ user.id }}"/>
+                    {{ form_row(user.id) }}
                 </fieldset>
                 <div class="row">
                     <div class="col-md-6">
                         <fieldset class="form-group">
-                            <label>Prénom</label>
-                            <input name="user[firstName]" class="form-control" required value="{{ user.firstName }}"/>
+                            {{ form_row(user.firstName) }}
                         </fieldset>
                     </div>
                     <div class="col-md-6">
                         <fieldset class="form-group">
-                            <label>Nom</label>
-                            <input name="user[lastName]" class="form-control" required value="{{ user.lastName }}"/>
-                        </fieldset>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <fieldset class="form-group">
-                            <label>Numéro de téléphone</label>
-                            <br>
-                            <input name="user[phoneNumber]" value="{{ user.phoneNumber }}"/>
-                        </fieldset>
-                    </div>
-                    <div class="col-md-6">
-                        <fieldset class="form-group">
-                            <label>Email</label>
-                            <input type="email" name="user[email]" class="form-control" required value="{{ user.email }}"/>
+                            {{ form_row(user.lastName) }}
                         </fieldset>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6">
                         <fieldset class="form-group">
-                            <label>Roles</label>
-                            <br>
-                            <select name="user[roles]">
-                                {% set selectedBlog ='' %}
-                                {% set selectedManagment ='' %}
-                                {% for role in user.roles %}
-                                    {% if role == 'ROLE_BLOG' %}
-                                        {% set selectedBlog ='selected' %}
-                                    {% elseif role == 'ROLE_MANAGMENT' %}
-                                        {% set selectedManagment ='selected' %}
-                                    {% endif %}
-                                {% endfor %}
-                                <option {{ selectedBlog }} value="ROLE_BLOG">ROLE_BLOG</option>
-                                <option {{ selectedManagment }} value="ROLE_MANAGMENT">ROLE_MANAGMENT</option>
-                            </select>
+                            {{ form_row(user.phoneNumber) }}
                         </fieldset>
                     </div>
                     <div class="col-md-6">
                         <fieldset class="form-group">
-                            <label>Activé</label>
-                            <span hidden>
-                                <input type="hidden" name="user[enabled]" class="form-control" value="0"/>
-                            </span>
-                            <input type="checkbox" name="user[enabled]" class="form-control" value="1"/>
+                            {{ form_row(user.email) }}
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <fieldset class="form-group">
+                            {{ form_row(user.roles) }}
                         </fieldset>
                     </div>
                 </div>
@@ -75,7 +46,7 @@
                 <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
                 <button type="submit" class="btn btn-primary pull-right">Valider</button>
             </div>
-            </form>
+            {{ form_end(user) }}
         </div><!-- /.modal-content -->
     </div><!-- /.modal -->
 </div>

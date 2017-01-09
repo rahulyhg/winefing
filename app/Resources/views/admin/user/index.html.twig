@@ -1,12 +1,21 @@
 {% extends 'admin/base.html.twig' %}
 {% block table %}
+    <div id="success" class="alert alert-success" hidden>
+
+    </div>
+    <div id="error" class="alert alert-danger" hidden>
+        <h4>Erreur lors de la création du wallet sur Lemon Way</h4>
+        <p></p>
+    </div>
     <table class="table table-striped">
         <thead>
         <tr>
             <th>
-                <button type="button" class="btn btn-default btn-circle btn-plus-admin" onclick="loadForm('{{ url('user_new_form')}}', 'user')">
-                    <i class="glyphicon glyphicon-plus glyphicon-plus-admin"></i>
-                </button>Utilisateur
+                {% if app.request.get('group') != role_host and app.request.get('group') != role_user %}
+                    <button type="button" class="btn btn-default btn-circle btn-plus-admin" onclick="loadForm('{{ url('user_new_form')}}', 'user')">
+                        <i class="glyphicon glyphicon-plus glyphicon-plus-admin"></i>
+                    </button>Utilisateur
+                {% endif %}
             </th>
             <th>Téléphone</th>
             <th>Email</th>
@@ -20,24 +29,44 @@
                 <td>{{ user.firstName }} {{ user.lastName }}</td>
                 <td>{{ user.phoneNumber }}</td>
                 <td>{{ user.email }}</td>
-                <td>{{ user.lastLogin }}</td>
+                <td>{{ user.lastLogin|date('d-m-Y') }}</td>
                 <td>
-                    {% if user.enabled == 1 %}
-                        {% set checked = 'checked' %}
-                    {% else %}
-                        {% set checked = '' %}
+                    {% if app.request.get('group') == role_host %}
+                        {% if  user.verify == 1 %}
+                            {% set checked = 'checked' %}
+                        {% else %}
+                            {% set checked = '' %}
+                        {% endif %}
+                        <input {{ checked }} onchange="verifyUser('{{ path('user_verify') }}', '{{ user.id }}', this.checked)" type="checkbox"  data-toggle="toggle" data-off="Non validé" data-on="Valider" data-width="126"  data-onstyle="success">
                     {% endif %}
-                    {#<input {{ checked }} onchange="activate('{{ path('user_activated') }}', 'userActivatedToggle', '{{ user.id }}')" id="userActivatedToggle-{{ user.id }}" type="checkbox" value="" data-toggle="toggle" data-off="Not activated" data-on="Activated" data-onstyle="success">#}
-                    {#{% if user.deleted == 1 %}#}
-                        {#<input type="button" class="btn btn-danger" value="Supprimer" onclick="setPathDeleteButton('{{ path('user_admin_delete', {'id' : user.id}) }}')"/>#}
-                    {#{% endif %}#}
-                    <a href="{{ path('wallet_create', {'id' :user.id })}}">
-                        <input type="button" class="btn btn-danger" value="Activer"/>
-                    </a>
+                    <input type="button" class="btn btn-danger" value="Supprimer" onclick="setPathDeleteButton('{{ path('user_delete', {'id' : user.id}) }}')"/>
                     <input type="button"  class="btn btn-primary" value="Editer" id="update" onclick="loadForm('{{ path('user_new_form', {'id' : user.id}) }}', 'user')"/>
                 </td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
+    <script>
+        function verifyUser(path, userId, checked) {
+            $.ajax({
+                url: path,
+                type: 'PUT',
+                data: {verify: checked ? 1 : 0, id: userId},
+                async: true,
+                success: function (data, textStatus, jqXHR) {
+                    if(checked) {
+                        $('#success').html('Le victiculteur à bien été publié, et son wallet a bien été créé !');
+                    } else {
+                        $('#success').html('Le victiculteur à bien été désactivé.');
+                    }
+                    $('#success').show();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    var err = jqXHR.responseText;
+                    $('#error p').html($(err).filter('title').text());
+                    $('#error').show();
+                }
+            });
+        }
+    </script>
 {% endblock %}

@@ -28,14 +28,15 @@ class BoxItemType extends AbstractType
             ->add('submit', SubmitType::class, array('attr'=>array('class'=>'btn btn-primary pull-right')))
             ->add('boxItemTrs', CollectionType::class, array(
             'entry_type' => BoxItemTrType::class))
-            ->add('boxes', EntityType::class,  array(
+            ->add('box', EntityType::class,  array(
                 'class' => 'WinefingApiBundle:Box',
-                'choice_label' => 'id', 'multiple' =>true));
+                'choice_label' => 'id'));;
     }
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
             'data_class' => 'Winefing\ApiBundle\Entity\BoxItem',
+            'language' => 'fr'
         ));
     }
 }

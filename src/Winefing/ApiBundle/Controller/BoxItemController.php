@@ -48,11 +48,13 @@ class BoxItemController extends Controller implements ClassResourceInterface
      *
      *
      */
-    public function postAction()
+    public function postAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
         $serializer = $this->container->get('jms_serializer');
         $boxItem = new BoxItem();
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Box');
+        $boxItem->setBox($repository->findOneById($request->request->get('box')));
         $validator = $this->get('validator');
         $errors = $validator->validate($boxItem);
         if (count($errors) > 0) {
@@ -71,5 +73,23 @@ class BoxItemController extends Controller implements ClassResourceInterface
         $em->remove($characteristicCategory);
         $em->flush();
         return new Response(json_encode([200, "success"]));
+    }
+    public function putBoxAction(Request $request) {
+        $em = $this->getDoctrine()->getManager();
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:BoxItem');
+        $boxeItem = $repository->findOneById($request->request->get('id'));
+        $boxeItem->resetBoxes();
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Box');
+        foreach($request->request->get('boxes') as $box) {
+            $boxeItem->addBox($repository->findOneById($box));
+        }
+        $validator = $this->get('validator');
+        $errors = $validator->validate($boxeItem);
+        if (count($errors) > 0) {
+            $errorsString = (string) $errors;
+            throw new HttpException(400, $errorsString);
+        }
+        $em->persist($boxeItem);
+        $em->flush();
     }
 }

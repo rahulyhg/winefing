@@ -37,8 +37,13 @@ class RentalPromotionController extends Controller implements ClassResourceInter
         $em = $this->getDoctrine()->getManager();
         $serializer = $this->container->get('jms_serializer');
         $rentalPromotion = new RentalPromotion();
-        $rentalPromotion->setStartDate(date_create_from_format('U', $request->request->get('startDate')));
-        $rentalPromotion->setEndDate(date_create_from_format('U', $request->request->get('endDate')));
+
+        $startDate = new \DateTime();
+        $startDate->setTimestamp($request->request->get('startDate'));
+        $endDate = new \DateTime();
+        $endDate->setTimestamp($request->request->get('endDate'));
+        $rentalPromotion->setStartDate($startDate);
+        $rentalPromotion->setEndDate($endDate);
         $rentalPromotion->setReduction($request->request->get('reduction'));
 
         $validator = $this->get('validator');
@@ -56,8 +61,12 @@ class RentalPromotionController extends Controller implements ClassResourceInter
         $em = $this->getDoctrine()->getManager();
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:RentalPromotion');
         $rentalPromotion = $repository->findOneById($request->request->get('rentalPromotion'));
-        $rentalPromotion->setStartDate(date_create_from_format('U', $request->request->get('startDate')));
-        $rentalPromotion->setEndDate(date_create_from_format('U', $request->request->get('endDate')));
+        $startDate = new \DateTime();
+        $startDate->setTimestamp($request->request->get('startDate'));
+        $endDate = new \DateTime();
+        $endDate->setTimestamp($request->request->get('endDate'));
+        $rentalPromotion->setStartDate($startDate);
+        $rentalPromotion->setEndDate($endDate);
         $rentalPromotion->setReduction($request->request->get('reduction'));
         $validator = $this->get('validator');
         $errors = $validator->validate($rentalPromotion);

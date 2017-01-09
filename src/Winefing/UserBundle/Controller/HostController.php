@@ -33,15 +33,6 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class HostController extends Controller
 {
-
-    /**
-     * @Route("wallet/create/{id}", name="wallet_create")
-     */
-    public function createWallet($id){
-        $lemonWay = $this->container->get('winefing.lemonway_controller');
-        $lemonWay->addWallet($id);
-        return new Response();
-    }
     /**
      * @Route("/user/host/edit", name="user_host_edit")
      */

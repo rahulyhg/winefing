@@ -69,7 +69,7 @@ class User implements UserInterface, \Serializable
      * @ORM\Column(type="datetime", nullable=true)
      * @Groups({"default"})
      */
-    private $lastLogin = 1;
+    private $lastLogin;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -96,10 +96,10 @@ class User implements UserInterface, \Serializable
     protected $phoneNumber;
 
     /**
-     * @ORM\Column(name="verify", type="string", length=255, nullable=true)
+     * @ORM\Column(name="verify", type="boolean")
      * @Groups({"default"})
      */
-    protected $verify;
+    protected $verify = 0;
 
     /**
      * @ORM\Column(name="birth_date", type="date", length=255, nullable=true)
@@ -150,10 +150,30 @@ class User implements UserInterface, \Serializable
      */
     private $subscriptions;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Domain", fetch="EXTRA_LAZY")
+     * @Groups({"wineList"})
+     */
+    private $wineList;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Box", fetch="EXTRA_LAZY")
+     * @Groups({"boxList"})
+     */
+    private $boxList;
+
+    /**
+     * @ORM\Column(name="wallet", type="boolean")
+     * @Groups({"default"})
+     */
+    protected $wallet = 0;
+
     public function __construct()
     {
         $this->subscriptions = new ArrayCollection();
         $this->domains = new ArrayCollection();
+        $this->wineList = new ArrayCollection();
+        $this->boxList = new ArrayCollection();
         $this->isActive = true;
 
         return $this;
@@ -212,7 +232,9 @@ class User implements UserInterface, \Serializable
      */
     public function getRoles()
     {
-        return str_split($this->roles, strlen($this->roles)+1);
+//        return $this->getRoles();
+//        return str_split($this->roles, strlen($this->roles)+1);
+        return $this->roles;
     }
 
     /**
@@ -476,7 +498,14 @@ class User implements UserInterface, \Serializable
     }
     public function isHost() {
         $success = false;
-        if(in_array(UserGroupEnum::Host, $this->roles)) {
+//        if(in_array(UserGroupEnum::Host, $this->roles)) {
+//            $success = true;
+//        }
+        return $success;
+    }
+    public function isAdmin() {
+        $success = false;
+        if((UserGroupEnum::Blog == $this->roles) || (UserGroupEnum::Managment == $this->roles) || (UserGroupEnum::Technical == $this->roles)) {
             $success = true;
         }
         return $success;
@@ -485,17 +514,25 @@ class User implements UserInterface, \Serializable
     /**
      * @return mixed
      */
-    public function getWallet()
+    public function getWineList()
     {
-        return $this->wallet;
+        return $this->wineList;
     }
 
     /**
-     * @param mixed $wallet
+     * @return mixed
      */
-    public function setWallet($wallet)
+    public function getBoxList()
     {
-        $this->wallet = $wallet;
+        return $this->boxList;
+    }
+
+    public function addElementInWineList(Domain $domain) {
+        $this->wineList[] = $domain;
+    }
+
+    public function addElementInBoxList(Box $box) {
+        $this->boxList[] = $box;
     }
     /** @see \Serializable::serialize() */
     public function serialize()
@@ -519,5 +556,37 @@ class User implements UserInterface, \Serializable
             // see section on salt below
             // $this->salt
             ) = unserialize($serialized);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIsActive()
+    {
+        return $this->isActive;
+    }
+
+    /**
+     * @param mixed $isActive
+     */
+    public function setIsActive($isActive)
+    {
+        $this->isActive = $isActive;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getWallet()
+    {
+        return $this->wallet;
+    }
+
+    /**
+     * @param mixed $wallet
+     */
+    public function setWallet($wallet)
+    {
+        $this->wallet = $wallet;
     }
 }

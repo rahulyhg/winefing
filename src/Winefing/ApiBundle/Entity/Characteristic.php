@@ -6,6 +6,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation\Type;
+
 /**
  * Characteristic
  *
@@ -67,6 +69,13 @@ class Characteristic
      * @Groups({"default"})
      */
     private $activated;
+
+    /**
+     * @var
+     * @Groups({"default"})
+     * @Type("string")
+     */
+    private $name;
 
 
     /**
@@ -205,6 +214,27 @@ class Characteristic
     public function removeCharacteristicTr(CharacteristicTr $characteristicTr)
     {
         $this->characteristicTrs->removeElement($characteristicTr);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param mixed $name
+     */
+    public function setTr($language)
+    {
+        foreach($this->getCharacteristicTrs() as $characteristicTr) {
+            if($characteristicTr->getLanguage()->getCode() == $language) {
+                $this->name = $characteristicTr->getName();
+                break;
+            }
+        }
     }
 }
 

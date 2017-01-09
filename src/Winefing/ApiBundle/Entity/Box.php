@@ -26,7 +26,9 @@ class Box
     private $id;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\BoxItem", mappedBy="boxes", cascade={"persist", "merge", "detach"})
+     * @var BoxItems
+     * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\BoxItem", mappedBy="box", fetch="EAGER", cascade="ALL")
+     * @Groups({"trs"})
      */
     private $boxItems;
 
@@ -49,6 +51,13 @@ class Box
      */
     private $mediaPresentation;
 
+    /**
+     * @var
+     * @Groups({"default"})
+     * @Type("boolean")
+     */
+    private $hasChoice = 0;
+
     public function _construct() {
         $this->boxItems = new ArrayCollection();
         $this->boxTrs = new ArrayCollection();
@@ -63,6 +72,31 @@ class Box
      */
     private $price;
 
+    /**
+     * @var
+     * @Groups({"default"})
+     * @Type("string")
+     */
+    private $name;
+
+    /**
+     * @var
+     * @Groups({"default"})
+     * @Type("string")
+     */
+    private $description;
+
+    /**
+     * @return mixed
+     */
+    public function getHasChoice()
+    {
+        foreach($this->boxItems as $boxItem){
+            if(count($boxItem->getBoxItemChoices())) {
+                $this->hasChoice = true;
+            }
+        }
+    }
 
     /**
      * Get id
@@ -176,6 +210,38 @@ class Box
     }
 
     /**
+     * @return mixed
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param mixed $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param mixed $description
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
+
+    /**
      * @param mixed $mediaPresentation
      */
     public function getMediaPresentation()
@@ -185,6 +251,21 @@ class Box
     public function deleteBoxItem(BoxItem $boxItem) {
         $this->boxItems->removeElement($boxItem);
         return $this;
+    }
+    public function setTr($language) {
+        foreach($this->boxTrs as $boxTr) {
+            if($boxTr->getLanguage()->getCode() == $language) {
+                $this->name = $boxTr->getName();
+                $this->description = $boxTr->getDescription();
+                break;
+            }
+        }
+        foreach ($this->getBoxItems() as $boxItem) {
+            $boxItem->setTr($language);
+            foreach($boxItem->getBoxItemChoices() as $boxItemChoice) {
+                $boxItemChoice->setTr($language);
+            }
+        }
     }
 }
 

@@ -66,7 +66,7 @@ class BoxItemChoiceController extends Controller
             $body['description'] = $boxItemChoiceTr['description'];
             $this->submitBoxItemChoiceTr($body);
         }
-        return $this->redirectToRoute('boxes_items');
+        return $this->redirectToRoute('boxes_admin');
     }
     public function submitBoxItemChoice($boxItemId) {
         $api = $this->container->get('winefing.api_controller');
@@ -106,6 +106,6 @@ class BoxItemChoiceController extends Controller
     public function deleteBoxItem($id, Request $request) {
         $api = $this->container->get('winefing.api_controller');
         $api->delete($this->get('router')->generate('api_delete_boxitem_choice', array('id' => $id)));
-        return $this->redirectToRoute('boxes_items');
+        return $this->redirectToRoute('boxes_admin');
     }
 }

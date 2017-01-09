@@ -157,19 +157,30 @@ class RentalController extends Controller implements ClassResourceInterface
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Rental');
         $rental = $repository->findOneById($rental);
         $allDates = array();
-        $date = strtotime($start);
+        $date = $start;
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:RentalPromotion');
-        while($date < strtotime($end)){
+        $total = 0.0;
+        $i = 0;
+        while($date < $end){
             $rentalPromotion = $repository->findPromotionByDate($date, $rental->getId());
             if(empty($rentalPromotion) || $rentalPromotion == NULL) {
-                $price = $rental->getPrice();
+                $price = (float) $rental->getPrice();
             } else {
-                $price =  $rental->getPrice() * ((100-$rentalPromotion->getReduction())/100);
+                $price =  $rental->getPrice() * ((100-$rentalPromotion[0]->getReduction())/100);
             }
-            $allDates[$date] = $price;
+            $total += $price;
+            $allDates[$date] = round($price, 2);
             $date = strtotime('+1 days', $date);
+            $i++;
         }
-        $json = $serializer->serialize($allDates, 'json');
+        $result['dates'] = $allDates;
+        $result['dayNumber'] = $i;
+        $result['averagePrice'] = round(($total/$i), 2);
+        $result['sum'] = round($total, 2);
+        $comission = $this->container->getParameter('client_comission');
+        $result['comission'] = $comission;
+        $result['total'] = round($total + $comission, 2);
+        $json = $serializer->serialize($result, 'json');
         return new Response($json);
     }
 

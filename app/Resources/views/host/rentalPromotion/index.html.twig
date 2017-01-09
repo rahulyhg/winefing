@@ -1,20 +1,47 @@
 {% extends 'host/base.html.twig' %}
 {% block table %}
-    <div class="row">
-         <a href="{{ path('rentals_promotion_new') }}">
-             <input type="button" class="btn btn-primary" value="Add">
-         </a>
-        {% for rentalPromotion in rentalsPromotions %}
-            {{ rentalPromotion.startDate|date("m/d/Y")}}
-            {{ rentalPromotion.endDate|date("m/d/Y")}}
-            {{ rentalPromotion.reduction }}
-            {{ rentalPromotion.id }}
-            <br><br>
-        {% endfor %}
+        <div class="container">
+        <div class="row">
+             <a href="{{ path('rentals_promotion_new') }}">
+                 <input type="button" class="btn btn-primary" value="Add">
+             </a>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>
+                        <a href="{{ path('rentals_promotion_new') }}">
+                            <i class="glyphicon glyphicon-plus glyphicon-plus-admin"></i>
+                        </a>
+                        {% trans %}label.end_date{% endtrans %}
+                    </th>
+                    <th>{% trans %}label.start_date{% endtrans %}</th>
+                    <th>{% trans %}label.reduction{% endtrans %}</th>
+                    <th>{% trans %}label.rentals{% endtrans %}</th>
+                    <th>{% trans %}label.actions{% endtrans %}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for rentalPromotion in rentalsPromotions %}
+                    <tr>
+                        <td>{{ rentalPromotion.startDate|date("m/d/Y")}}</td>
+                        <td>{{ rentalPromotion.endDate|date("m/d/Y")}}</td>
+                        <td>
+                            {{ rentalPromotion.reduction }}
+                        </td>
+                        <td>
+                            {% for rental in rentalPromotion.rentals %}
+                                {{ rental.name }} : {{ rental.price }}
+                            {% endfor %}
+
+                        </td>
+                        <td>
+                            <input type="button"  class="btn btn-primary" value="{% trans %}label.edit{% endtrans %}" id="update" onclick="loadForm('{{ path('rentals_promotion_new', {'id' : rentalPromotion.id}) }}', 'language')"/>
+                            <input type="button" class="btn btn-danger" value="{% trans %}label.delete{% endtrans %}" onclick="setPathDeleteButton('{{ path('rental_promotion_delete', {'id' : rentalPromotion.id}) }}')"/>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
-    <script>
-        jQuery(document).ready(function() {
-            FancyBox.initFancybox();
-        });
-    </script>
 {% endblock %}

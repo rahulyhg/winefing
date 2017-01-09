@@ -34,6 +34,40 @@ class BoxController extends Controller implements ClassResourceInterface
      * Liste de tout les languages possible en base
      * @return Response
      */
+    public function getByLanguageAction($id, $language)
+    {
+        $serializer = $this->container->get('winefing.serializer_controller');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Box');
+        $box = $repository->findOneById($id);
+        $box->setTr($language);
+        $box->setMediaPresentation();
+        return new Response($serializer->serialize($box, 'json', SerializationContext::create()->setGroups(array('default', 'boxItems', 'boxItemChoices'))));
+    }
+    /**
+     * Liste de tout les languages possible en base
+     * @return Response
+     */
+    public function cgetByLanguageAction($language)
+    {
+        $serializer = $this->container->get('winefing.serializer_controller');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Box');
+        $boxes = $repository->findAll();
+        foreach ($boxes as $box) {
+            $box->setTr($language);
+            foreach ($box->getBoxItems() as $boxItem) {
+                $boxItem->setTr($language);
+                foreach($boxItem->getBoxItemChoices() as $boxItemChoice) {
+                    $boxItemChoice->setTr($language);
+                }
+            }
+            $box->setMediaPresentation();
+        }
+        return new Response($serializer->serialize($boxes, 'json', SerializationContext::create()->setGroups(array('default', 'boxItems', 'boxItemChoices'))));
+    }
+    /**
+     * Liste de tout les languages possible en base
+     * @return Response
+     */
     public function cgetAction()
     {
         $serializer = $this->container->get('winefing.serializer_controller');
@@ -120,6 +154,16 @@ class BoxController extends Controller implements ClassResourceInterface
         $em->remove($box);
         $em->flush();
         return new Response();
+    }
+    public function cgetBoxListAction($userId, $language) {
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
+        $serializer = $this->container->get("jms_serializer");
+        $user = $repository->findOneById($userId);
+        $boxes = $user->getBoxList();
+        foreach($boxes as $box) {
+            $box->setTr($language);
+        }
+        return new Response($serializer->serialize($boxes, 'json', SerializationContext::create()->setGroups(array('default'))));
     }
 
 }

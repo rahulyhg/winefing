@@ -100,7 +100,13 @@ class RentalPromotionController extends Controller
     public function editAction($id) {
 
     }
-    public function deleteAction() {
+    /**
+     * Delete a Rental Promotion
+     * @param $id
+     * @Route("/rentals-promotion/delete/{id}", name="rental_promotion_delete")
+     *
+     */
+    public function deleteAction($id) {
 
     }
     /**

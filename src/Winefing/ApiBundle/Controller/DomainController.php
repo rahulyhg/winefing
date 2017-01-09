@@ -29,6 +29,14 @@ use JMS\Serializer\SerializationContext;
 
 class DomainController extends Controller implements ClassResourceInterface
 {
+    public function cgetAction()
+    {
+        $serializer = $this->container->get('jms_serializer');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Domain');
+        $domains = $repository->findAll();
+        $json = $serializer->serialize($domains, 'json', SerializationContext::create()->setGroups(array('default')));
+        return new Response($json);
+    }
 
     public function getAction($id)
     {
@@ -152,6 +160,12 @@ class DomainController extends Controller implements ClassResourceInterface
             $em->flush();
         }
         return new Response(json_encode([200, "success"]));
+    }
+    public function cgetWineListAction($userId) {
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
+        $serializer = $this->container->get("jms_serializer");
+        $user = $repository->findOneById($userId);
+        return new Response($serializer->serialize($user->getWinelist(), 'json', SerializationContext::create()->setGroups(array('default'))));
     }
 
 }

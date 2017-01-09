@@ -32,32 +32,31 @@ use Winefing\ApiBundle\Entity\BoxTr;
 
 class BoxItemController extends Controller
 {
+    protected $api;
+
+    protected $serializer;
+
+//    public function __construct(){
+//        $this->api = $this->container->get('winefing.api_controller');
+//        $this->serializer = $this->container->get('winefing.serializer_controller');
+//    }
     /**
-     * @Route("/boxes/items", name="boxes_items")
+     * @Route("/box/item/form/{boxId}/{id}", name="box_item_form")
      */
-    public function cgetAction() {
-        $api = $this->container->get('winefing.api_controller');
-        $serializer = $this->container->get('winefing.serializer_controller');
-        $response = $api->get($this->get('router')->generate('api_get_box_items'));
-        $boxItems = $serializer->decode($response->getBody()->getContents());
-        $response = $api->get($this->get('_router')->generate('api_get_languages_picture_path'));
-        $languagePicturePath = $serializer->decode($response->getBody()->getContents());
-        return $this->render('admin/box/item/index.html.twig', array("boxItems" => $boxItems, 'languagePicturePath'=>$languagePicturePath)
-        );
-    }
-    /**
-     * @Route("/box/item/form/{id}", name="box_item_form")
-     */
-    public function newFormAction($id = '') {
+    public function newFormAction($boxId, $id = '', Request $request) {
         if(empty($id)) {
             $boxItem = new BoxItem();
         } else {
             $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:BoxItem');
             $boxItem = $repository->findOneById($id);
         }
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Box');
+        $box = $repository->findOneById($boxId);
+        $boxItem->setBox($box);
         $this->setBoxItemTrs($boxItem);
+        $option["language"] = $request->request->get('local');
         $boxItemForm = $this->createForm(BoxItemType::class, $boxItem, array(
-            'action' => $this->generateUrl('box_item_submit_form', array('id' => $boxItem->getId()))));
+            'action' => $this->generateUrl('box_item_submit_form', array('id' => $boxItem->getId())), 'language' => $request->request->get('local')));
         return $this->render('admin/box/item/form.html.twig', array("boxItemForm" => $boxItemForm->createView())
         );
     }
@@ -68,7 +67,7 @@ class BoxItemController extends Controller
         $boxItemId = $request->request->get('box_item')['id'];
         $boxItemTrs = $request->request->get('box_item')['boxItemTrs'];
         if(empty($boxItemId)) {
-            $boxItemId = $this->submitItemBox();
+            $boxItemId = $this->submitItemBox($request->request->get('box_item'));
         }
         $body['boxItem'] = $boxItemId;
         foreach($boxItemTrs as $boxItemTr) {
@@ -78,12 +77,12 @@ class BoxItemController extends Controller
             $body['description'] = $boxItemTr['description'];
             $this->submitBoxItemTr($body);
         }
-        return $this->redirectToRoute('boxes_items');
+        return $this->redirectToRoute('boxes_admin');
     }
-    public function submitItemBox() {
+    public function submitItemBox($boxItem) {
         $api = $this->container->get('winefing.api_controller');
         $serializer = $this->container->get('jms_serializer');
-        $response = $api->post($this->get('router')->generate('api_post_box_item'), array());
+        $response = $api->post($this->get('router')->generate('api_post_box_item'), $boxItem);
         $boxItem = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\BoxItem', 'json');
         return $boxItem->getId();
     }
@@ -114,17 +113,8 @@ class BoxItemController extends Controller
      * @Route("/box/item/delete/{id}", name="box_item_delete")
      */
     public function deleteBoxItem($id, Request $request) {
-        var_dump($id);
         $api = $this->container->get('winefing.api_controller');
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:BoxItem');
-        $boxItem = $repository->findOneById($id);
-        if(count($boxItem->getBoxes()) !=0) {
-            $request->getSession()
-                ->getFlashBag()
-                ->add('error', "You can't delete this item because it's related to box");
-            return $this->redirectToRoute('boxes_items');
-        }
         $api->delete($this->get('router')->generate('api_delete_box_item', array('id' => $id)));
-        return $this->redirectToRoute('boxes_items');
+        return $this->redirectToRoute('boxes_admin');
     }
 }

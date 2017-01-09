@@ -32,13 +32,13 @@ class Rental
     private $characteristicValues;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Media", inversedBy="rentals", cascade={"persist", "merge", "detach"})
+     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Media", inversedBy="rentals", cascade={"persist", "merge", "detach"}, fetch="EXTRA_LAZY")
      * @Groups({"medias"})
      */
     private $medias;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Property", inversedBy="rentals")
+     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Property", inversedBy="rentals", fetch="EXTRA_LAZY")
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"property"})
      */

@@ -8,6 +8,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Form\UserRegistrationType;
 use Symfony\Component\Translation\Translator;
 use Symfony\Component\Translation\Loader\ArrayLoader;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -26,51 +27,28 @@ use AppBundle\Form\AddressType;
 use AppBundle\Form\DomainType;
 use Winefing\ApiBundle\Entity\Address;
 use Winefing\ApiBundle\Entity\Domain;
+use Winefing\ApiBundle\Entity\User;
+use Winefing\ApiBundle\Entity\UserGroupEnum;
 
 class RegistrationController extends Controller
 {
     /**
-     * @Route("/registration/test", name="test")
+     * @Route("/registration", name="registration")
      */
-    public function test()
-    {
-
-        return $this->render('host/index.html.twig');
-    }
-    /**
-     * @Route("/registration/host", name="host_registration_index")
-     */
-    public function host()
-    {
-        $addressForm = $this->createForm(AddressType::class, new Address());
-        $domainForm = $this->createForm(DomainType::class, new Domain());
-        return $this->render('host/registration.html.twig', array(
-            'addressForm' => $addressForm->createView(), 'domainForm' => $domainForm->createView()
+    public function userAction(Request $request) {
+        $user = new User();
+        $form =$this->createForm(UserRegistrationType::class, $user);
+        $form->handleRequest($request);
+        if($form->isSubmitted() && $form->isValid()) {
+            $body = $request->request->get('user_registration');
+            $body['roles'] = UserGroupEnum::User;
+            $api = $this->container->get('winefing.api_controller');
+            var_dump($body['email']['first']);
+            $response = $api->post($this->get('router')->generate('api_post_user'), $body);
+            var_dump($response->getBody());
+        }
+        return $this->render('user/registration.html.twig', array(
+            'user' => $form->createView()
         ));
-    }
-
-    /**
-     * @Route("/registration/addProperty", name="property_registration_add")
-     * @Method({"POST"})
-     */
-    public function addProperty(Request $request) {
-        $session = new Session();
-        $property = new Property();
-        $property->setName($request->request->get('name'));
-        $property->setUser($session->get('user'));
-        $property->setAddress($request->request->get('address'));
-        $property->setStreet($request->request->get('address'));
-        $property->setPostalCode(strval($request->request->get('postal_code')));
-        $property->setLocality($request->request->get('locality'));
-        $property->setCountry($request->request->get('country'));
-        $property->setLng(123);
-        $property->setLat(3456);
-
-        $em = $this->getDoctrine()->getManager();
-        $em->merge($property);
-        $em->flush();
-        $session->remove('user');
-        return new Response();
-
     }
 }

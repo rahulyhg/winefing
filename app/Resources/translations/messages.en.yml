@@ -79,3 +79,30 @@ label.card_type : Card type
 label.card_number : Card number
 label.card_code : Card code
 label.card_expiration_date : Card expiration date
+label.price_details : Price details
+label.service_fees : Service fees:
+label.total : Total:
+
+label.about_us: About us
+label.or: Or
+label.help: Help
+label.login: Login
+label.pay: Pay
+label.registration: Registration
+label.service_fees_explication: This amount allows to the website to survive.
+error.not_null: The can not be null.
+error.not_empty: The can not be empty.
+error.only_numerical_character: The can content only numerical values.
+error.not_exceed_100: The value can not exceed 100.
+label.select: Select
+
+label.start_date: Start date
+label.end_date: End Date
+label.actions: Actions
+label.delete: Delete
+
+error.email_existing: An account with this email already exist.
+error.password_format: Le mot de passe doit contenir 8 charactères, dont au moins une chiffre et une lettre majuscule.
+error.email_not_corresponding: Les emails ne correspondent pas.
+error.password_not_corresponding: Les mot de passe ne correspondent pas.
+

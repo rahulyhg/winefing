@@ -173,3 +173,13 @@ boxItemChoiceTr:
     type: rest
     resource: Winefing\ApiBundle\Controller\BoxItemChoiceTrController
     name_prefix:  api_
+
+propertyCategory:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\PropertyCategoryController
+    name_prefix:  api_
+
+propertyCategoryTr:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\PropertyCategoryTrController
+    name_prefix:  api_

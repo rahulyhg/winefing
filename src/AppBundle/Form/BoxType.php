@@ -9,8 +9,6 @@
 namespace AppBundle\Form;
 
 
-namespace AppBundle\Form;
-
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
@@ -27,7 +25,7 @@ class BoxType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('medias', FileType::class, array('multiple'=>true, 'required' => true, 'attr'=>array('class'=>'form-control')))
+            ->add('medias', FileType::class, array('data_class'=> null, 'multiple'=>true, 'required' => true, 'attr'=>array('class'=>'form-control')))
             ->add('price', MoneyType::class, array('attr'=>array('class'=>'form-control')))
             ->add('submit', SubmitType::class, array('attr'=>array('class'=>'btn btn-primary pull-right')))
             ->add('boxTrs', CollectionType::class, array(

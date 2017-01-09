@@ -14,6 +14,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use Doctrine\ORM\EntityManager;
+use Winefing\ApiBundle\Entity\Error;
+use Winefing\ApiBundle\Entity\ErrorEnum;
 use Winefing\ApiBundle\Entity\MediaFormatEnum;
 use Winefing\ApiBundle\Entity\User;
 use Winefing\ApiBundle\Entity\UserGroupEnum;
@@ -24,6 +26,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use FOS\UserBundle\Doctrine\UserManagerInterface;
 use JMS\Serializer\SerializationContext;
+use Symfony\Component\Translation\Translator;
 
 
 
@@ -37,10 +40,14 @@ class UserController extends Controller implements ClassResourceInterface
     {
         $serializer = $this->container->get("jms_serializer");
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
-        $users = $repository->findByRoles($role);
+        if($role == UserGroupEnum::Admin) {
+            $users = $repository->findAdmin();
+        } else {
+            $users = $repository->findByRoles($role);
+        }
         return new Response($serializer->serialize($users, 'json', SerializationContext::create()->setGroups(array('default'))));
     }
-    public function getByEmailAction($email) {
+    public function getByEmail($email) {
         $userManager = $this->get('fos_user.user_manager');
         $serializer = $this->container->get("jms_serializer");
         $user = $userManager->findBy(array('email'=>$email));
@@ -72,13 +79,18 @@ class UserController extends Controller implements ClassResourceInterface
         $serializer = $this->container->get("jms_serializer");
         $user = new User();
         $em = $this->getDoctrine()->getManager();
-        $newUser = $request->request>all();
-        $user->setRoles($newUser["ROLE"]);
-        switch ($newUser["role"]) {
+        $newUser = $request->request->all();
+        $user->setRoles($newUser["roles"]);
+        switch ($user->getRoles()) {
             case UserGroupEnum::Host :
                 $this->setHost($user, $newUser);
                 break;
             case UserGroupEnum::User:
+                $error = new Error(ErrorEnum::email_existing);
+                $error->setMessage($this->get('translator')->trans($error->getMessage()));
+                if(!empty($this->findUserByEmail($newUser['email']['first']))) {
+                    throw new HttpException(400,'lol');
+                }
                 $this->setUser($user, $newUser);
                 break;
             default :
@@ -86,14 +98,15 @@ class UserController extends Controller implements ClassResourceInterface
                 break;
         }
         $this->setEncodePassword($user, $newUser["password"]);
+        $user->setEnabled(1);
         $validator = $this->get('validator');
         $errors = $validator->validate($user);
         if (count($errors) > 0) {
             $errorsString = (string)$errors;
-            throw new HttpException(400, $errorsString);
+            throw new HttpException(400,$errorsString);
         }
         $em->persist($user);
-        $em->flush(($user));
+        $em->flush();
         return new Response($serializer->serialize($user, 'json', SerializationContext::create()->setGroups(array('id'))));
     }
     public function setHost($user, $newUser) {
@@ -102,22 +115,26 @@ class UserController extends Controller implements ClassResourceInterface
         $user->setPhoneNumber($newUser['phoneNumber']);
         $user->setEmail($newUser['email']);
         $user->setUserName($newUser['email']);
-        $user->setEnabled(1);
         $user->setVerify(0);
+        $user->setLastLogin(new \DateTime());
     }
     public function setUser($user, $newUser) {
         $user->setEmail($newUser['email']);
         $user->setUserName($newUser['email']);
-        $user->setEnabled(1);
+        $user->setLastLogin(new \DateTime());
     }
-    public function setAdmin($user, $newUser) {
+    public function setAdmin($user, &$newUser) {
         $user->setFirstName($newUser['firstName']);
         $user->setLastName(strtoupper($newUser['lastName']));
         $user->setPhoneNumber($newUser['phoneNumber']);
         $user->setEmail($newUser['email']);
         $user->setUserName($newUser['email']);
-        $user->setEnabled(1);
         $newUser['password'] = "winefing";
+    }
+    public function findUserByEmail($email) {
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
+        $user =  $repository->findOneByEmail($email);
+        return $user;
     }
 
     /**
@@ -261,5 +278,87 @@ class UserController extends Controller implements ClassResourceInterface
         }
         $em->persist($user);
         $em->flush($user);
+    }
+    public function putDomainAction(Request $request) {
+        $em = $this->getDoctrine()->getManager();
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
+        $user = $repository->findOneById($request->request->get('user'));
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Domain');
+        $domain = $repository->findOneById($request->request->get('domain'));
+        $user->addElementInWineList($domain);
+        $validator = $this->get('validator');
+        $errors = $validator->validate($user);
+        if (count($errors) > 0) {
+            $errorsString = (string)$errors;
+            throw new HttpException(400, $errorsString);
+        }
+        $em->persist($user);
+        $em->flush($user);
+    }
+    public function putBoxAction(Request $request) {
+        $em = $this->getDoctrine()->getManager();
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
+        $user = $repository->findOneById($request->request->get('user'));
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Box');
+        $domain = $repository->findOneById($request->request->get('box'));
+        $user->addElementInBoxList($domain);
+        $validator = $this->get('validator');
+        $errors = $validator->validate($user);
+        if (count($errors) > 0) {
+            $errorsString = (string)$errors;
+            throw new HttpException(400, $errorsString);
+        }
+        $em->persist($user);
+        $em->flush($user);
+    }
+    public function putVerifyAction(Request $request) {
+        $em = $this->getDoctrine()->getManager();
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
+        $user = $repository->findOneById($request->request->get("id"));
+        $user->setVerify($request->request->get("verify"));
+        $em->persist($user);
+        $em->flush();
+        return new Response(json_encode([200, "success"]));
+    }
+    public function deleteAction($id) {
+        $user = $this->findUserById($id);
+        switch($user->getRoles()) {
+            case UserGroupEnum::Host :
+                $error = $this->deleteHost($user);
+                break;
+            case UserGroupEnum::User :
+                $error = $this->deleteUser($user);
+                break;
+            default :
+                $error = $this->deleteAdmin($user);
+                break;
+        }
+        if(!empty($error)) {
+            return new Response(json_encode($error));
+        }
+    }
+    public function deleteAdmin($user) {
+        $em = $this->getDoctrine()->getManager();
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Article');
+        $articles = $repository->findByUser($user);
+        if(!empty($articles)) {
+            return array('msg'=> 'You can delete this user');
+        }
+        $em->remove($user);
+        $em->flush();
+
+    }
+    public function deleteHost($user) {
+        $em = $this->getDoctrine()->getManager();
+
+    }
+    public function deleteUser($user) {
+        $em = $this->getDoctrine()->getManager();
+
+    }
+    public function findUserById($id) {
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
+        $user = $repository->findOneById($id);
+        return $user;
     }
 }

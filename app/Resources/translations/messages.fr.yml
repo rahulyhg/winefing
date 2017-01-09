@@ -1,81 +1,107 @@
-label.wine_region: Wine region
+label.wine_region: Région viticole
 label.description: Description
-label.name: Name
+label.name: Nom
 label.contact: Contact
-label.the_domain: The domain
-label.next: Next
-label.submit: Submit
-label.first_name: First Name
-label.last_name: Last Name
-label.phone_number: Phone number
+label.the_domain: Le domain
+label.next: Suivant
+label.submit: Soumettre
+label.first_name: Prénom
+label.last_name: Nom
+label.phone_number: Numéro de téléphone
 label.email: Email
-label.confirmation_email: Confirm email
+label.confirmation_email: Confirmer l'email
 label.password: Password
-label.confirmation_password: Confirm password
-label.current_password: Current password
-label.dashboard: Dashboard
-label.my_domain: My domain
+label.confirmation_password: Confirmer le mot de passe
+label.current_password: Mot de passe actuel
+label.dashboard: Tableau de bord
+label.my_domain: Mon domain
 label.my_rentals: Mes locations
 label.my_reservations: Mes réservations
 label.my_reviews: Mes avis
 label.my_profil: Mon profil
 label.pictures: Photos
-label.address: Address
+label.address: Addresse
 label.informations: Informations
 label.presentation: Présentation
-label.postal_code: Code postale
+label.postal_code: Code postal
 label.locality: Ville
-label.country: Country
-label.edit_profil: Edit profil
-label.profil_picture: Profil picture
-label.edit_password: Edit password
-label.bank_details: Bank details
-label.sex: Sex
+label.country: Pays
+label.edit_profil: Modifier le profil
+label.profil_picture: Modifier la photo
+label.edit_password: Modifier le mot de passe
+label.bank_details: IBAM
+label.sex: Sexe
 label.age: Age
-label.birth_date: Birth date
-label.male: Male
-label.female: Female
-label.edit_picture: Edit picture
+label.birth_date: Date de naissance
+label.male: Homme
+label.female: Femme
+label.edit_picture: Modifier la photo
 label.notifications: Notifications
-label.receive_sms_when: Receive a sms when
-label.receive_email_when: Receive a email when
-label.property: Property
-label.property_category: Property's category
-label.new_property: New property
-label.rental: Rental
+label.receive_sms_when: Recevoir un sms quand
+label.receive_email_when: Recevoir un email quand
+label.property: Propriété
+label.property_category: Catégorie de la propriété
+label.new_property: Nouvelle propriété
+label.rental: Location
 label.property_name_exemple: Château du pâpe, Gîte des Lilas...
 label.rental_name_exemple: Chambre royal, gîte des lilas...
-label.new_address: New address
-label.property_pictures_explication: Only property frontage or commun room (such as the castel's living room).
-label.prices: Prices
-label.rentals: Rentals
+label.new_address: Nouvelle addresse
+label.property_pictures_explication: Ne mettre que des photos de la propriété ou des parties communes de la propriété (ne pas mettre les chambres).
+label.prices: Prix
+label.rentals: Locations
 label.my_properties: Mes propriétés
-label.edit: Edit
-label.no_rental_for_property: You have no rental for this property
-label.new_rental: New rental
+label.edit: Modifier
+label.no_rental_for_property: Vous n'avez pas de location pour cette propriété.
+label.new_rental: Nouvelle location
 label.budget: Budget
-label.people_number: People number
-label.from: From
-label.to: To
-label.duration: Duration
-label.event_ctageory: Kind of event
-label.price: Price
+label.people_number: Nombre de personne
+label.from: De
+label.to: à
+label.duration: Durée
+label.event_ctageory: Type d'évênement
+label.price: Prix
 label.domain: Domain
-label.price_explanation: The price has to be per night day.
-label.people_number_explanation: The number of people that the room contain
-label.minimum_rental_period: Minimum rental period
-label.minimum_rental_period_explanation: Minimum rental period that has to be order
+label.price_explanation: Le prix doit être indiqué TTC par nuit.
+label.people_number_explanation: Le nombre de personne que le logement peut contenir
+label.minimum_rental_period: Période de location minimu
+label.minimum_rental_period_explanation: La période minimum (en jour) que doit sélectionner l'utilisateur.
 label.promotions: Promotions
 label.date: Date
 label.reduction: Reduction
-success.profil_edit: The profil is well modified.
-success.picture_edit: The picture is well modified.
-success.password_edit: The password is well modified.
-success.modifications_saved: The changes have been succefully saved.
-error.not_current_password: The password is not the current one
-error.email_already_exist: A account with this email already exist. 
-error.domain_already_exist: You can't create two domain per account. Create a new account for this domain. 
+success.profil_edit: Le profil est bien modifié.
+success.picture_edit: La photo est bien modifiée.
+success.password_edit: Le mot de passe est bien modifié.
+success.modifications_saved: Les modifications ont bien été sauvegardé.
+error.not_current_password: Le mot de passe ne correpond pas à celui actuel.
+error.email_already_exist: Un compte avec ce mail existe déjà.
+error.domain_already_exist: Vous ne pouvez créer deux domains par compte. Un domain existe déjà pour ce compte.
 label.card_type : Type de carte
 label.card_number : Numéro de carte
 label.card_code : Pyctograme
 label.card_expiration_date : Date d'expiration
+label.price_details : Détail des prix
+label.service_fees : Frais de service :
+label.total : Total :
+
+label.about_us: A propos
+label.or: Ou
+label.help: Aide
+label.login: Connexion
+label.pay: Payer
+label.registration: S'inscrire
+label.service_fees_explication: Ce montant permet au site de gérer les frais quotidiens.
+error.not_null: Le ne peut pas être null.
+error.not_empty: Le ne peut pas être vide.
+error.only_numerical_character: Le doit contenir uniquement des charactères numériques.
+error.not_exceed_100: La valeur ne doit pas dépasser 100.
+label.select: Selectionner
+
+label.start_date: Date de début
+label.end_date: Date de fin
+label.actions: Actions
+label.delete: Supprimer
+
+error.email_existing: Un compte avec ce mail existe déjà.
+error.password_format: Le mot de passe doit contenir 8 charactères, dont au moins une chiffre et une lettre majuscule.
+error.email_not_corresponding: Les emails ne correspondent pas.
+error.password_not_corresponding: Les mot de passe ne correspondent pas.

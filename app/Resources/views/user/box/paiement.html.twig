@@ -1,0 +1,52 @@
+{% extends 'host/base.html.twig' %}
+{% block table %}
+    <div class="row">
+        <div>
+            {% set length = boxes|length %}
+            {% set i = 0 %}
+            {% for j in 0..(length/3)|round(0, 'ceil') %}
+                <div class="row container-realestate">
+                    {% for box in i..(i+2) if (i < length) %}
+                        <div class="col-md-4 col-sm-6 col-xs-12">
+                            <div class="box-container">
+                                <div class="box-image">
+                                    {#<img src="{{ mediaPath ~ boxes[i].mediaPresentation }}" alt="{{ boxes[i].name }}" alt="mikha real estate theme">#}
+                                    <div class="box-status">
+                                        <span>For Rent</span>
+                                    </div>
+                                </div>
+                                <div class="box-features">
+                                    {% for boxItem in boxes[i].boxItems %}
+                                        {{ boxItem.name }}
+                                        <ul>
+                                            {% for boxItemChoice in boxItem.boxItemChoices if boxItem.boxItemChoices|length>0 %}
+                                                <li>{{ boxItemChoice.name }}</li>
+                                                {% if loop.index < boxItem.boxItemChoices|length %}
+                                                    {% trans %}label.or{% endtrans %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        </ul>
+                                    {% endfor %}
+                                    <span><i class="fa fa-home"></i> 5,000 m<sup>2</sup></span>
+                                    <span><i class="fa fa-hdd-o"></i> 2 Bed</span>
+                                    <span><i class="fa fa-male"></i> 2 Bath</span>
+                                </div>
+                                <div class="box-content">
+                                    <h3><a href="{{ path('rental_edit', {'id': boxes[i].id }) }}">{{ boxes[i].name }}</a><br>
+                                        <small>{{ boxes[i].description }}</small></h3>
+                                    <a href="{{ path('rental_edit', {'id': boxes[i].id }) }}">
+                                        <button class="btn btn-primary pull-right">Modifier</button>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% set i = i+1 %}
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+        {% for box in boxes %}
+
+        {% endfor %}
+    </div>
+{% endblock %}

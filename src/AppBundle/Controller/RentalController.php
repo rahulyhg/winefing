@@ -34,7 +34,7 @@ class RentalController extends Controller
 {
     const DATE_FORMAT = 'd-m-Y';
     /**
-     * @Route("users/rentals", name="rentals_users")
+     * @Route("/rentals-list", name="rentals_list")
      *
      */
     public function cgetForUserAction() {
@@ -53,27 +53,10 @@ class RentalController extends Controller
      */
     public function paiement(Request $request){
         $rental = $this->getRental($request->request->get('rental'));
-        var_dump($request->request->all());
-        $prices = $this->getPricesRentalAndPeriod($rental->getId(), $request->request->get('start'), $request->request->get('end'));
+        $bill = $this->getPricesRentalAndPeriod($rental->getId(), $request->request->get('start'), $request->request->get('end'));
         $creditCard = new CreditCard();
-        var_dump($prices);
         $creditCardForm = $this->createForm(CreditCardType::class, $creditCard);
-
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:RentalPromotion');
-        $date = strtotime($request->request->get('start'));
-        while($date < strtotime($request->request->get('end'))){
-            $rentalPromotion = $repository->findPromotionByDate($date, $rental->getId());
-            var_dump($rentalPromotion);
-            if(empty($rentalPromotion) || $rentalPromotion == NULL) {
-                $price = $rental->getPrice();
-            } else {
-                $price =  $rental->getPrice() * ((100-$rentalPromotion->getReduction())/100);
-            }
-            $allDates[$date] = $price;
-            $date = strtotime('+1 days', $date);
-        }
-
-        return $this->render('user/rental/paiement.html.twig', ['creditCardForm'=>$creditCardForm->createView()]);
+        return $this->render('user/rental/paiement.html.twig', ['creditCardForm'=>$creditCardForm->createView(), 'bill'=>$bill]);
     }
 
     /**
@@ -86,7 +69,7 @@ class RentalController extends Controller
     public function getPricesRentalAndPeriod($rental, $start, $end) {
         $serializer = $this->container->get('winefing.serializer_controller');
         $api = $this->container->get('winefing.api_controller');
-        $response = $api->get($this->get('_router')->generate('api_get_rental_prices_by_date', array('rental'=>$rental, 'start'=>$start, 'end'=>$end)));
+        $response = $api->get($this->get('_router')->generate('api_get_rental_prices_by_date', array('rental'=>$rental, 'start'=>strtotime($start), 'end'=>strtotime($end))));
         $prices = $serializer->decode($response->getBody()->getContents(),'json');
         return $prices;
 
@@ -100,7 +83,6 @@ class RentalController extends Controller
         $serializer = $this->container->get('jms_serializer');
         $rentalPromotions = $this->getRentalPromotions($id);
         $rentalPromotionsArray = $this->formateDate($rental, $rentalPromotions);
-        var_dump($rentalPromotionsArray);
         if($request->isMethod('POST')) {
             $order['rental'] = $id;
             $order['startDate'] = $request->request->get('start');

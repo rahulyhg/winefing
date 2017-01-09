@@ -72,7 +72,12 @@ $(document)
     })
     .on('submit','#boxItemChoice', function(){
         $("#boxItemChoice :disabled").removeAttr('disabled');
-    });
+    })
+    .on('submit','#propertyCategory', function(){
+        $("#propertyCategory :disabled").removeAttr('disabled');
+    })
+
+;
 
 $(document).ready(function () {
 

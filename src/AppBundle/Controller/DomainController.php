@@ -31,6 +31,34 @@ use Winefing\ApiBundle\Entity\CharacteristicValue;
 class DomainController extends Controller
 {
     /**
+     * @Route("/domain/{id}/wishlist", name="domain_add_to_wishlist")
+     */
+    public function addToWishlistAction($id) {
+        if(!empty($this->getUser())) {
+            $body['user'] = $this->getUser()->getId();
+            $body['domain'] = $id;
+            $api = $this->container->get('winefing.api_controller');
+            $api->put($this->get('router')->generate('api_put_user_domain'), $body);
+        } else {
+            $error = '%error.not_connecteed%';
+            throw new \Exception($error);
+        }
+        return new Response();
+    }
+
+    /**
+     * @Route("/domains", name="domains")
+     */
+    public function cgetAction() {
+        $api = $this->container->get('winefing.api_controller');
+        $serializer = $this->container->get('jms_serializer');
+        $response =  $api->get($this->get('router')->generate('api_get_domains'));
+        $domains = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\Domain>', 'json');
+        return $this->render('user/domain/index.html.twig', array(
+                'domains' => $domains
+        ));
+    }
+    /**
      * @Route("/domain/edit", name="domain_edit")
      */
     public function getAction(Request $request) {

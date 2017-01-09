@@ -8,6 +8,7 @@
 
 namespace Winefing\UserBundle\Controller;
 
+use AppBundle\Form\AdminUserType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -29,35 +30,37 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 class AdminController extends Controller
 {
     /**
-     * @Route("/user/newForm/{id}", name="user_new_form")
+     * @Route("lolilolilo/{id}", name="user_new_form")
      */
-    public function newFormAction($id = 'user_post') {
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Article');
-        $user = $repository->findBy(array('id'=>$id));
+    public function newFormAction($id = '') {
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
+        $user = $repository->findOneById($id);
         $action = $this->generateUrl('users_admin_submit');
         if(empty($user)){
             $user = new User();
         }
+        $options['action']= $action;
+        $userForm = $this->createForm(AdminUserType::class, $user, $options);
         return $this->render('admin/user/form.html.twig', array(
-            'user' => $user, 'action' => $action, 'method' => 'POST'
+            'user' => $userForm->createView()
         ));
     }
     /**
-     * @Route("/users/admin/submit", name="users_admin_submit")
+     * @Route("admin/users/submit", name="users_admin_submit")
      */
     public function postAction(Request $request)
     {
         $api = $this->container->get('winefing.api_controller');
-        $user = $request->request->all()["user"];
+        $user = $request->request->all()["admin_user"];
         if(empty($user["id"])) {
-            $api->post($this->get("_router")->generate("api_post_admin_user"), $user);
+            $api->post($this->get("_router")->generate("api_post_user"), $user);
         } else {
-            $api->put($this->get("_router")->generate("api_put_admin_user"), $user);
+            $api->put($this->get("_router")->generate("api_put_user"), $user);
         }
         $request->getSession()
             ->getFlashBag()
             ->add('success', "The user is well created.");
-        return $this->redirectToRoute('users_admin');
+        return $this->redirectToRoute('users_by_group', array('group'=>UserGroupEnum::Admin), 301);
     }
     /**
      * @Route("user/admin/delete/{id}", name="user_admin_delete")

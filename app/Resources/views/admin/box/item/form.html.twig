@@ -11,7 +11,7 @@
                         {{ form_widget(boxItemForm.id,  { 'attr': {'required': 'false'} }) }}
                     </fieldset>
                     <div class="form-group">
-                        {{ form_widget(boxItemForm.boxes) }}
+                        {{ form_widget(boxItemForm.box, {'attr':{'hidden':'true'}}) }}
                     </div>
                     {% for boxItemTr in boxItemForm.boxItemTrs %}
                         <fieldset class="form-group">

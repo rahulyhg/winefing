@@ -13,7 +13,7 @@ fos_user:
 
 winefing_api:
     type: rest
-    prefix: /api
+    prefix: /{_locale}/api
     resource: "@WinefingApiBundle/Resources/config/routing.yml"
 
 app:

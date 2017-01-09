@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <div class="row">
+        {% for domain in domains %}
+            {{ domain.name }}
+            {{ domain.id }}
+            <button id="whishlist" onclick="addToWishlist('{{ path('domain_add_to_wishlist', {'id': domain.id}) }}')">Whishlist</button>
+            <br>
+        {% endfor %}
+    </div>
+    <script>
+        function addToWishlist(path) {
+            $.ajax({
+                url: path,
+                type: 'PUT',
+                async: false,
+                success: function (data, textStatus, jqXHR) {
+                    console.log('yes');
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log("no good");
+                }
+            });
+        }
+    </script>
+{% endblock %}

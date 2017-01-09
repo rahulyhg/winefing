@@ -38,18 +38,54 @@ use Winefing\ApiBundle\Entity\BoxTr;
 class BoxController extends Controller
 {
     /**
+     * @Route("/box/{id}/order", name="box_order")
+     */
+    public function orderAction($id, Request $request) {
+        $box = $this->getBox($id, $request->getLocale());
+
+        foreach($box['boxItems'] as $boxItem) {
+            if(count($boxItem['boxItemChoices']) > 0) {
+                return  $this->render('user/box/select.html.twig', array("box" => $box));
+            }
+        }
+        return  $this->render('user/box/paiement.html.twig', array("box" => $box));
+    }
+    public function getBox($id, $language) {
+        $api = $this->container->get('winefing.api_controller');
+        $serializer = $this->container->get('winefing.serializer_controller');
+        $response = $api->get($this->get('router')->generate('api_get_box_by_language', array('id'=> $id, 'language' => $language)));
+        $box = $serializer->decode($response->getBody()->getContents());
+        return $box;
+    }
+    /**
      * @Route("/boxes/", name="boxes")
      */
-    public function cgetAction() {
+    public function cgetAction(Request $request) {
+        $api = $this->container->get('winefing.api_controller');
+        $serializer = $this->container->get('winefing.serializer_controller');
+        $response = $api->get($this->get('router')->generate('api_get_boxes_by_language', array('language' => $request->getLocale())));
+        $boxes = $serializer->decode($response->getBody()->getContents());
+        $response = $api->get($this->get('_router')->generate('api_get_box_media_path'));
+        $mediaPath = $serializer->decode($response->getBody()->getContents());
+        return $this->render('user/box/index.html.twig', array("boxes" => $boxes, 'mediaPath' => $mediaPath));
+    }
+
+    /**
+     * @Route("/admin//boxes/", name="boxes_admin")
+     */
+    public function cgetAdminAction() {
         $api = $this->container->get('winefing.api_controller');
         $serializer = $this->container->get('winefing.serializer_controller');
         $response = $api->get($this->get('router')->generate('api_get_boxes'));
         $boxes = $serializer->decode($response->getBody()->getContents());
         $response = $api->get($this->get('_router')->generate('api_get_box_media_path'));
         $mediaPath = $serializer->decode($response->getBody()->getContents());
-        return $this->render('admin/box/index.html.twig', array("boxes" => $boxes, 'mediaPath' => $mediaPath)
+        $response = $api->get($this->get('_router')->generate('api_get_languages_picture_path'));
+        $languagePicturePath = $serializer->decode($response->getBody()->getContents());
+        return $this->render('admin/box/index.html.twig', array("boxes" => $boxes, 'mediaPath' => $mediaPath, 'languagePicturePath'=>$languagePicturePath)
         );
     }
+
     /**
      * @Route("/boxes/items", name="boxes_items")
      */

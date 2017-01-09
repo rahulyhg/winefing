@@ -38,9 +38,9 @@ class TagTrController extends Controller implements ClassResourceInterface
     public function cgetAction()
     {
         $serializer = $this->container->get('winefing.serializer_controller');
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:WineRegion');
-        $wineRegions = $repository->findAll();
-        return new Response($serializer->serialize($wineRegions, 'json'));
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:TagTr');
+        $tagTrs = $repository->findAll();
+        return new Response($serializer->serialize($tagTrs, 'json'));
     }
 
     /**

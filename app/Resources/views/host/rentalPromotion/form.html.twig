@@ -65,7 +65,9 @@
         $(document).ready(function() {
             $('#sandbox-container .input-daterange').datepicker({
                 startDate: ""+getFormattedDate(new Date)+"'",
-                format: 'dd-mm-yyyy'
+                format: 'dd-mm-yyyy',
+                orientation: "bottom auto",
+                autoclose: true
             });
         });
 

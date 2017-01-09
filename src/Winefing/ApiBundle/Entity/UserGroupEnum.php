@@ -13,4 +13,5 @@ abstract class UserGroupEnum extends BasicEnum {
     const Managment = "ROLE_MANAGMENT";
     const Host = "ROLE_HOST";
     const User = "ROLE_USER";
+    const Admin = "ROLE_ADMIN";
 }

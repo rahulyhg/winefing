@@ -33,6 +33,7 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Utilisateurs<span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li class="{% if route == 'users_by_group' and app.request.get('group') == role_admin%}submenu-admin-active{% endif %}"><a href="{{ path('users_by_group', {'group' : role_admin}) }}">Admin</a></li>
+                        <li class="{% if route == 'users_by_group' and app.request.get('group') == role_user%}submenu-admin-active{% endif %}"><a href="{{ path('users_by_group', {'group' : role_user}) }}">Utilisateur</a></li>
                         <li class="{% if route == 'users_by_group'and app.request.get('group') == role_host %}submenu-admin-active{% endif %}"><a href="{{ path('users_by_group', {'group' : role_host}) }}">Propriétaires</a></li>
                     </ul>
                 </li>
@@ -44,6 +45,7 @@
                         <li class="{% if route == 'subscriptions' %}submenu-admin-active{% endif %}"><a href="{{ path('subscriptions') }}">Abonnements</a></li>
                         <li class="{% if route == 'promotions' %}submenu-admin-active{% endif %}"><a href="{{ path('promotions') }}">Promotions</a></li>
                         <li class="{% if route == 'web_pages' %}submenu-admin-active{% endif %}"><a href="{{ path('web_pages') }}">Web pages</a></li>
+                        <li class="{% if route == 'propertyCategories' %}submenu-admin-active{% endif %}"><a href="{{ path('propertyCategories') }}">Type de propriété</a></li>
                     </ul>
                 </li>
                 <li class="dropdown {% if route == 'articleCategory' or route =='articles'%}active{% endif %}">
@@ -56,8 +58,7 @@
                 <li class="dropdown {% if route == 'boxes' or route =='box_new'%}active{% endif %}">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Box<span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li class="{% if route == 'boxes' %}submenu-admin-active{% endif %}"><a href="{{ path('boxes') }}">Les boxes</a></li>
-                        <li class="{% if route == 'boxes_items' %}submenu-admin-active{% endif %}"><a href="{{ path('boxes_items') }}">Les items</a></li>
+                        <li class="{% if route == 'boxes_admin' %}submenu-admin-active{% endif %}"><a href="{{ path('boxes_admin') }}">Les boxes</a></li>
                         <li class="{% if route == 'box_new'%}submenu-admin-active{% endif %}"><a href="{{ path('box_new') }}">Ajouter</a></li>
                     </ul>
                 </li>

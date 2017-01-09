@@ -39,6 +39,13 @@ class BoxItemChoice
      */
     private $boxItemChoiceTrs;
 
+    /**
+     * @var
+     * @Groups({"default"})
+     * @Type("string")
+     */
+    private $name;
+
     public function _construct(){
         $this->boxItemChoiceTrs[] = new ArrayCollection();
         return $this;
@@ -80,6 +87,30 @@ class BoxItemChoice
 
     public function addBoxItemChoiceTr(BoxItemChoiceTr $boxItemChoiceTr) {
         $this->boxItemChoiceTrs[] = $boxItemChoiceTr;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param mixed $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+    public function setTr($language) {
+        foreach($this->boxItemChoiceTrs as $boxItemChoiceTr) {
+            if($boxItemChoiceTr->getLanguage()->getCode() == $language) {
+                $this->name = $boxItemChoiceTr->getName();
+                break;
+            }
+        }
     }
 }
 

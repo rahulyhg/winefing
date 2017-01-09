@@ -9,6 +9,8 @@ imports:
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale:  fr
+    host_comission: 10.00
+    client_comission: 6.20
     language_directory_upload: '%kernel.root_dir%/../web/Resources/pictures/language/'
     characteristic_category_directory_upload: '%kernel.root_dir%/../web/Resources/pictures/characteristicCategory/'
     characteristic_directory_upload: '%kernel.root_dir%/../web/Resources/pictures/characteristic/'
@@ -60,6 +62,8 @@ twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
     globals:
+        host_comission: "%host_comission%"
+        client_comission: "%client_comission%"
         language_directory: '%language_directory%'
         format_boolean: 'BOOLEAN'
         format_monnaie: 'MONNAIE'
@@ -130,7 +134,9 @@ fos_user:
     user_class: Winefing\ApiBundle\Entity\User
 #    use_listener: false
 
-
+#fos_rest:
+#    view:
+#        jsonp_handler: ~
 assetic:
     debug:          '%kernel.debug%'
     use_controller: '%kernel.debug%'

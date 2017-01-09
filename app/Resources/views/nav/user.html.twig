@@ -15,9 +15,9 @@
         <div class="collapse navbar-collapse" id="navbar-top">
             <ul class="nav navbar-nav navbar-right">
                 <li class="{% if app.request.attributes.get('_route') == 'user_host_new' %}active{% endif %}"><a href="{{ path("user_host_new", {'step' : 'contact'}) }}">Utilisateur</a></li>
-                <li><a href="#" class="signin" data-toggle="modal" data-target="#modal-signin">Aide</a></li>
-                <li><a href="#modal-signin" class="signin" data-toggle="modal" data-target="#modal-signin">Inscription</a></li>
-                <button type="button" value="Connexion" class="btn signup" onclick="loadForm('{{ path('fos_user_security_login')}}', 'login')">Connexion</button>
+                <li><a href="#" class="signin" data-toggle="modal" data-target="#modal-signin">{% trans %}label.help{% endtrans %}</a></li>
+                <li><a href="#modal-signin" class="signin" data-toggle="modal" data-target="#modal-signin">{% trans %}label.registration{% endtrans %}</a></li>
+                <button type="button" value="Connexion" class="btn signup" onclick="loadForm('{{ path('fos_user_security_login')}}', 'login')">{% trans %}label.login{% endtrans %}</button>
             </ul>
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container -->

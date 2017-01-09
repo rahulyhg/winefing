@@ -9,61 +9,57 @@
 namespace PaiementBundle\Controller;
 
 
-use FOS\UserBundle\Doctrine\UserManager;
 use PaiementBundle\Entity\CreditCard;
 use PaiementBundle\Entity\Wallet;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Winefing\ApiBundle\Entity\User;
 use Doctrine\ORM\EntityManager;
+use JMS\Serializer\Serializer;
 
 class LemonWayController
 {
-    protected $userManager;
-    const DIRECTKIT_WS = 'https://sandbox-api.lemonway.fr/mb/demo/dev/directkitxml/service.asmx';
-    const INFORMATIONS = ["wlLogin"=> 'society', "wlPass" => "123456", "language" => 'fr', "version"=>1.0, "walletIp"=> '82.228.78.5', 'walletUa'=> 'ua'];
+    protected $em;
+    protected $serializer;
+    const DIRECTKIT_WS = 'https://sandbox-api.lemonway.fr/mb/winefing/dev/directkitxml/service.asmx';
+    const INFORMATIONS = ["wlLogin"=> 'adminmb', "wlPass" => "WhWo//2016", "language" => 'fr', "version"=>1.0, "walletIp"=> '212.51.179.194', 'walletUa'=> 'ua'];
 
-    public function __construct(UserManager $userManager){
-        $this->userManager = $userManager;
+    public function __construct(EntityManager $entityManager, Serializer $serializer){
+        $this->em = $entityManager;
+        $this->serializer = $serializer;
     }
     /**
      *
      */
-    public function addWallet($userId) {
-        $opts = array(
-            'http'=>array(
-                'user_agent' => 'PHPSoapClient'
-            )
-        );
-
-        $context = stream_context_create($opts);
-        $client = new \SoapClient($this::DIRECTKIT_WS."?wsdl",
-            array('stream_context' => $context,
-                'cache_wsdl' => WSDL_CACHE_NONE));
-//        $user = $this->getUser($userId);
-////        libxml_disable_entity_loader(false);
-//        $client = new \Soapclient($this::DIRECTKIT_WS."?wsdl");
-//        var_dump($user->getId());
-//        $wallet['wallet'] = rand();
-//        $wallet['clientMail'] = $user->getEmail();
-//        $wallet['clientFirstName'] = $user->getFirstName();
-//        $wallet['clientLastName'] = $user->getLastName().'www';
-//        $response = $client->RegisterWallet(array_merge($this::INFORMATIONS, $wallet));
-//        $array = json_decode(json_encode($response), True);
-//        if(!empty(array_key_exists("WALLET", $array))) {
-//            $wallet = $array['RegisterWalletResult']['WALLET'];
-//            $this->updateUser($user, $wallet['ID']);
-//        } else {
-//            return $array['RegisterWalletResult']['E'];
-//        }
+    public function addWallet($user) {
+        $client = new \Soapclient($this::DIRECTKIT_WS."?wsdl");
+        $wallet['wallet'] = $user->getId();
+        $this->setUserWallet($wallet, $user);
+        $this->setCompanyWallet($wallet);
+        $this->setCompanyInformationWallet($wallet, $user);
+        $response = $client->RegisterWallet(array_merge($this::INFORMATIONS, $wallet));
+        if(empty($response->RegisterWalletResult->E)) {
+            $this->updateUser($user);
+            $response->RegisterWalletResult->WALLET->ID;
+        } else {
+            switch ($response->RegisterWalletResult->E->Msg){
+                case '152' :
+                    $this->updateUser($user);
+                    return $response->RegisterWalletResult->E->Msg;
+                    break;
+                default :
+                    return $response->RegisterWalletResult->E->Msg;
+            }
+        }
     }
     public function getUser($id) {
         $user = $this->userManager->findUserBy(array('id'=>$id));
         return $user;
     }
-    public function updateUser(User $user, $wallet) {
-        $user->setWallet($wallet);
-        $this->userManager->updateUser($user);
+    public function updateUser(User $user) {
+        $user->setWallet(1);
+        $this->em->persist($user);
+        $this->em->flush();
     }
 
     public function creditCardMoneyIn($creditCard, $amountTot) {
@@ -79,14 +75,34 @@ class LemonWayController
      * @param Wallet $wallet
      * @param User $user
      */
-    public function setUserWallet($wallet, $user) {
-        $wallet->setWallet($user->getId());
-        $wallet->setClientMail($user->getEmail());
-        $wallet->setClientTitle($user->getSex());
-        $wallet->setClientFirstName($user->getFirstName());
-        $wallet->setClientLastName($user->getLastName());
-        $wallet->setPhoneNumber($user->getPhoneNumber());
-        $wallet->setMobileNumber($user->getPhoneNumber());
+    public function setUserWallet(&$wallet, $user) {
+        $wallet["clientMail"] = $user->getEmail();
+        if(empty($user->getSex())) {
+            $wallet["clientTitle"] = $user->getSex();
+        }
+        $wallet["clientFirstName"] = $user->getFirstName();
+        $wallet["clientLastName"] = $user->getLastName().'WWW';
+        $wallet["phoneNumber"] = $user->getPhoneNumber();
+        if(!is_null($user->getBirthDate())) {
+            $wallet["birthdate"] = date_format($user->getBirthDate(), 'd/m/Y');
+        }
+    }
+    /**
+     * Set classical informations about the user.
+     * @param Wallet $wallet
+     * @param User $user
+     */
+    public function setUserUpdateWallet(&$wallet, $user) {
+        $wallet["clientMail"] = $user->getEmail();
+        if(empty($user->getSex())) {
+            $wallet["clientTitle"] = $user->getSex();
+        }
+        $wallet["clientFirstName"] = $user->getFirstName();
+        $wallet["clientLastName"] = $user->getLastName().'WWW';
+        $wallet["phoneNumber"] = $user->getPhoneNumber();
+        if(!is_null($user->getBirthDate())) {
+            $wallet["birthdate"] = date_format($user->getBirthDate(), 'd/m/Y');
+        }
     }
 
     /**
@@ -94,21 +110,28 @@ class LemonWayController
      * @param Wallet $wallet
      * @param User $user
      */
-    public function setAddressWallet($wallet, $user) {
+    public function setAddressWallet(&$wallet, $user) {
         $wallet->setStreet('');
         $wallet->setPostCode('');
         $wallet->setCity('');
     }
 
     /**
+     *If the user is a Host.
+     * @param Wallet $wallet
+     * @param User $user
+     */
+    public function setCompanyWallet(&$wallet){
+        $wallet["isCompany"] = 1;
+        $wallet['payerOrBeneficiary'] = 2;
+    }
+    /**
      *If the user is a Host, we have to indicate other informations (about the company).
      * @param Wallet $wallet
      * @param User $user
      */
-    public function setCompanyWallet($wallet, $user){
-        $wallet->setIsCompany(1);
-        $wallet->setCompanyName($user->getDomains()[0]->getName());
-        $wallet->setCompanyDescription($user->getDomains()[0]->getDescription());
-        $wallet->setPayerOrBeneficiary(2);
+    public function setCompanyInformationWallet(&$wallet, $user){
+        $wallet["companyName"] = $user->getDomains()[0]->getName();
+        $wallet["companyDescription"] = $user->getDomains()[0]->getDescription();
     }
 }
