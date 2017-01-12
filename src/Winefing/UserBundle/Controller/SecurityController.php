@@ -8,6 +8,7 @@
 
 namespace Winefing\UserBundle\Controller;
 
+use AppBundle\Form\UserRegistrationType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -22,7 +23,6 @@ use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Symfony\Component\HttpFoundation\File\File;
 use Winefing\ApiBundle\Entity\User;
-use Winefing\ApiBundle\Entity\UserGroupEnum;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Winefing\UserBundle\Form\LoginType;
@@ -34,6 +34,8 @@ class SecurityController extends Controller
      */
     public function loginAction(Request $request)
     {
+        $user = new User();
+        $userForm = $this->createForm(UserRegistrationType::class, $user);
         $authenticationUtils = $this->get('security.authentication_utils');
 
         // get the login error if there is one
@@ -41,9 +43,10 @@ class SecurityController extends Controller
 
         // last username entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();
-        return $this->render('user/login/index.html.twig',array(
+        return $this->render('user/security/index.html.twig',array(
             'last_username' => $lastUsername,
             'error'         => $error,
+            'user' => $userForm->createView()
         ));
     }
 

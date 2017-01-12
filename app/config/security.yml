@@ -10,6 +10,7 @@ security:
         Winefing\ApiBundle\Entity\User: bcrypt
 
     role_hierarchy:
+        ROLE_SUPER_ADMIN: ROLE_TECHNIQUE
         ROLE_ADMIN: [ROLE_MANAGER, ROLE_TECHNIQUE]
         ROLE_BLOG: [ROLE_MANAGER, ROLE_TECHNIQUE, ROLE_BLOG]
         ROLE_HOST: ROLE_HOST
@@ -18,22 +19,27 @@ security:
 
 
     firewalls:
+        dev:
+            pattern:  ^/(_(profiler|wdt)|css|images|js)/
+            security: false
         main:
             pattern: ^/
             anonymous: true
+            provider: our_db_provider
             form_login:
               login_path: login
               check_path: login
+              success_handler: winefing.component.authentication.handler.login_success_handler
               csrf_parameter: _csrf_security_token
               csrf_token_id: a_private_string
               default_target_path: home
               always_use_default_target_path: true
             logout:
                 path:   /logout
-                target: /logout
+                target: home
 
     access_control:
         - { path: ^/registration$, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/admin/, role: ROLE_ADMIN }
+        - { path: ^/_local/admin/, role: ROLE_ADMIN }

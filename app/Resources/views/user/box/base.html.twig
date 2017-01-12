@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    {% set route = app.request.attributes.get('_route') %}
+    <div class="container">
+        <div class="stepwizard col-md-offset-3">
+            <div class="stepwizard-row setup-panel">
+                <div class="stepwizard-step">
+                    <a type="button" class="btn btn-circle {% if route != 'box_select_item_choices' %}{{ 'disabled btn-default' }}{% else %}{{  'btn-primary' }}{% endif %}">1</a>
+                    <p>{% trans %}label.select{% endtrans %}</p>
+                </div>
+                <div class="stepwizard-step">
+                    <a type="button" class="btn btn-circle {% if (route == 'box_paiement_address' and app.request.get('addressType') == address_billing)%}{{ 'btn-primary' }}{% else %}{{  'disabled btn-default' }}{% endif %}">2</a>
+                    <p>{% trans %}label.billing_address{% endtrans %}</p>
+                </div>
+                <div class="stepwizard-step">
+                    <a type="button" class="btn btn-circle {% if (route == 'box_paiement_address' and app.request.get('addressType') == address_delivering) %}{{ 'btn-primary' }}{% else %}{{  'disabled btn-default' }}{% endif %}">3</a>
+                    <p>{% trans %}label.delivery_address{% endtrans %}</p>
+                </div>
+                <div class="stepwizard-step">
+                    <a type="button" class="btn btn-circle {% if route != 'box_paiement' %}{{ 'disabled btn-default' }}{% else %}{{  'btn-primary' }}{% endif %}">4</a>
+                    <p>{% trans %}label.paiement{% endtrans %}</p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                {% block new %}
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

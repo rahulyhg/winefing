@@ -1,0 +1,72 @@
+<div class="row">
+    {% if addresses is not empty %}
+        <div class="col-md-6">
+            <div>
+                <h3>{% trans %}label.existing_address{% endtrans %}</h3>
+                <br>
+                {% for address in addresses %}
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4>
+                                <div class="dropdown">
+                                    {{ address.name }}
+                                    <button  class="btn dropdown-toggle" style="background-color:transparent;border: none"type="button" data-toggle="dropdown" >
+                                        <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a onclick="setPathDeleteButton('{{ path('rental_paiement_delete_address', {'id' : address.id}) }}');">{% trans %}label.delete{% endtrans %}</a></li>
+                                        <li><a href="#">{% trans %}label.edit{% endtrans %}</a></li>
+                                    </ul>
+                                </div>
+                            </h4>
+                        </div>
+                        <div class="panel-body">
+                            {{ address.streetAddress }}
+                            <br>
+                            {{ address.country }}
+                            {{ address.formattedAddress }}
+                            <br>
+                            <a href="{{ path('rental_paiement_billing_address', {'addressId' : address.id}) }}">
+                                <input type="button" class="btn btn-default btn-primary" value="{% trans %}label.select_address{% endtrans %}">
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div>
+                <h3>{% trans %}label.new_address{% endtrans %}</h3>
+                <br>
+                {% include('user/address/form.html.twig') %}
+            </div>
+        </div>
+    {% else %}
+        <div class="col-xs-6 col-md-offset-3">
+            <div>
+                <h3>{% trans %}label.new_address{% endtrans %}</h3>
+                <br>
+                {% include('user/address/form.html.twig') %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+<span id="modalDelete">
+    <div class="modal fade" tabindex="-1" role="dialog" id="confirmation">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">{% trans %}label.delete{% endtrans %}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>{% trans %}warning.delete_address{% endtrans %}</p>
+                </div><!-- /.modal-content -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans %}label.cancel{% endtrans %}</button>
+                    <a id="delete" type="submit" class="btn btn-primary pull-right">{% trans %}label.delete{% endtrans %}</a>
+                </div>
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+    </div>
+</span>

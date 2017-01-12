@@ -42,7 +42,7 @@
     <script type="text/javascript">
         Stripe.setPublishableKey('pk_test_9Ap0mXJ0cPLJoQzpA7y4bgwl');
     </script>
-    {% javascripts 'bundles/app/js/custom.js' 'bundles/app/js/dropzone.js' 'bundles/app/js/jquery.fancybox.pack.js' 'bundles/app/js/jquery.fancybox.js'
+    {% javascripts 'bundles/app/js/custom.js' 'bundles/app/js/dropzone.js' 'bundles/app/js/jquery.fancybox.pack.js' 'bundles/app/js/jquery.fancybox.js' 'bundles/app/js/card.js'
     'bundles/app/js/fancy-box.js'%}
     <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
@@ -51,7 +51,8 @@
 
     <body><!-- begin:navbar -->
         {% block nav %}
-            {% if app.user %}
+            {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                {{ 'in' }}
                 {% if is_granted("ROLE_HOST") %}
                     {{ include('nav/host.html.twig') }}
                 {% elseif is_granted("ROLE_USER") %}
@@ -71,20 +72,34 @@
             {{ include('footer.html.twig') }}
         {% endblock %}
         <!-- begin:modal-signin -->
-        <div class="modal fade" id="modal-signin" tabindex="-1" role="dialog" aria-labelledby="modal-signin" aria-hidden="true">
+        <div class="modal fade" id="login" tabindex="-1" role="dialog" aria-labelledby="modal-signin" aria-hidden="true">
             <div class="modal-dialog modal-sm">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                        <h4 class="modal-title">Sign in</h4>
-                    </div>
-                    <div class="modal-body">
-                        {% include('user/login/form.html.twig') %}
-                    </div>
-                    <div class="modal-footer">
-                        <p>Don't have account ? <a href="#modal-signup"  data-toggle="modal" data-target="#modal-signup">Sign up here.</a></p>
-                        <input type="submit" class="btn btn-danger btn-block btn-lg" value="Sign in">
-                    </div>
+                    <form method="post" action="{{ path('login') }}">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title">{% trans %}label.sign_in{% endtrans %}</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>{% trans %}label.email{% endtrans %}</label>
+                                <input type="email" id="username" name="_username" class="form-control"/>
+                            </div>
+                            <div class="form-group">
+                                <label>{% trans %}label.password{% endtrans %}</label>
+                                <input type="password" id="password" name="_password" class="form-control"/>
+                            </div>
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="forget"> {% trans %}label.keep_me_logged_in{% endtrans %}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <p>{% trans %}question.not_acccount{% endtrans %}<a href="#modal-signup"  data-toggle="modal" data-target="#modal-signup"><br>{% trans %}label.sign_up_here{% endtrans %}</a></p>
+                            <input type="submit" class="btn btn-danger btn-block btn-lg" value="Sign in">
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

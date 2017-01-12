@@ -35,6 +35,18 @@ class ApiController {
         $client = new Client();
         return $client->request('POST',  $this->getUrl($uri), ['json' => $params]);
     }
+    public function link($uri, $params) {
+        $client = new Client();
+        return $client->request('LINK',  $this->getUrl($uri), ['json' => $params]);
+    }
+    public function patch($uri, $params) {
+        $client = new Client();
+        return $client->request('PATCH',  $this->getUrl($uri), ['json' => $params]);
+    }
+    public function unlink($uri, $params) {
+        $client = new Client();
+        return $client->request('UNLINK',  $this->getUrl($uri), ['json' => $params]);
+    }
 
     public function put($uri, $params){
         $client = new Client();

@@ -32,13 +32,15 @@ class AddressController extends Controller implements ClassResourceInterface
         $json = $serializer->serialize($address);
         return new Response($json);
     }
-    public function getByUserAction($userId)
+    public function cgetByUserAction($userId)
     {
-        $serializer = $this->container->get('winefing.serializer_controller');
+        $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Address');
-        $address = $repository->findOneById($userId);
-        $json = $serializer->serialize($address);
-        return new Response($json);
+        $addresses = $repository->findAllByUser($userId);
+        if(count($addresses)>0) {
+            $json = $serializer->serialize($addresses, 'json',  SerializationContext::create()->setGroups(array('default')));
+            return new Response($json);
+        }
     }
 
     public function postAction(Request $request)
@@ -52,6 +54,8 @@ class AddressController extends Controller implements ClassResourceInterface
         $address->setCountry($request->request->get('country'));
         $address->setPostalCode($request->request->get('postalCode'));
         $address->setLocality($request->request->get('locality'));
+        $address->setName($request->request->get('name'));
+        $address->setAdditionalInformation($request->request->get('additionaleInformation'));
         $address->setLat(1.0);
         $address->setLng(1.0);
         $address->setName($request->request->get('name'));
@@ -60,11 +64,29 @@ class AddressController extends Controller implements ClassResourceInterface
         $errors = $validator->validate($address);
         if (count($errors) > 0) {
             $errorsString = (string) $errors;
-            return new Response(400, $errorsString);
+            throw new HttpException(400, $errorsString);
         }
         $em->persist($address);
         $em->flush();
         $json = $serializer->serialize($address, 'json', SerializationContext::create()->setGroups(array('id')));
+        return new Response($json);
+    }
+    public function postCopyAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $serializer = $this->container->get('jms_serializer');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Address');
+        $address = $repository->findOneById($request->request->get('id'));
+        $newAddress = clone $address;
+        $validator = $this->get('validator');
+        $errors = $validator->validate($newAddress);
+        if (count($errors) > 0) {
+            $errorsString = (string) $errors;
+            throw new HttpException(400, $errorsString);
+        }
+        $em->persist($newAddress);
+        $em->flush();
+        $json = $serializer->serialize($newAddress, 'json', SerializationContext::create()->setGroups(array('id')));
         return new Response($json);
     }
     public function putAction(Request $request)
@@ -78,6 +100,8 @@ class AddressController extends Controller implements ClassResourceInterface
         $address->setCountry($request->request->get('country'));
         $address->setPostalCode($request->request->get('postalCode'));
         $address->setLocality($request->request->get('locality'));
+        $address->setName($request->request->get('name'));
+        $address->setAdditionalInformation($request->request->get('additionaleInformation'));
         $address->setLat(1.0);
         $address->setLng(1.0);
         $address->setName($request->request->get('name'));
@@ -86,7 +110,7 @@ class AddressController extends Controller implements ClassResourceInterface
         $errors = $validator->validate($address);
         if (count($errors) > 0) {
             $errorsString = (string) $errors;
-            return new Response(400, $errorsString);
+            throw new HttpException(400, $errorsString);
         }
         $em->persist($address);
         $em->flush();
@@ -105,6 +129,23 @@ class AddressController extends Controller implements ClassResourceInterface
         $em->remove($webPage);
         $em->flush();
         return new Response(json_encode([200, "success"]));
+    }
+    public function patchUserAction(Request $request) {
+        $em = $this->getDoctrine()->getManager();
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Address');
+        $address = $repository->findOneById($request->request->get('address'));
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
+        $user = $repository->findOneById($request->request->get('user'));
+        $address->addUser($user);
+        $validator = $this->get('validator');
+        $errors = $validator->validate($address);
+        if (count($errors) > 0) {
+            $errorsString = (string)$errors;
+            throw new HttpException(400, $errorsString);
+        }
+        $em->persist($address);
+        $em->flush($address);
+        return new Response(json_encode($request->request->get('user')));
     }
 
 }

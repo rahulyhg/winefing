@@ -23,10 +23,8 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use FOS\UserBundle\Doctrine\UserManagerInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
-use AppBundle\Form\AddressType;
-use AppBundle\Form\DomainType;
-use Winefing\ApiBundle\Entity\Address;
-use Winefing\ApiBundle\Entity\Domain;
+use Symfony\Component\Form\FormError;
+use Winefing\ApiBundle\Entity\StatusCodeEnum;
 use Winefing\ApiBundle\Entity\User;
 use Winefing\ApiBundle\Entity\UserGroupEnum;
 
@@ -40,12 +38,16 @@ class RegistrationController extends Controller
         $form =$this->createForm(UserRegistrationType::class, $user);
         $form->handleRequest($request);
         if($form->isSubmitted() && $form->isValid()) {
-            $body = $request->request->get('user_registration');
-            $body['roles'] = UserGroupEnum::User;
             $api = $this->container->get('winefing.api_controller');
-            var_dump($body['email']['first']);
-            $response = $api->post($this->get('router')->generate('api_post_user'), $body);
-            var_dump($response->getBody());
+            $body['email'] = $request->request->get('user_registration')['email']['first'];
+            if($api->get($this->get('router')->generate('api_get_user_by_email', $body))->getStatusCode() != StatusCodeEnum::empty_response) {
+                $form->get('email')['first']->addError(new FormError($this->get('translator')->trans('error.email_existing')));
+            } else {
+                $body['roles'] = UserGroupEnum::User;
+                $body['password'] = $request->request->get('user_registration')['password']['first'];
+                $response = $api->post($this->get('router')->generate('api_post_user'), $body);
+            }
+
         }
         return $this->render('user/registration.html.twig', array(
             'user' => $form->createView()

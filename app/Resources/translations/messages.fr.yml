@@ -105,3 +105,28 @@ error.email_existing: Un compte avec ce mail existe déjà.
 error.password_format: Le mot de passe doit contenir 8 charactères, dont au moins une chiffre et une lettre majuscule.
 error.email_not_corresponding: Les emails ne correspondent pas.
 error.password_not_corresponding: Les mot de passe ne correspondent pas.
+
+label.paiement: Paiement
+example.address_home: Ex. Domicile, Lieu de travail, addresse de papi....
+label.select_address: Selectionner cette addresse
+label.existing_address: Addresse existante
+label.address_additional_information: Complément d'addresse
+example.address_additional_information: Ex. Numéro d'appartement, digit code...
+
+warning.delete_address: Etes vous sûr de vouloir supprimer cette addresse ?
+label.cancel: Annuler
+
+label.agree_sales_conditions: J'accepte les conditions générals de vente
+label.save_credit_card: Sauvegarder ma carte de crédit pour des prochaines transactions
+label.order_resume: Résumé de la commande
+label.here : Ici
+label.billing_address : Addresse de facturation
+label.delivery_address : Addresse de livraison
+
+label.sign_in : Se connecter
+label.keep_me_logged_in : Rester connecté.
+question.not_acccount: Vous n'avez pas de compte ?
+label.sign_up_here: Créer un compte ici.
+label.create_an_account: Créer un compte
+
+Bad credentials: "L'email ou le mot de passe n'est pas bon."

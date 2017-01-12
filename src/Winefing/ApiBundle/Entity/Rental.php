@@ -26,6 +26,12 @@ class Rental
     private $id;
 
     /**
+     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\RentalOrder", inversedBy="rental", fetch="EXTRA_LAZY")
+     * @Groups({"rentalOrders"})
+     */
+    private $rentalOrders;
+
+    /**
      * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\CharacteristicValue", inversedBy="rentals")
      * @Groups({"characteristicValues"})
      */
@@ -103,6 +109,7 @@ class Rental
         $this->characteristicValues = new ArrayCollection();
         $this->medias = new ArrayCollection();
         $this->rentalPromotions = new ArrayCollection();
+        $this->rentalOrders = new ArrayCollection();
         return $this;
     }
 
@@ -274,6 +281,22 @@ class Rental
     public function getMedias()
     {
         return $this->medias;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRentalOrders()
+    {
+        return $this->rentalOrders;
+    }
+
+    /**
+     * @param mixed $rentalOrders
+     */
+    public function setRentalOrders($rentalOrders)
+    {
+        $this->rentalOrders = $rentalOrders;
     }
 
 }

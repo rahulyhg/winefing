@@ -16,33 +16,39 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Winefing\ApiBundle\Entity\User;
 use Doctrine\ORM\EntityManager;
 use JMS\Serializer\Serializer;
+use Winefing\ApiBundle\Entity\UserGroupEnum;
+use Symfony\Component\Form\FormError;
 
 class LemonWayController
 {
     protected $em;
     protected $serializer;
-    const DIRECTKIT_WS = 'https://sandbox-api.lemonway.fr/mb/winefing/dev/directkitxml/service.asmx';
-    const INFORMATIONS = ["wlLogin"=> 'adminmb', "wlPass" => "WhWo//2016", "language" => 'fr', "version"=>1.0, "walletIp"=> '212.51.179.194', 'walletUa'=> 'ua'];
+    protected $directkit_ws;
+    protected $informations;
 
     public function __construct(EntityManager $entityManager, Serializer $serializer){
         $this->em = $entityManager;
         $this->serializer = $serializer;
+        $this->directkit_ws = 'https://sandbox-api.lemonway.fr/mb/winefing/dev/directkitxml/service.asmx';
+        $this->informations = ["wlLogin"=> 'adminmb', "wlPass" => "WhWo//2016", "language" => 'fr', "version"=>1.0, "walletIp"=> '212.51.179.194', 'walletUa'=> 'ua'];
     }
     /**
      *
      */
     public function addWallet($user) {
-        $client = new \Soapclient($this::DIRECTKIT_WS."?wsdl");
+        $client = new \Soapclient($this->directkit_ws."?wsdl");
         $wallet['wallet'] = $user->getId();
         $this->setUserWallet($wallet, $user);
-        $this->setCompanyWallet($wallet);
-        $this->setCompanyInformationWallet($wallet, $user);
-        $response = $client->RegisterWallet(array_merge($this::INFORMATIONS, $wallet));
+        if($user->getRoles() == UserGroupEnum::Host) {
+            $this->setCompanyWallet($wallet);
+            $this->setCompanyInformationWallet($wallet, $user);
+        }
+        $response = $client->RegisterWallet(array_merge($this->informations, $wallet));
         if(empty($response->RegisterWalletResult->E)) {
             $this->updateUser($user);
             $response->RegisterWalletResult->WALLET->ID;
         } else {
-            switch ($response->RegisterWalletResult->E->Msg){
+            switch ($response->RegisterWalletResult->E->Code){
                 case '152' :
                     $this->updateUser($user);
                     return $response->RegisterWalletResult->E->Msg;
@@ -52,9 +58,42 @@ class LemonWayController
             }
         }
     }
-    public function getUser($id) {
-        $user = $this->userManager->findUserBy(array('id'=>$id));
-        return $user;
+    public function registerCard($user, &$creditCardForm) {
+        $client = new \Soapclient($this->directkit_ws."?wsdl");
+        $card['wallet'] = $user->getId();
+        $this->setCard($card, $creditCardForm);
+        $response = $client->RegisterCard(array_merge($this->informations, $card));
+        var_dump($response);
+        if(empty($response->RegisterCardResult->E)) {
+            $creditCard = new \Winefing\ApiBundle\Entity\CreditCard();
+            $creditCard->setOwner($creditCardForm['name']->getData());
+            return $this->newCreditCard($response->RegisterCardResult->CARD, $creditCard);
+        } else {
+            switch ($response->RegisterCardResult->E->Code){
+                case '212' :
+                    $creditCardForm->get('cardNumber')->addError(new FormError($response->RegisterCardResult->E->Msg));
+                    break;
+                case '266' :
+                    $creditCardForm->get('cardDate')->addError(new FormError($response->RegisterCardResult->E->Msg));
+                    break;
+                case '267' :
+                    $creditCardForm->get('cardCode')->addError(new FormError($response->RegisterCardResult->E->Msg));
+                    break;
+                default :
+                    throw new \Exception($response->RegisterCardResult->E->Msg);
+            }
+        }
+    }
+    public function newCreditCard($card, &$creditCard) {
+        $creditCard->setExpirationDate($card->EXTRA->EXP);
+        $creditCard->setNumber($card->EXTRA->NUM);
+        $creditCard->setLemonWayId($card->ID);
+    }
+    public function setCard(&$card, $creditCardForm) {
+        $card['cardType'] = $creditCardForm['cardType']->getData();
+        $card['cardNumber'] = str_replace(" ", "", $creditCardForm['cardNumber']->getData());
+        $card['cardCode'] = $creditCardForm['cardCode']->getData();
+        $card['cardDate'] = str_replace(" ", "", $creditCardForm['cardDate']->getData());
     }
     public function updateUser(User $user) {
         $user->setWallet(1);
@@ -110,10 +149,11 @@ class LemonWayController
      * @param Wallet $wallet
      * @param User $user
      */
-    public function setAddressWallet(&$wallet, $user) {
-        $wallet->setStreet('');
-        $wallet->setPostCode('');
-        $wallet->setCity('');
+    public function setAddressWallet(&$wallet, $address) {
+        $wallet['newStreet'] = $address->getStreetAddress();
+        $wallet['newPostCode'] = $address->getPostalCode();
+        $wallet['newCity'] = $address->getCity();
+        $wallet['newCtry'] = $address->getCountry();
     }
 
     /**
@@ -133,5 +173,29 @@ class LemonWayController
     public function setCompanyInformationWallet(&$wallet, $user){
         $wallet["companyName"] = $user->getDomains()[0]->getName();
         $wallet["companyDescription"] = $user->getDomains()[0]->getDescription();
+    }
+
+    /**
+     * This allows to update the information about the address. This is the only function allowing to add information about the address.
+     * @param $user
+     * @param $address
+     * @return mixed
+     */
+    public function updateAddressWallet($user, $address){
+        $client = new \Soapclient($this->directkit_ws."?wsdl");
+        $wallet['wallet'] = $user->getId();
+        $this->setAddressWallet($wallet, $address);
+        $response = $client->UpdateWalletDetails(array_merge($this->informations, $wallet));
+
+        if(empty($response->RegisterWalletResult->E)) {
+            $this->updateUser($user);
+            $response->RegisterWalletResult->WALLET->ID;
+        } else {
+            switch ($response->RegisterWalletResult->E->Msg){
+                default :
+                    return $response->RegisterWalletResult->E->Msg;
+            }
+        }
+
     }
 }

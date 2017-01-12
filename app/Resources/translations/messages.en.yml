@@ -106,3 +106,26 @@ error.password_format: Le mot de passe doit contenir 8 charactères, dont au moi
 error.email_not_corresponding: Les emails ne correspondent pas.
 error.password_not_corresponding: Les mot de passe ne correspondent pas.
 
+label.paiement: Paiement
+example.address_home: Ex. Domicile, Work place, Mum's address...
+label.select_address: Select this address
+label.existing_address: Existing address
+label.address_additional_information: Additional Information
+example.address_additional_information: Ex. Flat appartement, digit code
+
+warning.delete_address: Do you really want to delete this address ?
+label.cancel: Cancel
+label.agree_sales_conditions: Agree with sales conditions
+label.save_credit_card: Saves credit card for further transaction
+label.order_resume: Order resume
+label.here : Here
+label.billing_address : Billing Address
+label.delivery_address : Delivery Address
+
+label.sign_in : Sign in
+label.keep_me_logged_in : Keep me logged in
+question.not_acccount: Don't have account ?
+label.sign_up_here: Sign up here.
+label.create_an_account: Create an account.
+
+Bad credentials: "Your user name or password are incorrect."

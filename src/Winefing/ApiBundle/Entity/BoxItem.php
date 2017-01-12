@@ -53,6 +53,13 @@ class BoxItem
      */
     private $name;
 
+    /**
+     * @var
+     * @Groups({"default"})
+     * @Type("string")
+     */
+    private $description;
+
     public function _construct(){
         $this->boxItemChoices[] = new ArrayCollection();
         $this->boxItemTrs[] = new ArrayCollection();
@@ -130,12 +137,21 @@ class BoxItem
         foreach($this->boxItemTrs as $boxItemTr) {
             if($boxItemTr->getLanguage()->getCode() == $language) {
                 $this->name = $boxItemTr->getName();
+                $this->description = $boxItemTr->getDescription();
                 break;
             }
         }
     }
     public function resetBoxes(){
         $this->boxes = new ArrayCollection();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDescription()
+    {
+        return $this->description;
     }
 }
 

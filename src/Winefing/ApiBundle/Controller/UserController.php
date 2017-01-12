@@ -47,11 +47,13 @@ class UserController extends Controller implements ClassResourceInterface
         }
         return new Response($serializer->serialize($users, 'json', SerializationContext::create()->setGroups(array('default'))));
     }
-    public function getByEmail($email) {
-        $userManager = $this->get('fos_user.user_manager');
+    public function getByEmailAction($email) {
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
         $serializer = $this->container->get("jms_serializer");
-        $user = $userManager->findBy(array('email'=>$email));
-        return new Response($serializer->serialize($user, 'json'));
+        $user = $repository->findOneByEmail($email);
+        if(count($user)>0) {
+            return new Response($serializer->serialize($user, 'json', SerializationContext::create()->setGroups(array('id'))));
+        }
     }
     public function getAction($id)
     {
@@ -86,10 +88,8 @@ class UserController extends Controller implements ClassResourceInterface
                 $this->setHost($user, $newUser);
                 break;
             case UserGroupEnum::User:
-                $error = new Error(ErrorEnum::email_existing);
-                $error->setMessage($this->get('translator')->trans($error->getMessage()));
-                if(!empty($this->findUserByEmail($newUser['email']['first']))) {
-                    throw new HttpException(400,'lol');
+                if(!empty($this->findUserByEmail($newUser['email']))) {
+                    throw new HttpException('An email already exist with this count');
                 }
                 $this->setUser($user, $newUser);
                 break;

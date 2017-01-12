@@ -30,6 +30,13 @@ class User implements UserInterface, \Serializable
      */
     protected $id;
 
+    /**
+     * @var CreditCards
+     * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\CreditCard", mappedBy="user", fetch="EXTRA_LAZY", cascade="ALL")
+     * @Groups({"creditCards"})
+     */
+    private $creditCards;
+
 
     /**
      * @ORM\Column(type="string", length=25, unique=true)
@@ -157,6 +164,12 @@ class User implements UserInterface, \Serializable
     private $wineList;
 
     /**
+     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Address", fetch="LAZY", cascade={"persist", "merge", "detach"})
+     * @Groups({"addresses"})
+     */
+    private $addresses;
+
+    /**
      * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Box", fetch="EXTRA_LAZY")
      * @Groups({"boxList"})
      */
@@ -174,7 +187,9 @@ class User implements UserInterface, \Serializable
         $this->domains = new ArrayCollection();
         $this->wineList = new ArrayCollection();
         $this->boxList = new ArrayCollection();
+        $this->addresses = new ArrayCollection();
         $this->isActive = true;
+        $this->creditCards = new ArrayCollection();
 
         return $this;
     }
@@ -234,7 +249,7 @@ class User implements UserInterface, \Serializable
     {
 //        return $this->getRoles();
 //        return str_split($this->roles, strlen($this->roles)+1);
-        return $this->roles;
+        return array('ROLE_USER');
     }
 
     /**
@@ -589,4 +604,41 @@ class User implements UserInterface, \Serializable
     {
         $this->wallet = $wallet;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getAddresses()
+    {
+        return $this->addresses;
+    }
+
+    /**
+     * @param mixed $addresses
+     */
+    public function setAddresses($addresses)
+    {
+        $this->addresses = $addresses;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCreditCards()
+    {
+        return $this->creditCards;
+    }
+
+    /**
+     * @param mixed $creditCards
+     */
+    public function setCreditCards($creditCards)
+    {
+        $this->creditCards = $creditCards;
+    }
+
+    public function addCreditCard(CreditCard $creditCard){
+        $this->creditCards[] = $creditCard;
+    }
+
 }

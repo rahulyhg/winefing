@@ -10,18 +10,13 @@ namespace Winefing\ApiBundle\Repository;
  */
 class AddressRepository extends \Doctrine\ORM\EntityRepository
 {
-//    function findByUser($userId)
-//    {
-//        $query = $this->createQueryBuilder('address')
-//            ->join("address.articleCategory", "articleCategory")
-//            ->join("articleCategoryTr.language", "language")
-//            ->where('language.code = :langueCode and articleCategory.id = :articleCategory')
-//            ->setParameter('langueCode', 'fr')
-//            ->setParameter('articleCategory', $articleCategoryId)
-//            ->setMaxResults(1)
-//            ->getQuery();
-//        $frenchName = $query->getResult();
-//        var_dump($query->getResult());
-//        return $frenchName;
-//    }
+    function findAllByUser($userId)
+    {
+        $query = $this->createQueryBuilder('address')
+            ->join("address.users", "user")
+            ->where('user.id = :userId')
+            ->setParameter('userId', $userId)
+            ->getQuery();
+        return $query->getResult();
+    }
 }

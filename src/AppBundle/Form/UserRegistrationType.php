@@ -29,6 +29,8 @@ class UserRegistrationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+            ->add('firstName', null, array('label' => 'label.first_name', 'attr'=>array('class'=> 'form-control')))
+            ->add('lastName', null, array('label' => 'label.last_name', 'attr'=>array('class'=> 'form-control')))
             ->add('password', RepeatedType::class, array('type' => PasswordType::class,
                 'first_options'  => array('label' => 'label.password', 'data'=>'', 'attr'=>array('class'=> 'form-control')),
                 'second_options' => array('label' => 'label.confirmation_password', 'data'=>'', 'attr'=>array('class'=> 'form-control'))))

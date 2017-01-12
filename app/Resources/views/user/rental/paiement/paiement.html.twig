@@ -1,0 +1,174 @@
+{% extends 'user/rental/paiement/base.html.twig' %}
+{% block new %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel-group" id="accordion">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne"><span class="glyphicon glyphicon-file">
+                            </span>  {% trans %}label.order_resume{% endtrans %}</a>
+                        </h4>
+                    </div>
+                    <div id="collapseOne" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            {% set detail = '' %}
+                            {% for dayPrice in bill.dayPrices %}
+                                {% set date =  dayPrice['day']|date('d-m-Y')%}
+                                {% set price = dayPrice['price'] %}
+                                {% set detail = detail ~ "<label>" ~ date ~ ": "  ~ price ~ "</label> <br>" %}
+                            {% endfor %}
+                            <div class="row">
+                                <br>
+                                <div class="col-sm-6">
+                                    <label>{{ bill.averagePrice ~'$ *' }} {{ bill.dayNumber }} {% trans %}label.days{% endtrans %}</label>
+                                    <a data-html="true" style="border:none" type="button" title="{% trans %}label.price_details{% endtrans %}" data-container="body" data-toggle="popover" data-placement="bottom" data-content="{{ detail }}">
+                                        <spam class="glyphicon glyphicon-question-sign"></spam>
+                                    </a>
+                                    <label> : </label>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label>{{ bill.amount ~'$'}}</label>
+                                </div>
+                                <br>
+                                <label>{% trans %}label.service_fees{% endtrans %}</label>
+                                <label>{{ bill.comission ~ '$' }}</label>
+                                <br>
+                                <label>{% trans %}label.total{% endtrans %}</label>
+                                <label>{{ bill.totalTTC  ~ '$' }}</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <span class="glyphicon glyphicon-eur">
+                            </span>  {% trans %}label.pay{% endtrans %}
+                            <object style="float: left;" type="image/svg+xml" data="{{ picturePath ~'credit-card.svg'}}" height="20px">
+                            </object>
+                            <object style="float: left;" type="image/svg+xml" data="{{ picturePath ~'mastercard.svg'}}" height="20px">
+                            </object>
+                            <object style="float: left;" type="image/svg+xml" data="{{ picturePath ~'visa.svg'}}" height="20px">
+                            </object>
+                        </h4>
+                    </div>
+                    <div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    {{ form_start(creditCardForm) }}
+                                    <div class="panel panel-default">
+                                        <div class="panel-body">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group {% if creditCardForm.cardName.vars.errors|length %}has-error{% endif %}">
+                                                        {{ form_row(creditCardForm.cardName) }}
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group {% if creditCardForm.cardType.vars.errors|length %}has-error{% endif %}">
+                                                        {{ form_row(creditCardForm.cardType) }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group {% if creditCardForm.cardNumber.vars.errors|length %}has-error{% endif %}">
+                                                {{ form_row(creditCardForm.cardNumber) }}
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group {% if creditCardForm.cardCode.vars.errors|length %}has-error{% endif %}">
+                                                        {{ form_row(creditCardForm.cardCode) }}
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group {% if creditCardForm.cardDate.vars.errors|length %}has-error{% endif %}">
+                                                        {{ form_row(creditCardForm.cardDate) }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div style="font-weight: normal!important;font-style: italic">
+                                        <spam>{% trans %}label.agree_sales_conditions{% endtrans %}</spam>
+                                        <a href="#" target="_blank">
+                                            {% trans %}label.here{% endtrans%}.
+                                        </a>
+                                        {{ form_widget(creditCardForm.cgv) }}
+                                        <br>
+                                        <spam>{% trans %}label.save_credit_card{% endtrans %}</spam>
+                                        <a href="#" target="_blank">
+                                            {% trans %}label.here{% endtrans%}.
+                                        </a>
+                                        {{ form_widget(creditCardForm.save) }}
+                                    </div>
+                                    <div class="form-group">
+                                        {{ form_row(creditCardForm.submit) }}
+                                    </div>
+                                    {{ form_end(creditCardForm) }}
+                                </div>
+                                <div class="col-md-6">
+                                    <div class='card-wrapper'></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function(){
+            $('[data-toggle="popover"]').popover();
+            var card = new Card({
+                form: document.querySelector('form'),
+                container: '.card-wrapper',
+                placeholders: {
+                        number: '**** **** **** ****',
+                        name: 'Audrey Carval',
+                        expiry: '**/****',
+                        cvc: '***'
+            }
+            });
+        });
+        $('#credit_card_cardNumber').on('change', function() {
+            console.log(card.type);
+        });
+//        var card = new Card({
+//            // a selector or DOM element for the form where users will
+//            // be entering their information
+//            form: 'form', // *required*
+//            // a selector or DOM element for the container
+//            // where you want the card to appear
+//            container: '.card-wrapper', // *required*
+//
+//            formSelectors: {
+//                numberInput: 'input#number', // optional — default input[name="number"]
+//                expiryInput: 'input#expiry', // optional — default input[name="expiry"]
+//                cvcInput: 'input#cvc', // optional — default input[name="cvc"]
+//                nameInput: 'input#name' // optional - defaults input[name="name"]
+//            },
+//
+//            width: 200, // optional — default 350px
+//            formatting: true, // optional - default true
+//
+//            // Strings for translation - optional
+//            messages: {
+//                validDate: 'valid\ndate', // optional - default 'valid\nthru'
+//                monthYear: 'mm/yyyy', // optional - default 'month/year'
+//            },
+//
+//            // Default placeholders for rendered fields - optional
+//            placeholders: {
+//                number: '•••• •••• •••• ••••',
+//                name: 'Full Name',
+//                expiry: '••/••',
+//                cvc: '•••'
+//            },
+//
+//            // if true, will log helpful messages for setting up Card
+//            debug: false // optional - default false
+//        });
+    </script>
+{% endblock %}

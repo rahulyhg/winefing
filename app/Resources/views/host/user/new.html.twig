@@ -38,29 +38,58 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            {{ form_row(userForm.firstName) }}
+                                            <label>*{{ form_label(userForm.firstName) }}</label>
+                                            {{ form_errors(userForm.firstName) }}
+                                            {{ form_widget(userForm.firstName) }}
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            {{ form_row(userForm.lastName) }}
+                                            <label>*{{ form_label(userForm.lastName) }}</label>
+                                            {{ form_errors(userForm.lastName) }}
+                                            {{ form_widget(userForm.lastName) }}
                                         </div>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    {{ form_row(userForm.phoneNumber) }}
+                                    <div class="form-group">
+                                        <label>*{{ form_label(userForm.phoneNumber) }}</label>
+                                        {{ form_errors(userForm.phoneNumber) }}
+                                        {{ form_widget(userForm.phoneNumber) }}
+                                    </div>
+                                </div>
+                                <div class="form-group has-success has-feedback">
+                                    <label class="control-label">*{{ form_label(userForm.email.first) }}</label>
+                                    {{ form_errors(userForm.email.first) }}
+                                    <div class="input-group">
+                                        <span class="input-group-addon">@</span>
+                                        {{ form_widget(userForm.email.first, {'attr':{'aria-describedby':'emailSuccessStatus'}}) }}
+                                    </div>
+                                    <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
+                                    <span id="emailSuccessStatus" class="sr-only">(success)</span>
+                                </div>
+                                <div class="form-group has-success has-feedback">
+                                    <label class="control-label">*{{ form_label(userForm.email.second) }}</label>
+                                    {{ form_errors(userForm.email.second) }}
+                                    <div class="input-group">
+                                        <span class="input-group-addon">@</span>
+                                        {{ form_widget(userForm.email.second, {'attr':{'aria-describedby':'emailConfirmationSuccessStatus'}}) }}
+                                    </div>
+                                    <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
+                                    <span id="emailConfirmationSuccessStatus" class="sr-only">(success)</span>
                                 </div>
                                 <div class="form-group">
-                                    {{ form_row(userForm.email.first) }}
-                                </div>
-                                <div id="emailRepeatFieldset">
-                                    {{ form_row(userForm.email.second) }}
+                                    <label style="float: left">
+                                        *{{ form_label(userForm.password.first) }}
+                                        <a href="#" data-toggle="tooltip" title="{% trans %}{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
+                                    </label>
+                                    {{ form_errors(userForm.password.first) }}
+                                    {{ form_widget(userForm.password.first) }}
                                 </div>
                                 <div class="form-group">
-                                    {{ form_row(userForm.password.first) }}
-                                </div>
-                                <div class="form-group">
-                                    {{ form_row(userForm.password.second) }}
+                                    <label>*{{ form_label(userForm.password.second) }}</label>
+                                    {{ form_errors(userForm.password.second) }}
+                                    {{ form_widget(userForm.password.second) }}
                                 </div>
                             {{ form_end(userForm) }}
                         {% endif %}

@@ -11,6 +11,7 @@ parameters:
     locale:  fr
     host_comission: 10.00
     client_comission: 6.20
+    tax: 20.00
     language_directory_upload: '%kernel.root_dir%/../web/Resources/pictures/language/'
     characteristic_category_directory_upload: '%kernel.root_dir%/../web/Resources/pictures/characteristicCategory/'
     characteristic_directory_upload: '%kernel.root_dir%/../web/Resources/pictures/characteristic/'
@@ -21,15 +22,16 @@ parameters:
     rental_directory_upload: '%kernel.root_dir%/../web/Resources/pictures/rental/'
     box_directory_upload: '%kernel.root_dir%/../web/Resources/pictures/box/'
 
-    language_directory: 'test-prod/web/Resources/pictures/language/'
-    characteristic_category_directory: 'test-prod/web/Resources/pictures/characteristicCategory/'
-    characteristic_directory: 'test-prod/web/Resources/pictures/characteristic/'
-    article_directory: 'test-prod/web/Resources/pictures/article/'
-    domain_directory: 'test-prod/web/Resources/pictures/domain/'
-    user_directory: 'test-prod/web/Resources/pictures/user/'
-    property_directory: 'test-prod/web/Resources/pictures/property/'
-    rental_directory: 'test-prod/web/Resources/pictures/rental/'
-    box_directory: 'test-prod/web/Resources/pictures/box/'
+    language_directory: 'winefing/web/Resources/pictures/language/'
+    credit_card_directory: '/winefing/web/Resources/credit-card/'
+    characteristic_category_directory: 'winefing/web/Resources/pictures/characteristicCategory/'
+    characteristic_directory: 'winefing/web/Resources/pictures/characteristic/'
+    article_directory: 'winefing/web/Resources/pictures/article/'
+    domain_directory: 'winefing/web/Resources/pictures/domain/'
+    user_directory: 'winefing/web/Resources/pictures/user/'
+    property_directory: 'winefing/web/Resources/pictures/property/'
+    rental_directory: 'winefing/web/Resources/pictures/rental/'
+    box_directory: 'winefing/web/Resources/pictures/box/'
     mail_chimp_token: '82eeea1796fe25cf7d185ec3ce2af340-us14'
     mail_chimp_url: 'https://us14.api.mailchimp.com/export/1.0/'
 
@@ -75,10 +77,12 @@ twig:
         format_date_time: 'DATETIME'
         format_date: 'DATE'
         format_varchar: 'VARCHAR'
-        user_directory: '%kernel.root_dir%/test-prod/web/Resources/pictures/user/'
         role_host : 'ROLE_HOST'
         role_admin : 'ROLE_ADMIN'
         role_user : 'ROLE_USER'
+        address_billing : 'billing'
+        address_delivering : 'delivering'
+        user_directory : 'http://40.68.82.241/winefing/web/Resources/pictures/user/'
 
 
 # Doctrine Configuration
@@ -88,8 +92,8 @@ doctrine:
         host:     localhost
         port:     ~
         dbname:   dev
-        user:     test_prod
-        password: test_prod
+        user:     root
+        password: WhWo//2016
         charset:  UTF8
         # if using pdo_sqlite as your database driver:
         #   1. add the path in parameters.yml
@@ -127,12 +131,6 @@ swiftmailer:
     username:  "%mailer_user%"
     password:  "%mailer_password%"
     spool:     { type: memory }
-
-fos_user:
-    db_driver: orm
-    firewall_name: dev
-    user_class: Winefing\ApiBundle\Entity\User
-#    use_listener: false
 
 #fos_rest:
 #    view:

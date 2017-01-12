@@ -1,52 +1,43 @@
-{% extends 'host/base.html.twig' %}
-{% block table %}
+{% extends 'user/box/base.html.twig' %}
+{% block new %}
     <div class="row">
-        <div>
-            {% set length = boxes|length %}
-            {% set i = 0 %}
-            {% for j in 0..(length/3)|round(0, 'ceil') %}
-                <div class="row container-realestate">
-                    {% for box in i..(i+2) if (i < length) %}
-                        <div class="col-md-4 col-sm-6 col-xs-12">
-                            <div class="box-container">
-                                <div class="box-image">
-                                    {#<img src="{{ mediaPath ~ boxes[i].mediaPresentation }}" alt="{{ boxes[i].name }}" alt="mikha real estate theme">#}
-                                    <div class="box-status">
-                                        <span>For Rent</span>
-                                    </div>
-                                </div>
-                                <div class="box-features">
-                                    {% for boxItem in boxes[i].boxItems %}
-                                        {{ boxItem.name }}
-                                        <ul>
-                                            {% for boxItemChoice in boxItem.boxItemChoices if boxItem.boxItemChoices|length>0 %}
-                                                <li>{{ boxItemChoice.name }}</li>
-                                                {% if loop.index < boxItem.boxItemChoices|length %}
-                                                    {% trans %}label.or{% endtrans %}
-                                                {% endif %}
-                                            {% endfor %}
-                                        </ul>
-                                    {% endfor %}
-                                    <span><i class="fa fa-home"></i> 5,000 m<sup>2</sup></span>
-                                    <span><i class="fa fa-hdd-o"></i> 2 Bed</span>
-                                    <span><i class="fa fa-male"></i> 2 Bath</span>
-                                </div>
-                                <div class="box-content">
-                                    <h3><a href="{{ path('rental_edit', {'id': boxes[i].id }) }}">{{ boxes[i].name }}</a><br>
-                                        <small>{{ boxes[i].description }}</small></h3>
-                                    <a href="{{ path('rental_edit', {'id': boxes[i].id }) }}">
-                                        <button class="btn btn-primary pull-right">Modifier</button>
+        <div class="col-xs-6 col-md-offset-3">
+            <br>
+            <form name="boxItemChoice" method="post">
+                {% for boxItem in box.boxItems %}
+                    {% if boxItem.boxItemChoices|length > 0 %}
+                        <input type="hidden" name="boxItemChoice[{{ loop.index }}][boxItem]" value="{{ boxItem.id }}">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" data-parent="#accordion" href="#{{ boxItem.id }}">
+                                        <label>{{ boxItem.name }}</label>
+                                    <span class="glyphicon glyphicon-chevron-down"></span>
                                     </a>
+                                </h4>
+                            </div>
+                            <div id="{{ boxItem.id }}" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                    {{ boxItem.description }}
                                 </div>
                             </div>
                         </div>
-                        {% set i = i+1 %}
-                    {% endfor %}
-                </div>
-            {% endfor %}
+                        <div>
+                            <select name="boxItemChoice[{{ loop.index }}][boxItemChoice]" class="selectpicker">
+                                {% for boxItemChoice in boxItem.boxItemChoices %}
+                                    <option value="{{ boxItemChoice.id }}">{{ boxItemChoice.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <br><br>
+                    {% endif %}
+                {% endfor %}
+                <input type="submit" class="btn btn-default btn-primary" value="{% trans %}label.submit{% endtrans %}">
+            </form>
         </div>
-        {% for box in boxes %}
-
-        {% endfor %}
     </div>
+    <script>
+        $('.selectpicker').selectpicker({
+        });
+    </script>
 {% endblock %}

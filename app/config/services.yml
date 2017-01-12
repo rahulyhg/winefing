@@ -1,7 +1,7 @@
 # Learn more about services, parameters and containers at
 # http://symfony.com/doc/current/book/service_container.html
 parameters:
-#    parameter_name: value
+    winefing.login_success_handler.class: Winefing\UserBundle\Controller\LoginSuccessHandler
 
 services:
     winefing.api_controller:
@@ -19,3 +19,6 @@ services:
     winefing.lemonway_controller:
         class: PaiementBundle\Controller\LemonWayController
         arguments: ["@doctrine.orm.entity_manager", "@jms_serializer" ]
+    winefing.component.authentication.handler.login_success_handler:
+        class:  %winefing.login_success_handler.class%
+        arguments:  ["@router", "@winefing.api_controller", "@winefing.webpath_controller", '@service_container']

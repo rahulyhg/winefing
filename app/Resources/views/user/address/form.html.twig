@@ -1,0 +1,39 @@
+{{ form_start(addressForm, {'method':'POST'}) }}
+    <div class="form-group">
+        <label for="address">*{{ form_label(addressForm.name) }}</label>
+        {{ form_errors(addressForm.name) }}
+        {{ form_widget(addressForm.name,  { 'attr': {'class': 'form-control'} }) }}
+    </div>
+    <div class="form-group">
+        <label for="address">*{% trans %}label.address{% endtrans %} </label>
+        {{ form_errors(addressForm.formattedAddress) }}
+        {{ form_widget(addressForm.formattedAddress,  { 'attr': {'class': 'form-control'} }) }}
+    </div>
+    <div class="form-group">
+        <label for="address">{{ form_label(addressForm.additionalInformation) }}</label>
+        {{ form_errors(addressForm.additionalInformation) }}
+        {{ form_widget(addressForm.additionalInformation,  { 'attr': {'class': 'form-control'} }) }}
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="postal_code">*{% trans %}label.postal_code{% endtrans %} </label>
+                {{ form_errors(addressForm.postalCode) }}
+                {{ form_widget(addressForm.postalCode,  { 'attr': {'class': 'form-control'} }) }}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="locality">*{% trans %}label.locality{% endtrans %} </label>
+                {{ form_errors(addressForm.locality) }}
+                {{ form_widget(addressForm.locality,  { 'attr': {'class': 'form-control'} }) }}
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="country">*{% trans %}label.country{% endtrans %} </label>
+        {{ form_errors(addressForm.country) }}
+        {{ form_widget(addressForm.country,  { 'attr': {'class': 'form-control'} }) }}
+    </div>
+    {{ form_widget(addressForm.submit) }}
+{{ form_end(addressForm) }}

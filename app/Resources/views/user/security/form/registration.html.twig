@@ -1,0 +1,41 @@
+<div>
+    {% set class = "form-group has-error" %}
+    {{ form_start(user) }}
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group {% if user.firstName.vars.errors|length %}has-error{% endif %}">
+                    <label>*{{ form_label(user.firstName) }}</label>
+                    {{ form_errors(user.firstName) }}
+                    {{ form_widget(user.firstName) }}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group {% if user.lastName.vars.errors|length %}has-error{% endif %}">
+                    <label>*{{ form_label(user.lastName) }}</label>
+                    {{ form_errors(user.lastName) }}
+                    {{ form_widget(user.lastName) }}
+                </div>
+            </div>
+        </div>
+        <div class="form-group {% if user.email.first.vars.errors|length %}has-error{% endif %}">
+            <label>*{{ form_label(user.email.first) }}</label>
+            {{ form_errors(user.email.first) }}
+            {{ form_widget(user.email.first) }}
+        </div>
+        <div class="form-group {% if user.email.second.vars.errors|length %}has-error{% endif %}">
+            <label>*{{ form_label(user.email.second) }}</label>
+            {{ form_errors(user.email.second) }}
+            {{ form_widget(user.email.second) }}
+        </div>
+        <div class="form-group {% if user.password.first.vars.errors|length %}has-error{% endif %}">
+            <label>*{{ form_label(user.password.first) }}</label>
+            {{ form_errors(user.password.first) }}
+            {{ form_widget(user.password.first) }}
+        </div>
+        <div class="form-group {% if user.password.second.vars.errors|length %}has-error{% endif %}">
+            <label>*{{ form_label(user.password.second) }}</label>
+            {{ form_errors(user.password.second) }}
+            {{ form_widget(user.password.second) }}
+        </div>
+    {{ form_end(user) }}
+</div>

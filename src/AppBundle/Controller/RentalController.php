@@ -6,6 +6,8 @@
  * Time: 20:38
  */
 namespace AppBundle\Controller;
+use AppBundle\Form\AddressType;
+use AppBundle\Form\AddressUserType;
 use AppBundle\Form\RentalType;
 use PaiementBundle\Entity\CreditCard;
 use PaiementBundle\Form\CreditCardType;
@@ -22,12 +24,14 @@ use GuzzleHttp;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Symfony\Component\HttpFoundation\File\File;
+use Winefing\ApiBundle\Entity\Address;
 use Winefing\ApiBundle\Entity\CharacteristicrentalValue;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\Common\Collections\ArrayCollection;
 use Winefing\ApiBundle\Entity\Rental;
 use Winefing\ApiBundle\Entity\CharacteristicValue;
+use Winefing\ApiBundle\Entity\StatusCodeEnum;
 
 
 class RentalController extends Controller
@@ -45,49 +49,19 @@ class RentalController extends Controller
         $mediaPath = $this->getMediaPath();
         return $this->render('user/rental/research.html.twig', array('rentals' => $rentals, 'mediaPath'=>$mediaPath));
     }
-
-    /**
-     * @param $order
-     * @return mixed
-     * @Route("users/rental/paiement", name="rental_paiement")
-     */
-    public function paiement(Request $request){
-        $rental = $this->getRental($request->request->get('rental'));
-        $bill = $this->getPricesRentalAndPeriod($rental->getId(), $request->request->get('start'), $request->request->get('end'));
-        $creditCard = new CreditCard();
-        $creditCardForm = $this->createForm(CreditCardType::class, $creditCard);
-        return $this->render('user/rental/paiement.html.twig', ['creditCardForm'=>$creditCardForm->createView(), 'bill'=>$bill]);
-    }
-
-    /**
-     * For each of the period of location, this function return an array with the date and the price associated.
-     * @param $rental
-     * @param $start
-     * @param $end
-     * @return array[date] = $price
-     */
-    public function getPricesRentalAndPeriod($rental, $start, $end) {
-        $serializer = $this->container->get('winefing.serializer_controller');
-        $api = $this->container->get('winefing.api_controller');
-        $response = $api->get($this->get('_router')->generate('api_get_rental_prices_by_date', array('rental'=>$rental, 'start'=>strtotime($start), 'end'=>strtotime($end))));
-        $prices = $serializer->decode($response->getBody()->getContents(),'json');
-        return $prices;
-
-    }
     /**
      * @Route("users/rental/{id}", name="rental")
      *
      */
     public function getOneAction($id, Request $request) {
         $rental = $this->getRental($id);
-        $serializer = $this->container->get('jms_serializer');
         $rentalPromotions = $this->getRentalPromotions($id);
         $rentalPromotionsArray = $this->formateDate($rental, $rentalPromotions);
         if($request->isMethod('POST')) {
-            $order['rental'] = $id;
-            $order['startDate'] = $request->request->get('start');
-            $order['endDate'] = $request->request->get('end');
-            return $this->redirectToRoute('rental_paiement', array('request'=> $order), 307);
+            $this->get('session')->set('rental', $id);
+            $this->get('session')->set('startDate', $request->request->get('start'));
+            $this->get('session')->set('endDate', $request->request->get('end'));
+            return $this->redirectToRoute('rental_paiement_billing_address');
         }
         return $this->render('user/rental/singleCard.html.twig', array('rental' => $rental, 'rentalPromotions'=>$rentalPromotionsArray));
     }

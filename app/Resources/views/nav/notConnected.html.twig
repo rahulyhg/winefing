@@ -14,13 +14,9 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="navbar-top">
             <ul class="nav navbar-nav navbar-right">
-                <li class="{% if app.request.attributes.get('_route') == 'user_host_new' %}active{% endif %}"><a href="{{ path("user_host_new", {'step' : 'contact'}) }}">Viticulteur</a></li>
-                <li><a href="#" class="signin" data-toggle="modal" data-target="#modal-signin">{% trans %}label.help{% endtrans %}</a></li>
+                <li><a href="#">{% trans %}label.help{% endtrans %}</a></li>
                 <li><a href="#modal-signin" class="signin" data-toggle="modal" data-target="#modal-signin">{% trans %}label.registration{% endtrans %}</a></li>
-                {#<button type="button" value="Connexion" class="btn signup" onclick="loadForm('{{ path('fos_user_security_login')}}', 'login')">Connexion</button>#}
-                <a href="{{ path('login') }}">
-                    <button type="button" value="Connexion" class="btn signup">Connexion</button>
-                </a>
+                <button class="btn signup" class="btn btn-info btn-lg" data-toggle="modal" data-target="#login">{% trans %}label.login{% endtrans %}</button>
             </ul>
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container -->

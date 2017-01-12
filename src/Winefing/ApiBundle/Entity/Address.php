@@ -5,6 +5,8 @@ namespace Winefing\ApiBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\Common\Collections\ArrayCollection;
+
 /**
  * Address
  *
@@ -36,6 +38,12 @@ class Address
     private $properties;
 
     /**
+     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\User", fetch="EXTRA_LAZY", cascade={"persist", "merge", "detach"})
+     * @Groups({"addresses"})
+     */
+    private $users;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="streetAddress", type="string", length=255, nullable=true)
@@ -62,6 +70,14 @@ class Address
     /**
      * @var string
      *
+     * @ORM\Column(name="additionalInformation", type="string", length=255, nullable=true)
+     * @Groups({"default"})
+     */
+    private $additionalInformation;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="political", type="string", length=255, nullable=true)
      * @Groups({"default"})
      */
@@ -72,6 +88,7 @@ class Address
      *
      * @ORM\Column(name="country", type="string", length=255)
      * @Groups({"default"})
+     * @Assert\NotBlank()
      */
     private $country;
 
@@ -117,6 +134,14 @@ class Address
     private $formattedAddress;
 
 
+    public function __construct(){
+        $this->users = new ArrayCollection();
+    }
+    public function __clone() {
+        $this->id = null;
+    }
+
+
     /**
      * Get id
      *
@@ -126,7 +151,6 @@ class Address
     {
         return $this->id;
     }
-
     /**
      * Set streetAddress
      *
@@ -375,5 +399,40 @@ class Address
         $this->name = $name;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getUsers()
+    {
+        return $this->users;
+    }
+
+    /**
+     * @param mixed $users
+     */
+    public function setUsers($users)
+    {
+        $this->users = $users;
+    }
+    public function addUser(User $user) {
+        $this->users[] = $user;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAdditionalInformation()
+    {
+        return $this->additionalInformation;
+    }
+
+    /**
+     * @param string $additionalInformation
+     */
+    public function setAdditionalInformation($additionalInformation)
+    {
+        $this->additionalInformation = $additionalInformation;
+    }
 }
 

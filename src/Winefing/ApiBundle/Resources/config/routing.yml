@@ -183,3 +183,18 @@ propertyCategoryTr:
     type: rest
     resource: Winefing\ApiBundle\Controller\PropertyCategoryTrController
     name_prefix:  api_
+
+creditCard:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\CreditCardController
+    name_prefix:  api_
+
+dayPrice:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\CreditCardController
+    name_prefix:  api_
+
+rentalOrder:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\RentalOrderController
+    name_prefix:  api_

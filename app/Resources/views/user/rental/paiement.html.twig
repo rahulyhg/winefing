@@ -2,8 +2,21 @@
 {% block body %}
     <div class="row">
         <div class="col-md-6">
+            <div class="form-group">
+                <label>{% trans %}label.first_name{% endtrans %}</label>
+                <input type="text" name="firstName" name="required" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>{% trans %}label.last_name{% endtrans %}</label>
+                <input type="text" name="lastName" name="required" class="form-control">
+            </div>
+            <div>
+                {% include('host/address/form.html.twig') %}
+            </div>
+            <div>
             {{ form_start(creditCardForm) }}
             {{ form_end(creditCardForm) }}
+            </div>
         </div>
         {% set detail = '' %}
         {% for key, val in bill.dates %}

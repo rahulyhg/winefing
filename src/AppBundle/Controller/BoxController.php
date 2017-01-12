@@ -37,26 +37,7 @@ use Winefing\ApiBundle\Entity\BoxTr;
 
 class BoxController extends Controller
 {
-    /**
-     * @Route("/box/{id}/order", name="box_order")
-     */
-    public function orderAction($id, Request $request) {
-        $box = $this->getBox($id, $request->getLocale());
 
-        foreach($box['boxItems'] as $boxItem) {
-            if(count($boxItem['boxItemChoices']) > 0) {
-                return  $this->render('user/box/select.html.twig', array("box" => $box));
-            }
-        }
-        return  $this->render('user/box/paiement.html.twig', array("box" => $box));
-    }
-    public function getBox($id, $language) {
-        $api = $this->container->get('winefing.api_controller');
-        $serializer = $this->container->get('winefing.serializer_controller');
-        $response = $api->get($this->get('router')->generate('api_get_box_by_language', array('id'=> $id, 'language' => $language)));
-        $box = $serializer->decode($response->getBody()->getContents());
-        return $box;
-    }
     /**
      * @Route("/boxes/", name="boxes")
      */
@@ -71,7 +52,7 @@ class BoxController extends Controller
     }
 
     /**
-     * @Route("/admin//boxes/", name="boxes_admin")
+     * @Route("/admin/boxes/", name="boxes_admin")
      */
     public function cgetAdminAction() {
         $api = $this->container->get('winefing.api_controller');
@@ -119,7 +100,7 @@ class BoxController extends Controller
             $body['boxTrs'] = $request->request->get('box')['boxTrs'];
             $this->submitBoxTrs($body);
             $this->postMedias($boxId, $request->files->get('box')['medias']);
-            return $this->redirectToRoute('boxes');
+            return $this->redirectToRoute('boxes_admin');
         }
         return $this->render('admin/box/form.html.twig', array(
             'boxForm' => $boxForm->createView()
@@ -149,7 +130,7 @@ class BoxController extends Controller
             $body['boxTrs'] = $request->request->get('box')['boxTrs'];
             $this->submitBoxTrs($body);
             $this->postMedias($boxId, $request->files->get('box')['medias']);
-            return $this->redirectToRoute('boxes');
+            return $this->redirectToRoute('boxes_admin');
         }
         return $this->render('admin/box/form.html.twig', array(
             'boxForm' => $boxForm->createView()
@@ -207,6 +188,6 @@ class BoxController extends Controller
         $request->getSession()
             ->getFlashBag()
             ->add('success', "The box is well deleted.");
-        return $this->redirectToRoute('boxes');
+        return $this->redirectToRoute('boxes_admin');
     }
 }

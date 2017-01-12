@@ -156,7 +156,7 @@ class RentalController extends Controller implements ClassResourceInterface
         $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Rental');
         $rental = $repository->findOneById($rental);
-        $allDates = array();
+        $dayPrices = array();
         $date = $start;
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:RentalPromotion');
         $total = 0.0;
@@ -166,20 +166,27 @@ class RentalController extends Controller implements ClassResourceInterface
             if(empty($rentalPromotion) || $rentalPromotion == NULL) {
                 $price = (float) $rental->getPrice();
             } else {
-                $price =  $rental->getPrice() * ((100-$rentalPromotion[0]->getReduction())/100);
+                $price =  round($rental->getPrice() * ((100-$rentalPromotion[0]->getReduction())/100), 2);
             }
             $total += $price;
-            $allDates[$date] = round($price, 2);
+            $dayPrice = array();
+            $dayPrice['day'] = $date;
+            $dayPrice['price'] = $price;
+            $dayPrices[] = $dayPrice;
             $date = strtotime('+1 days', $date);
             $i++;
         }
-        $result['dates'] = $allDates;
+        $result['startDate'] = $start;
+        $result['endDate'] = $end;
+        $result['dayPrices'] = $dayPrices;
         $result['dayNumber'] = $i;
         $result['averagePrice'] = round(($total/$i), 2);
-        $result['sum'] = round($total, 2);
+        $result['amount'] = $total;
         $comission = $this->container->getParameter('client_comission');
         $result['comission'] = $comission;
-        $result['total'] = round($total + $comission, 2);
+        $result['totalTTC'] = round($total + $comission, 2);
+        $result['totalTax'] = round($total * ($this->container->getParameter('tax')/100), 2);
+        $result['totalHT'] = $result['totalTTC'] - $result['totalTax'];
         $json = $serializer->serialize($result, 'json');
         return new Response($json);
     }
