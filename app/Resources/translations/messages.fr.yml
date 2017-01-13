@@ -129,4 +129,15 @@ question.not_acccount: Vous n'avez pas de compte ?
 label.sign_up_here: Créer un compte ici.
 label.create_an_account: Créer un compte
 
-Bad credentials: "L'email ou le mot de passe n'est pas bon."
+question.forgotten_password: Mot de passe oublié ?
+question.already_have_account: Vous avez déjà un compte ?
+label.agree_with_terms_of_use:  J'accepte les conditions d'acceptations général.
+
+label.my_wine_list: Ma Wine List
+
+host.paper.kbis: Extrait Kbis de la société créditrice
+host.paper.statuts: Status à jour de ladite société
+host.paper.statuts: Status à jour de ladite société
+host.paper.iban: Relevé d'identité bancaire de cette société
+host.paper.id: Pièce d'identité d'une personne détennant au moins 20% du capital de la société
+host.paper.residence_papier : Justificatif de domicile de cette personne

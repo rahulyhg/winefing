@@ -7,6 +7,8 @@
  */
 
 namespace Winefing\UserBundle\Controller;
+use AppBundle\Form\PasswordEditType;
+use AppBundle\Form\UserType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -92,5 +94,88 @@ class ManagerController extends Controller
                 ->add('error', $response->getBody()->getContents());
         }
         return $this->redirectToRoute('users_by_group', array('group'=>$user->isAdmin() ? UserGroupEnum::Admin : $user->getRoles()));
+    }
+
+    /**
+     * @Route("/user/edit", name="user_edit")
+     */
+    public function getHost(Request $request) {
+        $api = $this->container->get('winefing.api_controller');
+        $serializer = $this->container->get('jms_serializer');
+
+        $user = $this->getUser();
+        $userForm =  $this->createForm(UserType::class, $user);
+        $userForm->handleRequest($request);
+        if($userForm->isSubmitted() && $userForm->isValid()) {
+            $userEdit = $request->request->get('user');
+            $userEdit["birthDate"] = strtotime($userEdit["birthDate"]);
+            $userEdit["id"] = $user->getId();
+            $this->submit($userEdit);
+            $this->addFlash('userSuccess', $this->get('translator')->trans('success.profil_edit'));
+            return $this->redirect($this->generateUrl('user_edit', array('id' => $user->getId())) . '#profil');
+        }
+        $passwordForm = $this->createForm(PasswordEditType::class, $user);
+        $passwordForm->handleRequest($request);
+        if($passwordForm->isSubmitted() && $passwordForm->isValid()) {
+            if($request->request->get('password')["currentPassword"] != $user->getPassword()) {
+                $this->addFlash('passwordError', $this->get('translator')->trans('error.not_current_password'));
+            } else {
+                $passwordForm = $request->request->get('password');
+                $passwordForm['user'] = $user->getId();
+                $this->submitPassword($passwordForm);
+                $this->addFlash('passwordSuccess', $this->get('translator')->trans('success.password_edit'));
+            }
+            return $this->redirect($this->generateUrl('user_edit', array('id' => $user->getId())) . '#password');
+        }
+
+        $response = $api->get($this->get('router')->generate('api_get_subscriptions_user_group', array('userGroup'=> implode(',', $user->getRoles()))));
+        $subscriptions = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\Subscription>', 'json');
+        $subscriptionFormatList = $this->subscriptionsByFormat($subscriptions);
+
+
+        $response = $api->get($this->get('_router')->generate('api_get_user_media_path'));
+        $serializer = $this->container->get('winefing.serializer_controller');
+        $picturePath = $serializer->decode($response->getBody()->getContents());
+
+        if ($request->isMethod('POST')) {
+            $picture = $request->files->get('picture');
+            $subscription = $request->request->get('subscription');
+            if($picture !=null) {
+                $body["user"] = $user->getId();
+                $this->submitPicture($picture, $body);
+                $this->addFlash('pictureSuccess', $this->get('translator')->trans('success.picture_edit'));
+                return $this->redirect($this->generateUrl('user_edit', array('id' => $user->getId())) . '#picture');
+            }
+            if($subscription != null) {
+                $subscription["user"] = $user->getId();
+                $this->submitSubscriptions($subscription);
+                $this->addFlash('subscriptionsSuccess', $this->get('translator')->trans('success.modifications_saved'));
+                return $this->redirect($this->generateUrl('user_edit', array('id' => $user->getId())) . '#subscriptions');
+            }
+        }
+
+        return $this->render($this->getTwigView($user), array(
+            'userForm' => $userForm->createView(),
+            'picture' => $user->getPicture(),
+            'picturePath' => $picturePath,
+            'subscriptionFormatList' => $subscriptionFormatList,
+            'passwordForm' => $passwordForm->createView()
+        ));
+    }
+    public function getTwigView($user) {
+        $template = 'admin/userEdit.html.twig';
+        if(in_array(UserGroupEnum::Host, $user->getRoles())) {
+            $template = 'host/user/edit.html.twig';
+        } elseif(in_array(UserGroupEnum::User, $user->getRoles())) {
+            $template = 'user/backend/userEdit.html.twig';
+        }
+        return $template;
+    }
+    public function subscriptionsByFormat($subscriptions) {
+        $subscriptionFormatList = array();
+        foreach($subscriptions as $subscription) {
+            $subscriptionFormatList[$subscription->getFormat()][] = $subscription;
+        }
+        return $subscriptionFormatList;
     }
 }

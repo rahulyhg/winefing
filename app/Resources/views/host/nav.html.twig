@@ -28,8 +28,8 @@
                     <a href="{{ path('rentals_promotions') }}">{% trans %}label.promotions{% endtrans %}</a>
                 </li>
                 <li><a href="#">{% trans %}label.my_reviews{% endtrans %} </a></li>
-                <li class="{% if route == 'user_host_edit'%}active{% endif %}">
-                    <a href="{{ path('user_host_edit') }}">{% trans %}label.my_profil{% endtrans %} </a>
+                <li class="{% if route == 'user_edit'%}active{% endif %}">
+                    <a href="{{ path('user_edit') }}">{% trans %}label.my_profil{% endtrans %} </a>
                 </li>
             </ul>
         </div><!-- /.navbar-collapse -->

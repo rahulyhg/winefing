@@ -19,12 +19,13 @@ security:
 
 
     firewalls:
-        dev:
-            pattern:  ^/(_(profiler|wdt)|css|images|js)/
-            security: false
         main:
-            pattern: ^/
+            pattern:  ^/
             anonymous: true
+            remember_me:
+                secret:   '%secret%'
+                lifetime: 604800 # 1 week in seconds
+                path:     /
             provider: our_db_provider
             form_login:
               login_path: login
@@ -39,7 +40,12 @@ security:
                 target: home
 
     access_control:
-        - { path: ^/registration$, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/%locale%/registration, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/%locale%/login, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/%locale%/logout, role: IS_AUTHENTICATED_FULLY }
+        - { path: ^/%locale%/logout, role: IS_AUTHENTICATED_FULLY }
         - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/_local/admin/, role: ROLE_ADMIN }
+        - { path: ^/%locale%/admin/, role: ROLE_ADMIN }
+        - { path: ^/%locale%/host/, role: ROLE_HOST }
+        - { path: ^/%locale%/paiement/, role: IS_AUTHENTICATED_FULLY }

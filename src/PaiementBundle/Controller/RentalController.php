@@ -31,14 +31,26 @@ use Winefing\ApiBundle\Entity\CharacteristicrentalValue;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\Common\Collections\ArrayCollection;
+use Winefing\ApiBundle\Entity\RentalOrderGift;
 use Winefing\ApiBundle\Entity\StatusCodeEnum;
+use AppBundle\Form\RentalOrderGiftType;
 
 class RentalController extends Controller
 {
     /**
      * @param $order
      * @return mixed
-     * @Route("users/rental/paiement", name="rental_paiement")
+     * @Route("paiement/rental/gift", name="rental_paiement_gift")
+     */
+    public function paiementRentalGift() {
+        $rentalOrderGift = new RentalOrderGift();
+        $rentalOrderGiftForm = $this->createForm(RentalOrderGiftType::class, $rentalOrderGift);
+        return $this->render('user/rental/paiement/gift.html.twig', array('rentalOrderGift'=>$rentalOrderGiftForm->createView()));
+    }
+    /**
+     * @param $order
+     * @return mixed
+     * @Route("paiement/rental", name="rental_paiement")
      */
     public function paiement(Request $request){
         $user = $this->getUser();

@@ -81,7 +81,7 @@
                                 <div class="form-group">
                                     <label style="float: left">
                                         *{{ form_label(userForm.password.first) }}
-                                        <a href="#" data-toggle="tooltip" title="{% trans %}{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
+                                        <a href="#" data-toggle="tooltip" title="{% trans %}error.password_format{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
                                     </label>
                                     {{ form_errors(userForm.password.first) }}
                                     {{ form_widget(userForm.password.first) }}

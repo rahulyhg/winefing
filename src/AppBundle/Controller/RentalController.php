@@ -38,7 +38,7 @@ class RentalController extends Controller
 {
     const DATE_FORMAT = 'd-m-Y';
     /**
-     * @Route("/rentals-list", name="rentals_list")
+     * @Route("/rentals", name="rentals")
      *
      */
     public function cgetForUserAction() {
@@ -84,7 +84,7 @@ class RentalController extends Controller
         return $rentalPromotionsArray;
     }
     /**
-     * @Route("/rentals", name="rentals")
+     * @Route("host/rentals", name="host_rentals")
      *
      */
     public function cgetAction() {
@@ -98,7 +98,7 @@ class RentalController extends Controller
     }
 
     /**
-     * @Route("/rental/edit/{id}", name="rental_edit")
+     * @Route("host/rental/edit/{id}", name="rental_edit")
      */
     public function putAction($id ='', Request $request) {
         $rental = $this->getRental($id);
@@ -149,7 +149,7 @@ class RentalController extends Controller
     }
 
     /**
-     * @Route("/rental/new", name="rental_new")
+     * @Route("host/rental/new", name="rental_new")
      */
     public function newAction(Request $request) {
         $rental = new Rental();
@@ -173,7 +173,7 @@ class RentalController extends Controller
         return $this->render('host/rental/new/rental.html.twig', $return);
     }
     /**
-     * @Route("/rental/{idRental}/characteristics", name="rental_characteristics")
+     * @Route("host/rental/{idRental}/characteristics", name="rental_characteristics")
      */
     public function putPropertyCharacteristics($idRental, Request $request){
         $rental = $this->getRental($idRental);
@@ -191,7 +191,7 @@ class RentalController extends Controller
         return $this->render('host/rental/new/information.html.twig', $return);
     }
     /**
-     * @Route("/rental/{idRental}/pictures", name="rental_pictures")
+     * @Route("host/rental/{idRental}/pictures", name="rental_pictures")
      */
     public function putPropertyPictures($idRental, Request $request) {
         if ($request->isMethod('POST')) {

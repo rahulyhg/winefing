@@ -83,6 +83,7 @@ twig:
         address_billing : 'billing'
         address_delivering : 'delivering'
         user_directory : 'http://40.68.82.241/winefing/web/Resources/pictures/user/'
+        picture_directory : 'http://40.68.82.241/winefing/web/Resources/pictures/'
 
 
 # Doctrine Configuration

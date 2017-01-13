@@ -34,19 +34,13 @@ class SecurityController extends Controller
      */
     public function loginAction(Request $request)
     {
-        $user = new User();
-        $userForm = $this->createForm(UserRegistrationType::class, $user);
         $authenticationUtils = $this->get('security.authentication_utils');
-
-        // get the login error if there is one
         $error = $authenticationUtils->getLastAuthenticationError();
-
         // last username entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();
-        return $this->render('user/security/index.html.twig',array(
+        return $this->render('login.html.twig',array(
             'last_username' => $lastUsername,
-            'error'         => $error,
-            'user' => $userForm->createView()
+            'error'         => $error
         ));
     }
 

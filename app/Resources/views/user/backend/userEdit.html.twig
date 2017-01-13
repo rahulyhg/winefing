@@ -1,0 +1,21 @@
+{% extends 'user/backend/base.html.twig' %}
+{% block table %}
+    <div class="row">
+        <div class="col-sm-3">
+            <ul class="nav nav-pills nav-stacked">
+                <li class="active"><a href="#profil" data-toggle="tab">{% trans %}label.edit_profil{% endtrans %} </a></li>
+                <li><a href="#picture" data-toggle="tab">{% trans %}label.profil_picture{% endtrans %} </a></li>
+                <li><a href="#password" data-toggle="tab">{% trans %}label.edit_password{% endtrans %} </a></li>
+                <li><a href="#notifications" data-toggle="tab">{% trans %}label.notifications{% endtrans %} </a></li>
+            </ul>
+        </div>
+        <div class="col-sm-9">
+            <div class="tab-content">
+                {% include('userEdit/tab/profil.html.twig') %}
+                {% include('userEdit/tab/picture.html.twig') %}
+                {% include('userEdit/tab/password.html.twig') %}
+                {% include('userEdit/tab/notifications.html.twig') %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

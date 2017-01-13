@@ -247,9 +247,7 @@ class User implements UserInterface, \Serializable
      */
     public function getRoles()
     {
-//        return $this->getRoles();
-//        return str_split($this->roles, strlen($this->roles)+1);
-        return array('ROLE_USER');
+        return explode(',', $this->roles);
     }
 
     /**
@@ -257,7 +255,7 @@ class User implements UserInterface, \Serializable
      */
     public function setRoles($roles)
     {
-        $this->roles = $roles;
+        $this->roles = implode(',', $roles);
     }
 
     /**

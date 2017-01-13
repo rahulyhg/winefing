@@ -10,4 +10,11 @@ namespace Winefing\ApiBundle\Repository;
  */
 class SubscriptionRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function findByUserGroup($userGroup) {
+        $query = $this->createQueryBuilder('subscription')
+            ->where('subscription.userGroup like :userGroup')
+            ->setParameter('userGroup', '%'.$userGroup.'%')
+            ->getQuery();
+        return $query->getResult();
+    }
 }

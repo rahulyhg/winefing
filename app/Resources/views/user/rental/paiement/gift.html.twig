@@ -1,0 +1,24 @@
+{% extends 'user/rental/paiement/base.html.twig' %}
+{% block new %}
+    <div class="row">
+            <div class="col-md-6">
+                <div>
+                    <h3>{% trans %}label.gift{% endtrans %}</h3>
+                    <br>
+                    {{ form_start(rentalOrderGift) }}
+                        <div class="form-group">
+                        {{ form_label(rentalOrderGift.message) }}
+                        {{ form_errors(rentalOrderGift.message) }}
+                        {{ form_widget(rentalOrderGift.message) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_label(rentalOrderGift.signature) }}
+                            {{ form_errors(rentalOrderGift.signature) }}
+                            {{ form_widget(rentalOrderGift.signature) }}
+                        </div>
+                        {{ form_widget(rentalOrderGift.submit) }}
+                    {{ form_end(rentalOrderGift) }}
+                </div>
+            </div>
+    </div>
+{% endblock %}

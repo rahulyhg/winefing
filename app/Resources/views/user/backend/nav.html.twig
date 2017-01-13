@@ -1,0 +1,32 @@
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+        {% set route = app.request.attributes.get('_route') %}
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li class="{% if route == 'rentals_promotions' or route == 'rentals_promotion_new' or route == 'rentals_promotion_edit'%}active{% endif %}">
+                    <a href="{{ path('rentals_promotions') }}">{% trans %}label.dashboard{% endtrans %}</a>
+                </li>
+                <li class="{% if route == 'domain_edit'%}active{% endif %}">
+                    <a href="{{ path('domain_edit') }}">{% trans %}label.my_wine_list{% endtrans %} </a>
+                </li>
+                <li class="{% if route == 'rentals' or route == 'rental_new' or route == 'rental_edit' %}active{% endif %}">
+                    <a href="{{ path('rentals') }}">{% trans %}label.my_reservations{% endtrans %}
+                    </a>
+                </li>
+                <li class="{% if route == 'user_edit'%}active{% endif %}">
+                    <a href="{{ path('user_edit') }}">{% trans %}label.my_profil{% endtrans %} </a>
+                </li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>

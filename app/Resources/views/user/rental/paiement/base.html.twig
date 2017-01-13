@@ -9,6 +9,10 @@
                     <p>{% trans %}label.address{% endtrans %}</p>
                 </div>
                 <div class="stepwizard-step">
+                    <a type="button" class="btn btn-circle {% if route != 'rental_paiement_gift' %}{{ 'disabled btn-default' }}{% else %}{{  'btn-primary' }}{% endif %}">2</a>
+                    <p>{% trans %}label.gift{% endtrans %}</p>
+                </div>
+                <div class="stepwizard-step">
                     <a type="button" class="btn btn-circle {% if route != 'rental_paiement' %}{{ 'disabled btn-default' }}{% else %}{{  'btn-primary' }}{% endif %}">2</a>
                     <p>{% trans %}label.paiement{% endtrans %}</p>
                 </div>

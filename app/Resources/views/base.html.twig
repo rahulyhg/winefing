@@ -91,7 +91,7 @@
                             </div>
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" name="forget"> {% trans %}label.keep_me_logged_in{% endtrans %}
+                                    <input type="checkbox" id="remember_me" name="_remember_me" checked> {% trans %}label.keep_me_logged_in{% endtrans %}
                                 </label>
                             </div>
                         </div>
@@ -107,34 +107,49 @@
 
         <!-- begin:modal-signup -->
         <div class="modal fade" id="modal-signup" tabindex="-1" role="dialog" aria-labelledby="modal-signup" aria-hidden="true">
-            <div class="modal-dialog modal-sm">
+            <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                        <h4 class="modal-title">Sign up</h4>
+                        <h4 class="modal-title">{% trans %}label.registration{% endtrans %}</h4>
                     </div>
-                    <div class="modal-body">
-                        <form role="form">
-                            <div class="form-group">
-                                <input type="email" class="form-control input-lg" placeholder="Enter email">
+                    <form role="form" method="post" action="{{ path('registration') }}">
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <input name="firstName" required class="form-control" placeholder="{% trans %}label.first_name{% endtrans %}">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <input name="lastName" required class="form-control" placeholder="{% trans %}label.last_name{% endtrans %}">
+                                    </div>
+                                </div>
                             </div>
                             <div class="form-group">
-                                <input type="password" class="form-control input-lg" placeholder="Password">
+                                <input name="emailFirst" required type="email" class="form-control" placeholder="{% trans %}label.email{% endtrans %}">
                             </div>
                             <div class="form-group">
-                                <input type="password" class="form-control input-lg" placeholder="Confirm Password">
+                                <input name="emailSecond" required type="email" class="form-control" placeholder="{% trans %}label.confirmation_email{% endtrans %}">
+                            </div>
+                            <div class="form-group">
+                                <input name="passwordFirst" required type="password" class="form-control" placeholder="{% trans %}label.password{% endtrans %}">
+                            </div>
+                            <div class="form-group">
+                                <input name="passwordSecond" required type="password" class="form-control" placeholder="{% trans %}label.confirmation_password{% endtrans %}">
                             </div>
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" name="agree"> Agree to our <a href="#">terms of use</a> and <a href="#">privacy policy</a>
+                                    <input required type="checkbox" name="agree">{% trans %}label.agree_with_terms_of_use{% endtrans %} <a href="#">{% trans %}label.here{% endtrans %}.</a>
                                 </label>
                             </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <p>Already have account ? <a href="#modal-signin" data-toggle="modal" data-target="#modal-signin">Sign in here.</a></p>
-                        <input type="submit" class="btn btn-danger btn-block btn-lg" value="Sign up">
-                    </div>
+                        </div>
+                        <div class="modal-footer">
+                            <p>{% trans %}question.already_have_account{% endtrans %}<a href="#modal-signin" data-toggle="modal" data-target="#login"> {% trans %}label.sign_in{% endtrans %}.</a></p>
+                            <input type="submit" class="btn btn-danger btn-block btn-lg" value="{% trans %}label.registration{% endtrans %}">
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

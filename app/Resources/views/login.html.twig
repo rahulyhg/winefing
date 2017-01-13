@@ -1,0 +1,33 @@
+{% extends 'baseLogin.html.twig' %}
+{% block body %}
+    <div class="row">
+        <div class="col-md-4">
+            <br><br>
+            <h3>{% trans %}label.sign_in{% endtrans %}</h3>
+            <div>
+                {% if error is defined and error %}
+                    {{ error.messageKey|trans(error.messageData, 'security') }}
+                {% endif %}
+                <form method="post">
+                    <div class="form-group {% if error %}has-error{% endif %}">
+                        <label>{% trans %}label.email{% endtrans %}</label>
+                        <input type="email" id="username" name="_username" class="form-control"/>
+                    </div>
+                    <div class="form-group {% if error %}has-error{% endif %}">
+                        <label>{% trans %}label.password{% endtrans %}</label>
+                        <input type="password" id="password" name="_password" class="form-control"/>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="forget">{% trans %}label.keep_me_logged_in{% endtrans %}
+                        </label>
+                    </div>
+                    <input type="submit" name="login" class="btn btn-primary"/>
+                </form>
+            </div>
+        </div>
+        <div class="col-md-8" style="   padding: 0 !important; margin: 0 !important;">
+            <img style="width: 100%" src="{{ picture_directory ~'sign-in.jpeg' }}">
+        </div>
+    </div>
+{% endblock %}

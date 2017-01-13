@@ -30,7 +30,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 class AdminController extends Controller
 {
     /**
-     * @Route("lolilolilo/{id}", name="user_new_form")
+     * @Route("admin/user/new/{id}", name="user_new_form")
      */
     public function newFormAction($id = '') {
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
@@ -63,7 +63,7 @@ class AdminController extends Controller
         return $this->redirectToRoute('users_by_group', array('group'=>UserGroupEnum::Admin), 301);
     }
     /**
-     * @Route("user/admin/delete/{id}", name="user_admin_delete")
+     * @Route("admin/user/delete/{id}", name="user_admin_delete")
      */
     public function deleteAction($id, Request $request)
     {
@@ -94,7 +94,7 @@ class AdminController extends Controller
     }
 
     /**
-     * @Route("/user/activated/", name="user_activated")
+     * @Route("admin/user/activated/", name="user_activated")
      */
     public function putActivatedAction(Request $request) {
         $api = $this->container->get('winefing.api_controller');

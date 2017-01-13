@@ -83,7 +83,7 @@ class UserController extends Controller implements ClassResourceInterface
         $em = $this->getDoctrine()->getManager();
         $newUser = $request->request->all();
         $user->setRoles($newUser["roles"]);
-        switch ($user->getRoles()) {
+        switch (implode(',', $user->getRoles())) {
             case UserGroupEnum::Host :
                 $this->setHost($user, $newUser);
                 break;
@@ -119,6 +119,8 @@ class UserController extends Controller implements ClassResourceInterface
         $user->setLastLogin(new \DateTime());
     }
     public function setUser($user, $newUser) {
+        $user->setFirstName($newUser['firstName']);
+        $user->setLastName(strtoupper($newUser['lastName']));
         $user->setEmail($newUser['email']);
         $user->setUserName($newUser['email']);
         $user->setLastLogin(new \DateTime());
@@ -322,7 +324,7 @@ class UserController extends Controller implements ClassResourceInterface
     }
     public function deleteAction($id) {
         $user = $this->findUserById($id);
-        switch($user->getRoles()) {
+        switch(implode(',', $user->getRoles())) {
             case UserGroupEnum::Host :
                 $error = $this->deleteHost($user);
                 break;
