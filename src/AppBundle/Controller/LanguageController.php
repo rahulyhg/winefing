@@ -38,10 +38,8 @@ class LanguageController extends Controller
         $serializer = $this->container->get('winefing.serializer_controller');
         $response = $api->get($this->get('router')->generate('api_get_languages'));
         $languages = $serializer->decode($response->getBody()->getContents());
-        $response = $api->get($this->get('_router')->generate('api_get_languages_picture_path'));
-        $picturePath = $serializer->decode($response->getBody()->getContents());
         return $this->render('admin/language/index.html.twig', array(
-            'languages' => $languages, 'picturePath' => $picturePath)
+            'languages' => $languages)
         );
     }
     /**
@@ -75,9 +73,9 @@ class LanguageController extends Controller
             $response =  $api->put($this->get('router')->generate('api_put_language'), $language);
         }
         $language = $serializer->decode($response->getBody()->getContents());
-        $picture = $request->files->all()["language"]["picture"];
-        if($picture != null) {
-            $api->file($this->get('router')->generate('api_post_language_file'), $language, $picture);
+        $media = $request->files->all()["language"]["picture"];
+        if($media != null) {
+            $api->file($this->get('router')->generate('api_post_language_file'), $language, $media);
         }
         $request->getSession()
             ->getFlashBag()

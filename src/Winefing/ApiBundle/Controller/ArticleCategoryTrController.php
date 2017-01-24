@@ -20,14 +20,33 @@ use FOS\RestBundle\Controller\Annotations\FileParam;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use JMS\Serializer\SerializationContext;
 
 
 class ArticleCategoryTrController extends Controller implements ClassResourceInterface
 {
     /**
-     * Create an articleCategoryTr from the submitted data.
-     *
-     *
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Create a new object",
+     *  views = { "index", "blog" },
+     *  output= {
+     *      "class"="Winefing\ApiBundle\Entity\ArticleCategoryTr",
+     *      "groups"={"id", "default"}
+     *     },
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         204={
+     *           "Returned when no content",
+     *         }
+     *     },
+     *  requirements={
+     *     {
+     *          "name"="role", "dataType"="string", "required"=true, "description"="user role"
+     *      }
+     *     }
+     * )
      */
     public function postAction(Request $request)
     {

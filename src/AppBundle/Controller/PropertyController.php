@@ -48,12 +48,8 @@ class PropertyController extends Controller
         $serializer = $this->container->get('jms_serializer');
         $response = $api->get($this->get('_router')->generate('api_get_properties_by_user', array('userId' => $userId)));
         $properties = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\Property>', 'json');
-        $response = $api->get($this->get('_router')->generate('api_get_property_media_path'));
-        $serializer = $this->container->get('winefing.serializer_controller');
-        $mediaPath = $serializer->decode($response->getBody()->getContents());
         return $this->render('host/property/index.html.twig', array(
-            'properties' => $properties,
-            'mediaPath' => $mediaPath));
+            'properties' => $properties));
     }
     /**
      * Edit the property of the current user (host).
@@ -84,9 +80,6 @@ class PropertyController extends Controller
         $addressForm = $this->createForm(AddressType::class, $address);
         $characteristicCategories = $this->getCharacteristicValuesByCategory($property->getId());
 
-        $mediaPath = $this->getMediaPath();
-        $rentalMediaPath = $this->getRentalMediaPath();
-
         $addressForm->handleRequest($request);
         if ($addressForm->isSubmitted()) {
             if ($addressForm->isValid()) {
@@ -114,8 +107,6 @@ class PropertyController extends Controller
         $return['characteristicCategories'] = $characteristicCategories;
         $return['medias'] = $property->getMedias();
         $return['rentals'] = $property->getRentals();
-        $return['mediaPath'] = $mediaPath;
-        $return['rentalMediaPath'] = $rentalMediaPath;
         return $this->render('host/property/edit.html.twig', $return);
     }
     /**
@@ -260,7 +251,7 @@ class PropertyController extends Controller
     public function getPropertyDomainAddress($propertyId){
         $api = $this->container->get('winefing.api_controller');
         $serializer = $this->container->get('jms_serializer');
-        $response = $api->get($this->get('_router')->generate('api_get_property_domain_address', array('propertyId' => $propertyId)));
+        $response = $api->get($this->get('_router')->generate('api_get_address_by_property', array('propertyId' => $propertyId)));
         $address = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Address', 'json');
         return $address;
     }
@@ -280,28 +271,6 @@ class PropertyController extends Controller
             ->getForm();
     }
 
-    /**
-     * Get the path for the properties' pictures.
-     * @return string
-     */
-    public function getMediaPath() {
-        $api = $this->container->get('winefing.api_controller');
-        $serializer = $this->container->get('winefing.serializer_controller');
-        $response = $api->get($this->get('_router')->generate('api_get_property_media_path'));
-        $mediaPath = $serializer->decode($response->getBody()->getContents());
-        return $mediaPath;
-    }
-    /**
-     * Get the path for the rentals' pictures.
-     * @return string
-     */
-    public function getRentalMediaPath() {
-        $api = $this->container->get('winefing.api_controller');
-        $serializer = $this->container->get('winefing.serializer_controller');
-        $response = $api->get($this->get('_router')->generate('api_get_rental_media_path'));
-        $rentalMediaPath = $serializer->decode($response->getBody()->getContents());
-        return $rentalMediaPath;
-    }
     /**
      * Submit the property : if it's new one (empty id), call the post api route, else the put api route.
      * @param array
@@ -350,7 +319,7 @@ class PropertyController extends Controller
             $address = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Address', 'json');
             $body["address"] = $address->getId();
             $body["property"] = $property;
-            $api->put($this->get('router')->generate('api_put_property_address'), $body);
+            $api->patch($this->get('router')->generate('api_patch_property_address'), $body);
         } else {
             $response = $api->put($this->get('router')->generate('api_put_address'), $address);
             $address = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Address', 'json');
@@ -403,7 +372,7 @@ class PropertyController extends Controller
     {
         $api = $this->container->get('winefing.api_controller');
         $serializer = $this->container->get('jms_serializer');
-        $response = $response = $api->get($this->get('_router')->generate('api_get_property_missing_characteristics', array('propertyId' => $propertyId)));
+        $response = $response = $api->get($this->get('_router')->generate('api_get_characteristic_values_by_scope', array('id' => $propertyId, 'scope'=> ScopeEnum::Property)));
         $missingCharacteristics = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\Characteristic>', 'json');
         foreach ($missingCharacteristics as $characteristic) {
             $characteristicValue = new CharacteristicValue();

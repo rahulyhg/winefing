@@ -16,6 +16,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Winefing\ApiBundle\Entity\CharacteristicValue;
 use JMS\Serializer\SerializationContext;
+use Winefing\ApiBundle\Entity\ScopeEnum;
 
 
 class CharacteristicValueController extends Controller implements ClassResourceInterface
@@ -92,5 +93,24 @@ class CharacteristicValueController extends Controller implements ClassResourceI
         $em->persist($characteristicValue);
         $em->flush();
         return new Response();
+    }
+
+    public function cgetByScopeAction($id, $scope)
+    {
+        $serializer = $this->container->get('jms_serializer');
+        switch ($scope) {
+            case(ScopeEnum::Domain) :
+                $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Domain');
+                break;
+            case(ScopeEnum::Property) :
+                $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Property');
+                break;
+            case(ScopeEnum::Rental) :
+                $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Rental');
+                break;
+        }
+        $object = $repository->findOneById($id);
+        $json = $serializer->serialize($object->getCharacteristicValues(), 'json', SerializationContext::create()->setGroups(array('default', 'medias', 'address')));
+        return new Response($json);
     }
 }

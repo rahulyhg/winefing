@@ -63,32 +63,6 @@
         </div>
         {% block script %}
         <script>
-        $('#phoneNumber').keyup(function () {
-            if (this.value != this.value.replace(/[^0-9\.]/g, '')) {
-                this.value = this.value.replace(/[^0-9\.]/g, '');
-            }
-        });
-        $("#email").keyup(function() {
-            if($("#emailRepeat").val() != '') {
-                changeRepeatInputCss('email');
-            }
-        });
-        $("#password").keyup(function() {
-            var upperCase= new RegExp('[A-Z]');
-            var lowerCase= new RegExp('[a-z]');
-            var numbers = new RegExp('[0-9]');
-            if($(this).val().match(upperCase) && $(this).val().match(lowerCase) && $(this).val().match(numbers))
-            {
-                $('#password').popover('hide');
-                changeInputCss('password', true);
-            } else {
-                $('#password').popover('show');
-                changeInputCss('password', false);
-            }
-            if($("#passwordRepeat").val() != '') {
-                changeRepeatInputCss('password');
-            }
-        });
 
         function geolocate() {
             if (navigator.geolocation) {
@@ -283,7 +257,7 @@
             return -1;
         }
     </script>
-    <script type="text/javascript" src="http://maps.google.com/maps/api/js?key=AIzaSyBXbn5jGttQkXWIfV91bBmsMg-HS_o_f7o&signed_in=true&libraries=places&callback=initAutocomplete"
+    <script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyBXbn5jGttQkXWIfV91bBmsMg-HS_o_f7o&signed_in=true&libraries=places&callback=initAutocomplete"
             async defer></script>
     {% endblock %}
 {% endblock %}

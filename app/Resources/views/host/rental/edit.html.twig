@@ -94,8 +94,8 @@
                                         <div class="row">
                                             {% for f in 0..imagePerSlide - 1 if j <= medias|length - 1%}
                                                 <div class="col-md-4">
-                                                    <a href="{{ mediaPath ~ medias[j].name }}" rel="gallery2" class="fancybox img-hover-v1">
-                                                        <img src="{{ mediaPath ~ medias[j].name }}" style="max-width:100%;">
+                                                    <a href="{{ rental_directory ~ medias[j].name }}" rel="gallery2" class="fancybox img-hover-v1">
+                                                        <img src="{{ rental_directory ~ medias[j].name }}" style="max-width:100%;">
                                                     </a>
                                                 </div>
                                                 {% set j = j + 1 %}

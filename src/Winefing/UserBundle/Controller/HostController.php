@@ -7,6 +7,7 @@
  */
 
 namespace Winefing\UserBundle\Controller;
+use AppBundle\Form\DomainRegistrationType;
 use AppBundle\Form\UserType;
 use AppBundle\Form\DomainNewType;
 use AppBundle\Form\HostUserRegistrationType;
@@ -24,6 +25,7 @@ use GuzzleHttp;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Symfony\Component\HttpFoundation\File\File;
+use Winefing\ApiBundle\Entity\StatusCodeEnum;
 use Winefing\ApiBundle\Entity\UserForm;
 use Winefing\ApiBundle\Entity\User;
 use Winefing\ApiBundle\Entity\Domain;
@@ -33,50 +35,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class HostController extends Controller
 {
-    /**
-     * @Route("/user/host/new/{step}/{id}", name="user_host_new")
-     */
-    public function submitAction($step, $id = '', Request $request)
-    {
-        $return = array();
-        if($step == 'contact') {
-            $user = new User();
-            $userForm =  $this->createForm(HostUserRegistrationType::class, $user);
-            $return["userForm"] = $userForm->createView();
-            $userForm->handleRequest($request);
-            if($userForm->isSubmitted() && $userForm->isValid()) {
-                $userEdit = $request->request->get('host_user_registration');
-                $userEdit["email"] = $userEdit["email"]["first"];
-                if(!$this->emailExist($userEdit["email"])) {
-                    $userEdit["password"] = $userEdit["password"]["first"];
-                    $userEdit["id"] = $user->getId();
-                    $user = $this->submit($userEdit);
-                    return $this->redirect($this->generateUrl('user_host_new', array('step' => 'domain', 'id' => $user->getId())) . '#domain');
-                } else {
-                    $this->addFlash('contactError', $this->get('translator')->trans('error.email_already_exist'));
-                }
-            }
-        }
-        if($step == 'domain') {
-            $domainForm = $this->createForm(DomainNewType::class, new Domain());
-            $return["domainForm"] = $domainForm->createView();
-            $domainForm->handleRequest($request);
-            if ($domainForm->isSubmitted() && $domainForm->isValid()) {
-                if(!$this->userHasDomain($id)) {
-                    $domainNew = $request->request->get('domain_new');
-                    $domainNew["user"] = $id;
-                    $addressForm = $domainNew["address"];
-                    $address = $this->submitAddress($addressForm);
-                    $domainNew["address"] = $address->getId();
-                    $domain = $this->submitDomain($domainNew);
-                    return $this->redirect($this->generateUrl('domain_edit', array('userId'=> $id)) . '#presentation');
-                } else {
-                    $this->addFlash('domainError', $this->get('translator')->trans('error.domain_already_exist'));
-                }
-            }
-        }
-        return $this->render('host/user/new.html.twig', $return);
-    }
+
     public function submitDomain($domain) {
         $serializer = $this->container->get("jms_serializer");
         $api = $this->container->get('winefing.api_controller');
@@ -91,25 +50,21 @@ class HostController extends Controller
         $address = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Domain', 'json');
         return $address;
     }
-    public function userHasDomain($userId) {
-        $result = false;
-        $api = $this->container->get('winefing.api_controller');
-        $response = $api->get($this->get('_router')->generate('api_get_domain_by_user', array('userId' => $userId)));
-        if($response->getBody()->getContents() != 'null') {
-            $result = true;
-        }
-        return $result;
-    }
     public function emailExist($email) {
         $result = false;
         $api = $this->container->get('winefing.api_controller');
         $response =  $api->get($this->get('router')->generate('api_get_user_by_email', array('email' => $email)));
-        if($response->getBody()->getContents() != 'null') {
+        if($response->getStatusCode() != StatusCodeEnum::empty_response) {
             $result = true;
         }
         return $result;
     }
 
+    /**
+     * New Host User
+     * @param $user
+     * @return mixed
+     */
     public function submit($user)
     {
         $api = $this->container->get('winefing.api_controller');
@@ -132,12 +87,62 @@ class HostController extends Controller
     public function submitPassword($password)
     {
         $api = $this->container->get('winefing.api_controller');
-        $api->put($this->get('router')->generate('api_put_user_password'), $password);
+        $api->patch($this->get('router')->generate('api_patch_user_password'), $password);
     }
 
     public function submitSubscriptions($subscription)
     {
         $api = $this->container->get('winefing.api_controller');
-        $api->put($this->get('router')->generate('api_put_user_subscriptions'), $subscription);
+        $api->patch($this->get('router')->generate('api_patch_user_subscriptions'), $subscription);
+    }
+
+    /**
+     * Get the address's lat and lng. Re
+     * @param $address
+     * @return array|bool
+     */
+    function geocode($address){
+
+        // url encode the address
+        $address = urlencode($address);
+
+        // google map geocode api url
+        $url = "http://maps.google.com/maps/api/geocode/json?address={$address}";
+
+        // get the json response
+        $resp_json = file_get_contents($url);
+
+        // decode the json
+        $resp = json_decode($resp_json, true);
+
+        // response status will be 'OK', if able to geocode given address
+        if($resp['status']=='OK'){
+            // get the important data
+            $lati = $resp['results'][0]['geometry']['location']['lat'];
+            $longi = $resp['results'][0]['geometry']['location']['lng'];
+            $formatted_address = $resp['results'][0]['formatted_address'];
+
+            // verify if data is complete
+            if($lati && $longi && $formatted_address){
+
+                // put the data in the array
+                $data_arr = array();
+
+                array_push(
+                    $data_arr,
+                    $lati,
+                    $longi,
+                    $formatted_address
+                );
+
+                return $data_arr;
+
+            }else{
+                return false;
+            }
+
+        }else{
+            return false;
+        }
     }
 }

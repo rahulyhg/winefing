@@ -18,6 +18,7 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -29,17 +30,16 @@ class HostUserRegistrationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('firstName', null, array('label' => 'label.first_name', 'attr'=> array('maxlength'=>"60",'class'=> 'form-control')))
-            ->add('lastName', null, array('label' => 'label.last_name','attr'=> array('maxlength'=>"60",'class'=> 'form-control')))
-            ->add('phoneNumber', null, array('label' => 'label.phone_number', 'attr'=> array('maxlength'=>"10",'class'=> 'form-control')))
+            ->add('firstName', null, array('label' => 'label.first_name', 'attr'=> array('required'=>true,'maxlength'=>"60",'class'=> 'form-control')))
+            ->add('lastName', null, array('label' => 'label.last_name','attr'=> array('required'=>true,'maxlength'=>"60",'class'=> 'form-control')))
+            ->add('phoneNumber', null, array('label' => 'label.phone_number', 'attr'=> array('required'=>true,'class'=> 'form-control')))
             ->add('password', RepeatedType::class, array('type' => PasswordType::class,
-                'first_options'  => array('label' => 'label.password', 'data'=>'', 'attr'=>array('class'=> 'form-control')),
-                'second_options' => array('label' => 'label.confirmation_password', 'data'=>'', 'attr'=>array('class'=> 'form-control'))))
+                'first_options'  => array('label' => 'label.password', 'data'=>'', 'attr'=>array('required'=>true,'class'=> 'form-control', 'placeholder'=>'label.enter_password')),
+                'second_options' => array('label' => false, 'data'=>'', 'attr'=>array('required'=>true,'class'=> 'form-control', 'placeholder'=>'label.confirmation_password'))))
             ->add('email', RepeatedType::class, array('type' => EmailType::class,
-                'first_options'  => array('label' => 'label.email', 'data'=>'', 'attr'=>array('class'=> 'form-control')),
-                'second_options' => array('label' => 'label.confirmation_email', 'data'=>'', 'attr'=>array('class'=> 'form-control'))))
-            ->add('submit', SubmitType::class, array('label' => 'label.submit',
-                'attr' => array('class' => 'btn btn-primary pull-right')))
+                'first_options'  => array('label' => 'label.email', 'data'=>'', 'attr'=>array('required'=>true,'class'=> 'form-control','placeholder'=>'label.enter_email')),
+                'second_options' => array('label' => false, 'data'=>'', 'attr'=>array('required'=>true,'class'=> 'form-control', 'placeholder'=>'label.confirmation_email'))))
+
 
         ;
     }

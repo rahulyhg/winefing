@@ -25,9 +25,9 @@ class WineRegionType extends AbstractType
     {
         $builder
             ->add('id',  HiddenType::class, array('required' => false))
-        ->add('country', EntityType::class,  array('class' => 'WinefingApiBundle:Country', 'choice_label' => 'name'))
-        ->add('wineRegionTrs', CollectionType::class, array(
-        'entry_type' => WineRegionTrType::class));
+            ->add('country', EntityType::class,  array('class' => 'WinefingApiBundle:Country', 'choice_label' => 'name'))
+            ->add('wineRegionTrs', CollectionType::class, array(
+            'entry_type' => WineRegionTrType::class));
     }
     public function configureOptions(OptionsResolver $resolver)
     {

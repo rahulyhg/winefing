@@ -30,12 +30,10 @@ class PropertyCategoryController extends Controller
     public function cgetAction() {
         $api = $this->container->get('winefing.api_controller');
         $serializer = $this->container->get('winefing.serializer_controller');
-        $response = $api->get($this->get('_router')->generate('api_get_languages_picture_path'));
-        $languagePicturePath = $serializer->decode($response->getBody()->getContents());
         $serializer = $this->container->get('jms_serializer');
         $response = $api->get($this->get('_router')->generate('api_get_property_categories'));
         $propertyCategories = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\PropertyCategory>', 'json');
-        return $this->render('admin/propertyCategory/index.html.twig', array("propertyCategories" => $propertyCategories, 'languagePicturePath' => $languagePicturePath));
+        return $this->render('admin/propertyCategory/index.html.twig', array("propertyCategories" => $propertyCategories));
     }
 
     /**

@@ -14,8 +14,9 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="navbar-top">
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="#">{% trans %}label.help{% endtrans %}</a></li>
+                <li><a href="{{ path('registration_host') }}">{% trans %}label.host{% endtrans %}</a></li>
                 <li><a href="#modal-signup" class="signin" data-toggle="modal" data-target="#modal-signup">{% trans %}label.registration{% endtrans %}</a></li>
+                <li><a href="#">{% trans %}label.help{% endtrans %}</a></li>
                 <button class="btn signup" class="btn btn-info btn-lg" data-toggle="modal" data-target="#login">{% trans %}label.login{% endtrans %}</button>
             </ul>
         </div><!-- /.navbar-collapse -->

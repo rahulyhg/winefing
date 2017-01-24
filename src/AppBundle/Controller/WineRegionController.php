@@ -35,9 +35,7 @@ class WineRegionController extends Controller
         $response = $api->get($this->generateUrl('api_get_wine_regions'));
         $serializer = $this->container->get('winefing.serializer_controller');
         $wineRegions = $serializer->decode($response->getBody()->getContents());
-        $response = $api->get($this->get('_router')->generate('api_get_languages_picture_path'));
-        $languagePicturePath = $serializer->decode($response->getBody()->getContents());
-        return $this->render('admin/wineRegion/index.html.twig', array("wineRegions" => $wineRegions, 'languagePicturePath'=>$languagePicturePath));
+        return $this->render('admin/wineRegion/index.html.twig', array("wineRegions" => $wineRegions));
     }
 
     /**

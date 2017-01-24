@@ -45,9 +45,7 @@ class ArticleController extends Controller
         $serializer = $this->container->get("winefing.serializer_controller");
         $response = $api->get($this->get('router')->generate('api_get_articles'));
         $articles = $serializer->decode($response->getBody()->getContents());
-        $response = $api->get($this->get('_router')->generate('api_get_languages_picture_path'));
-        $languagePicturePath = $serializer->decode($response->getBody()->getContents());
-        return $this->render('admin/blog/article.html.twig', array("articles" => $articles, "languagePicturePath" => $languagePicturePath)
+        return $this->render('admin/blog/article.html.twig', array("articles" => $articles)
         );
     }
 }

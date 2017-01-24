@@ -14,26 +14,78 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use Doctrine\ORM\EntityManager;
-use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Winefing\ApiBundle\Entity\Box;
-use FOS\RestBundle\Request\ParamFetcher;
-use FOS\RestBundle\Controller\Annotations\RequestParam;
-use FOS\RestBundle\Controller\Annotations\FileParam;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Templating\Helper\AssetsHelper;
 use JMS\Serializer\SerializationContext;
-use Winefing\ApiBundle\Entity\BoxItem;
-use Winefing\ApiBundle\Entity\CreditCard;
 use Winefing\ApiBundle\Entity\RentalOrder;
 use Winefing\ApiBundle\Entity\StatusOrderEnum;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
 
 class RentalOrderController extends Controller implements ClassResourceInterface
 {
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Get bill for a rental, with all the field calculated.",
+     *  output= {
+     *      "class"="Winefing\ApiBundle\Entity\RentalOrder",
+     *      "groups"={"default"}
+     *     },
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         204={
+     *           "Returned when no content",
+     *         }
+     *     },
+     *  requirements={
+     *     {
+     *          "name"="rental", "dataType"="date", "required"=true, "description"="rental id",
+     *          "name"="start", "dataType"="date", "required"=true, "description"="start date of the reservation. Format timestamp.",
+     *          "name"="end", "dataType"="string", "required"=true, "description"="end date of the reservation. Format timestamp."
+     *      }
+     *     }
+     * )
+     */
+    public function getBeforePostAction($rental, $start, $end) {
+        $serializer = $this->container->get('jms_serializer');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Rental');
+        $rental = $repository->findOneById($rental);
+        $rentalOrder = new RentalOrder();
+        $date = $start;
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:RentalPromotion');
+        $total = 0.0;
+        $i = 0;
+        while($date < $end){
+            $rentalPromotion = $repository->findPromotionByDate($date, $rental->getId());
+            if(empty($rentalPromotion) || $rentalPromotion == NULL) {
+                $price = (float) $rental->getPrice();
+            } else {
+                $price =  round($rental->getPrice() * ((100-$rentalPromotion[0]->getReduction())/100), 2);
+            }
+            $total += $price;
+            $dayPrice = new DayPrice();
+            $dayPrice->setDate($date);
+            $dayPrice->setPrice($price);
+            $rentalOrder->addDayPrice($dayPrice);
+            $date = strtotime('+1 days', $date);
+            $i++;
+        }
+        $rentalOrder->setStartDate($start);
+        $rentalOrder->setEndDate($end);
+        $rentalOrder->setDayNumber($i);
+        $rentalOrder->setAveragePrice(round(($total/$i), 2));
+        $rentalOrder->setAmount($total);
+        $comission = $this->container->getParameter('client_comission');
+        $rentalOrder->setComission($comission);
+        $rentalOrder->setTotalTTC(round($total + $comission, 2));
+        $rentalOrder->setTotalTax(round($total * ($this->container->getParameter('tax')/100), 2));
+        $rentalOrder->setTotalHT($rentalOrder->getTotalTTC() - $rentalOrder->getTotalTax());
+        $json = $serializer->serialize($rentalOrder, 'json', SerializationContext::create()->setGroups(array('default', 'dayPrices')));
+        return new Response($json);
+    }
+
     /**
      * Liste de tout les languages possible en base
      * @return Response

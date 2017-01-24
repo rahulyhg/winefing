@@ -18,7 +18,7 @@
             <tr>
                 <td data-toggle="collapse" data-target="#characteristics-{{ characteristicCategory.id }}" class="accordion-toggle" style="cursor:pointer">
                     {% for characteristicCategoryTr in characteristicCategory.characteristicCategoryTrs %}
-                        <object style="float: left;" type="image/svg+xml" data="{{ languagePicturePath }}{{ characteristicCategoryTr.language.picture }}" height="20px">
+                        <object style="float: left;" type="image/svg+xml" data="{{ language_directory }}{{ characteristicCategoryTr.language.picture }}" height="20px">
                         </object>
                         <span style="margin-left: 10px">{{ characteristicCategoryTr.name }}</span>
                         <br><br>
@@ -26,7 +26,7 @@
                 </td>
                 <td>
                     {% if characteristicCategory.picture is not null %}
-                        <object style="float: left;" type="image/svg+xml" data="{{ characteristicCategoryPicturePath }}{{ characteristicCategory.picture }}" height="20px">
+                        <object style="float: left;" type="image/svg+xml" data="{{ characteristic_category_directory ~ characteristicCategory.picture }}" height="20px">
                         </object>
                     {% endif %}
                 </td>
@@ -55,7 +55,7 @@
                                 <tr>
                                     <td>
                                     {% for characteristicTr in characteristic.characteristicTrs %}
-                                        <object style="float: left;" type="image/svg+xml" data="{{ languagePicturePath }}{{ characteristicTr.language.picture }}" height="20px">
+                                        <object style="float: left;" type="image/svg+xml" data="{{ language_directory }}{{ characteristicTr.language.picture }}" height="20px">
                                         </object>
                                         <span style="margin-left: 10px">{{ characteristicTr.name }}</span>
                                         <br><br>
@@ -63,7 +63,7 @@
                                     </td>
                                     <td>
                                         {% if characteristic.picture is not null  %}
-                                            <object  type="image/svg+xml" data="{{ characteristicPicturePath }}{{ characteristic.picture }}" height="20px">
+                                            <object  type="image/svg+xml" data="{{ characteristic_category_directory ~  characteristic.picture }}" height="20px">
                                             </object>
                                         {% endif %}
                                     </td>

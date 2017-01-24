@@ -30,11 +30,9 @@ class TagController extends Controller
     public function cgetAction() {
         $api = $this->container->get('winefing.api_controller');
         $serializer = $this->container->get('winefing.serializer_controller');
-        $response = $api->get($this->get('_router')->generate('api_get_languages_picture_path'));
-        $languagePicturePath = $serializer->decode($response->getBody()->getContents());
         $response = $api->get($this->get('_router')->generate('api_get_tags'));
         $tags = $serializer->decode($response->getBody()->getContents());
-        return $this->render('admin/tag/index.html.twig', array("tags" => $tags, 'languagePicturePath' => $languagePicturePath));
+        return $this->render('admin/tag/index.html.twig', array("tags" => $tags));
     }
 
     /**

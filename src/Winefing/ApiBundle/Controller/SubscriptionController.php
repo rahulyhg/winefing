@@ -101,4 +101,14 @@ class SubscriptionController extends Controller implements ClassResourceInterfac
         $em->flush();
         return new Response(json_encode([200, "success"]));
     }
+    public function patchUserAction(Request $request) {
+        $em = $this->getDoctrine()->getManager();
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
+        $user = $repository->findOneById($request->request->get('user'));
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Subscription');
+        $subscriptions = $repository->findByUserGroup(implode(",", $user->getRoles()));
+        $user->setSubscriptions($subscriptions);
+        $em->persist($user);
+        $em->flush();
+    }
 }

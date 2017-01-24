@@ -39,7 +39,7 @@ class LemonWayController
         $client = new \Soapclient($this->directkit_ws."?wsdl");
         $wallet['wallet'] = $user->getId();
         $this->setUserWallet($wallet, $user);
-        if($user->getRoles() == UserGroupEnum::Host) {
+        if(implode(",",$user->getRoles()) == UserGroupEnum::Host) {
             $this->setCompanyWallet($wallet);
             $this->setCompanyInformationWallet($wallet, $user);
         }

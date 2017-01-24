@@ -198,3 +198,8 @@ rentalOrder:
     type: rest
     resource: Winefing\ApiBundle\Controller\RentalOrderController
     name_prefix:  api_
+
+email:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\EmailController
+    name_prefix:  api_

@@ -298,6 +298,11 @@ class Rental
     {
         $this->rentalOrders = $rentalOrders;
     }
+    public function setTr($language) {
+        foreach($this->characteristicValues as $characteristicValue) {
+            $characteristicValue->getCharacteristic()->setTr($language);
+        }
+    }
 
 }
 

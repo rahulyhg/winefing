@@ -31,6 +31,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\Common\Collections\ArrayCollection;
 use Winefing\ApiBundle\Entity\Rental;
 use Winefing\ApiBundle\Entity\CharacteristicValue;
+use Winefing\ApiBundle\Entity\ScopeEnum;
 use Winefing\ApiBundle\Entity\StatusCodeEnum;
 
 
@@ -46,8 +47,7 @@ class RentalController extends Controller
         $serializer = $this->container->get('jms_serializer');
         $response = $api->get($this->get('_router')->generate('api_get_rentals'));
         $rentals = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\Rental>', 'json');
-        $mediaPath = $this->getMediaPath();
-        return $this->render('user/rental/research.html.twig', array('rentals' => $rentals, 'mediaPath'=>$mediaPath));
+        return $this->render('user/rental/research.html.twig', array('rentals' => $rentals));
     }
     /**
      * @Route("users/rental/{id}", name="rental")
@@ -93,8 +93,7 @@ class RentalController extends Controller
         $serializer = $this->container->get('jms_serializer');
         $response = $api->get($this->get('_router')->generate('api_get_rentals_by_user', array('userId' => $userId)));
         $rentals = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\Rental>', 'json');
-        $mediaPath = $this->getMediaPath();
-        return $this->render('host/rental/index.html.twig', array('rentals' => $rentals, 'mediaPath'=>$mediaPath));
+        return $this->render('host/rental/index.html.twig', array('rentals' => $rentals));
     }
 
     /**
@@ -106,7 +105,6 @@ class RentalController extends Controller
 
         $this->setMissingCharacteristicsAction($rental);
         $characteristicCategories = $this->getCharacteristicCategories($rental);
-        $mediaPath = $this->getMediaPath();
 
         $rentalForm =  $this->createForm(RentalType::class, $rental);
         $rentalForm->handleRequest($request);
@@ -136,16 +134,8 @@ class RentalController extends Controller
         return $this->render('host/rental/edit.html.twig', array(
             'rentalForm' => $rentalForm->createView(),
             'characteristicCategories' => $characteristicCategories,
-            'medias' => $rental->getMedias(),
-            'mediaPath' => $mediaPath
+            'medias' => $rental->getMedias()
         ));
-    }
-    public function getMediaPath() {
-        $api = $this->container->get('winefing.api_controller');
-        $serializer = $this->container->get('winefing.serializer_controller');
-        $response = $api->get($this->get('_router')->generate('api_get_rental_media_path'));
-        $mediaPath = $serializer->decode($response->getBody()->getContents());
-        return $mediaPath;
     }
 
     /**
@@ -277,7 +267,7 @@ class RentalController extends Controller
     {
         $api = $this->container->get('winefing.api_controller');
         $serializer = $this->container->get('winefing.serializer_controller');
-        $response = $response = $api->get($this->get('_router')->generate('api_get_rental_missing_characteristics', array('rentalId' => $rental->getId())));
+        $response = $response = $api->get($this->get('_router')->generate('api_get_characteristics_missing', array('id' => $rental->getId(), 'scope'=>ScopeEnum::Rental)));
         $missingCharacteristics = $serializer->decode($response->getBody()->getContents());
 
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Characteristic');

@@ -5,149 +5,208 @@
         <div class="stepwizard col-md-offset-3">
             <div class="stepwizard-row setup-panel">
                 <div class="stepwizard-step">
-                    <a id="anchor-contact" href="#contact" type="button" class="btn btn-primary btn-circle" disabled="disabled">1</a>
-                    <p>{% trans %}label.contact{% endtrans %} </p>
+                    <a style="pointer-events: none;" href="#step-1" type="button" class="btn btn-primary btn-circle">1</a>
+                    <p>{% trans %}label.contact{% endtrans %}</p>
                 </div>
                 <div class="stepwizard-step">
-                    <a id="anchor-domain" href="#domain" type="button" class="btn btn-default btn-circle" disabled="disabled">2</a>
-                    <p>{% trans %}label.domain{% endtrans %} </p>
+                    <a style="pointer-events: none;" href="#step-2" type="button" class="btn btn-default btn-circle" disabled="disabled">2</a>
+                    <p>{% trans %}label.domain{% endtrans %}</p>
                 </div>
             </div>
         </div>
-        <form role="form" method="post">
-            <div class="row setup-content" id="contact">
+        {{ form_start(domainForm) }}
+            <div class="row setup-content" id="step-1">
                 <div class="col-xs-6 col-md-offset-3">
                     <div class="col-md-12">
-                        {% if userForm is defined %}
-                            {% if app.session.flashBag.has('contactSuccess') %}
-                                <div class="alert alert-success">
-                                    {% for msg in app.session.flashBag.get('contactSuccess') %}
-                                        {{ msg }}
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                            {% if app.session.flashBag.has('contactError') %}
-                                <div class="alert alert-danger">
-                                    {% for msg in app.session.flashBag.get('contactError') %}
-                                        {{ msg }}
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                            <h3> {% trans %}label.contact{% endtrans %} </h3>
-                            {{ form_start(userForm) }}
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label>*{{ form_label(userForm.firstName) }}</label>
-                                            {{ form_errors(userForm.firstName) }}
-                                            {{ form_widget(userForm.firstName) }}
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label>*{{ form_label(userForm.lastName) }}</label>
-                                            {{ form_errors(userForm.lastName) }}
-                                            {{ form_widget(userForm.lastName) }}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="form-group">
-                                        <label>*{{ form_label(userForm.phoneNumber) }}</label>
-                                        {{ form_errors(userForm.phoneNumber) }}
-                                        {{ form_widget(userForm.phoneNumber) }}
-                                    </div>
-                                </div>
-                                <div class="form-group has-success has-feedback">
-                                    <label class="control-label">*{{ form_label(userForm.email.first) }}</label>
-                                    {{ form_errors(userForm.email.first) }}
-                                    <div class="input-group">
-                                        <span class="input-group-addon">@</span>
-                                        {{ form_widget(userForm.email.first, {'attr':{'aria-describedby':'emailSuccessStatus'}}) }}
-                                    </div>
-                                    <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
-                                    <span id="emailSuccessStatus" class="sr-only">(success)</span>
-                                </div>
-                                <div class="form-group has-success has-feedback">
-                                    <label class="control-label">*{{ form_label(userForm.email.second) }}</label>
-                                    {{ form_errors(userForm.email.second) }}
-                                    <div class="input-group">
-                                        <span class="input-group-addon">@</span>
-                                        {{ form_widget(userForm.email.second, {'attr':{'aria-describedby':'emailConfirmationSuccessStatus'}}) }}
-                                    </div>
-                                    <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
-                                    <span id="emailConfirmationSuccessStatus" class="sr-only">(success)</span>
-                                </div>
-                                <div class="form-group">
-                                    <label style="float: left">
-                                        *{{ form_label(userForm.password.first) }}
-                                        <a href="#" data-toggle="tooltip" title="{% trans %}error.password_format{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
-                                    </label>
-                                    {{ form_errors(userForm.password.first) }}
-                                    {{ form_widget(userForm.password.first) }}
-                                </div>
-                                <div class="form-group">
-                                    <label>*{{ form_label(userForm.password.second) }}</label>
-                                    {{ form_errors(userForm.password.second) }}
-                                    {{ form_widget(userForm.password.second) }}
-                                </div>
-                            {{ form_end(userForm) }}
+                        {% set contactError = app.session.flashBag.has('contactError') %}
+                        {% if app.session.flashBag.has('contactSuccess') %}
+                            <div class="alert alert-success">
+                                {% for msg in app.session.flashBag.get('contactSuccess') %}
+                                    {{ msg }}
+                                {% endfor %}
+                            </div>
                         {% endif %}
+                        {% if contactError %}
+                            <div class="alert alert-danger">
+                                {% for msg in app.session.flashBag.get('contactError') %}
+                                    {{ msg }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <h3> {% trans %}label.contact{% endtrans %} </h3>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>*{{ form_label(domainForm.user.firstName) }}</label>
+                                    {{ form_errors(domainForm.user.firstName) }}
+                                    {{ form_widget(domainForm.user.firstName) }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>*{{ form_label(domainForm.user.lastName) }}</label>
+                                    {{ form_errors(domainForm.user.lastName) }}
+                                    {{ form_widget(domainForm.user.lastName) }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div id="phone_number_group_div"class="form-group has-feedback">
+                                <label>*{{ form_label(domainForm.user.phoneNumber) }}</label>
+                                {{ form_errors(domainForm.user.phoneNumber) }}<br>
+                                {{ form_widget(domainForm.user.phoneNumber) }}
+                                <span id="valid-phone-number" class="hide">&nbsp;&nbsp;<span class="glyphicon glyphicon-ok"></span>&nbsp;&nbsp;{% trans %}label.valid{% endtrans %}</span>
+                                <span id="error-phone-number" class="hide">&nbsp;&nbsp;<span class="glyphicon glyphicon-remove"></span>&nbsp;&nbsp;{% trans %}label.invalid_number{% endtrans %}</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">*{{ form_label(domainForm.user.email.first) }}</label>
+                            {{ form_errors(domainForm.user.email.first) }}
+                            <div class="input-group">
+                                <span class="input-group-addon">@</span>
+                                {{ form_widget(domainForm.user.email.first) }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            {{ form_errors(domainForm.user.email.second) }}
+                            <div class="input-group">
+                                <span class="input-group-addon">@</span>
+                                {{ form_widget(domainForm.user.email.second, {'attr':{'aria-describedby':'emailConfirmationSuccessStatus'}}) }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">
+                                *{% trans %}label.password{% endtrans %}
+                                <a href="#" id="password-indication"data-toggle="tooltip" data-placement="top" title="{% trans %}error.password_format{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
+                            </label><br>
+                            {{ form_errors(domainForm.user.password.first) }}
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                                {{ form_widget(domainForm.user.password.first) }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                                {{ form_widget(domainForm.user.password.second) }}
+                            </div>
+                        </div>
+                        <button class="btn btn-primary nextBtn pull-right" type="button" >{% trans %}label.next{% endtrans %}</button>
                     </div>
                 </div>
             </div>
-            <div class="row setup-content" id="domain">
+            <div class="row setup-content" id="step-2">
                 <div class="col-xs-6 col-md-offset-3">
                     <div class="col-md-12">
-                        {% if domainForm is defined %}
-                            {% if app.session.flashBag.has('domainSuccess') %}
-                                <div class="alert alert-success">
-                                    {% for msg in app.session.flashBag.get('domainSuccess') %}
-                                        {{ msg }}
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                            {% if app.session.flashBag.has('domainError') %}
-                                <div class="alert alert-danger">
-                                    {% for msg in app.session.flashBag.get('domainError') %}
-                                        {{ msg }}
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                            <h3>{% trans %}label.the_domain{% endtrans %}</h3>
-                            {{ form_start(domainForm) }}
-                                {{ form_row(domainForm.name) }}
-                                {{ form_row(domainForm.wineRegion) }}
-                                <br>
-                                {{ form_row(domainForm.address.formattedAddress) }}
-                                <div class="row">
-                                    <div class="col-sm-6">
-                                        {{ form_row(domainForm.address.postalCode) }}
-                                    </div>
-                                    <div class="col-sm-6">
-                                        {{ form_row(domainForm.address.locality) }}
-                                    </div>
-                                </div>
-                                {{ form_row(domainForm.address.country) }}
-                                <br>
-                                {{ form_row(domainForm.submit) }}
-                            {{ form_end(domainForm) }}
+                        {% if app.session.flashBag.has('domainSuccess') %}
+                            <div class="alert alert-success">
+                                {% for msg in app.session.flashBag.get('domainSuccess') %}
+                                    {{ msg }}
+                                {% endfor %}
+                            </div>
                         {% endif %}
+                        {% if app.session.flashBag.has('domainError') %}
+                        <div class="alert alert-danger">
+                        {% for msg in app.session.flashBag.get('domainError') %}
+                        {{ msg }}
+                        {% endfor %}
+                        </div>
+                        {% endif %}
+                        <h3>{% trans %}label.the_domain{% endtrans %}</h3>
+                        {{ form_row(domainForm.name) }}
+                        {{ form_row(domainForm.wineRegion) }}
+                        <br>
+                        {{ form_row(domainForm.address.formattedAddress) }}
+                        {{ form_row(domainForm.address.additionalInformation) }}
+                        <br>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    {{ form_row(domainForm.address.streetAddress) }}
+                                </div>
+                            </div>
+                            <div class="col-sm-8">
+                                {{ form_row(domainForm.address.route) }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                            {{ form_row(domainForm.address.postalCode) }}
+                            </div>
+                            <div class="col-sm-6">
+                            {{ form_row(domainForm.address.locality) }}
+                            </div>
+                        </div>
+                        {{ form_row(domainForm.address.country) }}
+                        <br>
+                        {% trans%}label.agree_with_terms_of_use{% endtrans %}
+                        {{ form_row(domainForm.agree) }}
+                        {% trans%}label.subscribe_newsletter{% endtrans %}
+                        {{ form_row(domainForm.subscription) }}
+                        <br>
+                        {{ form_row(domainForm.submit) }}
                     </div>
                 </div>
             </div>
-        </form>
+        {{ form_end(domainForm) }}
     </div>
+{% endblock %}
+{% block script %}
+    {% javascripts 'bundles/app/js/phone-number.js' 'bundles/app/js/address.js' %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
     <script>
-        $(document).ready(function() {
-            url = document.location.toString();
-            id = {{  id }};
-            step = url.split('#')[1];
-            if((step == 'domain') && id == '' ) {
-                step = 'contact';
-            }
-            document.getElementById("anchor-" + step).removeAttribute("disabled");
-            $("#anchor-" + step)[0].click();
-        });
+        $(document).ready(function(){
+            adressId = 'domain_registration_address_formattedAddress';
+            componentFormId = {
+                street_number: 'domain_registration_address_streetAddress',
+                route: 'domain_registration_address_route',
+                locality: 'domain_registration_address_locality',
+                country: 'domain_registration_address_country',
+                postal_code: 'domain_registration_address_postalCode'
+            };
+            $('[data-toggle="tooltip"]').tooltip();
+            //Allows to check is the password's format is correct, and if the confirmation correspond.
+            $('#domain_registration_user_email_first, #domain_registration_user_email_second').on('keyup', function() {
+                        if(checkFormatEmail(this)) {
+                            $(this).parent().closest('.form-group').removeClass().addClass("form-group has-success");
+                            checkCorrepondance(this, $('#domain_registration_user_email_first'), $('#domain_registration_user_email_second'));
+                        } else {
+                            $(this).parent().closest('.form-group').removeClass().addClass("form-group has-error");
+                        }
+                    }
+            );
+            //Allows to check is the password's format is correct, and if the confirmation correspond.
+            $('#domain_registration_user_password_first, #domain_registration_user_password_second').on('keyup', function() {
+                        if(checkFormatPassword(this)) {
+                            $(this).parent().closest('.form-group').removeClass().addClass("form-group has-success");
+                            $('#password-indication').tooltip('hide');
+                            checkCorrepondance(this, $('#domain_registration_user_password_first'), $('#domain_registration_user_password_second'));
+                        } else {
+                            $(this).parent().closest('.form-group').removeClass().addClass("form-group has-error");
+                            if($('#domain_registration_user_password_first').val().length==1) {
+                                $('#password-indication').tooltip({'trigger': 'manual'}).tooltip('show');
+                            }
+                        }
+                    }
+            );
+//            initAutocomplete();
+//            var componentForm = {
+//                locality: 'domain_registration_address_locality',
+//                country: 'domain_registration_address_country',
+//                postal_code: 'domain_registration_address_postalCode',
+//                state: 'domain_registration_address_state'
+//
+//            };
+//            fillInAddress('domain_registration_address_formattedAddress', componentForm);
+        })
     </script>
+    <script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyBXbn5jGttQkXWIfV91bBmsMg-HS_o_f7o&signed_in=true&libraries=places&callback=initAutocomplete" async defer></script>
+    {#<script>#}
+    {#if('{{ contactError }}'.length <=0 && '{{ app.session.flashBag.has('domainError')}}'>0 ) }#}
+    {#$('#step-1').hide();#}
+    {#$('#step-2').show().find('input:eq(0)').focus();#}
+    {#$('[data-toggle="tooltip"]').tooltip();#}
+    {#});#}
+    {#</script>#}
 {% endblock %}

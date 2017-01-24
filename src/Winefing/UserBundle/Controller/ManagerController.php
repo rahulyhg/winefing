@@ -15,6 +15,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Winefing\ApiBundle\Entity\UserGroupEnum;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 
 class ManagerController extends Controller
 {
@@ -132,11 +133,6 @@ class ManagerController extends Controller
         $subscriptions = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\Subscription>', 'json');
         $subscriptionFormatList = $this->subscriptionsByFormat($subscriptions);
 
-
-        $response = $api->get($this->get('_router')->generate('api_get_user_media_path'));
-        $serializer = $this->container->get('winefing.serializer_controller');
-        $picturePath = $serializer->decode($response->getBody()->getContents());
-
         if ($request->isMethod('POST')) {
             $picture = $request->files->get('picture');
             $subscription = $request->request->get('subscription');
@@ -157,7 +153,6 @@ class ManagerController extends Controller
         return $this->render($this->getTwigView($user), array(
             'userForm' => $userForm->createView(),
             'picture' => $user->getPicture(),
-            'picturePath' => $picturePath,
             'subscriptionFormatList' => $subscriptionFormatList,
             'passwordForm' => $passwordForm->createView()
         ));
@@ -177,5 +172,33 @@ class ManagerController extends Controller
             $subscriptionFormatList[$subscription->getFormat()][] = $subscription;
         }
         return $subscriptionFormatList;
+    }
+
+    /**
+     * Route define intside the mail received by the user after the registration.
+     * @Route("/user/{email}/verify/email", name="email_verify")
+     */
+    public function verifyEmailAction($email, Request $request) {
+        $body['email'] = $email;
+        $body['emailVerify'] = 1;
+        $api = $this->container->get('winefing.api_controller');
+        $api->patch($this->get('_router')->generate('api_patch_user_email_verify'), $body);
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
+        $user = $repository->findOneByEmail($email);
+
+        //connect the user
+        $token = new UsernamePasswordToken($user, null, 'main', $user->getRoles());
+        $this->get('security.token_storage')->setToken($token);
+        $this->get('session')->set('_security_main', serialize($token));
+
+        //add flash message
+        $this->get('session')
+            ->getFlashBag()
+            ->add('success', $this->get('translator')->trans('success.email_verify'));
+        if(implode(",", $user->getRoles())==UserGroupEnum::Host) {
+            return $this->redirectToRoute('domain_edit');
+        } else {
+            return $this->redirectToRoute('home');
+        }
     }
 }

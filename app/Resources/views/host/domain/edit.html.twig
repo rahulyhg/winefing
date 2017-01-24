@@ -10,6 +10,20 @@
             </ul>
         </div>
         <div class="col-sm-9">
+            {% if app.session.flashBag.has('success') %}
+                <div class="alert alert-success">
+                    {% for msg in app.session.flashBag.get('success') %}
+                        {{ msg }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% if app.session.flashBag.has('error') %}
+                <div class="alert alert-danger">
+                    {% for msg in app.session.flashBag.get('error') %}
+                        {{ msg }}
+                    {% endfor %}
+                </div>
+            {% endif %}
             <div class="tab-content">
                 <div class="tab-pane fade in active" id="presentation">
                     <div class="panel panel-default">
@@ -66,8 +80,8 @@
                                             {% for f in 0..imagePerSlide - 1%}
                                                 {% if j <= medias|length - 1 %}
                                                     <div class="col-md-4">
-                                                        <a href="{{ mediaPath ~ medias[j].name }}" rel="gallery2" class="fancybox img-hover-v1">
-                                                            <img src="{{ mediaPath ~ medias[j].name }}" style="max-width:100%;">
+                                                        <a href="{{ domain_directory ~ medias[j].name }}" rel="gallery2" class="fancybox img-hover-v1">
+                                                            <img src="{{ domain_directory ~ medias[j].name }}" style="max-width:100%;">
                                                         </a>
                                                     </div>
                                                     {% set j = j + 1 %}

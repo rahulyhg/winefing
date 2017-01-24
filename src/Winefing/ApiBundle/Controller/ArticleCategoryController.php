@@ -15,17 +15,38 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use Doctrine\ORM\EntityManager;
 use Winefing\ApiBundle\Entity\ArticleCategory;
-use Winefing\ApiBundle\Entity\ArticleCategoryTr;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\Annotations\FileParam;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Winefing\ApiBundle\WinefingApiBundle;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use JMS\Serializer\SerializationContext;
 
 
 class ArticleCategoryController extends Controller implements ClassResourceInterface
 {
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Get all the user by role.",
+     *  views = { "index", "blog" },
+     *  output= {
+     *      "class"="Winefing\ApiBundle\Entity\ArticleCategory",
+     *      "groups"={"id", "default"}
+     *     },
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         204={
+     *           "Returned when no content",
+     *         }
+     *     },
+     *  requirements={
+     *     {
+     *          "name"="role", "dataType"="string", "required"=true, "description"="user role"
+     *      }
+     *     }
+     * )
+     */
     public function cgetAction() {
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:ArticleCategory');
         $articleCategories = $repository->findAll();
@@ -48,7 +69,7 @@ class ArticleCategoryController extends Controller implements ClassResourceInter
         $errors = $validator->validate($articleCategory);
         if (count($errors) > 0) {
             $errorsString = (string) $errors;
-            return new Response(400, $errorsString);
+            return new HttpException(400, $errorsString);
         }
         $em->persist($articleCategory);
         $em->flush();
@@ -72,7 +93,7 @@ class ArticleCategoryController extends Controller implements ClassResourceInter
             $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:ArticleCategory');
             $articleCategoryPere = $repository->findOneById($request->request->get('categoryPere'));
             if($articleCategoryPere->getId() == $articleCategory->getId()) {
-                throw new BadRequestHttpException("The father category can't be the same has the current category.");
+                throw new HttpException(409, "The father category can't be the same has the current category.");
             }
             $articleCategory->setCategoryPere($articleCategoryPere);
         } else {
@@ -82,7 +103,7 @@ class ArticleCategoryController extends Controller implements ClassResourceInter
         $errors = $validator->validate($articleCategory);
         if (count($errors) > 0) {
             $errorsString = (string) $errors;
-            return new Response(400, $errorsString);
+            return new HttpException(400, $errorsString);
         }
         $em->persist($articleCategory);
         $em->flush();
@@ -96,15 +117,13 @@ class ArticleCategoryController extends Controller implements ClassResourceInter
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:ArticleCategory');
         $articleCategory = $repository->findOneById($id);
         if(!empty($repository->findByCategoryPere($articleCategory))) {
-            throw new BadRequestHttpException("You can't delete this category because it's the Category father of others elements.");
+            throw new HttpException(422,"You can't delete this category because it's the Category father of others elements.");
         }
         if(count($articleCategory->getArticles()) > 0) {
-            throw new BadRequestHttpException("You can't delete this category because there is some article related.");
-        } else {
-            $em = $this->getDoctrine()->getManager();
-            $em->remove($articleCategory);
-            $em->flush();
+            throw new HttpException(422,"You can't delete this category because there is some article related.");
         }
-        return new Response(json_encode([200, "success"]));
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($articleCategory);
+        $em->flush();
     }
 }

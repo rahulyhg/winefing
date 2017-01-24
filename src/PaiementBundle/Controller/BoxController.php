@@ -44,14 +44,11 @@ class BoxController extends Controller
         $box = $this->getBox($this->get('session')->get('box'), $request->getLocale());
         $creditCard = new CreditCard();
         $creditCardForm = $this->createForm(CreditCardType::class, $creditCard);
-        $webPath = $this->container->get('winefing.webPath_controller');
-        $picturePath = $webPath->getPath($this->getParameter('credit_card_directory'));
         $creditCardForm->handleRequest($request);
         if($creditCardForm->isSubmitted() && $creditCardForm->isValid()) {
         }
         return $this->render('user/box/paiement.html.twig', ['box'=>$box,
-            'creditCardForm'=>$creditCardForm->createView(),
-            'picturePath'=>$picturePath
+            'creditCardForm'=>$creditCardForm->createView()
         ]);
     }
     /**

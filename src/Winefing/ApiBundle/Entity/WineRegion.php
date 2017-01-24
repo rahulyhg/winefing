@@ -100,6 +100,14 @@ class WineRegion
     {
         $this->title = $title;
     }
+    public function getDisplayName($language){
+        foreach($this->wineRegionTrs as $wineRegionTr){
+            if($wineRegionTr->getLanguage()->getCode() == $language) {
+                return $wineRegionTr->getName();
+                break;
+            }
+        }
+    }
 
 }
 

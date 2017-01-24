@@ -55,9 +55,9 @@ class AddressController extends Controller implements ClassResourceInterface
         $address->setPostalCode($request->request->get('postalCode'));
         $address->setLocality($request->request->get('locality'));
         $address->setName($request->request->get('name'));
-        $address->setAdditionalInformation($request->request->get('additionaleInformation'));
-        $address->setLat(1.0);
-        $address->setLng(1.0);
+        $address->setAdditionalInformation($request->request->get('additionalInformation'));
+        $address->setLat($request->request->get('lat'));
+        $address->setLng($request->request->get('lng'));
         $address->setName($request->request->get('name'));
         $address->setFormattedAddress($request->request->get('formattedAddress'));
         $validator = $this->get('validator');
@@ -146,6 +146,14 @@ class AddressController extends Controller implements ClassResourceInterface
         $em->persist($address);
         $em->flush($address);
         return new Response(json_encode($request->request->get('user')));
+    }
+
+    public function getByPropertyAction($propertyId) {
+        $serializer = $this->container->get('jms_serializer');
+
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Property');
+        $property = $repository->findOneById($propertyId);
+        return new Response($serializer->serialize($property->getDomain()->getAddress(), 'json', SerializationContext::create()->setGroups(array('default'))));
     }
 
 }

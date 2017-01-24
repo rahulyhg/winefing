@@ -28,10 +28,13 @@ class AddressType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('formattedAddress', null, array('label'=>'label.address', 'attr'=>array('class'=>'form-control')))
-            ->add('postalCode', null, array('attr'=> array('maxlength'=>"60", 'class'=>'form-control')))
-            ->add('locality', null, array('attr'=> array('maxlength'=>"60", 'class'=>'form-control')))
-            ->add('country', null, array('attr'=> array('maxlength'=>"155", 'class'=>'form-control')))
+            ->add('formattedAddress', null, array('label'=>'label.address', 'attr'=>array('class'=>'form-control', 'onFocus'=>"geolocate()", 'required'=>true)))
+            ->add('postalCode', null, array('label'=>'label.postal_code','attr'=> array('maxlength'=>"60", 'class'=>'form-control', 'disabled'=>true)))
+            ->add('locality', null, array('label'=> 'label.locality', 'attr'=> array('maxlength'=>"60", 'class'=>'form-control', 'disabled'=>true)))
+            ->add('country', null, array('label'=>'label.country', 'attr'=> array('maxlength'=>"155", 'class'=>'form-control', 'disabled'=>true, 'required'=>true)))
+            ->add('streetAddress', null, array('label'=>'label.street', 'attr'=> array('maxlength'=>"155", 'class'=>'form-control', 'disabled'=>true, 'required'=>true)))
+            ->add('route', null, array('label'=>'label.route', 'attr'=> array('maxlength'=>"155", 'class'=>'form-control', 'disabled'=>true, 'required'=>true)))
+            ->add('additionalInformation', null, array('label'=>'label.address_additional_information', 'attr'=> array('maxlength'=>"255", 'class'=>'form-control')))
         ;
     } 
     public function configureOptions(OptionsResolver $resolver)

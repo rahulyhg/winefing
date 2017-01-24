@@ -46,9 +46,7 @@ class BoxController extends Controller
         $serializer = $this->container->get('winefing.serializer_controller');
         $response = $api->get($this->get('router')->generate('api_get_boxes_by_language', array('language' => $request->getLocale())));
         $boxes = $serializer->decode($response->getBody()->getContents());
-        $response = $api->get($this->get('_router')->generate('api_get_box_media_path'));
-        $mediaPath = $serializer->decode($response->getBody()->getContents());
-        return $this->render('user/box/index.html.twig', array("boxes" => $boxes, 'mediaPath' => $mediaPath));
+        return $this->render('user/box/index.html.twig', array("boxes" => $boxes));
     }
 
     /**
@@ -59,11 +57,7 @@ class BoxController extends Controller
         $serializer = $this->container->get('winefing.serializer_controller');
         $response = $api->get($this->get('router')->generate('api_get_boxes'));
         $boxes = $serializer->decode($response->getBody()->getContents());
-        $response = $api->get($this->get('_router')->generate('api_get_box_media_path'));
-        $mediaPath = $serializer->decode($response->getBody()->getContents());
-        $response = $api->get($this->get('_router')->generate('api_get_languages_picture_path'));
-        $languagePicturePath = $serializer->decode($response->getBody()->getContents());
-        return $this->render('admin/box/index.html.twig', array("boxes" => $boxes, 'mediaPath' => $mediaPath, 'languagePicturePath'=>$languagePicturePath)
+        return $this->render('admin/box/index.html.twig', array("boxes" => $boxes)
         );
     }
 

@@ -26,6 +26,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\Common\Collections\ArrayCollection;
 use Winefing\ApiBundle\Entity\CharacteristicValue;
+use Winefing\ApiBundle\Entity\ScopeEnum;
 
 
 class DomainController extends Controller
@@ -38,7 +39,7 @@ class DomainController extends Controller
             $body['user'] = $this->getUser()->getId();
             $body['domain'] = $id;
             $api = $this->container->get('winefing.api_controller');
-            $api->put($this->get('router')->generate('api_put_user_domain'), $body);
+            $api->patch($this->get('router')->generate('api_patch_user_domain'), $body);
         } else {
             $error = '%error.not_connecteed%';
             throw new \Exception($error);
@@ -62,7 +63,6 @@ class DomainController extends Controller
      * @Route("/domain/edit", name="domain_edit")
      */
     public function getAction(Request $request) {
-        $api = $this->container->get('winefing.api_controller');
         $domain = $this->getDomain();
         $this->getDoctrine()->getEntityManager()->persist($domain->getWineRegion());
         $domainForm = $this->createForm(DomainType::class, $domain);
@@ -97,13 +97,9 @@ class DomainController extends Controller
                 return $this->redirect($this->generateUrl('domain_edit', array('id' => $domain->getId())) . '#informations');
             }
         }
-        $response = $api->get($this->get('_router')->generate('api_get_domain_media_path'));
-        $serializer = $this->container->get('winefing.serializer_controller');
-        $mediaPath = $serializer->decode($response->getBody()->getContents());
         return $this->render('host/domain/edit.html.twig', array(
             'domainForm' => $domainForm->createView(),
             'addressForm'=>$addressForm->createView(),
-            'mediaPath' => $mediaPath,
             'characteristicCategories' => $characteristicCategories,
             'medias' => $domain->getMedias())
         );
@@ -144,7 +140,7 @@ class DomainController extends Controller
             $address = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Address', 'json');
             $body["address"] = $address->getId();
             $body["domain"] = $domain;
-            $api->put($this->get('router')->generate('api_put_property_address'), $body);
+            $api->patch($this->get('router')->generate('api_patch_property_address'), $body);
         } else {
             $response = $api->put($this->get('router')->generate('api_put_address'), $address);
             $address = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Address', 'json');
@@ -157,7 +153,6 @@ class DomainController extends Controller
         $serializer = $this->container->get('jms_serializer');
         $domain = $request->request->all()["characteristicValue"]["domain"];
         foreach($request->request->all()["characteristicValue"]["characteristicValue"] as $characteristicValue) {
-            var_dump(empty($characteristicValue["id"]));
             if (empty($characteristicValue["id"])) {
                 $response = $api->post($this->get('router')->generate('api_post_characteristic_value'), $characteristicValue);
                 $characteristicValue = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\CharacteristicValue', 'json');
@@ -188,7 +183,7 @@ class DomainController extends Controller
     {
         $api = $this->container->get('winefing.api_controller');
         $serializer = $this->container->get('winefing.serializer_controller');
-        $response = $response = $api->get($this->get('_router')->generate('api_get_domain_missing_characteristics', array('domainId' => $domain->getId())));
+        $response = $response = $api->get($this->get('_router')->generate('api_get_characteristics_missing', array('id' => $domain->getId(), 'scope'=> ScopeEnum::Domain)));
         $missingCharacteristics = $serializer->decode($response->getBody()->getContents());
 
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Characteristic');

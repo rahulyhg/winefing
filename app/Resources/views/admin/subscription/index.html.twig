@@ -19,7 +19,7 @@
             <tr>
                 <td data-toggle="collapse" data-target="#characteristics-{{ subscription.id }}" class="accordion-toggle" style="cursor:pointer">
                     {% for subscriptionTr in subscription.subscriptionTrs %}
-                        <object style="float: left;" type="image/svg+xml" data="{{ languagePicturePath }}{{ subscriptionTr.language.picture }}" height="20px">
+                        <object style="float: left;" type="image/svg+xml" data="{{ language_directory }}{{ subscriptionTr.language.picture }}" height="20px">
                         </object>
                         <span style="margin-left: 10px">{{ subscriptionTr.name }}</span>
                         <br><br>

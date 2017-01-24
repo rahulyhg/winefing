@@ -45,8 +45,6 @@ class WebPageController extends Controller
         $serializer = $this->container->get('winefing.serializer_controller');
         $response = $api->get($this->get('_router')->generate('api_get_web_pages'));
         $webPages = $serializer->decode($response->getBody()->getContents());
-        $response = $api->get($this->get('_router')->generate('api_get_languages_picture_path'));
-        $languagePicturePath = $serializer->decode($response->getBody()->getContents());
-        return $this->render('admin/webPage/index.html.twig', array("webPages" => $webPages, 'languagePicturePath' => $languagePicturePath));
+        return $this->render('admin/webPage/index.html.twig', array("webPages" => $webPages));
     }
 }

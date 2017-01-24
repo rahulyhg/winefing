@@ -71,7 +71,7 @@
                                 {% for property in i..(i+2) if (i < length) %}
                                     <div class="col-sm-3">
                                         <div class="card">
-                                            <img style="width:auto;" class="card-img-top" src="{{ rentalMediaPath ~ rentals[i].mediaPresentation }}" alt="{{ rentals[i].name }}">
+                                            <img style="width:auto;" class="card-img-top" src="{{ rental_directory ~ rentals[i].mediaPresentation }}" alt="{{ rentals[i].name }}">
                                             <div class="card-block">
                                                 <h4 class="card-title">{{ rentals[i].name }}</h4>
                                                 <p class="card-text">{{ rentals[i].description }}</p>
@@ -126,8 +126,8 @@
                                         <div class="row">
                                             {% for f in 0..imagePerSlide - 1 if j <= medias|length - 1%}
                                                 <div class="col-md-4">
-                                                    <a href="{{ mediaPath ~ medias[j].name }}" rel="gallery2" class="fancybox img-hover-v1">
-                                                        <img src="{{ mediaPath ~ medias[j].name }}" style="max-width:100%;">
+                                                    <a href="{{ property_directory ~ medias[j].name }}" rel="gallery2" class="fancybox img-hover-v1">
+                                                        <img src="{{ property_directory ~ medias[j].name }}" style="max-width:100%;">
                                                     </a>
                                                 </div>
                                                 {% set j = j + 1 %}

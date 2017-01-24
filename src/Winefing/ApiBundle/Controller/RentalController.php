@@ -16,55 +16,104 @@ use FOS\RestBundle\Routing\ClassResourceInterface;
 use Doctrine\ORM\EntityManager;
 use Doctrine\Common\Collections\ArrayCollection;
 use Winefing\ApiBundle\Entity\Rental;
-use FOS\RestBundle\Controller\Annotations\RequestParam;
-use FOS\RestBundle\Controller\Annotations\FileParam;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Winefing\ApiBundle\Entity\ScopeEnum;
 use FOS\RestBundle\Controller\Annotations\Get;
 use JMS\Serializer\SerializationContext;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 
 class RentalController extends Controller implements ClassResourceInterface
 {
     /**
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Get a entity by its id.",
+     *  views = { "index", "rental" },
+     *  output= {
+     *      "class"="Winefing\ApiBundle\Entity\Rental",
+     *      "groups"={"id", "default", "medias", "characteristicValues", "property"}
+     *     },
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         204={
+     *           "Returned when no content",
+     *         }
+     *     },
+     *  requirements={
+     *     {
+     *          "name"="id", "dataType"="integer", "required"=true, "description"="rental id"
+     *      }
+     *     }
+     * )
      * GET Route annotation.
-     * @Get("api/property/{id}")
+     * @Get("rental/{id}")
      */
     public function getAction($id)
     {
         $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Rental');
         $rental = $repository->findOneById($id);
-        $json = $serializer->serialize($rental, 'json', SerializationContext::create()->setGroups(array('default', 'medias', 'characteristicValues', 'property')));
+        $json = $serializer->serialize($rental, 'json', SerializationContext::create()->setGroups(array('id', 'default', 'medias', 'characteristicValues', 'property')));
         return new Response($json);
     }
-
-    public function getMissingCharacteristicsAction($rentalId) {
-        $serializer = $this->container->get('jms_serializer');
-
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Rental');
-        $rental = $repository->findOneById($rentalId);
-
-        $ids = array();
-        foreach($rental->getCharacteristicValues() as $characteristicValue) {
-            $ids[] = $characteristicValue->getCharacteristic()->getId();
-        }
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Characteristic');
-        $characteristics = $repository->findMissingCharacteristics($ids, ScopeEnum::Rental);
-        return new Response($serializer->serialize($characteristics, 'json', SerializationContext::create()->setGroups(array('default'))));
-
-    }
-
-    public function getMediaPathAction()
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "index", "rental" },
+     *  description="Get a entity by its id and by the language of the user.",
+     *  output= {
+     *      "class"="Winefing\ApiBundle\Entity\Rental",
+     *      "groups"={"id", "default", "characteristicValues", "property"}
+     *     },
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         204={
+     *           "Returned when no content",
+     *         }
+     *     },
+     *  requirements={
+     *     {
+     *          "name"="id", "dataType"="integer", "required"=true, "description"="rental id"
+     *      },
+     *     {
+     *          "name"="language", "dataType"="integer", "required"=true, "description"="language code"
+     *      }
+     *  }
+     * )
+     * GET Route annotation.
+     * @Get("rental/{id}/language/{language}")
+     */
+    public function getByLanguageAction($id, $language)
     {
-        $serializer = $this->container->get('winefing.serializer_controller');
-        $webPath = $this->container->get('winefing.webpath_controller');
-        $mediaPath = $webPath->getPath($this->getParameter('rental_directory'));
-        return new Response($serializer->serialize($mediaPath));
+        $serializer = $this->container->get('jms_serializer');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Rental');
+        $rental = $repository->findOneById($id);
+        $rental->setTr($language);
+        $json = $serializer->serialize($rental, 'json', SerializationContext::create()->setGroups(array('id', 'default', 'medias', 'characteristicValues', 'property')));
+        return new Response($json);
     }
-
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "index","rental" },
+     *  description="Return all the user's rentals. Returns a collection of Object.",
+     *  output= {
+     *      "class"="Winefing\ApiBundle\Entity\Rental",
+     *      "groups"={"default"}
+     *     },
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         204={
+     *           "Returned when no content",
+     *         }
+     *     },
+     *  requirements={
+     *     {
+     *          "name"="userId", "dataType"="integer", "required"=true, "description"="user id"
+     *      }
+     *     }
+     * )
+     */
     public function cgetByUserAction($userId) {
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Rental');
         $rentals = $repository->findByUser($userId);
@@ -75,6 +124,21 @@ class RentalController extends Controller implements ClassResourceInterface
         $json = $serializer->serialize($rentals, 'json', SerializationContext::create()->setGroups(array('default')));
         return new Response($json);
     }
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "index","rental" },
+     *  description="Returns a collection of Object.",
+     *  output= {
+     *      "class"="Winefing\ApiBundle\Entity\Rental",
+     *      "groups"={"default"}
+     *     },
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         204="Returned when no content"
+     *     }
+     * )
+     */
     public function cgetAction() {
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Rental');
         $rentals = $repository->findAll();
@@ -85,6 +149,23 @@ class RentalController extends Controller implements ClassResourceInterface
         $json = $serializer->serialize($rentals, 'json', SerializationContext::create()->setGroups(array('default')));
         return new Response($json);
     }
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "index","rental" },
+     *  description="New object.",
+     *  input="AppBundle\Form\RentalType",
+     *  output= {
+     *      "class"="Winefing\ApiBundle\Entity\Rental",
+     *      "groups"={"id"}
+     *     },
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         204="Returned when no content",
+     *         400="Returned when the entity is not valid"
+     *     }
+     * )
+     */
     public function postAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
@@ -101,13 +182,30 @@ class RentalController extends Controller implements ClassResourceInterface
         $errors = $validator->validate($rental);
         if (count($errors) > 0) {
             $errorsString = (string) $errors;
-            return new Response(400, $errorsString);
+            return new HttpException(400, $errorsString);
         }
         $em->persist($rental);
         $em->flush();
         $json = $serializer->serialize($rental, 'json', SerializationContext::create()->setGroups(array('id')));
         return new Response($json);
     }
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "index","rental" },
+     *  description="Edit object.",
+     *  input="AppBundle\Form\RentalType",
+     *  output= {
+     *      "class"="Winefing\ApiBundle\Entity\Rental",
+     *      "groups"={"id"}
+     *     },
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         204="Returned when no content",
+     *         400="Returned when the entity is not valid"
+     *     }
+     * )
+     */
     public function putAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
@@ -125,7 +223,7 @@ class RentalController extends Controller implements ClassResourceInterface
         $errors = $validator->validate($rental);
         if (count($errors) > 0) {
             $errorsString = (string) $errors;
-            return new Response(400, $errorsString);
+            return new HttpException(400, $errorsString);
         }
         $em->persist($rental);
         $em->flush();
@@ -134,61 +232,31 @@ class RentalController extends Controller implements ClassResourceInterface
     }
 
     /**
-     * Delete a web page
-     * @param $id
-     * @return Response
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "index","rental" },
+     *  description="Delete a rental, only if the rental has no rental's order (rentalOrders is empty).",
+     *  statusCodes={
+     *         204="Returned when no content",
+     *         422="The object can't be deleted."
+     *     },
+     *  requirements={
+     *     {
+     *          "name"="id", "dataType"="integer", "required"=true, "description"="rental id"
+     *      }
+     *     },
+     *
+     * )
      */
     public function deleteAction($id)
     {
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Rental');
-        $webPage = $repository->findOneById($id);
+        $rental = $repository->findOneById($id);
         $em = $this->getDoctrine()->getManager();
-        if(!empty($webPage->getWebPageTrs())) {
-            throw new BadRequestHttpException("You can't delete this webPage because some translation are related.");
-        } else {
-            $em->remove($webPage);
-            $em->flush();
+        if(!empty($rental->getRentalOrders())) {
+            return new HttpException(422, "can't delete this rental because order are related.");
         }
-        return new Response(json_encode([200, "success"]));
+        $em->remove($rental);
+        $em->flush();
     }
-
-    public function getPricesByDateAction($rental, $start, $end) {
-        $serializer = $this->container->get('jms_serializer');
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Rental');
-        $rental = $repository->findOneById($rental);
-        $dayPrices = array();
-        $date = $start;
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:RentalPromotion');
-        $total = 0.0;
-        $i = 0;
-        while($date < $end){
-            $rentalPromotion = $repository->findPromotionByDate($date, $rental->getId());
-            if(empty($rentalPromotion) || $rentalPromotion == NULL) {
-                $price = (float) $rental->getPrice();
-            } else {
-                $price =  round($rental->getPrice() * ((100-$rentalPromotion[0]->getReduction())/100), 2);
-            }
-            $total += $price;
-            $dayPrice = array();
-            $dayPrice['day'] = $date;
-            $dayPrice['price'] = $price;
-            $dayPrices[] = $dayPrice;
-            $date = strtotime('+1 days', $date);
-            $i++;
-        }
-        $result['startDate'] = $start;
-        $result['endDate'] = $end;
-        $result['dayPrices'] = $dayPrices;
-        $result['dayNumber'] = $i;
-        $result['averagePrice'] = round(($total/$i), 2);
-        $result['amount'] = $total;
-        $comission = $this->container->getParameter('client_comission');
-        $result['comission'] = $comission;
-        $result['totalTTC'] = round($total + $comission, 2);
-        $result['totalTax'] = round($total * ($this->container->getParameter('tax')/100), 2);
-        $result['totalHT'] = $result['totalTTC'] - $result['totalTax'];
-        $json = $serializer->serialize($result, 'json');
-        return new Response($json);
-    }
-
 }

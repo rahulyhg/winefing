@@ -17,19 +17,33 @@ use Doctrine\ORM\EntityManager;
 use Winefing\ApiBundle\Entity\LanguageEnum;
 use Winefing\ApiBundle\Entity\MediaFormatEnum;
 use Winefing\ApiBundle\Entity\Article;
-use Winefing\ApiBundle\Entity\ArticleTr;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\Annotations\FileParam;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\Common\Collections\ArrayCollection;
+use JMS\Serializer\SerializationContext;
+use FOS\RestBundle\Controller\Annotations\Get;
 
 class ArticleController extends Controller implements ClassResourceInterface
 {
     /**
-     * Liste de toute les articles possible en base
-     * @return Response
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Get all the object for the admin part",
+     *  views = { "index", "blog" },
+     *  output= {
+     *      "class"="Winefing\ApiBundle\Entity\Article"
+     *     },
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         204={
+     *           "Returned when no content",
+     *         }
+     *     }
+     * )
      */
     public function cgetAction()
     {
@@ -54,19 +68,63 @@ class ArticleController extends Controller implements ClassResourceInterface
                 }
             }
         }
-        $serializer = $this->container->get("winefing.serializer_controller");
-        $json = $serializer->serialize($articles);
+        $serializer = $this->container->get("jms_serializer");
+        $json = $serializer->serialize($articles, 'json', SerializationContext::create()->setGroups(array('default')));
         return new Response($json);
     }
     /**
-     * Create or update a characteristicCategory from the submitted data.<br/>
-     *
-     *
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Get all the object by language",
+     *  views = { "index", "blog" },
+     *  requirements={
+     *     {
+     *          "name"="language", "dataType"="integer", "required"=true, "description"="language code"
+     *      }
+     *  },
+     *  output= {
+     *      "class"="Winefing\ApiBundle\Entity\Article"
+     *     },
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         204={
+     *           "Returned when no content",
+     *         }
+     *     }
+     * )
+     * @Get("article/{id}/language/{language}")
+     */
+    public function cgetByLanguage($language)
+    {
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Article');
+        $articles = $repository->findAll();
+        foreach ($articles as $article) {
+            $article->setTr($language);
+        }
+        $serializer = $this->container->get("jms_serializer");
+        $json = $serializer->serialize($articles, 'json', SerializationContext::create()->setGroups(array('default')));
+        return new Response($json);
+    }
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "index","blog" },
+     *  description="New object.",
+     *  input="AppBundle\Form\ArticleType",
+     *  output= {
+     *      "class"="Winefing\ApiBundle\Entity\Article",
+     *      "groups"={"default"}
+     *     },
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         400="Returned when the entity is not valid"
+     *     }
+     * )
      */
     public function postAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $serializer = $this->container->get('winefing.serializer_controller');
+        $serializer = $this->container->get('jms_serializer');
         $article = new Article();
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
         $user = $repository->findOneById($request->request->get('user'));
@@ -87,16 +145,31 @@ class ArticleController extends Controller implements ClassResourceInterface
         $errors = $validator->validate($article);
         if (count($errors) > 0) {
             $errorsString = (string) $errors;
-            return new Response(400, $errorsString);
+            return new HttpException(400, $errorsString);
         }
         $em->persist($article);
         $em->flush();
-        return new Response($serializer->serialize($article));
+        return new Response($serializer->serialize($article, SerializationContext::create()->setGroups(array('id'))));
     }
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "index","blog" },
+     *  description="New object.",
+     *  input="AppBundle\Form\ArticleType",
+     *  output= {
+     *      "class"="Winefing\ApiBundle\Entity\Article",
+     *      "groups"={"default"}
+     *     },
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         400="Returned when the entity is not valid"
+     *     }
+     * )
+     */
     public function putAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $serializer = $this->container->get('winefing.serializer_controller');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Article');
         $article = $repository->findOneById($request->request->get('id'));
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
@@ -118,13 +191,34 @@ class ArticleController extends Controller implements ClassResourceInterface
         $errors = $validator->validate($article);
         if (count($errors) > 0) {
             $errorsString = (string) $errors;
-            return new Response(400, $errorsString);
+            return new HttpException(400, $errorsString);
         }
         $em->persist($article);
         $em->flush();
-        return new Response($serializer->serialize($article));
     }
-
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "index","blog" },
+     *  description="Post picture article.",
+     *  parameters={
+     *     {
+     *          "name"="picture", "dataType"="file", "required"=true
+     *      },
+     *     {
+     *          "name"="article", "dataType"="integer", "required"=true, "description"="article id"
+     *      }
+     *  },
+     *  output= {
+     *      "class"="Winefing\ApiBundle\Entity\Article",
+     *      "groups"={"default"}
+     *     },
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         400="Returned when the entity is not valid"
+     *     }
+     * )
+     */
     public function postFileAction(Request $request) {
         $mediaFormat = $this->container->get('winefing.media_format_controller');
         $uploadedFile = $request->files->get('picture');
@@ -134,7 +228,6 @@ class ArticleController extends Controller implements ClassResourceInterface
             throw new BadRequestHttpException($extentionCorrect);
         }
         $em = $this->getDoctrine()->getManager();
-        $serializer = $this->container->get('winefing.serializer_controller');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Article');
         $article = $repository->findOneById($request->request->get('article'));
         if(empty($article)) {
@@ -150,21 +243,34 @@ class ArticleController extends Controller implements ClassResourceInterface
         $article->setPicture($fileName);
         $em->persist($article);
         $em->flush();
-        return new Response($serializer->serialize($article));
     }
-
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "index","blog" },
+     *  description="Delete an article, only if translation are not related.",
+     *  statusCodes={
+     *         204="Returned when no content",
+     *         422="The object can't be deleted."
+     *     },
+     *  requirements={
+     *     {
+     *          "name"="id", "dataType"="integer", "required"=true, "description"="article id"
+     *      }
+     *     },
+     *
+     * )
+     */
     public function deleteAction($id)
     {
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Article');
         $article = $repository->findOneById($id);
         $em = $this->getDoctrine()->getManager();
         if(!empty($article->getArtileTrs())) {
-            throw new BadRequestHttpException("You can't delete this article because some translation are related.");
-        } else {
-            $em->remove($article);
-            $em->flush();
+            throw new HttpException(422,"You can't delete this article because some translation are related.");
         }
-        return new Response(json_encode([200, "success"]));
+        $em->remove($article);
+        $em->flush();
     }
 
 }

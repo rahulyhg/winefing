@@ -1,0 +1,6 @@
+<html>
+    <body>
+    <p>{{ 'text.welcome' | trans({"%name%":user.firstName}, "messages", language) }}.</p>
+    <a href="{{ verifyEmail }}">{{ 'label.validate_account' | trans({}, "messages", language) }}</a>
+    </body>
+</html>

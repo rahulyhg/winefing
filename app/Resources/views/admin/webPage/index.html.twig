@@ -32,7 +32,7 @@
                         {% for webPageTr in webPage.webPageTrs %}
                             <tr>
                                 <td>
-                                    <object style="float: left;" type="image/svg+xml" data="{{ languagePicturePath }}{{ webPageTr.language.picture }}" height="20px">
+                                    <object style="float: left;" type="image/svg+xml" data="{{ language_directory }}{{ webPageTr.language.picture }}" height="20px">
                                     </object>
                                     <span style="margin-left: 10px">{{ webPageTr.title }}</span>
                                     <br><br>
@@ -52,7 +52,7 @@
                         {% for missingLanguage in webPage.missingLanguages %}
                             <tr>
                                 <td colspan="3">
-                                    <a type="button" style="background-image: url({{ languagePicturePath }}{{ missingLanguage.picture }})" class="btn btn-default btn-circle btn-plus-admin" href="{{ path('webPageTr_new_form', {'id': 0, 'webPageId': webPage.id, 'languageId':missingLanguage.id}) }}">
+                                    <a type="button" style="background-image: url({{ language_directory }}{{ missingLanguage.picture }})" class="btn btn-default btn-circle btn-plus-admin" href="{{ path('webPageTr_new_form', {'id': 0, 'webPageId': webPage.id, 'languageId':missingLanguage.id}) }}">
                                         <span class="glyphicon-plus-missing-languages-round">
                                             <i class="glyphicon glyphicon-plus glyphicon-plus-admin"></i>
                                         </span>

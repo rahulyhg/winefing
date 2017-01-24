@@ -6,6 +6,10 @@ security:
             entity:
                 class: WinefingApiBundle:User
                 property: email
+        token:
+            entity:
+                class: WinefingApiBundle:User
+                property: token
     encoders:
         Winefing\ApiBundle\Entity\User: bcrypt
 
@@ -16,9 +20,13 @@ security:
         ROLE_HOST: ROLE_HOST
         ROLE_USER: ROLE_USER
 
-
-
     firewalls:
+        api:
+            pattern: ^/api/
+            anonymous: true
+            guard:
+                authenticators:
+                    - app.api_token_authenticator
         main:
             pattern:  ^/
             anonymous: true
@@ -39,6 +47,9 @@ security:
                 path:   /logout
                 target: home
 
+#                # by default, use the start() function from FormLoginAuthenticator
+#                entry_point: app.form_login_authenticator
+
     access_control:
         - { path: ^/%locale%/registration, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/%locale%/login, role: IS_AUTHENTICATED_ANONYMOUSLY }
@@ -49,3 +60,5 @@ security:
         - { path: ^/%locale%/admin/, role: ROLE_ADMIN }
         - { path: ^/%locale%/host/, role: ROLE_HOST }
         - { path: ^/%locale%/paiement/, role: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/doc, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api, role: IS_AUTHENTICATED_FULLY }

@@ -10,7 +10,7 @@ paiement:
 
 winefing_api:
     type: rest
-    prefix: /{_locale}/api
+    prefix: /api
     resource: "@WinefingApiBundle/Resources/config/routing.yml"
 
 app:
@@ -22,3 +22,7 @@ app:
 
 logout:
     path: /logout
+
+NelmioApiDocBundle:
+    resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
+    prefix:   /api/doc

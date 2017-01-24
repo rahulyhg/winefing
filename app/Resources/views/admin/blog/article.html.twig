@@ -39,7 +39,7 @@
                             {% for articleTr in article.articleTrs %}
                                 <tr>
                                     <td>
-                                        <object style="float: left;" type="image/svg+xml" data="{{ languagePicturePath }}{{ articleTr.language.picture }}" height="20px">
+                                        <object style="float: left;" type="image/svg+xml" data="{{ language_directory }}{{ articleTr.language.picture }}" height="20px">
                                         </object>
                                         <span style="margin-left: 10px">{{ articleTr.title }}</span>
                                         <br><br>
@@ -62,7 +62,7 @@
                             {% for missingLanguage in article.missingLanguages %}
                                 <tr>
                                     <td colspan="3">
-                                        <object style="float: left;" type="image/svg+xml" data="{{ languagePicturePath }}{{ missingLanguage.picture }}" height="20px">
+                                        <object style="float: left;" type="image/svg+xml" data="{{ language_directory }}{{ missingLanguage.picture }}" height="20px">
                                         </object>
                                         <span style="margin-left: 10px">
                                             <a href="{{ path('articleTr_new_form', {'id': 0, 'articleId': article.id, 'languageId':missingLanguage.id}) }}" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span></a>

@@ -80,7 +80,7 @@ class User implements UserInterface, \Serializable
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"default"})
+     * @Groups({"token"})
      */
     private $token;
 
@@ -181,6 +181,18 @@ class User implements UserInterface, \Serializable
      */
     protected $wallet = 0;
 
+    /**
+     * @ORM\Column(name="emailVerify", type="boolean")
+     * @Groups({"default"})
+     */
+    protected $emailVerify = 0;
+
+    /**
+     * @ORM\Column(name="phoneNumberVerify", type="boolean")
+     * @Groups({"default"})
+     */
+    protected $phoneNumberVerify = 0;
+
     public function __construct()
     {
         $this->subscriptions = new ArrayCollection();
@@ -255,7 +267,7 @@ class User implements UserInterface, \Serializable
      */
     public function setRoles($roles)
     {
-        $this->roles = implode(',', $roles);
+        $this->roles = $roles;
     }
 
     /**
@@ -459,6 +471,14 @@ class User implements UserInterface, \Serializable
     }
 
     /**
+     * @param mixed $subscriptions
+     */
+    public function setSubscriptions($subscriptions)
+    {
+        $this->subscriptions = $subscriptions;
+    }
+
+    /**
      * @return mixed
      */
     public function getPicture()
@@ -637,6 +657,38 @@ class User implements UserInterface, \Serializable
 
     public function addCreditCard(CreditCard $creditCard){
         $this->creditCards[] = $creditCard;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getEmailVerify()
+    {
+        return $this->emailVerify;
+    }
+
+    /**
+     * @param mixed $emailVerify
+     */
+    public function setEmailVerify($emailVerify)
+    {
+        $this->emailVerify = $emailVerify;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPhoneNumberVerify()
+    {
+        return $this->phoneNumberVerify;
+    }
+
+    /**
+     * @param mixed $phoneNumberVerify
+     */
+    public function setPhoneNumberVerify($phoneNumberVerify)
+    {
+        $this->phoneNumberVerify = $phoneNumberVerify;
     }
 
 }

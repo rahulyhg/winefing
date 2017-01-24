@@ -25,6 +25,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Winefing\ApiBundle\Entity\MediaFormatEnum;
 use JMS\Serializer\SerializationContext;
+use Winefing\ApiBundle\Entity\ScopeEnum;
 
 
 class CharacteristicController extends Controller implements ClassResourceInterface
@@ -81,13 +82,6 @@ class CharacteristicController extends Controller implements ClassResourceInterf
         return new Response();
     }
 
-    public function getPicturePathAction() {
-        $serializer = $this->container->get('winefing.serializer_controller');
-        $webPath = $this->container->get('winefing.webpath_controller');
-        $picturePath = $webPath->getPath($this->getParameter('characteristic_directory'));
-        return new Response($serializer->serialize($picturePath));
-    }
-
     public function postFileAction(Request $request)
     {
         $mediaFormat = $this->container->get('winefing.media_format_controller');
@@ -134,7 +128,6 @@ class CharacteristicController extends Controller implements ClassResourceInterf
         $em = $this->getDoctrine()->getManager();
         $em->remove($characteristic);
         $em->flush();
-        return new Response(json_encode([200, "success"]));
     }
     public function putActivatedAction(Request $request) {
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Characteristic');
@@ -143,5 +136,29 @@ class CharacteristicController extends Controller implements ClassResourceInterf
         $em = $this->getDoctrine()->getManager();
         $em->flush();
         return new Response(json_encode([200, "success"]));
+    }
+    public function cgetMissingAction($id, $scope) {
+        $serializer = $this->container->get('jms_serializer');
+
+        switch ($scope) {
+            case(ScopeEnum::Domain) :
+                $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Domain');
+                break;
+            case(ScopeEnum::Property) :
+                $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Property');
+                break;
+            case(ScopeEnum::Rental) :
+                $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Rental');
+                break;
+        }
+        $object = $repository->findOneById($id);
+
+        $ids = array();
+        foreach($object->getCharacteristicValues() as $characteristicValue) {
+            $ids[] = $characteristicValue->getCharacteristic()->getId();
+        }
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Characteristic');
+        $characteristics = $repository->findMissingCharacteristics($ids, $scope);
+        return new Response($serializer->serialize($characteristics, 'json', SerializationContext::create()->setGroups(array('default', 'format', 'trs'))));
     }
 }

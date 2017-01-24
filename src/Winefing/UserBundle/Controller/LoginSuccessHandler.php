@@ -35,6 +35,7 @@ class LoginSuccessHandler implements AuthenticationSuccessHandlerInterface
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token)
     {
+        $this->container->get('session')->set('token', $token->getUser()->getToken());
 //        $response = $this->api->get($this->get('router')->generate('api_get_subscriptions_user_group', array('userGroup'=> UserGroupEnum::Host)));
         //set last login user
         //if admin redirect to dashboard

@@ -27,14 +27,33 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use FOS\UserBundle\Doctrine\UserManagerInterface;
 use JMS\Serializer\SerializationContext;
 use Symfony\Component\Translation\Translator;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
 
 
 class UserController extends Controller implements ClassResourceInterface
 {
     /**
-     * Liste de tout les users possible en base
-     * @return Response
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Get all the user by role.",
+     *  views = { "index", "user" },
+     *  output= {
+     *      "class"="Winefing\ApiBundle\Entity\User",
+     *      "groups"={"id", "default"}
+     *     },
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         204={
+     *           "Returned when no content",
+     *         }
+     *     },
+     *  requirements={
+     *     {
+     *          "name"="role", "dataType"="string", "required"=true, "description"="user role"
+     *      }
+     *     }
+     * )
      */
     public function cgetAction($role)
     {
@@ -47,14 +66,58 @@ class UserController extends Controller implements ClassResourceInterface
         }
         return new Response($serializer->serialize($users, 'json', SerializationContext::create()->setGroups(array('default'))));
     }
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "index","user" },
+     *  description="Return the user by email.",
+     *  output= {
+     *      "class"="Winefing\ApiBundle\Entity\User",
+     *      "groups"={"id"}
+     *     },
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         204={
+     *           "Returned when no content",
+     *         }
+     *     },
+     *  requirements={
+     *     {
+     *          "name"="email", "dataType"="string", "required"=true, "description"="user email"
+     *      }
+     *     }
+     * )
+     */
     public function getByEmailAction($email) {
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
         $serializer = $this->container->get("jms_serializer");
         $user = $repository->findOneByEmail($email);
-        if(count($user)>0) {
+        if(!empty($user)) {
             return new Response($serializer->serialize($user, 'json', SerializationContext::create()->setGroups(array('id'))));
         }
     }
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "index","user" },
+     *  description="Return the user by id.",
+     *  output= {
+     *      "class"="Winefing\ApiBundle\Entity\User",
+     *      "groups"={"default"}
+     *     },
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         204={
+     *           "Returned when no content",
+     *         }
+     *     },
+     *  requirements={
+     *     {
+     *          "name"="id", "dataType"="integer", "required"=true, "description"="user id"
+     *      }
+     *     }
+     * )
+     */
     public function getAction($id)
     {
         $serializer = $this->container->get("jms_serializer");
@@ -63,18 +126,40 @@ class UserController extends Controller implements ClassResourceInterface
         return new Response($serializer->serialize($user, 'json', SerializationContext::create()->setGroups(array('default'))));
     }
 
-    public function getMediaPathAction()
-    {
-        $serializer = $this->container->get('winefing.serializer_controller');
-        $webPath = $this->container->get('winefing.webpath_controller');
-        $picturePath = $webPath->getPath($this->getParameter('user_directory'));
-        return new Response($serializer->serialize($picturePath));
-    }
-
     /**
-     * New a user
-     * @param Request $request
-     * @return Response
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "index","user" },
+     *  parameters={
+     *      {
+     *          "name"="firstName", "dataType"="string", "required"=true
+     *      },
+     *      {
+     *          "name"="lastName", "dataType"="string", "required"=true, "description"="timestamp"
+     *      },
+     *      {
+     *          "name"="phoneNumber", "dataType"="string", "required"=false, "description"="required only if the user is an host"
+     *      },
+     *     {
+     *          "name"="email", "dataType"="string", "required"=true
+     *      },
+     *     {
+     *          "name"="password", "dataType"="string", "required"=true
+     *      },
+     *  },
+     *  description="New object.",
+     *  output= {
+     *      "class"="Winefing\ApiBundle\Entity\User",
+     *      "groups"={"id"}
+     *     },
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         204="Returned when no content",
+     *         400="Returned when the entity is not valid",
+     *         409="Returned when a user already exist with the same email",
+     *
+     *     }
+     * )
      */
     public function postAction(Request $request)
     {
@@ -83,13 +168,13 @@ class UserController extends Controller implements ClassResourceInterface
         $em = $this->getDoctrine()->getManager();
         $newUser = $request->request->all();
         $user->setRoles($newUser["roles"]);
-        switch (implode(',', $user->getRoles())) {
+        switch ($newUser["roles"]) {
             case UserGroupEnum::Host :
                 $this->setHost($user, $newUser);
                 break;
             case UserGroupEnum::User:
                 if(!empty($this->findUserByEmail($newUser['email']))) {
-                    throw new HttpException('An email already exist with this count');
+                    throw new HttpException(409, 'An email already exist with this count');
                 }
                 $this->setUser($user, $newUser);
                 break;
@@ -99,6 +184,7 @@ class UserController extends Controller implements ClassResourceInterface
         }
         $this->setEncodePassword($user, $newUser["password"]);
         $user->setEnabled(1);
+        $user->setToken(random_bytes(10));
         $validator = $this->get('validator');
         $errors = $validator->validate($user);
         if (count($errors) > 0) {
@@ -140,16 +226,26 @@ class UserController extends Controller implements ClassResourceInterface
     }
 
     /**
-     * Edit a user
-     * @param Request $request
-     * @return Response
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "index","user" },
+     *  input="AppBundle\Form\UserType",
+     *  description="New object.",
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         204="Returned when no content",
+     *         400="Returned when the entity is not valid",
+     *         409="Returned when a user already exist with the same email",
+     *
+     *     }
+     * )
      */
     public function putAction(Request $request)
     {
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
         $user = $repository->findOneByEmail($request->request->get("email"));
         if(!empty($user) && $user->getId() != $request->request->get('id')) {
-            throw new BadRequestHttpException("this email is already use.");
+            throw new HttpException(409, "this email is already use.");
         }
         $em = $this->getDoctrine()->getManager();
         $user = $repository->findOneById($request->request->get('id'));
@@ -172,6 +268,28 @@ class UserController extends Controller implements ClassResourceInterface
         $em->persist($user);
         $em->flush($user);
     }
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "index","user" },
+     *  description="New object.",
+     *  parameters={
+     *     {
+     *          "name"="media", "dataType"="file", "required"=true, "description"="user's picture"
+     *      },
+     *      {
+     *          "name"="user", "dataType"="integer", "required"=true, "description"="user id"
+     *      }
+     *     },
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         204="Returned when no content",
+     *         400="Returned when the entity is not valid",
+     *         409="Returned when a user already exist with the same email",
+     *
+     *     }
+     * )
+     */
     public function postPictureAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
         $uploadedFile = $request->files->get('media');
@@ -196,14 +314,27 @@ class UserController extends Controller implements ClassResourceInterface
     }
 
     /**
-     * Edit a user
-     * @param Request $request
-     * @return Response
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "index","user" },
+     *  description="Edit password.",
+     *  parameters={
+     *     {
+     *          "name"="password", "dataType"="file", "required"=true, "description"="new password"
+     *      },
+     *      {
+     *          "name"="id", "dataType"="integer", "required"=true, "description"="user id"
+     *      }
+     *     },
+     *  statusCodes={
+     *         204="Returned when no content"
+     *
+     *     }
+     * )
      */
-    public function putPasswordAction(Request $request)
+    public function patchPasswordAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $serializer = $this->container->get("jms_serializer");
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
         $user = $repository->findBy(array("id" => $request->request->get("id")));
         $user->setPlainPassword($request->request->get('password'));
@@ -215,9 +346,27 @@ class UserController extends Controller implements ClassResourceInterface
         }
         $em->persist($user);
         $em->flush($user);
-        return new Response($serializer->serialize($user, 'json', SerializationContext::create()->setGroups(array('default'))));
     }
-    public function putSubscriptionsAction(Request $request)
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "index","user" },
+     *  description="Add subscriptions.",
+     *  parameters={
+     *     {
+     *          "name"="subscriptions", "dataType"="subscription", "required"=true, "description"="array collection of subscription."
+     *      },
+     *      {
+     *          "name"="user", "dataType"="integer", "required"=true, "description"="user id"
+     *      }
+     *     },
+     *  statusCodes={
+     *         204="Returned when no content"
+     *
+     *     }
+     * )
+     */
+    public function patchSubscriptionsAction(Request $request)
     {
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Subscription');
         $userRepository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
@@ -238,14 +387,31 @@ class UserController extends Controller implements ClassResourceInterface
         $em->persist($user);
         $em->flush($user);
     }
-
-    public function putActivatedAction(Request $request) {
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "index","user" },
+     *  description="Change the enabled field.",
+     *  parameters={
+     *     {
+     *          "name"="id", "dataType"="integer", "required"=true, "description"="user id."
+     *      },
+     *      {
+     *          "name"="enabled", "dataType"="boolean", "required"=true, "description"="if enabled = 0, the user can't access to his account"
+     *      }
+     *     },
+     *  statusCodes={
+     *         204="Returned when no content"
+     *
+     *     }
+     * )
+     */
+    public function patchEnabledAction(Request $request) {
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
         $user = $repository->findBy(array("id" => $request->request->get("id")));
-        $user->setEnabled($request->request->get("activated"));
+        $user->setEnabled($request->request->get("enabled"));
         $em = $this->getDoctrine()->getManager();
         $em->flush();
-        return new Response(json_encode([200, "success"]));
     }
     public function setEncodePassword($user, $password) {
         $plainPassword = $password;
@@ -253,35 +419,26 @@ class UserController extends Controller implements ClassResourceInterface
         $encoded = $encoder->encodePassword($user, $plainPassword);
         $user->setPassword($encoded);
     }
-    public function putAdminAction(Request $request)
-    {
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
-        $user = $repository->findBy(array("email" => $request->request->get("email")));
-        if(!empty($user) && $user->getId() != $request->request->get('id')) {
-            throw new BadRequestHttpException("this email is already use.");
-        }
-        $em = $this->getDoctrine()->getManager();
-        $user = $repository->findBy(array('id'=>$request->request->get('id')));
-        $user->setFirstName($request->request->get('firstName'));
-        $user->setLastName(strtoupper($request->request->get('lastName')));
-        $user->setPhoneNumber($request->request->get('phoneNumber'));
-        $user->setEmail($request->request->get('email'));
-        $user->setUserName($request->request->get('email'));
-        $user->setDescription($request->request->get('description'));
-        if(!empty($request->request->get('birthDate'))) {
-            $user->setBirthDate(date_create_from_format('U', $request->request->get('birthDate')));
-        }
-        $user->setSex($request->request->get('sex'));
-        $validator = $this->get('validator');
-        $errors = $validator->validate($user);
-        if (count($errors) > 0) {
-            $errorsString = (string)$errors;
-            throw new HttpException(400, $errorsString);
-        }
-        $em->persist($user);
-        $em->flush($user);
-    }
-    public function putDomainAction(Request $request) {
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "index","user" },
+     *  description="Add element in the winelist.",
+     *  parameters={
+     *     {
+     *          "name"="user", "dataType"="integer", "required"=true, "description"="user id."
+     *      },
+     *      {
+     *          "name"="domain", "dataType"="integer", "required"=true, "description"="domain id"
+     *      }
+     *     },
+     *  statusCodes={
+     *         204="Returned when no content"
+     *
+     *     }
+     * )
+     */
+    public function patchDomainAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
         $user = $repository->findOneById($request->request->get('user'));
@@ -297,7 +454,26 @@ class UserController extends Controller implements ClassResourceInterface
         $em->persist($user);
         $em->flush($user);
     }
-    public function putBoxAction(Request $request) {
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "index","user" },
+     *  description="Add element in the boxList.",
+     *  parameters={
+     *     {
+     *          "name"="user", "dataType"="integer", "required"=true, "description"="user id."
+     *      },
+     *      {
+     *          "name"="box", "dataType"="integer", "required"=true, "description"="box id"
+     *      }
+     *     },
+     *  statusCodes={
+     *         204="Returned when no content"
+     *
+     *     }
+     * )
+     */
+    public function patchBoxAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
         $user = $repository->findOneById($request->request->get('user'));
@@ -313,54 +489,181 @@ class UserController extends Controller implements ClassResourceInterface
         $em->persist($user);
         $em->flush($user);
     }
-    public function putVerifyAction(Request $request) {
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "index","user" },
+     *  description="Set the verify field of the user.If an hos is not verify, he is not displaying on the website.",
+     *  parameters={
+     *     {
+     *          "name"="id", "dataType"="integer", "required"=true, "description"="user id."
+     *      },
+     *      {
+     *          "name"="verify", "dataType"="boolean", "required"=true, "description"="verify"
+     *      }
+     *     },
+     *  statusCodes={
+     *         204="Returned when no content"
+     *
+     *     }
+     * )
+     */
+    public function patchtVerifyAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
         $user = $repository->findOneById($request->request->get("id"));
         $user->setVerify($request->request->get("verify"));
         $em->persist($user);
         $em->flush();
-        return new Response(json_encode([200, "success"]));
     }
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "index","user" },
+     *  description="Know if the email is verify.",
+     *  parameters={
+     *     {
+     *          "name"="id", "dataType"="integer", "required"=true, "description"="user id."
+     *      },
+     *      {
+     *          "name"="emailVerify", "dataType"="boolean", "required"=true, "description"="1 or 0"
+     *      }
+     *     },
+     *  statusCodes={
+     *         204="Returned when no content"
+     *
+     *     }
+     * )
+     */
+    public function patchEmailVerifyAction(Request $request) {
+        $em = $this->getDoctrine()->getManager();
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
+        $user = $repository->findOneByEmail($request->request->get("email"));
+        $user->setEmailVerify($request->request->get("emailVerify"));
+        $em->persist($user);
+        $em->flush();
+    }
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "index","user" },
+     *  description="Know if the phone number is verify",
+     *  parameters={
+     *     {
+     *          "name"="id", "dataType"="integer", "required"=true, "description"="user id."
+     *      },
+     *      {
+     *          "name"="phoneNumberVerify", "dataType"="boolean", "required"=true, "description"="1 or 0"
+     *      }
+     *     },
+     *  statusCodes={
+     *         204="Returned when no content"
+     *
+     *     }
+     * )
+     */
+    public function patchPhoneNumberVerifyAction(Request $request) {
+        $em = $this->getDoctrine()->getManager();
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
+        $user = $repository->findOneById($request->request->get("id"));
+        $user->setVerify($request->request->get("phoneNumberVerify"));
+        $em->persist($user);
+        $em->flush();
+    }
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "index","user" },
+     *  description="Delete an user.User : only if the user has no rental with rental's order (rentalOrders is empty). Host : only is the host has no rental with rentalOrder. Admin : only is the admin haven't write any article",
+     *  statusCodes={
+     *         204="Returned when no content",
+     *         422="The object can't be deleted."
+     *     },
+     *  requirements={
+     *     {
+     *          "name"="id", "dataType"="integer", "required"=true, "description"="user id"
+     *      }
+     *     },
+     *
+     * )
+     */
     public function deleteAction($id) {
-        $user = $this->findUserById($id);
+        $em = $this->getDoctrine()->getManager();
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
+        $user = $repository->findOneById($id);
         switch(implode(',', $user->getRoles())) {
             case UserGroupEnum::Host :
-                $error = $this->deleteHost($user);
+                $this->deleteHost($user);
                 break;
             case UserGroupEnum::User :
-                $error = $this->deleteUser($user);
+                $this->deleteUser($user);
                 break;
             default :
-                $error = $this->deleteAdmin($user);
+                $this->deleteAdmin($user);
                 break;
-        }
-        if(!empty($error)) {
-            return new Response(json_encode($error));
-        }
-    }
-    public function deleteAdmin($user) {
-        $em = $this->getDoctrine()->getManager();
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Article');
-        $articles = $repository->findByUser($user);
-        if(!empty($articles)) {
-            return array('msg'=> 'You can delete this user');
         }
         $em->remove($user);
         $em->flush();
+    }
+    public function deleteAdmin($user) {
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Article');
+        $articles = $repository->findByUser($user);
+        if(!empty($articles)) {
+            throw new HttpException(422, "you can't delete this user");
+        }
 
     }
     public function deleteHost($user) {
-        $em = $this->getDoctrine()->getManager();
+        foreach($user->getDomains() as $domain) {
+            foreach($domain->getProperties() as $property) {
+                foreach($property->getRentals() as $rental) {
+                    if(!empty($rental->getRentalOrders())) {
+                        throw new HttpException(422, "you can't delete this user");
+                    }
+                }
+            }
+        }
 
     }
     public function deleteUser($user) {
-        $em = $this->getDoctrine()->getManager();
+        if(!empty($user->getRentalOrders())) {
+            throw new HttpException(422, "you can't delete this user");
+        }
 
     }
-    public function findUserById($id) {
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "index","user" },
+     *  description="Get the user's token",
+     *  output= {
+     *      "class"="Winefing\ApiBundle\Entity\User",
+     *      "groups"={"token"}
+     *     },
+     *  parameters={
+     *     {
+     *          "name"="plainPassword", "dataType"="email", "required"=true, "description"="the password enter by the user."
+     *      },
+     *      {
+     *          "name"="password", "dataType"="string", "required"=true, "description"="user password"
+     *      }
+     *     },
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         204="Returned when no content"
+     *
+     *     }
+     * )
+     */
+    public function postTokenAction(Request $request) {
+        $serializer = $this->container->get("jms_serializer");
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
-        $user = $repository->findOneById($id);
-        return $user;
+        $user = $repository->findOneBy(array('email'=>$request->request->get('email')));
+        if($user) {
+            $encoder = $this->container->get('security.password_encoder');
+            if($encoder->isPasswordValid($user, $request->request->get('plainPassword'))) {
+                return new Response($serializer->serialize($user, 'json', SerializationContext::create()->setGroups(array('token'))));
+            }
+        }
     }
 }

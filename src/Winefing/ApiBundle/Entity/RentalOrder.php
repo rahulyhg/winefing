@@ -456,6 +456,10 @@ class RentalOrder
         $this->dayPrices = $dayPrices;
     }
 
+    public function addDayPrice(DayPrice $dayPrice) {
+        $this->dayPrices[] = $dayPrice;
+    }
+
     /**
      * @return float
      */

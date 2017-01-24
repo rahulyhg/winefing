@@ -41,13 +41,6 @@ class LanguageController extends Controller implements ClassResourceInterface
         $languages = $repository->findAll();
         return new Response($serializer->serialize($languages));
     }
-    public function cgetPicturePathAction()
-    {
-        $serializer = $this->container->get('winefing.serializer_controller');
-        $webPath = $this->container->get('winefing.webpath_controller');
-        $picturePath = $webPath->getPath($this->getParameter('language_directory'));
-        return new Response($serializer->serialize($picturePath));
-    }
     /**
      * Create or update a language from the submitted data.<br/>
      *
@@ -100,7 +93,7 @@ class LanguageController extends Controller implements ClassResourceInterface
     {
         $em = $this->getDoctrine()->getManager();
         $serializer = $this->container->get('winefing.serializer_controller');
-        $uploadedFile = $request->files->get('picture');
+        $uploadedFile = $request->files->get('media');
         $fileName = md5(uniqid()) . '.' . $uploadedFile->getClientOriginalExtension();
         $mediaFormat = $this->container->get('winefing.media_format_controller');
         $extentionCorrect = $mediaFormat->checkFormat($uploadedFile->getClientOriginalExtension(), MediaFormatEnum::Icon);

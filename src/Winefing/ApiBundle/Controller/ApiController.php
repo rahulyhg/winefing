@@ -14,10 +14,17 @@ use GuzzleHttp;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-
+use Symfony\Component\DependencyInjection\ContainerInterface as Container;
 
 class ApiController {
+    protected $container;
+    protected $token;
 
+    public function __construct(Container $container)
+    {
+        $this->container = $container;
+        $this->token = $this->container->get('session')->get('token');
+    }
     public function getUrl($uri) {
         if (isset($_SERVER['HTTPS']) &&
             ($_SERVER['HTTPS'] == 'on' || $_SERVER['HTTPS'] == 1) ||
@@ -33,29 +40,29 @@ class ApiController {
 
     public function post($uri, $params) {
         $client = new Client();
-        return $client->request('POST',  $this->getUrl($uri), ['json' => $params]);
+        return $client->request('POST',  $this->getUrl($uri), ['headers' => ['X-Token' => $this->token], 'json' => $params]);
     }
     public function link($uri, $params) {
         $client = new Client();
-        return $client->request('LINK',  $this->getUrl($uri), ['json' => $params]);
+        return $client->request('LINK',  $this->getUrl($uri), ['headers' => ['X-Token' => $this->token], 'json' => $params]);
     }
     public function patch($uri, $params) {
         $client = new Client();
-        return $client->request('PATCH',  $this->getUrl($uri), ['json' => $params]);
+        return $client->request('PATCH',  $this->getUrl($uri), ['headers' => ['X-Token' => $this->token], 'json' => $params]);
     }
     public function unlink($uri, $params) {
         $client = new Client();
-        return $client->request('UNLINK',  $this->getUrl($uri), ['json' => $params]);
+        return $client->request('UNLINK',  $this->getUrl($uri), ['headers' => ['X-Token' => $this->token], 'json' => $params]);
     }
 
     public function put($uri, $params){
         $client = new Client();
-        return $client->request('PUT', $this->getUrl($uri), ['json' => $params]);
+        return $client->request('PUT', $this->getUrl($uri), ['headers' => ['X-Token' => $this->token], 'json' => $params]);
     }
 
     public function get($uri){
-        $client = new Client();
-        return $client->request('GET', $this->getUrl($uri));
+        $client = new GuzzleHttp\Client();
+        return $client->request('GET', $this->getUrl($uri), ['headers' => ['X-Token' => $this->token]]);
     }
 
     public function delete($uri){
@@ -87,7 +94,7 @@ class ApiController {
         $client = new GuzzleHttp\Client();
 
         $headers = [
-            'Authorization' => 'Bearer '.$this->getParameter('mail_chimp_token'),
+            'Authorization' => 'Bearer '.'123',
             'content-type' => 'application/json',
             'Accept' => 'application/json',
         ];

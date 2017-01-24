@@ -40,6 +40,7 @@ class UserRegistrationType extends AbstractType
             ->add('submit', SubmitType::class, array('label' => 'label.submit',
                 'attr' => array('class' => 'btn btn-primary pull-right')))
             ->add('agree', CheckboxType::class, array('label'=>false, 'mapped'=>false, 'required'=>true))
+            ->add('subscription', CheckboxType::class, array('label'=>false, 'mapped'=>false, 'required'=>false, 'attr'=>array('checked'=>true)))
 
         ;
     }

@@ -6,6 +6,7 @@ parameters:
 services:
     winefing.api_controller:
         class: Winefing\ApiBundle\Controller\ApiController
+        arguments: ['@service_container']
     winefing.serializer_controller:
             class: Winefing\ApiBundle\Controller\SerializerController
     winefing.webpath_controller:
@@ -22,3 +23,6 @@ services:
     winefing.component.authentication.handler.login_success_handler:
         class:  %winefing.login_success_handler.class%
         arguments:  ["@router", "@winefing.api_controller", "@winefing.webpath_controller", '@service_container']
+    app.api_token_authenticator:
+        class: Winefing\ApiBundle\Controller\TokenAuthenticator
+        arguments: ["@doctrine.orm.entity_manager"]

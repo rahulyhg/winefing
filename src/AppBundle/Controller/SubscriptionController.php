@@ -37,9 +37,7 @@ class SubscriptionController extends Controller
         $response = $api->get($this->generateUrl('api_get_subscriptions'));
         $serializer = $this->container->get('winefing.serializer_controller');
         $subscriptions = $serializer->decode($response->getBody()->getContents());
-        $response = $api->get($this->get('_router')->generate('api_get_languages_picture_path'));
-        $languagePicturePath = $serializer->decode($response->getBody()->getContents());
-        return $this->render('admin/subscription/index.html.twig', array("subscriptions" => $subscriptions, 'languagePicturePath'=>$languagePicturePath));
+        return $this->render('admin/subscription/index.html.twig', array("subscriptions" => $subscriptions));
     }
 
     /**

@@ -78,13 +78,6 @@ class BoxController extends Controller implements ClassResourceInterface
         }
         return new Response($serializer->serialize($boxes, 'json', SerializationContext::create()->setGroups(array('default', 'boxTrs'))));
     }
-    public function getMediaPathAction()
-    {
-        $serializer = $this->container->get('winefing.serializer_controller');
-        $webPath = $this->container->get('winefing.webpath_controller');
-        $mediaPath = $webPath->getPath($this->getParameter('box_directory'));
-        return new Response($serializer->serialize($mediaPath));
-    }
     /**
      * Create or update a language from the submitted data.<br/>
      *

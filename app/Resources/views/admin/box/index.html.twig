@@ -20,7 +20,7 @@
             <tr>
                 <td data-toggle="collapse" data-target="#box-{{ box.id }}" class="accordion-toggle" style="cursor:pointer">
                     {% for boxTr in box.boxTrs %}
-                        <object style="float: left;" type="image/svg+xml" data="{{ mediaPath }}{{ boxTr.language.picture }}" height="20px">
+                        <object style="float: left;" type="image/svg+xml" data="{{ language_directory ~ boxTr.language.picture }}" height="20px">
                         </object>
                         <span style="margin-left: 10px">{{ boxTr.name }}</span>
                         <br><br>
@@ -30,7 +30,7 @@
                     {{ box.price }}
                 </td>
                 <td style="width: 25%">
-                    <img class="img-responsive" src="{{ mediaPath ~ box.mediaPresentation }}">
+                    <img class="img-responsive" src="{{ box_directory ~ box.mediaPresentation }}">
                 </td>
                 <td>
                     <a href="{{ path('box_edit', {'id' : box.id}) }}">
@@ -54,7 +54,7 @@
                                 <tr>
                                     <td data-toggle="collapse" data-target="#boxItem-{{ boxItem.id }}" class="accordion-toggle" style="cursor:pointer">
                                         {% for boxItemTr in boxItem.boxItemTrs %}
-                                            <object style="float: left;" type="image/svg+xml" data="{{ languagePicturePath }}{{ boxItemTr.language.picture }}" height="20px">
+                                            <object style="float: left;" type="image/svg+xml" data="{{ language_directory }}{{ boxItemTr.language.picture }}" height="20px">
                                             </object>
                                             <span style="margin-left: 10px">{{ boxItemTr.name }}</span>
                                             <br><br>
@@ -73,7 +73,7 @@
                                                 <tr>
                                                     <td>
                                                         {% for boxItemChoiceTr in boxItemChoice.boxItemChoiceTrs %}
-                                                            <object style="float: left;" type="image/svg+xml" data="{{ languagePicturePath }}{{ boxItemChoiceTr.language.picture }}" height="20px">
+                                                            <object style="float: left;" type="image/svg+xml" data="{{ language_directory }}{{ boxItemChoiceTr.language.picture }}" height="20px">
                                                             </object>
                                                             <span style="margin-left: 10px">{{ boxItemChoiceTr.name }}</span>
                                                             <br><br>

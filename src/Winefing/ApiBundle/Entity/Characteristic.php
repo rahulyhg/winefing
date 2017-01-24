@@ -232,6 +232,7 @@ class Characteristic
         foreach($this->getCharacteristicTrs() as $characteristicTr) {
             if($characteristicTr->getLanguage()->getCode() == $language) {
                 $this->name = $characteristicTr->getName();
+                $this->description = $characteristicTr->getDescription();
                 break;
             }
         }

@@ -133,3 +133,18 @@ label.agree_with_terms_of_use:  Agree to our terms of use and privacy policy.
 question.already_have_account: Already have an account ?
 
 label.my_wine_list: My Wine List
+label.host: Host
+label.enter_email: Enter email
+label.enter_password: Enter password
+label.valid: Valid
+label.invalid_number: Invalid Number
+label.street: Street
+label.route: Route
+error.address_not_correct: The address is not correct.
+label.subscribe_newsletter: Subscribe to the newslette
+
+label.welcome: Welcome
+
+text.welcome: Welcome %name% in the winefing comunity !
+success.email_verify: The email is well verify !
+label.validate_account: Validate account

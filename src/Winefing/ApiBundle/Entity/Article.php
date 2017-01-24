@@ -7,6 +7,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Validator\Constraints as Assert;
 use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\Type;
+
 /**
  * Article
  *
@@ -57,9 +59,35 @@ class Article extends Controller
     private $missingLanguages;
 
     /**
-     *
+     * @var
+     * @Groups({"default"})
+     * @Type("string")
      */
     private $title;
+    /**
+     * @var
+     * @Groups({"default"})
+     * @Type("string")
+     */
+    private $shortDescription;
+    /**
+     * @var
+     * @Groups({"default"})
+     * @Type("string")
+     */
+    private $content;
+    /**
+     * @var
+     * @Groups({"default"})
+     * @Type("string")
+     */
+    private $created;
+    /**
+     * @var
+     * @Groups({"default"})
+     * @Type("string")
+     */
+    private $updated;
 
     /**
      * @var string
@@ -172,7 +200,7 @@ class Article extends Controller
     /**
      * @return Language
      */
-    public function setMissingLanguages(ArrayCollection $languages)
+    public function setMissingLanguages($languages)
     {
         return $this->missingLanguages = $languages;
     }
@@ -209,6 +237,70 @@ class Article extends Controller
         $this->title = $title;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getShortDescription()
+    {
+        return $this->shortDescription;
+    }
+
+    /**
+     * @param mixed $shortDescription
+     */
+    public function setShortDescription($shortDescription)
+    {
+        $this->shortDescription = $shortDescription;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getContent()
+    {
+        return $this->content;
+    }
+
+    /**
+     * @param mixed $content
+     */
+    public function setContent($content)
+    {
+        $this->content = $content;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCreated()
+    {
+        return $this->created;
+    }
+
+    /**
+     * @param mixed $created
+     */
+    public function setCreated($created)
+    {
+        $this->created = $created;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUpdated()
+    {
+        return $this->updated;
+    }
+
+    /**
+     * @param mixed $updated
+     */
+    public function setUpdated($updated)
+    {
+        $this->updated = $updated;
+    }
+
     public function getTags(){
         return $this->tags;
     }
@@ -216,6 +308,17 @@ class Article extends Controller
     public function addTag(Tag $tag) {
         $this->tags[] = $tag;
         return $this;
+    }
+    public function setTr($language) {
+        foreach($this->articleTrs as $articleTr) {
+            if($articleTr->getLanguage()->getCode() == $language) {
+                $this->title = $articleTr->getTitle();
+                $this->content = $articleTr->getContent();
+                $this->shortDescription = $articleTr->getShortDescription();
+                $this->created = $articleTr->getCreated();
+                $this->updated = $articleTr->getUpdated();
+            }
+        }
     }
 }
 

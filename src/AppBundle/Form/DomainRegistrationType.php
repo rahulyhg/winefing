@@ -13,26 +13,32 @@ namespace AppBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManager;
-use AppBundle\Form\AddressType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 
-class DomainNewType extends AbstractType
+class DomainRegistrationType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
             ->add('name', null, array('attr'=> array('maxlength'=>"60", 'class'=> 'form-control')))
-            ->add('wineRegion', EntityType::class,  array('class' => 'WinefingApiBundle:WineRegion', 'choice_label' => 'title', 'attr'=> array('class'=> 'form-control')))
+            ->add('wineRegion', EntityType::class,  array('class' => 'WinefingApiBundle:WineRegion', 'attr'=> array('class'=> 'form-control'),
+                'choice_label' => function ($wineRegion) use ($options) {
+                    return $wineRegion->getDisplayName($options['language']);
+                }))
             ->add('address', AddressType::class)
+            ->add('user', HostUserRegistrationType::class)
+            ->add('agree', CheckboxType::class, array('label'=>false, 'mapped'=>false, 'required'=>true))
+            ->add('subscription', CheckboxType::class, array('label'=>false, 'mapped'=>false, 'required'=>false, 'attr'=>array('checked'=>true)))
             ->add('submit', SubmitType::class, array('label' => 'label.submit',
                 'attr' => array('class' => 'btn btn-primary pull-right')))
         ;
@@ -41,6 +47,7 @@ class DomainNewType extends AbstractType
     {
         $resolver->setDefaults(array(
             'data_class' => 'Winefing\ApiBundle\Entity\Domain',
+            'language'=>'fr'
         ));
     }
 }

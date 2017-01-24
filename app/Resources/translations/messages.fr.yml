@@ -141,3 +141,19 @@ host.paper.statuts: Status à jour de ladite société
 host.paper.iban: Relevé d'identité bancaire de cette société
 host.paper.id: Pièce d'identité d'une personne détennant au moins 20% du capital de la société
 host.paper.residence_papier : Justificatif de domicile de cette personne
+label.host: Victiculteur
+
+label.enter_email: Entrer l'email
+label.enter_password: Entrer le mot de passe
+label.valid: Valid
+label.invalid_number: Numéro non valide
+label.street: N°
+label.route: Rue
+error.address_not_correct: L'addresse n'est pas valide.
+label.subscribe_newsletter: S'inscrire aux newsletter
+
+label.welcome: Bienvenue
+text.welcome: Bienvenue %name% sur la communité winefing
+
+success.email_verify: Email verify !
+label.validate_account: Valider le compte

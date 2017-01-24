@@ -54,8 +54,6 @@ class RentalController extends Controller
      */
     public function paiement(Request $request){
         $user = $this->getUser();
-        $webPath = $this->container->get('winefing.webPath_controller');
-        $picturePath = $this->getParameter('credit_card_directory');
         $rental = $this->getRental($this->get('session')->get('rental'));
         $bill = $this->getPricesRentalAndPeriod($rental->getId(), $this->get('session')->get('startDate'), $this->get('session')->get('endDate'));
         $creditCard = new CreditCard();
@@ -84,7 +82,7 @@ class RentalController extends Controller
         $address = new Address();
         $addressForm = $this->createForm(AddressType::class, $address);
         return $this->render('user/rental/paiement/paiement.html.twig', ['creditCardForm'=>$creditCardForm->createView(),
-            'addressForm'=>$addressForm->createView(),'bill'=>$bill, 'picturePath'=>$picturePath]);
+            'addressForm'=>$addressForm->createView(),'bill'=>$bill]);
     }
     public function moneyInWithCardId($user) {
         $lemonWay = $this->container->get('winefing.lemonway_controller');
