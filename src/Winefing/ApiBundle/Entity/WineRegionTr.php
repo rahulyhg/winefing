@@ -45,6 +45,15 @@ class WineRegionTr
      */
     private $name;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="description", type="string", length=255)
+     * @Groups({"default"})
+     */
+    private $description;
+
+
 
     /**
      * Get id
@@ -110,6 +119,22 @@ class WineRegionTr
     public function setWineRegion($wineRegion)
     {
         $this->wineRegion = $wineRegion;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param string $description
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
     }
 }
 

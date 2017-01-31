@@ -31,16 +31,19 @@ class DomainType extends AbstractType
     {
         $builder
             ->add('name', null, array('attr'=> array('maxlength'=>"60")))
-            ->add('description', TextareaType::class, array('attr'=> array('maxlength'=>"60", 'required' => false, 'style' => 'height:250px')))
-            ->add('wineRegion', EntityType::class,  array(
-                'class' => 'WinefingApiBundle:WineRegion',
-                'choice_label' => 'title'))
+            ->add('description', TextareaType::class, array('attr'=> array('maxlength'=>"2000", 'style' => 'height:250px')))
+            ->add('history', TextareaType::class, array('label'=>'label.domain_history','required' => false, 'attr'=> array('maxlength'=>"2000", 'style' => 'height:250px')))
+            ->add('wineRegion', EntityType::class,  array('class' => 'WinefingApiBundle:WineRegion', 'attr'=> array('class'=> 'form-control'),
+                'choice_label' => function ($wineRegion) use ($options) {
+                    return $wineRegion->getDisplayName($options['language']);
+                }))
         ;
     }
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
             'data_class' => 'Winefing\ApiBundle\Entity\Domain',
+            'language' => 'fr'
         ));
     }
 }

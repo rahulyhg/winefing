@@ -23,6 +23,7 @@ use FOS\RestBundle\Controller\Annotations\FileParam;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use JMS\Serializer\SerializationContext;
 
 
 
@@ -31,10 +32,10 @@ class SubscriptionController extends Controller implements ClassResourceInterfac
 
     public function cgetAction()
     {
-        $serializer = $this->container->get('winefing.serializer_controller');
+        $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Subscription');
         $subscriptions = $repository->findAll();
-        return new Response($serializer->serialize($subscriptions));
+        return new Response($serializer->serialize($subscriptions, 'json', SerializationContext::create()->setGroups(array('id', 'default'))));
     }
     public function cgetUserGroupAction($userGroup) {
         $serializer = $this->container->get('jms_serializer');

@@ -80,12 +80,6 @@ class User implements UserInterface, \Serializable
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"token"})
-     */
-    private $token;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
      * @Groups({"default"})
      */
     protected $firstName;
@@ -316,22 +310,6 @@ class User implements UserInterface, \Serializable
     public function setLastLogin(\DateTime $lastLogin)
     {
         $this->lastLogin = $lastLogin;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getToken()
-    {
-        return $this->token;
-    }
-
-    /**
-     * @param mixed $token
-     */
-    public function setToken($token)
-    {
-        $this->token = $token;
     }
 
     /**

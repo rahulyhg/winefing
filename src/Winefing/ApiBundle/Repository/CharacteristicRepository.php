@@ -15,7 +15,7 @@ class CharacteristicRepository extends \Doctrine\ORM\EntityRepository
             $query = $this->createQueryBuilder('characteristic')
                 ->join("characteristic.characteristicCategory", "characteristicCategory")
                 ->join("characteristicCategory.scope", "scope")
-                ->where('scope.name = :scopeName')
+                ->where('scope.name = :scopeName and characteristic.activated = 1')
                 ->setParameter('scopeName', $scopeName)
                 ->getQuery();
             $characteristics = $query->getResult();
@@ -23,7 +23,7 @@ class CharacteristicRepository extends \Doctrine\ORM\EntityRepository
             $query = $this->createQueryBuilder('characteristic')
                 ->join("characteristic.characteristicCategory", "characteristicCategory")
                 ->join("characteristicCategory.scope", "scope")
-                ->where('characteristic.id not in (:ids) and scope.name = :scopeName')
+                ->where('characteristic.id not in (:ids) and scope.name = :scopeName and characteristic.activated = 1')
                 ->setParameter('ids', array_values($ids))
                 ->setParameter('scopeName', $scopeName)
                 ->getQuery();
@@ -35,7 +35,7 @@ class CharacteristicRepository extends \Doctrine\ORM\EntityRepository
         $query = $this->createQueryBuilder('characteristic')
             ->join("characteristic.characteristicCategory", "characteristicCategory")
             ->join("characteristicCategory.scope", "scope")
-            ->where('scope.name = :scopeName')
+            ->where('scope.name = :scopeName and characteristic.activated = 1')
             ->setParameter('scopeName', $scopeName)
             ->getQuery();
         $characteristics = $query->getResult();

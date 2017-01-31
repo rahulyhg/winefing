@@ -15,15 +15,21 @@ use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\DependencyInjection\ContainerInterface as Container;
+use Doctrine\ORM\EntityRepository as EntityRepository;
+use Winefing\ApiBundle\Repository\RefreshTokenRepository as RefreshTokenRepository;
 
 class ApiController {
     protected $container;
-    protected $token;
+    protected $token = '';
 
-    public function __construct(Container $container)
+    public function __construct(Container $container, $user, RefreshTokenRepository $refreshTokenRepository)
     {
-        $this->container = $container;
-        $this->token = $this->container->get('session')->get('token');
+//        $this->container = $container;
+//        $user = $this->container->getParameter('id');
+//        if($user instanceof User) {
+//            $token = $refreshTokenRepository->findOneByUser(98);
+//            $this->token = $this->getToken($token->getToken());
+//        }
     }
     public function getUrl($uri) {
         if (isset($_SERVER['HTTPS']) &&
@@ -61,8 +67,16 @@ class ApiController {
     }
 
     public function get($uri){
-        $client = new GuzzleHttp\Client();
-        return $client->request('GET', $this->getUrl($uri), ['headers' => ['X-Token' => $this->token]]);
+        $client = new Client();
+        $headers = [
+            'Authorization' => 'Bearer '.$this->token
+        ];
+
+        return $client->request(
+            'GET',
+            $this->getUrl($uri),
+            array('headers'=>$headers)
+        );
     }
 
     public function delete($uri){
@@ -108,6 +122,27 @@ class ApiController {
 
         $promise = $client->send($test);
         return json_decode($promise->getBody(),true);
+    }
+    public function getClientToken() {
+        $client = new GuzzleHttp\Client();
+        return $client->request('GET', "https://dev.winefing.fr/winefing/web/app_dev.php".$this->generateUrl('fos_oauth_server_authorize'),
+            [
+                'client_id'     => '429n7l7hjjqc8w808g80s8oss8goc4g0kk0w8kgsk8wss4cwcc',
+                'redirect_uri'  => 'https://dev.winefing.fr/winefing/web/app_dev.php/fr/home',
+                'response_type' => 'code'
+            ]
+        );
+    }
+    public function getToken($refreshToken){
+        $client = new GuzzleHttp\Client();
+        $params = [
+            'grant_type' => "refresh_token",
+            'client_id' => "21_3dvsds11kmo0oosgcokcg40gcgg8w40s0sc000o8cwggso4sws",
+            'client_secret' => "c0chzlnmf34ggckssk80os8coksgoss0s48ockw808c488c0s",
+            'refresh_token' => $refreshToken,
+        ];
+        $response = $client->request('POST', "https://dev.winefing.fr/winefing/web/app_dev.php/oauth/v2/token", ['json' => $params]);
+        return json_decode($response->getBody(), true)['access_token'];
     }
 }
 

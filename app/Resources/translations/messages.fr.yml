@@ -157,3 +157,14 @@ text.welcome: Bienvenue %name% sur la communité winefing
 
 success.email_verify: Email verify !
 label.validate_account: Valider le compte
+
+label.domain_history: Histoire du domaine
+help.domain_history: Cette partie permet de parler historiquement du domaine.
+label.drop_files_here: Mettre ici les fichiers à télécharger
+label.add_pictures: Ajouter des photos :
+help.pictures: Le nombre maximum de photo est de 10. Pour un rendu maximum, le format conseillé est de 1600px par 600px.
+
+label.reset_password: Changer le mot de passe
+label.explore: Explorer
+label.the_owner: Le propriétaire
+confirmation.delete: Etes-vous sur de vouloir supprimer cet élément ?

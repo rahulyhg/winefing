@@ -76,3 +76,28 @@ a[disabled] {
 .carousel-indicators .active {
     background: #428bca;
 }
+.upload-drop-zone {
+    color: #ccc !important;
+    border-style: dashed !important;
+    border-color: #ccc !important;
+    line-height: 200px !important;
+    text-align: center
+}
+.view-img-size {
+    width: 360px;
+    height: 240px;
+}
+.content {
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+.content-sm {
+    padding-top: 60px;
+    padding-bottom: 60px;
+}
+.rounded-3x {
+    border-radius: 15px !important;
+}
+img.img-bordered {
+    border: solid 4px #f1c40f !important;
+}

@@ -30,7 +30,7 @@ class DomainController extends Controller implements ClassResourceInterface
      *  views = { "index", "domain" },
      *  description="Return all the domains. Returns a collection of Object.",
      *  output= {
-     *      "class"="Winefing\ApiBundle\Entity\Property",
+     *      "class"="Winefing\ApiBundle\Entity\Domain",
      *      "groups"={"default"}
      *     },
      *  statusCodes={
@@ -47,6 +47,57 @@ class DomainController extends Controller implements ClassResourceInterface
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Domain');
         $domains = $repository->findAll();
         $json = $serializer->serialize($domains, 'json', SerializationContext::create()->setGroups(array('default')));
+        return new Response($json);
+    }
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "index", "domain" },
+     *  description="Return all the domain's informations.",
+     *  output= {
+     *      "class"="Winefing\ApiBundle\Entity\Domain",
+     *      "groups"={"default", "wineRegion", "medias", "characteristicValues", "properties", "rentals", "user"}
+     *     },
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         204={
+     *           "Returned when no content",
+     *         }
+     *     },
+     * requirements={
+     *     {
+     *          "name"="id", "dataType"="integer", "required"=true, "description"="domain id",
+     *          "name"="language", "dataType"="language", "required"=true, "description"="language code"
+     *      }
+     *   }
+     * )
+     */
+    public function getAllInformationsAction($id, $language) {
+        $serializer = $this->container->get('jms_serializer');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Domain');
+        $domains = $repository->findOneById($id);
+        foreach($domains as $domain) {
+            $domain->setMediaPresentation();
+            $domain->setTr($language);
+            foreach($domain->getProperties() as $property) {
+                $property->setTr($language);
+                foreach($property->getRentals() as $rental) {
+                    $rental->setTr($language);
+                }
+            }
+        }
+        $json = $serializer->serialize($domains, 'json', SerializationContext::create()->setGroups(array('default', 'wineRegion', 'medias', 'characteristicValues', 'properties', 'rentals', 'user')));
+        return new Response($json);
+    }
+    public function cgetExploreAction($language) {
+        $serializer = $this->container->get('jms_serializer');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Domain');
+        $domains = $repository->findGroupByWineRegion();
+        foreach($domains as $domain) {
+            $domain->setMediaPresentation();
+            $domain->setTr($language);
+        }
+        $json = $serializer->serialize($domains, 'json', SerializationContext::create()->setGroups(array('default', 'wineRegion')));
         return new Response($json);
     }
     /**
@@ -171,6 +222,7 @@ class DomainController extends Controller implements ClassResourceInterface
         $domain->setWineRegion($repository->findOneById($request->request->get('wineRegion')));
         $domain->setName($request->request->get('name'));
         $domain->setDescription($request->request->get('description'));
+        $domain->setHistory($request->request->get('history'));
         $validator = $this->get('validator');
         $errors = $validator->validate($domain);
         if (count($errors) > 0) {
@@ -276,6 +328,22 @@ class DomainController extends Controller implements ClassResourceInterface
         $serializer = $this->container->get("jms_serializer");
         $user = $repository->findOneById($userId);
         return new Response($serializer->serialize($user->getWinelist(), 'json', SerializationContext::create()->setGroups(array('default'))));
+    }
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "index","domain", "webPath"},
+     *  description="Return the web path for the entity image",
+     *  statusCodes={
+     *         200="Returned when successful",
+     *     }
+     *
+     * )
+     */
+    public function getMediaPathAction() {
+        $webPath = $this->container->get('winefing.webpath_controller');
+        $picturePath = $webPath->getPath($this->getParameter('domain_directory'));
+        return new Response(json_encode($picturePath));
     }
 
 }

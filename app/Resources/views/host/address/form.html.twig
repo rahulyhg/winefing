@@ -1,25 +1,42 @@
-<div class="form-group">
+<div class="form-group {% if addressForm.formattedAddress.vars.errors|length %}has-error{% endif %}">
     <label for="address">*{% trans %}label.address{% endtrans %} </label>
     {{ form_errors(addressForm.formattedAddress) }}
     {{ form_widget(addressForm.formattedAddress,  { 'attr': {'class': 'form-control'} }) }}
 </div>
+<div>
+    {{ form_label(addressForm.additionalInformation) }}
+    <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans %}help.domain_history{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
+    {{ form_errors(addressForm.additionalInformation) }}
+    {{ form_widget(addressForm.additionalInformation) }}
+</div>
+<br>
+<div class="row">
+    <div class="col-sm-4">
+        <div class="form-group {% if addressForm.streetAddress.vars.errors|length %}has-error{% endif %}">
+            {{ form_row(addressForm.streetAddress) }}
+        </div>
+    </div>
+    <div class="col-sm-8 {% if addressForm.route.vars.errors|length %}has-error{% endif %}">
+        {{ form_row(addressForm.route) }}
+    </div>
+</div>
 <div class="row">
     <div class="col-md-6">
-        <div class="form-group">
+        <div class="form-group {% if addressForm.postalCode.vars.errors|length %}has-error{% endif %}">
             <label for="postal_code">*{% trans %}label.postal_code{% endtrans %} </label>
             {{ form_errors(addressForm.postalCode) }}
             {{ form_widget(addressForm.postalCode,  { 'attr': {'class': 'form-control'} }) }}
         </div>
     </div>
     <div class="col-md-6">
-        <div class="form-group">
+        <div class="form-group {% if addressForm.locality.vars.errors|length %}has-error{% endif %}">
             <label for="locality">*{% trans %}label.locality{% endtrans %} </label>
             {{ form_errors(addressForm.locality) }}
             {{ form_widget(addressForm.locality,  { 'attr': {'class': 'form-control'} }) }}
         </div>
     </div>
 </div>
-<div class="form-group">
+<div class="form-group {% if addressForm.country.vars.errors|length %}has-error{% endif %}">
     <label for="country">*{% trans %}label.country{% endtrans %} </label>
     {{ form_errors(addressForm.country) }}
     {{ form_widget(addressForm.country,  { 'attr': {'class': 'form-control'} }) }}

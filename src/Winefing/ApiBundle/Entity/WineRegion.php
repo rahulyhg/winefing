@@ -5,7 +5,7 @@ namespace Winefing\ApiBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use JMS\Serializer\Annotation\Groups;
-
+use JMS\Serializer\Annotation\Type;
 /**
  * WineRegion
  *
@@ -38,7 +38,20 @@ class WineRegion
      */
     private $wineRegionTrs;
 
-    private $title;
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="picture", type="string", length=255)
+     * @Groups({"default"})
+     */
+    private $picture;
+
+    /**
+     * @var
+     * @Groups({"default"})
+     * @Type("string")
+     */
+    private $name;
 
 
     /**
@@ -107,6 +120,42 @@ class WineRegion
                 break;
             }
         }
+    }
+    /**
+     * @return mixed
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param mixed $name
+     */
+    public function setTr($language)
+    {
+        foreach($this->getWineRegionTrs() as $tr) {
+            if($tr->getLanguage()->getCode() == $language) {
+                $this->name = $tr->getName();
+                break;
+            }
+        }
+    }
+
+    /**
+     * @return string
+     */
+    public function getPicture()
+    {
+        return $this->picture;
+    }
+
+    /**
+     * @param string $picture
+     */
+    public function setPicture($picture)
+    {
+        $this->picture = $picture;
     }
 
 }

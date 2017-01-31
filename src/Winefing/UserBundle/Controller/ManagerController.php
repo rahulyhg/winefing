@@ -188,7 +188,6 @@ class ManagerController extends Controller
 
         //connect the user
         $token = new UsernamePasswordToken($user, null, 'main', $user->getRoles());
-        $this->get('security.token_storage')->setToken($token);
         $this->get('session')->set('_security_main', serialize($token));
 
         //add flash message
@@ -200,5 +199,32 @@ class ManagerController extends Controller
         } else {
             return $this->redirectToRoute('home');
         }
+    }
+    /**
+     * Route define intside the mail received by the user after the registration.
+     * @Route("/user/{id}/reset/password", name="reset_password")
+     */
+    public function resetPassword($id) {
+//        $body['email'] = $email;
+//        $body['emailVerify'] = 1;
+//        $api = $this->container->get('winefing.api_controller');
+//        $api->patch($this->get('_router')->generate('api_patch_user_email_verify'), $body);
+//        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
+//        $user = $repository->findOneByEmail($email);
+//
+//        //connect the user
+//        $token = new UsernamePasswordToken($user, null, 'main', $user->getRoles());
+//        $this->get('security.token_storage')->setToken($token);
+//        $this->get('session')->set('_security_main', serialize($token));
+//
+//        //add flash message
+//        $this->get('session')
+//            ->getFlashBag()
+//            ->add('success', $this->get('translator')->trans('success.email_verify'));
+//        if(implode(",", $user->getRoles())==UserGroupEnum::Host) {
+//            return $this->redirectToRoute('domain_edit');
+//        } else {
+//            return $this->redirectToRoute('home');
+//        }
     }
 }

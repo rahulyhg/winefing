@@ -97,6 +97,20 @@ class Property
      * @Groups({"default"})
      */
     private $description;
+    /**
+     * @var
+     * @Groups({"default"})
+     * @Type("float")
+     */
+    private $minPrice;
+
+    /**
+     * @var
+     * @Groups({"default"})
+     * @Type("float")
+     */
+    private $maxPrice;
+
 
     /**
      * Get id
@@ -296,4 +310,61 @@ class Property
         }
         return $this;
     }
+    public function setTr($language) {
+
+        //set characteristicValues
+        foreach($this->getCharacteristicValues() as $characteristicValue) {
+            $characteristicValue->getCharacteristic()->setTr($language);
+            $characteristicValue->getCharacteristic()->getCharacteristicCategory()->setTr($language);
+        }
+        //set property category
+        $this->getPropertyCategory()->setTr($language);
+
+        //set wine region
+        $this->getDomain()->getWineRegion()->setTr($language);
+
+    }
+    public function setMinMaxPrice() {
+        $i = 0;
+        foreach($this->getRentals() as $rental) {
+            if($i == 0) {
+                $this->minPrice = $rental->getprice();
+                $this->maxPrice = $rental->getprice();
+            } else {
+                if($rental->getprice() < $this->minPrice) {
+                    $this->minPrice = $rental->getprice();
+                } elseif($rental->getprice() > $this->maxPrice) {
+                    $this->maxPrice = $rental->getprice();
+                }
+            }
+            $i++;
+        }
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMinPrice()
+    {
+        return $this->minPrice;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMaxPrice()
+    {
+        return $this->maxPrice;
+    }
+    public function getCharacteristicValuesActivated() {
+        $characteristicValuesActivated = new ArrayCollection();
+        foreach($this->getCharacteristicValues() as $characteristicValue) {
+            if($characteristicValue->getCharacteristic()->getActivated()) {
+                $characteristicValuesActivated[] = $characteristicValue;
+            }
+        }
+        return $characteristicValuesActivated;
+    }
+
+
 }

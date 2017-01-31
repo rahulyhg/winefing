@@ -146,7 +146,10 @@ class UserController extends Controller implements ClassResourceInterface
      *     {
      *          "name"="password", "dataType"="string", "required"=true
      *      },
-     *  },
+     *     {
+     *          "name"="roles", "dataType"="string", "required"=true, "description"="array of size 1. ROLE_USER or ROLE_HOST or ROLE_ADMIN"
+     *      },
+     *   },
      *  description="New object.",
      *  output= {
      *      "class"="Winefing\ApiBundle\Entity\User",
@@ -184,7 +187,6 @@ class UserController extends Controller implements ClassResourceInterface
         }
         $this->setEncodePassword($user, $newUser["password"]);
         $user->setEnabled(1);
-        $user->setToken(random_bytes(10));
         $validator = $this->get('validator');
         $errors = $validator->validate($user);
         if (count($errors) > 0) {
@@ -210,6 +212,9 @@ class UserController extends Controller implements ClassResourceInterface
         $user->setEmail($newUser['email']);
         $user->setUserName($newUser['email']);
         $user->setLastLogin(new \DateTime());
+        if(!empty($newUser['birthDate'])) {
+            $user->setBirthDate(date_create_from_format('U', $newUser('birthDate')));
+        }
     }
     public function setAdmin($user, &$newUser) {
         $user->setFirstName($newUser['firstName']);
@@ -638,14 +643,14 @@ class UserController extends Controller implements ClassResourceInterface
      *  description="Get the user's token",
      *  output= {
      *      "class"="Winefing\ApiBundle\Entity\User",
-     *      "groups"={"token"}
+     *      "groups"={"token", "default"}
      *     },
      *  parameters={
      *     {
-     *          "name"="plainPassword", "dataType"="email", "required"=true, "description"="the password enter by the user."
+     *          "name"="email", "dataType"="email", "required"=true, "description"="the user's email."
      *      },
      *      {
-     *          "name"="password", "dataType"="string", "required"=true, "description"="user password"
+     *          "name"="plainPassword", "dataType"="string", "required"=true, "description"="user password without encoding"
      *      }
      *     },
      *  statusCodes={
@@ -662,8 +667,24 @@ class UserController extends Controller implements ClassResourceInterface
         if($user) {
             $encoder = $this->container->get('security.password_encoder');
             if($encoder->isPasswordValid($user, $request->request->get('plainPassword'))) {
-                return new Response($serializer->serialize($user, 'json', SerializationContext::create()->setGroups(array('token'))));
+                return new Response($serializer->serialize($user, 'json', SerializationContext::create()->setGroups(array('token', 'default'))));
             }
         }
+    }
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "index","user", "webPath"},
+     *  description="Return the web path for the entity image",
+     *  statusCodes={
+     *         200="Returned when successful",
+     *     }
+     *
+     * )
+     */
+    public function getMediaPathAction() {
+        $webPath = $this->container->get('winefing.webpath_controller');
+        $picturePath = $webPath->getPath($this->getParameter('user_directory'));
+        return new Response(json_encode($picturePath));
     }
 }

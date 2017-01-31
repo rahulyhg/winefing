@@ -1,27 +1,29 @@
 {% extends 'base.html.twig' %}
 {% block body %}
     {{ include('admin/nav.html.twig') }}
-    {% if app.session.flashBag.has('success') %}
-        <div class="alert alert-success">
-            {% for msg in app.session.flashBag.get('success') %}
-                {{ msg }}
-            {% endfor %}
-        </div>
-    {% endif %}
-    {% if app.session.flashBag.has('error') %}
-        <div class="alert alert-danger">
-            {% for msg in app.session.flashBag.get('error') %}
-                {{ msg }}
-            {% endfor %}
-        </div>
-    {% endif %}
-    {% block table %}
-    {% endblock %}
-    {% block modal %}
-        {{ include('admin/modal/delete.html.twig') }}
-        <span id="modalCreate">
-        </span>
-    {% endblock modal %}
+    <div class="container">
+        {% if app.session.flashBag.has('success') %}
+            <div class="alert alert-success">
+                {% for msg in app.session.flashBag.get('success') %}
+                    {{ msg }}
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% if app.session.flashBag.has('error') %}
+            <div class="alert alert-danger">
+                {% for msg in app.session.flashBag.get('error') %}
+                    {{ msg }}
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% block table %}
+        {% endblock %}
+        {% block modal %}
+            {{ include('admin/modal/delete.html.twig') }}
+            <span id="modalCreate">
+            </span>
+        {% endblock modal %}
+    </div>
 {% endblock %}
 {% block script %}
     <!-- Menu Toggle Script -->

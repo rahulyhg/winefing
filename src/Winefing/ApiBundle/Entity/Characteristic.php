@@ -44,7 +44,7 @@ class Characteristic
     /**
      * @var CharacteristicTr
      * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\CharacteristicTr", mappedBy="characteristic", fetch="EAGER", cascade="ALL")
-     * @Groups({"default"})
+     * @Groups({"trs"})
      */
     private $characteristicTrs;
 
@@ -232,7 +232,6 @@ class Characteristic
         foreach($this->getCharacteristicTrs() as $characteristicTr) {
             if($characteristicTr->getLanguage()->getCode() == $language) {
                 $this->name = $characteristicTr->getName();
-                $this->description = $characteristicTr->getDescription();
                 break;
             }
         }

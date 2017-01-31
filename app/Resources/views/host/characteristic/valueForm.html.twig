@@ -10,7 +10,7 @@
                 <div class="form-group">
                     <input name="characteristicValueForm[characteristicValue][{{ i }}][id]" value="{{ characteristicValue.id }}" hidden>
                     <input name="characteristicValueForm[characteristicValue][{{ i }}][characteristic]" value="{{ characteristicValue.characteristic.id }}" hidden >
-                    <label style="font-weight: normal">{{ characteristicValue.characteristic.characteristicTrs[0].name }} </label>
+                    <label style="font-weight: normal">{{ characteristicValue.characteristic.name }} </label>
                     {% if characteristicValue.characteristic.format.name == format_boolean %}
                         {% set checked = "" %}
                         {% if characteristicValue.value == 1 %}

@@ -43,7 +43,7 @@ class CharacteristicCategory
     /**
      * @var CharacteristicCategoryTr
      * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\CharacteristicCategoryTr", mappedBy="characteristicCategory", fetch="EAGER", cascade="ALL")
-     * @Groups({"default"})
+     * @Groups({"trs"})
      */
     private $characteristicCategoryTrs;
 

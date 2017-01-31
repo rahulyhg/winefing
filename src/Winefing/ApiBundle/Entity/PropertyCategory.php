@@ -5,7 +5,7 @@ namespace Winefing\ApiBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use JMS\Serializer\Annotation\Groups;
-
+use JMS\Serializer\Annotation\Type;
 /**
  * PropertyCategory
  *
@@ -45,6 +45,13 @@ class PropertyCategory
      * @Groups({"properties"})
      */
     private $properties;
+
+    /**
+     * @var
+     * @Groups({"default"})
+     * @Type("string")
+     */
+    private $name;
 
     public function _construct(){
         $this->propertyCategoryTrs[] = new ArrayCollection();
@@ -103,6 +110,34 @@ class PropertyCategory
     }
     public function addPropertyCategoryTr(PropertyCategoryTr $propertyCategoryTr) {
         $this->propertyCategoryTrs[] = $propertyCategoryTr;
+    }
+    /**
+     * @return mixed
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param mixed $name
+     */
+    public function setTr($language)
+    {
+        foreach($this->getPropertyCategoryTrs() as $tr) {
+            if($tr->getLanguage()->getCode() == $language) {
+                $this->name = $tr->getName();
+                break;
+            }
+        }
+    }
+    public function getDisplayName($language){
+        foreach($this->propertyCategoryTrs as $tr){
+            if($tr->getLanguage()->getCode() == $language) {
+                return $tr->getName();
+                break;
+            }
+        }
     }
 }
 

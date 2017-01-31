@@ -59,6 +59,47 @@ class PropertyController extends Controller implements ClassResourceInterface
         }
         return new Response($serializer->serialize($properties, 'json', SerializationContext::create()->setGroups(array('default'))));
     }
+
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "index", "property" },
+     *  description="Return all the properties with basic informations in the user's language",
+     *  output= {
+     *      "class"="Winefing\ApiBundle\Entity\Property",
+     *      "groups"={"default", "characteristicValues", "propertyCategory"}
+     *     },
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         204={
+     *           "Returned when no content",
+     *         }
+     *     },
+     *  requirements={
+     *     {
+     *          "name"="language", "dataType"="string", "required"=true, "description"="language code (fr, en...)"
+     *      }
+     *     }
+     * )
+     * @Get("mobile/properties/{language}")
+     */
+    public function cgetByLanguageAction($language) {
+        $serializer = $this->container->get('jms_serializer');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Property');
+        $properties = $repository->findAll();
+        $i = 0;
+        foreach($properties as $property) {
+            if(count($property->getRentals()) == 0) {
+                unset($properties[$i]);
+            } else {
+                $property->setMediaPresentation();
+                $property->setTr($language);
+                $property->setMinMaxPrice();
+            }
+            $i++;
+        }
+        return new Response($serializer->serialize($properties, 'json', SerializationContext::create()->setGroups(array('default', 'characteristicValues', 'propertyCategory'))));
+    }
     /**
      * @ApiDoc(
      *  resource=true,
@@ -132,8 +173,7 @@ class PropertyController extends Controller implements ClassResourceInterface
         }
         $em->persist($property);
         $em->flush();
-        $json = $serializer->serialize($property, 'json', SerializationContext::create()->setGroups(array('id')));
-        return new Response($json);
+        return new Response($serializer->serialize($property, 'json', SerializationContext::create()->setGroups(array('id'))));
     }
     /**
      * @ApiDoc(
@@ -225,6 +265,22 @@ class PropertyController extends Controller implements ClassResourceInterface
         }
         $em->remove($property);
         $em->flush();
+    }
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "index","property", "webPath"},
+     *  description="Return the web path for the entity image",
+     *  statusCodes={
+     *         200="Returned when successful",
+     *     }
+     *
+     * )
+     */
+    public function getMediaPathAction() {
+        $webPath = $this->container->get('winefing.webpath_controller');
+        $picturePath = $webPath->getPath($this->getParameter('property_directory'));
+        return new Response(json_encode($picturePath));
     }
 
 }

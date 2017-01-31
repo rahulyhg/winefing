@@ -35,7 +35,7 @@ class CharacteristicCategoryTr
     /**
      * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Language")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"default"})
+     * @Groups({"language"})
      */
     private $language;
 

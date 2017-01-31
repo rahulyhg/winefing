@@ -139,10 +139,14 @@
                         </div>
                         {{ form_row(domainForm.address.country) }}
                         <br>
-                        {% trans%}label.agree_with_terms_of_use{% endtrans %}
-                        {{ form_row(domainForm.agree) }}
-                        {% trans%}label.subscribe_newsletter{% endtrans %}
-                        {{ form_row(domainForm.subscription) }}
+                        <div>
+                            {% trans%}label.agree_with_terms_of_use{% endtrans %}
+                            {{ form_widget(domainForm.agree) }}
+                        </div>
+                        <div>
+                            {% trans%}label.subscribe_newsletter{% endtrans %}
+                            {{ form_widget(domainForm.subscription) }}
+                        </div>
                         <br>
                         {{ form_row(domainForm.submit) }}
                     </div>
@@ -165,7 +169,6 @@
                 country: 'domain_registration_address_country',
                 postal_code: 'domain_registration_address_postalCode'
             };
-            $('[data-toggle="tooltip"]').tooltip();
             //Allows to check is the password's format is correct, and if the confirmation correspond.
             $('#domain_registration_user_email_first, #domain_registration_user_email_second').on('keyup', function() {
                         if(checkFormatEmail(this)) {

@@ -1,0 +1,269 @@
+/* Réglages Divers */
+.border {
+	border:1px solid #cc6666;
+	width:70%;
+	margin:15px auto;
+}
+
+.section_padding {
+	padding:25px 0;
+}
+
+.col-no-padding {
+	padding:15px 0 !important;
+}
+
+
+.title_padding {
+	padding:0 15px !important;
+}
+
+.section_grey {
+	background-color:#f0f0f0;
+}
+
+/* Réglages Divers End */
+
+.image_3, .image_4, .image_6, .image_8, .image_15, .image_discover, .image_letyourself, .image_offer, .image_owner {
+	width:100%;
+	height:auto;
+	background-size:cover;
+}
+
+.image_3, .image_6 {
+	padding:120px 100px;
+}
+
+.image_4 {
+	padding:295px 100px;
+}
+
+.image_8 {
+	padding:150px 100px;
+}
+
+.image_13 {
+	padding:80px 10px;
+}
+
+.image_14 {
+	padding:117px 10px;
+}
+
+.image_15 {
+	padding:120px 165px;
+}
+
+
+/* Image & Font Discover */
+
+@media only screen and (min-width: 970px) {
+
+	.image_left {
+		padding:250px 10px !important;
+	}
+	
+}
+
+.image_hover_discover {
+	background-color: rgba(29,29,29,0.60);
+	padding:calc((250px / 4.52)) 0;
+	color:#fff;
+	transition:.5s;
+	opacity:0;
+}
+
+.image_hover_discover:hover {
+	opacity:1;
+}
+
+.image_discover h4 {
+	color:#fff;
+	position: absolute;
+	bottom:15px;
+	right:35px;
+}
+
+.image_discover_1 {
+	background-image: url(../img/discover/discover_1.jpg);
+	background-position: center;
+}
+
+.image_discover_2 {
+	background-image: url(../img/discover/discover_2.jpg);
+	background-position: center;
+}
+
+.image_discover_3 {
+	background-image: url(../img/discover/discover_3.jpeg);
+	background-position: center;
+}
+
+.image_discover_4 {
+	background-image: url(../img/discover/discover_4.jpg);
+	background-position: center;
+}
+
+.image_discover_5 {
+	background-image: url(../img/discover/discover_5.jpg);
+	background-position: right;
+}
+
+.image_discover_6 {
+	background-image: url(../img/discover/discover_6.jpg);
+	background-position: center;
+}
+
+.image_discover_7 {
+	background-image: url(../img/discover/discover_7.jpg);
+	background-position: center;
+}
+
+
+
+/* Image & Font Discover End*/
+
+/* Image & Font Let_Yourself */
+
+.image_hover {
+	color:#fff;
+	background-color:rgba(29,29,29,0.60);
+	padding:90px 100px;
+	opacity:0;
+	transition:.5s;
+}
+
+.image_hover:hover {
+	opacity:1;
+}
+
+.image_letyourself h4 {
+	color:#fff;
+}
+
+.image_letyourself_1 {
+	background-image: url(../img/letyourself/let_yourself_1.jpeg);
+	background-position: right;
+}
+
+.image_letyourself_2 {
+	background-image: url(../img/letyourself/let_yourself_2.jpeg);
+	background-position: right;
+}
+
+.image_letyourself_3 {
+	background-image: url(../img/letyourself/let_yourself_3.jpeg);
+	background-position: right;
+}
+
+.image_letyourself_4 {
+	background-image: url(../img/letyourself/let_yourself_4.jpeg);
+	background-position: right;
+}
+
+.image_letyourself_5 {
+	background-image: url(../img/letyourself/let_yourself_5.jpg);
+	background-position: right;
+}
+
+.image_letyourself_6 {
+	background-image: url(../img/letyourself/let_yourself_6.jpeg);
+	background-position: right;
+}
+
+/* Image & Font Let_Yourself End */
+
+/* Image Gift */
+
+.image_offer_1 {
+	background-image: url(../img/gift/gift_1.jpg);
+}
+
+.image_offer_2 {
+	background-image: url(../img/gift/gift_2.jpg);
+}
+
+/* Image Gift End*/
+
+/* Image Owner & Font */
+
+.owner_text {
+	padding:25px;
+}
+
+.image_owner {
+	padding:110px 10px;
+	border-radius:70px;
+}
+
+.image_owner_1 {
+	background-image: url(../img/owner/image_owner_1.jpg);
+	background-position: center;
+}
+
+.image_owner_2 {
+	background-image: url(../img/owner/image_owner_2.jpg);
+	background-position: center;
+}
+
+/* Image Owner & Font End */
+
+.image_camarsac_1 {
+	background-image: url(../img/camarsac/clos_du_prince_home.jpg);
+	background-position: right;
+}
+
+.image_camarsac_2 {
+	background-image: url(../img/camarsac/clos_du_prince_home_1.jpg);
+}
+
+.image_camarsac_3 {
+	background-image: url(../img/camarsac/beds/clos_du_prince_beds_1.jpg);
+	background-position:center;
+}
+
+.image_callamand_1 {
+	background-image: url(../img/callamand/great_callamand.jpg);
+}
+
+.image_callamand_2 {
+	background-image: url(../img/callamand/great_callamand_dining.jpg);
+}
+
+/* Single Property - Page Domaine */
+
+.property-description-center {
+	padding:25px !important; 
+	background-color:#fff; 
+	text-align:center;
+}
+
+/* Single Property - Page Domaine End */
+
+/*----Responsive----*/
+
+@media only screen and (max-width: 970px) {
+	.image_4 {
+		padding:150px 100px;
+	}
+	
+	.datepicker-plus {
+		display:block !important;
+	}
+	
+	.search_padding {
+		padding:8px;
+	}
+	
+	.datepicker_plus_wrapper {
+		padding:0px 57px;
+	}
+}
+
+@media only screen and (max-width: 1200px) {
+	.image_14 {
+		padding:95px 10px;
+	}
+}
+
+/*----Responsive End----*/

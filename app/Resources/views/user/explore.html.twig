@@ -1,0 +1,99 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+        <div class="content">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="heading-title heading-title-alt">
+                            <h3 class="text-center">La Sélection Winefing</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 col-md-8">
+                        <div class="property-image-list">
+                            <div class="image_4 image_callamand_1"></div>
+                            <div class="property-features text-center">
+                                <span>Grand Callamand</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-4">
+                        <div class="property-image-list">
+                            <div class="image_8 image_callamand_2"></div>
+                            <div class="property-features text-center">
+                                <span>Réservez votre chambre</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-4">
+                        <div class="property-text">
+                            <h3><a href="#">Grand Callamand</a></h3>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                                tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                                consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                                cillum dolore eu fugiat nulla pariatur.</p>
+                            <p style="float:right;"><a href="#" class="btn btn-danger">Plus de détails »</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% for domain in domains %}
+            <div class="{% if loop.index is divisibleby(2)  %}bg-grey{% endif %}">
+                <div class="content">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="heading-title heading-title-alt">
+                                    <h3 class="text-center">{{ domain.wineRegion.name }}</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6 col-md-3">
+                                <div class="property-image-list">
+                                    <a href="#">
+                                        <div class="image_3 image_camarsac_1"></div>
+                                        <div class="property-features text-center">
+                                            <span>Piscine, Dégustation, Bien-être</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-6 col-md-6">
+                                <div class="property-image-list">
+                                    <img src="{{ domain_directory ~ 'default.png' }}">
+                                    <div class="property-features property-features-center text-center">
+                                        <span>{{ domain.name }}</span>
+                                        <p style="padding:25px 35px;">{{ domain.description }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-12 col-md-3">
+                                <div class="property-image-list">
+                                    <a href="#">
+                                        <div class="image_3 image_camarsac_3"></div>
+                                        <div class="property-features text-center">
+                                            <span>Réservez votre chambre</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <p  style="float:right;"><a href="#" class="btn btn-danger">Découvrir les autres domaines Bordelais</a></p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        <script>
+            $(".property-image-list").mouseenter(function(){
+                $(this).children(".property-features-center").css({"top":"0", "padding":"25px 10px"})
+            });
+
+            $(".property-image-list").mouseleave(function(){
+                $(this).children(".property-features-center").css({"top":"86%", "padding":""})
+            });
+        </script>
+{% endblock %}

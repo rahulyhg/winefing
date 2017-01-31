@@ -1,0 +1,179 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h3 class="text-left" style="color:#cc6666; font-weight:400;">{{ domain.name }}</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-md-8 col-sm-12">
+                <div class="row">
+                    <div class="col-xs-12 col-md-12 col-sm-12">
+                        <div id="slider-property" class="carousel slide" data-ride="carousel">
+                            <ol class="carousel-indicators">
+                                <li data-target="#slider-property" data-slide-to="0" class="">
+                                    <img src="https://dev.winefing.fr/winefing/web/Resources/pictures/property/default.png" alt="">
+                                </li>
+                                <li data-target="#slider-property" data-slide-to="1" class="active">
+                                    <img src="https://dev.winefing.fr/winefing/web/Resources/pictures/property/default.png" alt="">
+                                </li>
+                                <li data-target="#slider-property" data-slide-to="2">
+                                    <img src="https://dev.winefing.fr/winefing/web/Resources/pictures/property/default.png" alt="">
+                                </li>
+                            </ol>
+                            <div class="carousel-inner">
+                                <div class="item">
+                                    <img src="https://dev.winefing.fr/winefing/web/Resources/pictures/property/default.png" alt="">
+                                </div>
+                                <div class="item active">
+                                    <img src="https://dev.winefing.fr/winefing/web/Resources/pictures/property/default.png" alt="">
+                                </div>
+                                <div class="item">
+                                    <img src="https://dev.winefing.fr/winefing/web/Resources/pictures/property/default.png" alt="">
+                                </div>
+                            </div>
+                            <a class="left carousel-control" href="#slider-property" data-slide="prev">
+                                <span class="glyphicon glyphicon-chevron-left"></span>
+                            </a>
+                            <a class="right carousel-control" href="#slider-property" data-slide="next">
+                                <span class="glyphicon glyphicon-chevron-right"></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-4 col-sm-12">
+                <div class="row">
+                    <div class="col-xs-12 col-md-12 col-sm-12">
+                        <img src="https://dev.winefing.fr/winefing/web/Resources/pictures/property/default.png">
+                    </div>
+                    <div class="col-xs-12 col-md-12 col-sm-12">
+                        <div class="property-image-list">
+                            <img src="https://dev.winefing.fr/winefing/web/Resources/pictures/property/default.png">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </section>
+    <div>
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-8 col-md-8">
+                    <h4 class="text-left" style="font-weight:400; color:#cc6666;">L'histoire du domaine</h4>
+                    <div class="property-text">
+                        <p>{{ domain.description }}</p>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-4 col-md-4" style="display:flex;">
+                    <p class="text-center" style="margin:auto; padding:75px;"><a href="#" class="btn btn-danger">Plus de détails »</a></p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <h4 class="text-left" style="font-weight:400; color:#cc6666;">La propriété</h4>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-6 col-sm-6 col-md-6">
+                    <h4 class="text-left" style="font-weight:600; color:#2f2f2f;">Les équipements</h4>
+                    <ul style="padding:0 13px;">
+                        <li> Jusqu'à 15 personnes</li>
+                        <li> Draps fournis</li>
+                        <li> Petit-déjeuner</li>
+                        <li> TV avec Bein Sports</li>
+                        <li> Wi-Fi</li>
+                    </ul>
+                </div>
+                <div class="col-xs-6 col-sm-6 col-md-6">
+                    <h4 class="text-left" style="font-weight:600; color:#2f2f2f;">Les activités</h4>
+                    <ul style="padding:0 13px;">
+                        <li> Dégustation de grand cru</li>
+                        <li> Visite du vignoble</li>
+                        <li> Création de votre propre vin</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% for property in domain.properties %}
+        <div class="{% if loop.index is not divisible by(2) %}bg-grey{% endif %}">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-8 col-md-8">
+                        <h4 class="text-left" style="font-weight:400; color:#cc6666;">{{ property.name }}</h4>
+                    </div>
+                </div>
+                <div class="row">
+                    {% for rental in property.rentals %}
+                        <div class="col-xs-12 col-sm-6 col-md-4">
+                            <div class="property-content-list">
+                                <div class="property-image-list">
+                                    <div class="image_15 image_callamand_1"></div>
+                                    <div class="property-price">
+                                        <h4>{{ rental.name }}</h4>
+                                        <span>{{ rental.price }} € <small> / nuit</small></span>
+                                    </div>
+                                    <div class="property-status">
+                                        <span>{{ rental.peopleNumber }}</span>
+                                    </div>
+                                    <div class="property-features">
+                                        <span><i class="fa fa-home"></i> 7,000 m<sup>2</sup></span>
+                                        <span><i class="fa fa-male"></i> 2 Bath</span>
+                                        <span><i class="fa fa-building-o"></i> 2 Floors</span>
+                                        <span><i class="fa fa-car"></i> 2 Garages</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="property-text property-description-center">
+                                <h3><a href="#">{{ rental.name }}</a>
+                                    <div class="border"></div>
+                                    <small>Arrivée : 15h ; Départ : 11h</small></h3>
+                                <p>{{ rental.description }}</p>
+                            </div>
+                            <p><a href="#" class="btn btn-danger" style="width:100%;">Order</a></p>
+                            <p><a href="#" class="btn btn-danger" style="width:100%;">Réserver</a></p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    <div>
+        <div class="col-md-12">
+            <div id="map-property"></div>
+        </div>
+    </div>
+    <div class="bg-grey">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-6 col-md-6">
+                    <h4 class="text-left" style="font-weight:600; color:#cc6666;">{% trans %}label.the_owner{% endtrans %}</h4>
+                    <div class="col-md-6 col-no-padding">
+                        <img class="img-responsive rounded-3x" src="{{ user_directory ~ domain.user.picture }}">
+                    </div>
+                    <div class="col-md-6">
+                        <div class="owner_text">
+                            <h5 class="text-left" style="font-weight:400; color:#cc6666;">{{ domain.user.firstName }}</h5>
+                            <p>{{ domain.user.description }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-6 col-md-6">
+                    <h4 class="text-left" style="font-weight:600; color:#cc6666;">{% trans %}label.wine_region{% endtrans %}</h4>
+                    <div class="col-md-6 col-no-padding">
+                        <div class="image_owner image_owner_2"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="owner_text">
+                            <h5 class="text-left" style="font-weight:400; color:#cc6666;">{{ domain.wineRegion.name }}</h5>
+                            <p>{{ domain.wineRegion.name }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

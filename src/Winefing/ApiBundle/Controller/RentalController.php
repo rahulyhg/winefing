@@ -59,6 +59,43 @@ class RentalController extends Controller implements ClassResourceInterface
     /**
      * @ApiDoc(
      *  resource=true,
+     *  description="Get all rental's property.",
+     *  views = { "index", "rental" },
+     *  output= {
+     *      "class"="Winefing\ApiBundle\Entity\Rental",
+     *      "groups"={"id", "default", "characteristicValues"}
+     *     },
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         204={
+     *           "Returned when no content",
+     *         }
+     *     },
+     *  requirements={
+     *     {
+     *          "name"="property", "dataType"="integer", "required"=true, "description"="property id",
+     *          "name"="language", "dataType"="string", "required"=true, "description"="language code",
+     *      }
+     *     }
+     * )
+     * GET Route annotation.
+     * @Get("mobile/rentals/property/{property}/{language}")
+     */
+    public function getByPropertyAction($property, $language)
+    {
+        $serializer = $this->container->get('jms_serializer');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Rental');
+        $rentals = $repository->findByProperty($property);
+        foreach($rentals as $rental) {
+            $rental->setMediaPresentation();
+            $rental->setTr($language);
+        }
+        $json = $serializer->serialize($rentals, 'json', SerializationContext::create()->setGroups(array('id', 'default', 'characteristicValues')));
+        return new Response($json);
+    }
+    /**
+     * @ApiDoc(
+     *  resource=true,
      *  views = { "index", "rental" },
      *  description="Get a entity by its id and by the language of the user.",
      *  output= {
@@ -258,5 +295,22 @@ class RentalController extends Controller implements ClassResourceInterface
         }
         $em->remove($rental);
         $em->flush();
+    }
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "index","rental", "webPath"},
+     *  description="Return the web path for the entity image",
+     *  statusCodes={
+     *         200="Returned when successful",
+     *     }
+     *
+     * )
+     */
+    public function getMediaPathAction() {
+        $serializer = $this->container->get('winefing.serializer_controller');
+        $webPath = $this->container->get('winefing.webpath_controller');
+        $picturePath = $webPath->getPath($this->getParameter('rental_directory'));
+        return new Response($serializer->serialize($picturePath));
     }
 }

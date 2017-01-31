@@ -6,7 +6,12 @@ parameters:
 services:
     winefing.api_controller:
         class: Winefing\ApiBundle\Controller\ApiController
-        arguments: ['@service_container']
+        arguments: ['@service_container', "@=service('security.token_storage').getToken()", '@winefing.repository.refresh_token']
+    winefing.geocoder_controller:
+        class: Winefing\ApiBundle\Controller\GeocodeAddressController
+    winefing.characteristic_service:
+        class: AppBundle\Controller\CharacteristicService
+        arguments: ['@winefing.api_controller', "@router", '@jms_serializer']
     winefing.serializer_controller:
             class: Winefing\ApiBundle\Controller\SerializerController
     winefing.webpath_controller:
@@ -26,3 +31,11 @@ services:
     app.api_token_authenticator:
         class: Winefing\ApiBundle\Controller\TokenAuthenticator
         arguments: ["@doctrine.orm.entity_manager"]
+    winefing.api.user_provider:
+            class: Winefing\ApiBundle\Controller\ApiUserProvider
+            arguments: ['@doctrine.orm.entity_manager']
+    winefing.repository.refresh_token:
+        class: Winefing\ApiBundle\Repository\RefreshTokenRepository
+        factory: ["@doctrine.orm.entity_manager", getRepository]
+        arguments:
+            - Winefing\ApiBundle\Entity\RefreshToken

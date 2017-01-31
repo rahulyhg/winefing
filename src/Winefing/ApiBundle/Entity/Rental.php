@@ -301,8 +301,17 @@ class Rental
     public function setTr($language) {
         foreach($this->characteristicValues as $characteristicValue) {
             $characteristicValue->getCharacteristic()->setTr($language);
+            $characteristicValue->getCharacteristic()->getCharacteristicCategory()->setTr($language);
         }
     }
-
+    public function getCharacteristicValuesActivated() {
+        $characteristicValuesActivated = new ArrayCollection();
+        foreach($this->getCharacteristicValues() as $characteristicValue) {
+            if($characteristicValue->getCharacteristic()->getActivated()) {
+                $characteristicValuesActivated[] = $characteristicValue;
+            }
+        }
+        return $characteristicValuesActivated;
+    }
 }
 

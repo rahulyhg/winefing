@@ -103,8 +103,7 @@ class RentalController extends Controller
         $rental = $this->getRental($id);
         $this->getDoctrine()->getEntityManager()->persist($rental->getProperty());
 
-        $this->setMissingCharacteristicsAction($rental);
-        $characteristicCategories = $this->getCharacteristicCategories($rental);
+        $characteristicCategories = $this->getCharacteristicCategory($rental, $request->getLocale());
 
         $rentalForm =  $this->createForm(RentalType::class, $rental);
         $rentalForm->handleRequest($request);
@@ -168,7 +167,7 @@ class RentalController extends Controller
     public function putPropertyCharacteristics($idRental, Request $request){
         $rental = $this->getRental($idRental);
         $this->setMissingCharacteristicsAction($rental);
-        $characteristicCategories = $this->getCharacteristicCategories($rental);
+        $characteristicCategories = $this->getCharacteristicCategory($rental, $request->getLocale());
         $return['characteristicCategories'] = $characteristicCategories;
         if ($request->isMethod('POST')) {
             $characteristicValueForm = $request->request->get("characteristicValueForm");
@@ -234,20 +233,8 @@ class RentalController extends Controller
     }
 
     public function submitCharacteristicValues($characteristicValueForm) {
-        $api = $this->container->get('winefing.api_controller');
-        $serializer = $this->container->get('winefing.serializer_controller');
-        $rental = $characteristicValueForm["rental"];
-        foreach($characteristicValueForm["characteristicValue"] as $characteristicValue) {
-            if (empty($characteristicValue["id"])) {
-                $response = $api->post($this->get('router')->generate('api_post_characteristic_value'), $characteristicValue);
-                $characteristicValue = $serializer->decode($response->getBody()->getContents());
-                $characteristicValueProperty["rental"] = $rental;
-                $characteristicValueProperty["characteristicValue"] = $characteristicValue["id"];
-                $api->put($this->get('router')->generate('api_put_characteristic_value_rental'), $characteristicValueProperty);
-            } else {
-                $api->put($this->get('router')->generate('api_put_characteristic_value'), $characteristicValue);
-            }
-        }
+        $characteristicService = $this->container->get('winefing.characteristic_service');
+        $characteristicService->submitCharacteristicValues($characteristicValueForm, ScopeEnum::Property);
     }
 
     /**
@@ -262,22 +249,6 @@ class RentalController extends Controller
             ->add('success', "The rental is well deleted.");
         return $this->redirectToRoute('rental_user');
     }
-
-    public function setMissingCharacteristicsAction($rental)
-    {
-        $api = $this->container->get('winefing.api_controller');
-        $serializer = $this->container->get('winefing.serializer_controller');
-        $response = $response = $api->get($this->get('_router')->generate('api_get_characteristics_missing', array('id' => $rental->getId(), 'scope'=>ScopeEnum::Rental)));
-        $missingCharacteristics = $serializer->decode($response->getBody()->getContents());
-
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Characteristic');
-        foreach ($missingCharacteristics as $characteristic) {
-            $characteristicValue = new CharacteristicValue();
-            $characteristic = $repository->findOneById($characteristic["id"]);
-            $characteristicValue->setCharacteristic($characteristic);
-            $rental->addCharacteristicValue($characteristicValue);
-        }
-    }
     public function submitPictures($media)
     {
         $api = $this->container->get('winefing.api_controller');
@@ -291,16 +262,12 @@ class RentalController extends Controller
             $api->put($this->get('router')->generate('api_put_media_rental'), $body);
         }
     }
-    public function getCharacteristicCategories($rental) {
-        $list = array();
-        foreach($rental->getCharacteristicValues() as $characteristicValue) {
-            $list[$characteristicValue
-                ->getCharacteristic()
-                ->getCharacteristicCategory()
-                ->getCharacteristicCategoryTrs()[0]
-                ->getName()][]
-                = $characteristicValue;
-        }
-        return $list;
+    public function getCharacteristicCategory($rental, $language) {
+        $api = $this->container->get('winefing.api_controller');
+        $serializer = $this->container->get('jms_serializer');
+        $response = $api->get($this->get('router')->generate('api_get_characteristic_values_all_by_scope', array('id'=>$rental->getId(), 'scope'=>ScopeEnum::Rental, 'language'=>$language)));
+        $characteristicValues = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\CharacteristicValue>', "json");
+        $characteristicService = $this->container->get('winefing.characteristic_service');
+        return $characteristicService->getByCharacteristicCategory($characteristicValues);
     }
 }

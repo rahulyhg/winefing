@@ -20,4 +20,22 @@ class DomainRepository extends \Doctrine\ORM\EntityRepository
             ->getQuery();
         return $query->getResult();
     }
+    function findGroupByWineRegion()
+    {
+        $query = $this->createQueryBuilder('domain')
+            ->join("domain.wineRegion", "wineRegion")
+            ->groupBy('wineRegion.id')
+            ->getQuery();
+        return $query->getResult();
+    }
+    function findOneWithMediaId($mediaId)
+    {
+        $query = $this->createQueryBuilder('domain')
+            ->innerJoin("domain.medias", "medias")
+            ->where('medias.id = :mediaId')
+            ->setParameter('mediaId', $mediaId)
+            ->setMaxResults(1)
+            ->getQuery();
+        return $query->getOneOrNullResult();
+    }
 }

@@ -51,25 +51,26 @@ class PropertyController extends Controller
         return $this->render('host/property/index.html.twig', array(
             'properties' => $properties));
     }
+
     /**
      * Edit the property of the current user (host).
      * This part allows to edit, the property's information or the property's address or the property's pictures.
      * @param $id, Request $request
      * @return
-     * @Route("/property/edit/{id}", name="property_edit")
+     * @Route("/property/edit/{id}/{nav}", name="property_edit")
      */
-    public function putAction($id, Request $request) {
+    public function putAction($id, $nav = '#presentation', Request $request) {
         $return = array();
         $property = $this->getProperty($id);
-        $propertyForm =  $this->createForm(PropertyType::class, $property);
+        $propertyForm =  $this->createForm(PropertyType::class, $property, array('language'=>$request->getLocale()));
         $propertyForm->handleRequest($request);
         if ($propertyForm->isSubmitted()) {
             if($propertyForm->isValid()) {
                 $propertyForm = $request->request->all()['property'];
                 $propertyForm["id"] = $property->getId();
-                $property = $this->submit($propertyForm);
+                $this->submit($propertyForm);
             }
-            return $this->redirect($this->generateUrl('property_edit', array('id'=> $property->getId())). '#presentation');
+            return $this->redirect($this->generateUrl('property_edit', array('id'=> $property->getId())));
         }
         $return['propertyForm'] = $propertyForm->createView();
         $address = $this->getAddress($property);
@@ -78,8 +79,6 @@ class PropertyController extends Controller
             $return['addressListChoice'] = $addressListChoice->createView();
         }
         $addressForm = $this->createForm(AddressType::class, $address);
-        $characteristicCategories = $this->getCharacteristicValuesByCategory($property->getId());
-
         $addressForm->handleRequest($request);
         if ($addressForm->isSubmitted()) {
             if ($addressForm->isValid()) {
@@ -87,8 +86,9 @@ class PropertyController extends Controller
                 $addressForm["property"] = $property->getId();
                 $addressForm["id"] = $address->getId();
                 $this->submitAddress($addressForm);
+                var_dump($property->getId());
             }
-            return $this->redirect($this->generateUrl('property_edit', array('id' => $property->getId())) . '#address');
+            return $this->redirect($this->generateUrl('property_edit', array('id' => $property->getId(), 'nav'=>'#address')));
         }
         if ($request->isMethod('POST')) {
             $media = $request->files->get('media');
@@ -96,18 +96,27 @@ class PropertyController extends Controller
             if (!empty($media)) {
                 $media["property"] = $property->getId();
                 $this->submitPictures($media);
-                return $this->redirect($this->generateUrl('property_edit', array('id' => $property->getId())) . '#medias');
+                return $this->redirect($this->generateUrl('property_edit', array('id' => $property->getId(), 'nav'=>'#medias')));
             } elseif (!empty($characteristicValueForm)) {
                 $characteristicValueForm["property"] = $property->getId();
                 $this->submitCharacteristicPropertyValues($characteristicValueForm);
-                return $this->redirect($this->generateUrl('property_edit', array('id' => $property->getId())) . '#informations');
+                return $this->redirect($this->generateUrl('property_edit', array('id' => $property->getId(), 'nav'=>'#informations')));
             }
         }
+
+
         $return['addressForm'] = $addressForm->createView();
-        $return['characteristicCategories'] = $characteristicCategories;
+        $return['characteristicCategories'] = $this->getCharacteristicCategory($property, $request->getLocale());
         $return['medias'] = $property->getMedias();
-        $return['rentals'] = $property->getRentals();
+        $return['rentals'] = $this->getRentals($property->getId(), $request->getLocale());
         return $this->render('host/property/edit.html.twig', $return);
+    }
+    public function getRentals($propertyId, $language) {
+        $api = $this->container->get('winefing.api_controller');
+        $serializer = $this->container->get('jms_serializer');
+        $response = $api->get($this->get('_router')->generate('api_get_rental_by_property', array('property'=>$propertyId, 'language' => $language)));
+        $rentals = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\Rental>', 'json');
+        return $rentals;
     }
     /**
      * Create and handle the submition of a new property.
@@ -333,20 +342,8 @@ class PropertyController extends Controller
      * @param array
      */
     public function submitCharacteristicPropertyValues($characteristicValueForm) {
-        $api = $this->container->get('winefing.api_controller');
-        $serializer = $this->container->get('winefing.serializer_controller');
-        $property = $characteristicValueForm["property"];
-        foreach($characteristicValueForm["characteristicValue"] as $characteristicValue) {
-            if (empty($characteristicValue["id"])) {
-                $response = $api->post($this->get('router')->generate('api_post_characteristic_value'), $characteristicValue);
-                $characteristicValue = $serializer->decode($response->getBody()->getContents());
-                $characteristicValueProperty["property"] = $property;
-                $characteristicValueProperty["characteristicValue"] = $characteristicValue["id"];
-                $api->put($this->get('router')->generate('api_put_characteristic_value_property'), $characteristicValueProperty);
-            } else {
-                $api->put($this->get('router')->generate('api_put_characteristic_value'), $characteristicValue);
-            }
-        }
+        $characteristicService = $this->container->get('winefing.characteristic_service');
+        $characteristicService->submitCharacteristicValues($characteristicValueForm, ScopeEnum::Property);
     }
 
     /**
@@ -365,63 +362,18 @@ class PropertyController extends Controller
     }
 
     /**
-     * Get all the characteristic not filled in, create a characteristic value and add it to the array.
-     * @param $propertyId
+     * Get all the characteristic (current + missing)
+     * @param $domain
+     * @param $language
+     * @return mixed
      */
-    public function getMissingCharacteristicValues($propertyId, $characteristicValues)
-    {
+    public function getCharacteristicCategory($property, $language) {
         $api = $this->container->get('winefing.api_controller');
         $serializer = $this->container->get('jms_serializer');
-        $response = $response = $api->get($this->get('_router')->generate('api_get_characteristic_values_by_scope', array('id' => $propertyId, 'scope'=> ScopeEnum::Property)));
-        $missingCharacteristics = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\Characteristic>', 'json');
-        foreach ($missingCharacteristics as $characteristic) {
-            $characteristicValue = new CharacteristicValue();
-            $characteristicValue->setCharacteristic($characteristic);
-            array_push($characteristicValues, $characteristicValue);
-        }
-        return $characteristicValues;
-    }
+        $response = $api->get($this->get('router')->generate('api_get_characteristic_values_all_by_scope', array('id'=>$property->getId(), 'scope'=>ScopeEnum::Property, 'language'=>$language)));
 
-    /**
-     * Get all the characteristicValues of the property.
-     * @param $propertyId
-     * @return array of characteristicValues
-     */
-    public function getCharacteristicValues($propertyId)
-    {
-        $api = $this->container->get('winefing.api_controller');
-        $serializer = $this->container->get('jms_serializer');
-        $response = $response = $api->get($this->get('_router')->generate('api_get_property_characteristic_values', array('propertyId' => $propertyId)));
-        return $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\CharacteristicValue>', 'json');
-    }
-
-    /**
-     * Get all the characteristicValues organize by characteristicCategory.
-     * @param array of characteristicValues
-     * @return array[characteristicCategory][] = [characteristicValue]
-     */
-    public function getCharacteristicCategories($characteristicValues) {
-        $list = array();
-        foreach($characteristicValues as $characteristicValue) {
-            $list[$characteristicValue
-                ->getCharacteristic()
-                ->getCharacteristicCategory()
-                ->getCharacteristicCategoryTrs()[0]
-                ->getName()][]
-                = $characteristicValue;
-        }
-        return $list;
-    }
-
-    /**
-     * Get all the characteristicValue possible (the one already fill in by the host, and the one missing) by Category
-     * @param $propertyId
-     * @return array
-     */
-    public function getCharacteristicValuesByCategory($propertyId) {
-        $characteristicValues = $this->getCharacteristicValues($propertyId);
-        $characteristicValues = $this->getMissingCharacteristicValues($propertyId, $characteristicValues);
-        $characteristicCategories = $this->getCharacteristicCategories($characteristicValues);
-        return  $characteristicCategories;
+        $characteristicValues = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\CharacteristicValue>', "json");
+        $characteristicService = $this->container->get('winefing.characteristic_service');
+        return $characteristicService->getByCharacteristicCategory($characteristicValues);
     }
 }

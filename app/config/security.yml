@@ -6,10 +6,8 @@ security:
             entity:
                 class: WinefingApiBundle:User
                 property: email
-        token:
-            entity:
-                class: WinefingApiBundle:User
-                property: token
+        myProvider:
+            id: winefing.api.user_provider
     encoders:
         Winefing\ApiBundle\Entity\User: bcrypt
 
@@ -21,12 +19,22 @@ security:
         ROLE_USER: ROLE_USER
 
     firewalls:
-        api:
-            pattern: ^/api/
-            anonymous: true
-            guard:
-                authenticators:
-                    - app.api_token_authenticator
+#        oauth_token:                                   # Everyone can access the access token URL.
+#            pattern: ^/oauth/v2/token
+#            security: false
+##        oauth_authorize:
+##            pattern:    ^/oauth/v2/auth
+#        api:
+#            pattern: ^/api                                # All URLs are protected
+#            fos_oauth: true                            # OAuth2 protected resource
+#            stateless: true                            # Do no set session cookies
+#            anonymous: false
+#        api:
+#            pattern: ^/api/
+#            anonymous: true
+#            guard:
+#                authenticators:
+#                    - app.api_token_authenticator
         main:
             pattern:  ^/
             anonymous: true
@@ -61,4 +69,4 @@ security:
         - { path: ^/%locale%/host/, role: ROLE_HOST }
         - { path: ^/%locale%/paiement/, role: IS_AUTHENTICATED_FULLY }
         - { path: ^/api/doc, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api, role: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api, role: IS_AUTHENTICATED_ANONYMOUSLY }

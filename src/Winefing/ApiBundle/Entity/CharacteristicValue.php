@@ -128,5 +128,9 @@ class CharacteristicValue
         $this->rentals[] = $rental;
         return $this;
     }
+    public function setTr($language) {
+        $this->getCharacteristic()->setTr($language);
+        $this->getCharacteristic()->getCharacteristicCategory()->setTr($language);
+    }
 }
 

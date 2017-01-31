@@ -148,3 +148,14 @@ label.welcome: Welcome
 text.welcome: Welcome %name% in the winefing comunity !
 success.email_verify: The email is well verify !
 label.validate_account: Validate account
+
+label.domain_history: Domain's history
+help.domain_history: This section is only to speak about the history of the domain.
+label.drop_files_here: Drop files here to upload
+label.add_pictures: Add pictures:
+help.pictures: Max picture number is 10. Optimoium format is 1600px per 600px.
+
+label.reset_password: Reset password
+label.explore: Explore
+label.the_owner: The owner
+confirmation.delete: Are your sure to delete this element ?

@@ -14,7 +14,7 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="navbar-top">
             <ul class="nav navbar-nav navbar-right">
-                <li class="{% if app.request.attributes.get('_route') == 'user_host_new' %}active{% endif %}"><a href="{{ path("user_host_new", {'step' : 'contact'}) }}">Viticulteur</a></li>
+                <li class="{% if app.request.attributes.get('_route') == 'registration_host' %}active{% endif %}"><a href="{{ path("registration_host", {'step' : 'contact'}) }}">Viticulteur</a></li>
                 <li><a href="#" class="signin" data-toggle="modal" data-target="#modal-signin">{% trans %}label.help{% endtrans %}</a></li>
                 <li><a href="#modal-signin" class="signin" data-toggle="modal" data-target="#modal-signin">{% trans %}label.registration{% endtrans %}</a></li>
                 {% if app.user %}

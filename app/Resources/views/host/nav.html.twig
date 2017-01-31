@@ -19,8 +19,8 @@
                 <li class="{% if route == 'properties' or route == 'new_property' or route == 'property_edit' %}active{% endif %}">
                     <a href="{{ path('properties') }}">{{ 'label.my_properties'|trans }} </a>
                 </li>
-                <li class="{% if route == 'rentals' or route == 'rental_new' or route == 'rental_edit' %}active{% endif %}">
-                    <a href="{{ path('rentals') }}">{% trans %}label.my_rentals{% endtrans %}
+                <li class="{% if route == 'host_rentals' or route == 'host_rentals' or route == 'host_rentals' %}active{% endif %}">
+                    <a href="{{ path('host_rentals') }}">{% trans %}label.my_rentals{% endtrans %}
                     </a>
                 </li>
                 <li><a href="#">{% trans %}label.my_reservations{% endtrans %} </a></li>

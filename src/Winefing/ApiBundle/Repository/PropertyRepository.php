@@ -30,4 +30,14 @@ class PropertyRepository extends \Doctrine\ORM\EntityRepository
         $properties = $query->getResult();
         return $properties;
     }
+    function findOneWithMediaId($mediaId)
+    {
+        $query = $this->createQueryBuilder('domain')
+            ->innerJoin("domain.medias", "medias")
+            ->where('medias.id = :mediaId')
+            ->setParameter('mediaId', $mediaId)
+            ->setMaxResults(1)
+            ->getQuery();
+        return $query->getOneOrNullResult();
+    }
 }

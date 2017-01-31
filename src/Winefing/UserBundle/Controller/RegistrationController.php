@@ -24,6 +24,7 @@ use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Form\FormError;
 use Winefing\ApiBundle\Entity\StatusCodeEnum;
+use Winefing\ApiBundle\Entity\User;
 use Winefing\ApiBundle\Entity\UserGroupEnum;
 use AppBundle\Form\DomainRegistrationType;
 use AppBundle\Form\DomainNewType;
@@ -66,24 +67,27 @@ class RegistrationController extends Controller
         $user = new User();
         $form =$this->createForm(UserRegistrationType::class, $user);
         $form->handleRequest($request);
-        if($request->isMethod('POST') && !$form->isSubmitted()) {
-            $userRegistration = $request->request->get('user');
-            $form->get('firstName')->setData($userRegistration['firstName']);
-            $form->get('lastName')->setData($userRegistration['lastName']);
-            $form->get('email')['first']->setData($userRegistration['email']['first']);
-            $form->get('email')['second']->setData($userRegistration['email']['second']);
-            $form->get('password')['first']->setData($userRegistration['password']['first']);
-            $form->get('password')['second']->setData($userRegistration['password']['second']);
-            $form->submit($userRegistration);
-        }
         if($form->isSubmitted() && $form->isValid()) {
+            $body = $request->request->get('user_registration');
+            $body['roles'] = UserGroupEnum::User;
             $body['email'] = $request->request->get('user_registration')['email']['first'];
             if($this->emailExist($body['email'])) {
                 $form->get('email')['first']->addError(new FormError($this->get('translator')->trans('error.email_existing')));
             } else {
-                $body['roles'] = UserGroupEnum::User;
                 $body['password'] = $request->request->get('user_registration')['password']['first'];
-                $this->submitUser($body);
+                $user = $this->submitUser($body);
+
+                //create the wallet on lemon way
+                try {
+                    $this->createWallet($user);
+                } catch(\Exception $e) {
+                    $logger = $this->get('logger');
+                    $logger->critical($e->getMessage());
+                }
+
+                //login user
+                $this->logIn($user);
+                return $this->redirectToRoute('home');
             }
 
         }
@@ -97,10 +101,6 @@ class RegistrationController extends Controller
      */
     public function submitAction(Request $request)
     {
-        $body['user'] = 90;
-        $body['language'] = $request->getLocale();
-        $this->sendEmailRegistration($body);
-
         $domain = new Domain();
         $domainForm =  $this->createForm(DomainRegistrationType::class, $domain);
         $return = array();
@@ -108,16 +108,11 @@ class RegistrationController extends Controller
         $domainForm->handleRequest($request);
         if($domainForm->isSubmitted() && $domainForm->isValid()) {
             if(!$this->emailExist($domainForm->get('user')['email']->getData())) {
-                //submit user
-                $user = $request->request->get('domain_registration')['user'];
-                $user['roles'] = UserGroupEnum::Host;
-                $user['password'] = $user['password']['first'];
-                $user['email'] = $user['email']['first'];
-                $user = $this->submitUser($user);
-
                 //submit address
                 $address = $request->request->get('domain_registration')['address'];
-                $coordinate = $this->geocode($address['formattedAddress']);
+                $geocoder = $this->container->get('winefing.geocoder_controller');
+                $coordinate = $geocoder->geocode($address['formattedAddress']);
+
                 //get the address's lat and lng
                 if(!($coordinate)) {
                     $this->addFlash('contactError', $this->get('translator')->trans('error.address_not_correct'));
@@ -126,6 +121,12 @@ class RegistrationController extends Controller
                     $address['lng'] = $coordinate[1];
                 }
                 $address = $this->submitAddress($address);
+                //submit user
+                $user = $request->request->get('domain_registration')['user'];
+                $user['roles'] = UserGroupEnum::Host;
+                $user['password'] = $user['password']['first'];
+                $user['email'] = $user['email']['first'];
+                $user = $this->submitUser($user);
 
                 //submit domain
                 $domainNew['name'] = $request->request->get('domain_registration')['name'];
@@ -135,22 +136,24 @@ class RegistrationController extends Controller
                 $this->submitDomain($domainNew);
 
                 //create the wallet on lemon way
-                $this->createWallet($user);
-
-
+                try {
+                    $this->createWallet($user);
+                } catch(\Exception $e) {
+                    $logger = $this->get('logger');
+                    $logger->critical($e->getMessage());
+                }
                 $body['user'] = $user->getId();
+
                 //create the subscription
-                var_dump($request->request->get('domain_registration'));
                 if(array_key_exists('subscription', $request->request->get('domain_registration'))) {
                     $this->submitAllSubscriptions($body);
                 }
                 //send email of welcoming
                 $this->sendEmailRegistration($body);
 
-
                 //login user
                 $this->logIn($user);
-                return $this->redirectToRoute('home');
+                return $this->redirectToRoute('domain_edit');
             } else {
                 $this->addFlash('contactError', $this->get('translator')->trans('error.email_already_exist'));
             }
@@ -234,58 +237,7 @@ class RegistrationController extends Controller
     }
     public function logIn($user) {
         $token = new UsernamePasswordToken($user, null, 'main', $user->getRoles());
-        $this->get('security.token_storage')->setToken($token);
         $this->get('session')->set('_security_main', serialize($token));
-    }
-
-    /**
-     * Get the address's lat and lng. Return false if nothing find
-     * @param $address
-     * @return array|bool
-     */
-    function geocode($address){
-
-        // url encode the address
-        $address = urlencode($address);
-
-        // google map geocode api url
-        $url = "http://maps.google.com/maps/api/geocode/json?address={$address}";
-
-        // get the json response
-        $resp_json = file_get_contents($url);
-
-        // decode the json
-        $resp = json_decode($resp_json, true);
-
-        // response status will be 'OK', if able to geocode given address
-        if($resp['status']=='OK'){
-            // get the important data
-            $lati = $resp['results'][0]['geometry']['location']['lat'];
-            $longi = $resp['results'][0]['geometry']['location']['lng'];
-            $formatted_address = $resp['results'][0]['formatted_address'];
-
-            // verify if data is complete
-            if($lati && $longi && $formatted_address){
-
-                // put the data in the array
-                $data_arr = array();
-
-                array_push(
-                    $data_arr,
-                    $lati,
-                    $longi,
-                    $formatted_address
-                );
-
-                return $data_arr;
-
-            }else{
-                return false;
-            }
-
-        }else{
-            return false;
-        }
     }
     /**
      * Permet de créer un wallet sur Lemon Way si ce dernier n'a pas déjà été créé.

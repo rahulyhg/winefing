@@ -1,6 +1,7 @@
 <?php
 
 namespace Winefing\ApiBundle\Repository;
+use Winefing\ApiBundle\Entity\ScopeEnum;
 
 /**
  * MediaRepository

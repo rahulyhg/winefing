@@ -1,7 +1,209 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-        <div id="welcome">
-            <h1><span>Welcome o</span> amjz {{ constant('Symfony\\Component\\HttpKernel\\Kernel::VERSION') }}</h1>
+    <div>
+        <div class="container content">
+            <div class="row">
+                <div class="text-center" style="margin-bottom: 50px">
+                    <h2>Région du mois</h2>
+                </div>
+                <div>
+                <div class="col-md-6">
+                    <img src="{{ discover_directory ~'discover_4.jpg' }}" class="img-responsive margin-bottom-10" alt="">
+                </div>
+                    <div class="col-md-6">
+                        <h2>Le Bordelais</h2>
+                        <p>Ducimus qui blanditiis praesentium voluptatum deleniti atque cupiditate non provident, similique sunt in culpa qui officia ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                        <div class="row margin-bottom-10">
+                            <div class="col-md-3">
+                                <a href="{{ discover_directory ~'discover_1.jpg' }}" title="Project #1" data-rel="gallery" class="fancybox img-hover-v1">
+                                    <img class="img-responsive" src="{{ discover_directory ~'discover_1.jpg' }}" alt="">
+                                </a>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="{{ discover_directory ~'discover_2.jpg' }}" title="Project #2" data-rel="gallery" class="fancybox img-hover-v1">
+                                    <img class="img-responsive" src="{{ discover_directory ~'discover_2.jpg' }}" alt="">
+                                </a>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="{{ discover_directory ~'discover_3.jpeg' }}" title="Project #3" data-rel="gallery" class="fancybox img-hover-v1">
+                                    <img class="img-responsive" src="{{ discover_directory ~'discover_3.jpeg' }}" alt="">
+                                </a>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="{{ discover_directory ~'discover_5.jpg' }}" title="Project #4" data-rel="gallery" class="fancybox img-hover-v1">
+                                    <img class="img-responsive" src="{{ discover_directory ~'discover_5.jpg' }}" alt="">
+                                </a>
+                            </div>
+                        </div>
+                        <a class="btn btn-primary"><i class="fa fa-thumbs-up"></i> Libero adipiscing</a>
+                    </div>
+                </div>
+            </div>
         </div>
+    </div>
+    <div class="bg-grey">
+        <!--=== Content Part ===-->
+        <div class="container content-sm">
+            <div class="text-center" style="margin-bottom: 50px">
+                <h2>Laissez-vous guider</h2>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="view view-tenth view-img-size">
+                        <img class="img-responsive" src="{{ let_your_self_directory ~ "let_yourself_1.jpeg" }}" alt="" />
+                        <div class="mask">
+                            <h2>Portfolio Item</h2>
+                            <p>At vero eos et accusamus et iusto odio dignissimos dolores et quas molestias excepturi sint occaecati cupiditate non provident.</p>
+                            <a href="portfolio_old_item.html" class="info">Read More</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="view view-tenth view-img-size">
+                        <img class="img-responsive" src="{{ let_your_self_directory ~ "let_yourself_2.jpeg" }}" alt="" />
+                        <div class="mask">
+                            <h2>Portfolio Item</h2>
+                            <p>At vero eos et accusamus et iusto odio dignissimos dolores et quas molestias excepturi sint occaecati cupiditate non provident.</p>
+                            <a href="portfolio_old_item.html" class="info">Read More</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="view view-tenth view-img-size">
+                        <img class="img-responsive" src="{{ let_your_self_directory ~ "let_yourself_3.jpeg" }}" alt="" />
+                        <div class="mask">
+                            <h2>Portfolio Item</h2>
+                            <p>At vero eos et accusamus et iusto odio dignissimos dolores et quas molestias excepturi sint occaecati cupiditate non provident.</p>
+                            <a href="portfolio_old_item.html" class="info">Read More</a>
+                        </div>
+                    </div>
+                </div>
+            </div><!--/row-->
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="view view-tenth no-margin-bottom view-img-size">
+                        <img class="img-responsive" src="{{ let_your_self_directory ~ "let_yourself_4.jpeg" }}" alt="" />
+                        <div class="mask">
+                            <h2>Portfolio Item</h2>
+                            <p>At vero eos et accusamus et iusto odio dignissimos dolores et quas molestias excepturi sint occaecati cupiditate non provident.</p>
+                            <a href="portfolio_old_item.html" class="info">Read More</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="view view-tenth no-margin-bottom view-img-size">
+                        <img class="img-responsive" src="{{ let_your_self_directory ~ "let_yourself_5.jpg" }}" alt="" />
+                        <div class="mask">
+                            <h2>Portfolio Item</h2>
+                            <p>At vero eos et accusamus et iusto odio dignissimos dolores et quas molestias excepturi sint occaecati cupiditate non provident.</p>
+                            <a href="portfolio_old_item.html" class="info">Read More</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="view view-tenth no-margin-bottom view-img-size">
+                        <img class="img-responsive" src="{{ let_your_self_directory ~ "let_yourself_6.jpeg" }}" alt="" />
+                        <div class="mask">
+                            <h2>Portfolio Item</h2>
+                            <p>At vero eos et accusamus et iusto odio dignissimos dolores et quas molestias excepturi sint occaecati cupiditate non provident.</p>
+                            <a href="portfolio_old_item.html" class="info">Read More</a>
+                        </div>
+                    </div>
+                </div>
+            </div><!--/row-->
+        </div><!--/container-->
+        <!--=== End Content Part ===-->
+    </div>
+    <section id="offer" class="section_padding">
+        <div class="content">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="heading-title heading-title-alt">
+                            <h3 class="text-center">Offrir</h3>
+                            <p class="text-center">Carte ou Coffret Cadeau, offrez plus que des émotions</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-3">
+                        <div class="image_offer image_offer_1">
+                            <a href="#">
+                                <div class="image_hover text-center" style="padding:78px 20px;">
+                                    <h4>Carte Cadeau</h4>
+                                    <p>20€, 50€, 100€, soyez sûr de faire plaisir</p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-9">
+                        <div class="image_offer image_offer_2">
+                            <a href="#">
+                                <div class="image_hover text-center">
+                                    <h4>Coffret Cadeau</h4>
+                                    <p>Offrez un de nos coffrets, réalisé par vos soins pour vous ou pour un proche</p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-center" style="margin:30px 0 20px"><a href="#" class="btn btn-section btn-danger">En savoir plus</a></p>
+            </div>
+        </div>
+    </section>
+    <div class="bg-grey">
+        <div class="content">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="heading-title heading-title-alt">
+                            <h3 class="text-center">Comment ça marche ?</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 col-sm-6 col-xs-12">
+                        <div class="service-container">
+                            <div class="service-icon">
+                                <a href="#"></a>
+                            </div>
+                            <div class="service-content">
+                                <h3>TROUVEZ</h3>
+                                <p>Votre destination</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- break -->
+                    <div class="col-md-4 col-sm-6 col-xs-12">
+                        <div class="service-container">
+                            <div class="service-icon">
+                                <a href="#"><i class="fa fa-thumbs-up"></i></a>
+                            </div>
+                            <div class="service-content">
+                                <h3>RÉSERVEZ</h3>
+                                <p>Directement en ligne</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- break -->
+                    <div class="col-md-4 col-sm-6 col-xs-12">
+                        <div class="service-container">
+                            <div class="service-icon">
+                                <a href="#"><i class="fa fa-automobile"></i></a>
+                            </div>
+                            <div class="service-content">
+                                <h3>VIVEZ</h3>
+                                <p>Un moment d'exception</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        FancyBox.initFancybox();
+    </script>
 {% endblock %}
 

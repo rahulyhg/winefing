@@ -56,7 +56,13 @@ class CharacteristicValueController extends Controller implements ClassResourceI
         $characteristicValue->setValue($request->request->get('value'));
         $em->persist($characteristicValue);
         $em->flush();
-        return new Response();
+    }
+    public function deleteAction($id) {
+        $em = $this->getDoctrine()->getManager();
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:CharacteristicValue');
+        $characteristicValue = $repository->findOneById($id);
+        $em->remove($characteristicValue);
+        $em->flush();
     }
 
     public function putDomainAction(Request $request) {
@@ -68,7 +74,6 @@ class CharacteristicValueController extends Controller implements ClassResourceI
         $characteristicValue->addDomain($domain);
         $em->persist($characteristicValue);
         $em->flush();
-        return new Response();
     }
 
     public function putPropertyAction(Request $request) {
@@ -80,7 +85,6 @@ class CharacteristicValueController extends Controller implements ClassResourceI
         $characteristicValue->addProperty($property);
         $em->persist($characteristicValue);
         $em->flush();
-        return new Response();
     }
 
     public function putRentalAction(Request $request) {
@@ -92,7 +96,6 @@ class CharacteristicValueController extends Controller implements ClassResourceI
         $characteristicValue->addRental($rental);
         $em->persist($characteristicValue);
         $em->flush();
-        return new Response();
     }
 
     public function cgetByScopeAction($id, $scope)
@@ -110,7 +113,54 @@ class CharacteristicValueController extends Controller implements ClassResourceI
                 break;
         }
         $object = $repository->findOneById($id);
-        $json = $serializer->serialize($object->getCharacteristicValues(), 'json', SerializationContext::create()->setGroups(array('default', 'medias', 'address')));
+        $json = $serializer->serialize($object->getCharacteristicValues(), 'json', SerializationContext::create()->setGroups(array('default', 'medias', 'address', 'trs')));
+        return new Response($json);
+    }
+
+    /**
+     * Get the characteristic + the missing one
+     * @param $id
+     * @param $scope
+     * @return Response
+     */
+    public function cgetAllByScopeAction($id, $scope, $language)
+    {
+        $serializer = $this->container->get('jms_serializer');
+        switch ($scope) {
+            case(ScopeEnum::Domain) :
+                $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Domain');
+                break;
+            case(ScopeEnum::Property) :
+                $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Property');
+                break;
+            case(ScopeEnum::Rental) :
+                $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Rental');
+                break;
+        }
+        $object = $repository->findOneById($id);
+
+        //the current characteristic value
+        $characteristicValues = $object->getCharacteristicValuesActivated();
+
+        //find the missing Characteristic
+        $ids = array();
+        foreach($characteristicValues as $characteristicValue) {
+            $ids[] = $characteristicValue->getCharacteristic()->getId();
+        }
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Characteristic');
+        $characteristics = $repository->findMissingCharacteristics($ids, $scope);
+
+        //add the missing to the array
+        foreach($characteristics as $characteristic) {
+            $characteristicValue = new CharacteristicValue();
+            $characteristicValue->setCharacteristic($characteristic);
+            $characteristicValues->add($characteristicValue);
+        }
+        //set language
+        foreach($characteristicValues as $characteristicValue) {
+            $characteristicValue->setTr($language);
+        }
+        $json = $serializer->serialize($characteristicValues, 'json', SerializationContext::create()->setGroups(array('default', 'characteristicCategory', 'characteristic')));
         return new Response($json);
     }
 }

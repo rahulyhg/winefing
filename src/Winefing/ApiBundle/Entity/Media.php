@@ -42,19 +42,19 @@ class Media
     private $presentation = 0;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Domain", mappedBy="medias", fetch="EXTRA_LAZY")
+     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Domain", mappedBy="medias", fetch="EXTRA_LAZY", cascade={"persist", "merge", "detach"})
      * @Groups({"domains"})
      */
     private $domains;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Property", mappedBy="medias", fetch="EXTRA_LAZY")
+     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Property", mappedBy="medias", fetch="EXTRA_LAZY", cascade={"persist", "merge", "detach"})
      * @Groups({"properties"})
      */
     private $properties;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Rental", mappedBy="medias", fetch="EXTRA_LAZY")
+     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Rental", mappedBy="medias", fetch="EXTRA_LAZY", cascade={"persist", "merge", "detach"})
      * @Groups({"rentals"})
      */
     private $rentals;
@@ -128,6 +128,7 @@ class Media
     {
         $this->presentation = $presentation;
     }
+
 
     /**
      * @return mixed

@@ -39,14 +39,8 @@ class CharacteristicCategoryController extends Controller
         $serializer = $this->container->get("winefing.serializer_controller");
         $response = $api->get($this->get('_router')->generate('api_get_characteristic_categories', array('scopeName' => $scopeName)));
         $characteristicCategories = $serializer->decode($response->getBody()->getContents());
-        $response = $api->get($this->get('_router')->generate('api_get_characteristic_categories_picture_path'));
-        $characteristicCategoryPicturePath = $serializer->decode($response->getBody()->getContents());
-        $response = $api->get($this->get('_router')->generate('api_get_characteristic_picture_path'));
-        $characteristicPicturePath = $serializer->decode($response->getBody()->getContents());
         return $this->render('admin/characteristic/index.html.twig', array(
-            'characteristicCategories' => $characteristicCategories, 'scopeName' => $scopeName,
-            'characteristicCategoryPicturePath' => $characteristicCategoryPicturePath,
-            'characteristicPicturePath' => $characteristicPicturePath));
+            'characteristicCategories' => $characteristicCategories, 'scopeName' => $scopeName));
     }
     /**
      * @Route("/characteristicCategory/newForm/{scopeName}/{id}", name="characteristicCategory_new_form")

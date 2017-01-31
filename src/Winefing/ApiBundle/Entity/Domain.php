@@ -5,6 +5,7 @@ namespace Winefing\ApiBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\Type;
 
 /**
  * Domain
@@ -77,7 +78,7 @@ class Domain
     /**
      * @var string
      *
-     * @ORM\Column(name="description", type="string", length=500, nullable=true)
+     * @ORM\Column(name="description", type="string", length=2000, nullable=true)
      * @Groups({"default"})
      */
     private $description;
@@ -85,10 +86,16 @@ class Domain
     /**
      * @var string
      *
-     * @ORM\Column(name="history", type="string", length=500, nullable=true)
+     * @ORM\Column(name="history", type="string", length=2000, nullable=true)
      * @Groups({"default"})
      */
     private $history;
+
+    /**
+     * @Groups({"default"})
+     * @Type("string")
+     */
+    private $mediaPresentation;
 
     public function _construct() {
         $this->medias = new ArrayCollection();
@@ -271,6 +278,46 @@ class Domain
         foreach($this->getCharacteristicValues() as $characteristicValue) {
             $characteristicValue->setTr($language);
         }
+        $this->getWineRegion()->setTr($language);
+    }
+    public function getCharacteristicValuesActivated() {
+        $characteristicValuesActivated = new ArrayCollection();
+        foreach($this->getCharacteristicValues() as $characteristicValue) {
+            if($characteristicValue->getCharacteristic()->getActivated()) {
+                $characteristicValuesActivated[] = $characteristicValue;
+            }
+        }
+        return $characteristicValuesActivated;
+    }
+    /**
+     * @return mixed
+     */
+    public function setMediaPresentation()
+    {
+        if(count($this->medias) > 0) {
+            foreach ($this->medias as $media) {
+                if ($media->isPresentation()) {
+                    $this->mediaPresentation = $media->getName();
+                    break;
+
+                }
+            }
+            if(empty($this->mediaPresentation)) {
+                $this->mediaPresentation = $this->medias[0]->getName();
+
+            }
+        } else {
+            $this->mediaPresentation = 'default.png';
+        }
+        return $this->mediaPresentation;
+    }
+
+    /**
+     * @param mixed $mediaPresentation
+     */
+    public function getMediaPresentation()
+    {
+        return $this->mediaPresentation;
     }
 }
 

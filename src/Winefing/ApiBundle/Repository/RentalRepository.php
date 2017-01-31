@@ -23,4 +23,14 @@ class RentalRepository extends \Doctrine\ORM\EntityRepository
             return $query->getResult();
         }
     }
+    function findOneWithMediaId($mediaId)
+    {
+        $query = $this->createQueryBuilder('domain')
+            ->innerJoin("domain.medias", "medias")
+            ->where('medias.id = :mediaId')
+            ->setParameter('mediaId', $mediaId)
+            ->setMaxResults(1)
+            ->getQuery();
+        return $query->getOneOrNullResult();
+    }
 }

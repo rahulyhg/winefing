@@ -14,10 +14,10 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
                 <li class="{% if route == 'rentals_promotions' or route == 'rentals_promotion_new' or route == 'rentals_promotion_edit'%}active{% endif %}">
-                    <a href="{{ path('rentals_promotions') }}">{% trans %}label.dashboard{% endtrans %}</a>
+                    <a href="#">{% trans %}label.dashboard{% endtrans %}</a>
                 </li>
                 <li class="{% if route == 'domain_edit'%}active{% endif %}">
-                    <a href="{{ path('domain_edit') }}">{% trans %}label.my_wine_list{% endtrans %} </a>
+                    <a href="#">{% trans %}label.my_wine_list{% endtrans %} </a>
                 </li>
                 <li class="{% if route == 'rentals' or route == 'rental_new' or route == 'rental_edit' %}active{% endif %}">
                     <a href="{{ path('rentals') }}">{% trans %}label.my_reservations{% endtrans %}

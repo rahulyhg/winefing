@@ -63,18 +63,19 @@ twig:
         role_user : 'ROLE_USER'
         address_billing : 'billing'
         address_delivering : 'delivering'
-        user_directory : '%protocol%://%host_name%/winefing/web/Resources/pictures/user/'
-        picture_directory : '%protocol%://%host_name%/winefing/web/Resources/pictures/'
-        language_directory: '%protocol%://%host_name%/winefing/web/Resources/pictures/language/'
-        credit_card_directory: '%protocol%://%host_name%/winefing/web/Resources/credit-card/'
-        characteristic_category_directory: '%protocol%://%host_name%/winefing/web/Resources/pictures/characteristicCategory/'
-        characteristic_directory: '%protocol%://%host_name%/winefing/web/Resources/pictures/characteristic/'
-        article_directory: '%protocol%://%host_name%/winefing/web/Resources/pictures/article/'
-        domain_directory: '%protocol%://%host_name%/winefing/web/Resources/pictures/domain/'
-        user_directory: '%protocol%://%host_name%/winefing/web/Resources/pictures/user/'
-        property_directory: '%protocol%://%host_name%/winefing/web/Resources/pictures/property/'
-        rental_directory: '%protocol%://%host_name%/winefing/web/Resources/pictures/rental/'
-        box_directory: '%protocol%://%host_name%/winefing/web/Resources/pictures/box/'
+        let_your_self_directory : '%protocol%://%host_name%/%let_your_self_directory%/'
+        discover_directory : '%protocol%://%host_name%/%discover_directory%/'
+        picture_directory : '%protocol%://%host_name%/%picture_directory%/'
+        language_directory: '%protocol%://%host_name%/%language_directory%/'
+        credit_card_directory: '%protocol%://%host_name%/%credit_card_directory%/'
+        characteristic_category_directory: '%protocol%://%host_name%/%characteristic_category_directory%/'
+        characteristic_directory: '%protocol%://%host_name%/winefing/%characteristic_directory%/'
+        article_directory: '%protocol%://%host_name%/%article_directory%/'
+        domain_directory: '%protocol%://%host_name%/%domain_directory%/'
+        user_directory: '%protocol%://%host_name%/%user_directory%/'
+        property_directory: '%protocol%://%host_name%/%property_directory%/'
+        rental_directory: '%protocol%://%host_name%/%rental_directory%/'
+        box_directory: '%protocol%://%host_name%/%box_directory%/'
         mail_chimp_token: '82eeea1796fe25cf7d185ec3ce2af340-us14'
         mail_chimp_url: 'https://us14.api.mailchimp.com/export/1.0/'
 
@@ -134,16 +135,21 @@ assetic:
         phone_number_js:
             inputs:
                 - 'assets/vendor/intl-tel-input/build/js/intlTelInput.js'
-        step_wizard_css:
-            inputs:
-                - 'bundles/app/css/step-wizard.css'
         bootstrap_css:
             inputs:
                 - 'assets/vendor/bootstrap/dist/css/*'
         arillo_css:
             inputs:
-                - 'bundles/app/css/*'
-
+                - 'bundles/app/css/arillo/*'
+        unify_css:
+            inputs:
+                - 'bundles/app/css/unify/*'
+        custom_css:
+            inputs:
+                - 'bundles/app/css/custom/*'
+        other_css:
+            inputs:
+                - 'bundles/app/css/other/*'
         bootstrap_js:
             inputs:
                 - 'assets/vendor/bootstrap/dist/js/*'
@@ -203,3 +209,15 @@ nelmio_api_doc:
         request_format:
             formats:
                 json:       "application/json"
+
+fos_oauth_server:
+    db_driver:           orm
+    client_class:        Winefing\ApiBundle\Entity\Client
+    access_token_class:  Winefing\ApiBundle\Entity\AccessToken
+    refresh_token_class: Winefing\ApiBundle\Entity\RefreshToken
+    auth_code_class:     Winefing\ApiBundle\Entity\AuthCode
+    service:
+      user_provider: winefing.api.user_provider
+      options:
+          supported_scopes: user
+          access_token_lifetime: 3600

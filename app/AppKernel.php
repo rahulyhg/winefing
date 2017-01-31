@@ -24,6 +24,7 @@ class AppKernel extends Kernel
             new PaiementBundle\PaiementBundle(),
             new Winefing\UserBundle\WinefingUserBundle(),
             new Nelmio\ApiDocBundle\NelmioApiDocBundle(),
+            new FOS\OAuthServerBundle\FOSOAuthServerBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
