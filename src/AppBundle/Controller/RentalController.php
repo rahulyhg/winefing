@@ -33,6 +33,7 @@ use Winefing\ApiBundle\Entity\Rental;
 use Winefing\ApiBundle\Entity\CharacteristicValue;
 use Winefing\ApiBundle\Entity\ScopeEnum;
 use Winefing\ApiBundle\Entity\StatusCodeEnum;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 
 
 class RentalController extends Controller
@@ -105,7 +106,12 @@ class RentalController extends Controller
 
         $characteristicCategories = $this->getCharacteristicCategory($rental, $request->getLocale());
 
-        $rentalForm =  $this->createForm(RentalType::class, $rental);
+        //create the form
+        $rentalForm =  $this->createForm(RentalType::class, $rental, array('user'=>$this->getUser()->getId()));
+        $rentalForm->get('property')->setData($rental->getProperty());
+        $rentalForm->add('description', TextareaType::class, array('label'=> false,'attr'=> array('maxlength'=>"255", 'required'=> false)));
+
+
         $rentalForm->handleRequest($request);
         if ($rentalForm->isSubmitted()) {
             if($rentalForm->isValid()) {
@@ -138,13 +144,22 @@ class RentalController extends Controller
     }
 
     /**
-     * @Route("host/rental/new", name="rental_new")
+     * @Route("host/rental/new/{property}", name="rental_new")
      */
-    public function newAction(Request $request) {
+    public function newAction($property = '', Request $request) {
         $rental = new Rental();
-        $rental->setPrice(1.1);
+        $rental->setPrice(1);
+        $rental->setMinimumRentalPeriod(1);
+        $rental->setPeopleNumber(2);
+
         $options['user'] = $this->getUser()->getId();
         $rentalForm = $this->createForm(RentalType::class, $rental, $options);
+
+        if($property) {
+            $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Property');
+            $property = $repository->findOneById($property);
+            $rentalForm->get('property')->setData($property);
+        }
         $return['rentalForm'] = $rentalForm->createView();
         $rentalForm->handleRequest($request);
         if ($rentalForm->isSubmitted()) {
@@ -166,7 +181,6 @@ class RentalController extends Controller
      */
     public function putPropertyCharacteristics($idRental, Request $request){
         $rental = $this->getRental($idRental);
-        $this->setMissingCharacteristicsAction($rental);
         $characteristicCategories = $this->getCharacteristicCategory($rental, $request->getLocale());
         $return['characteristicCategories'] = $characteristicCategories;
         if ($request->isMethod('POST')) {
@@ -234,7 +248,7 @@ class RentalController extends Controller
 
     public function submitCharacteristicValues($characteristicValueForm) {
         $characteristicService = $this->container->get('winefing.characteristic_service');
-        $characteristicService->submitCharacteristicValues($characteristicValueForm, ScopeEnum::Property);
+        $characteristicService->submitCharacteristicValues($characteristicValueForm, ScopeEnum::Rental);
     }
 
     /**

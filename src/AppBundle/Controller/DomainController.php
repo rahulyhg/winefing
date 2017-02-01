@@ -95,9 +95,9 @@ class DomainController extends Controller
         $domainForm = $this->createForm(DomainType::class, $domain, array('language'=>$request->getLocale()));
         $domainForm->handleRequest($request);
         if($domainForm->isSubmitted() && $domainForm->isValid()) {
-                $domainForm = $request->request->get('domain');
-                $domainForm["id"] = $domain->getId();
-                $this->submit($domainForm);
+                $body = $request->request->get('domain');
+                $body["id"] = $domain->getId();
+                $this->submit($body);
         }
         $addressForm = $this->createForm(AddressType::class, $domain->getAddress());
         $addressForm->handleRequest($request);

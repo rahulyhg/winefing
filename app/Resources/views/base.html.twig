@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.2/css/bootstrap-select.min.css">
     <!-- Latest compiled and minified CSS -->
     {#<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css" integrity="sha384-AysaV+vQoT3kOAXZkl02PThvDr8HYKPZhNT5h/CXfBThSRXQ6jW5DO2ekP5ViFdi" crossorigin="anonymous">#}
-    {% stylesheets '@other_css''@custom_css''@unify_css''@bootstrap_css''@arillo_css' '@phone_number_css'filter='cssrewrite' %}
+    {% stylesheets '@other_css''@custom_css''@unify_css''@bootstrap_css''@arillo_css' '@phone_number_css' '@toast_css'filter='cssrewrite' %}
     <link rel="stylesheet" href="{{ asset_url }}" />
     {% endstylesheets %}
     <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
@@ -38,7 +38,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
     {% block javascripts %}
         {% javascripts 'bundles/app/js/form-control.js' 'bundles/app/js/host-registration.js' 'bundles/app/js/custom.js' 'bundles/app/js/dropzone.js' 'bundles/app/js/jquery.fancybox.pack.js' 'bundles/app/js/jquery.fancybox.js' 'bundles/app/js/card.js'
-        'bundles/app/js/fancy-box.js' 'assets/vendor/intl-tel-input/build/js/intlTelInput.js' %}
+        'bundles/app/js/fancy-box.js' 'assets/vendor/intl-tel-input/build/js/intlTelInput.js' 'assets/vendor/jquery-toast-plugin/dist/jquery.toast.min.js' %}
             <script type="text/javascript" src="{{ asset_url }}"></script>
         {% endjavascripts %}
     {% endblock javascripts %}
@@ -240,8 +240,6 @@
         </div>
         <!-- end:modal-signup -->
     {% block script %}
-        <script>
-        </script>
     {% endblock %}
     </body>
 </html>

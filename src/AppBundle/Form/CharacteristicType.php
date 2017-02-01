@@ -18,19 +18,18 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Winefing\ApiBundle\Entity\CharacteristicCategory;
-use AppBundle\Form\CharacteristicTrType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Winefing\ApiBundle\Entity\CharacteristicCodeEnum;
 
 class CharacteristicType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('id',  HiddenType::class, array(
-                'required' => false))
+            ->add('id',  HiddenType::class, array('required' => false))
+            ->add('code', ChoiceType::class, array('placeholder'=>'', 'choices' => array(CharacteristicCodeEnum::WineType => CharacteristicCodeEnum::WineType)))
             ->add('format', EntityType::class,  array(
                 'class' => 'WinefingApiBundle:Format',
                 'choice_label' => 'name'))
@@ -41,6 +40,7 @@ class CharacteristicType extends AbstractType
             ->add('characteristicCategory', EntityType::class,  array(
                 'class' => 'WinefingApiBundle:characteristicCategory',
                 'choice_label' => 'id'))
+
         ;
     }
     public function configureOptions(OptionsResolver $resolver)

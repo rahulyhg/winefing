@@ -1,8 +1,12 @@
 {% extends 'base.html.twig' %}
 {% block body %}
+    <div class="row">
         {{ include('host/nav.html.twig') }}
-    <div class="container">
-        {% block table %}
-        {% endblock %}
+        <div class="container">
+            <div class="content">
+                {% block table %}
+                {% endblock %}
+            </div>
+        </div>
     </div>
 {% endblock %}

@@ -224,6 +224,13 @@ myDropzone.on("addedfile", function(origFile) {
 
   reader.readAsDataURL(origFile);
 }).on('success', function(file, responseText) {
-   obj = JSON.parse(responseText);
+  obj = JSON.parse(responseText);
   setAddElement(file, obj);
+  $.toast({
+    heading: 'Success',
+    text: 'And these were just the basic demos! Scroll down to check further details on how to customize the output.',
+    showHideTransition: 'slide',
+    icon: 'success',
+    position: 'top-right'
+  })
 });

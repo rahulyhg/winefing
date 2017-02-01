@@ -278,7 +278,6 @@ class Domain
         foreach($this->getCharacteristicValues() as $characteristicValue) {
             $characteristicValue->setTr($language);
         }
-        $this->getWineRegion()->setTr($language);
     }
     public function getCharacteristicValuesActivated() {
         $characteristicValuesActivated = new ArrayCollection();

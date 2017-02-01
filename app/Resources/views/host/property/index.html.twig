@@ -28,9 +28,6 @@
                                 </div>
                                 <div class="property-content">
                                     <h3><a href="{{ path('property_edit', {'id': properties[i].id }) }}">{{ properties[i].name }}</a> <small>{{ properties[i].description }}</small></h3>
-                                    <a href="{{ path('property_edit', {'id': properties[i].id }) }}">
-                                        <button class="btn btn-primary pull-right">Modifier</button>
-                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -40,9 +37,4 @@
             {% endfor %}
         </div>
     </div>
-    <script>
-        jQuery(document).ready(function() {
-            FancyBox.initFancybox();
-        });
-    </script>
 {% endblock %}

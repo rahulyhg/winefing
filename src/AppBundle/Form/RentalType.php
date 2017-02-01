@@ -35,15 +35,14 @@ class RentalType extends AbstractType
         $userId = $options["user"];
         $builder
             ->add('name', null, array('label'=> false, 'attr'=> array('maxlength'=>"60", 'required'=> true)))
-            ->add('description', TextareaType::class, array('label'=> false,'attr'=> array('maxlength'=>"255", 'required'=> false)))
-            ->add('price', MoneyType::class, array('currency'=>'EUR','label'=> false))
+            ->add('price', IntegerType::class, array('label'=> false,'attr' => array('min'=> 1, 'step'=>15.50)))
             ->add('peopleNumber', IntegerType::class, array('label'=> false, 'attr' => array('min'=> 1)))
-            ->add('minimumRentalPeriod', IntegerType::class, array('label'=> false, 'attr'=> array('required'=> false,'min'=> 1)))
+            ->add('minimumRentalPeriod', IntegerType::class, array('label'=> false, 'attr'=> array('min'=> 1)))
             ->add('property', EntityType::class,  array(
                 'label'=> false,
                 'class' => 'WinefingApiBundle:Property',
                 'choice_label' => 'name',
-                'placeholder' => 'Nouvel propriété',
+                'placeholder' => 'label.new_property',
                 'query_builder' => function (EntityRepository $er) use ($userId){
                     return $er->createQueryBuilder('property')
                         ->join('property.domain', 'domain')

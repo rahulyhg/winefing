@@ -69,7 +69,7 @@ twig:
         language_directory: '%protocol%://%host_name%/%language_directory%/'
         credit_card_directory: '%protocol%://%host_name%/%credit_card_directory%/'
         characteristic_category_directory: '%protocol%://%host_name%/%characteristic_category_directory%/'
-        characteristic_directory: '%protocol%://%host_name%/winefing/%characteristic_directory%/'
+        characteristic_directory: '%protocol%://%host_name%/%characteristic_directory%/'
         article_directory: '%protocol%://%host_name%/%article_directory%/'
         domain_directory: '%protocol%://%host_name%/%domain_directory%/'
         user_directory: '%protocol%://%host_name%/%user_directory%/'
@@ -132,6 +132,12 @@ assetic:
         phone_number_css:
             inputs:
                 - 'assets/vendor/intl-tel-input/build/css/intlTelInput.css'
+        bootflat_css:
+            inputs:
+                - 'assets/vendor/Bootflat/bootflat/css/bootflat.min.css'
+        toast_css:
+            inputs:
+                - 'assets/vendor/jquery-toast-plugin/dist/jquery.toast.min.css'
         phone_number_js:
             inputs:
                 - 'assets/vendor/intl-tel-input/build/js/intlTelInput.js'

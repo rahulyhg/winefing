@@ -74,7 +74,7 @@ class RentalController extends Controller implements ClassResourceInterface
      *  requirements={
      *     {
      *          "name"="property", "dataType"="integer", "required"=true, "description"="property id",
-     *          "name"="language", "dataType"="string", "required"=true, "description"="language code",
+     *          "name"="language", "dataType"="string", "required"=true, "description"="language code"
      *      }
      *     }
      * )

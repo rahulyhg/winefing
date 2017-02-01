@@ -41,7 +41,7 @@ class SubscriptionController extends Controller implements ClassResourceInterfac
         $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Subscription');
         $subscriptions = $repository->findByUserGroup($userGroup);
-        return new Response($serializer->serialize($subscriptions, 'json'));
+        return new Response($serializer->serialize($subscriptions, 'json', SerializationContext::create()->setGroups(array('id', 'default', 'trs'))));
     }
     public function postAction(Request $request)
     {

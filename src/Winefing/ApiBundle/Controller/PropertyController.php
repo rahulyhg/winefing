@@ -67,7 +67,7 @@ class PropertyController extends Controller implements ClassResourceInterface
      *  description="Return all the properties with basic informations in the user's language",
      *  output= {
      *      "class"="Winefing\ApiBundle\Entity\Property",
-     *      "groups"={"default", "characteristicValues", "propertyCategory"}
+     *      "groups"={"domain","domain", "default", "characteristicValues", "propertyCategory"}
      *     },
      *  statusCodes={
      *         200="Returned when successful",
@@ -95,10 +95,11 @@ class PropertyController extends Controller implements ClassResourceInterface
                 $property->setMediaPresentation();
                 $property->setTr($language);
                 $property->setMinMaxPrice();
+                $property->getDomain()->setTr($language);
             }
             $i++;
         }
-        return new Response($serializer->serialize($properties, 'json', SerializationContext::create()->setGroups(array('default', 'characteristicValues', 'propertyCategory'))));
+        return new Response($serializer->serialize($properties, 'json', SerializationContext::create()->setGroups(array('domain','domain','default', 'characteristicValues', 'propertyCategory'))));
     }
     /**
      * @ApiDoc(

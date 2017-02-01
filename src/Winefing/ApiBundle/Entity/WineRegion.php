@@ -98,21 +98,6 @@ class WineRegion
         $this->wineRegionTrs = new ArrayCollection();
     }
 
-    /**
-     * @return mixed
-     */
-    public function getTitle()
-    {
-        return $this->title;
-    }
-
-    /**
-     * @param mixed $title
-     */
-    public function setTitle($title)
-    {
-        $this->title = $title;
-    }
     public function getDisplayName($language){
         foreach($this->wineRegionTrs as $wineRegionTr){
             if($wineRegionTr->getLanguage()->getCode() == $language) {

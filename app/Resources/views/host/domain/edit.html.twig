@@ -97,7 +97,6 @@
                     </h4>{#{% set imagePerSlide = 3 %}#}
                     <p>{% trans %}label.add_pictures{% endtrans %}</p>
                     <div class="dropzone upload-drop-zone" id="my-dropzone-container">
-
                     </div>
                 </div>
                 <div class="tab-pane fade in" id="address">
@@ -146,14 +145,36 @@
                         </div>
                     {% endif %}
                     {# end error - success message #}
-                    <form name="characteristicValue" method="post">
-                        {% include('host/characteristic/valueForm.html.twig') %}
-                        <button class="btn btn-primary btn-lg pull-right" type="submit" >{% trans %}label.submit{% endtrans %}</button>
-                    </form>
+                    <div style="margin-bottom: 20px">
+                        <form name="characteristicValue" method="post">
+                            {% include('host/characteristic/valueForm.html.twig') %}
+                            <button class="btn btn-primary pull-right" type="submit" >{% trans %}label.submit{% endtrans %}</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+    {#<div>#}
+        {#<div class="tabbable tabs-left clearfix">#}
+            {#<ul class="nav nav-tabs">#}
+                {#<li class="active">#}
+                    {#<a href="#">Lol</a>#}
+                {#</li>#}
+                {#<li>#}
+                    {#<a href="#">Lol</a>#}
+                {#</li>#}
+            {#</ul>#}
+            {#<div class="content">#}
+                {#<div class="tab-pane fade active in">#}
+                    {#<p>lol</p>#}
+                {#</div>#}
+                {#<div class="tab-pane fade">#}
+                    {#<p>lol</p>#}
+                {#</div>#}
+            {#</div>#}
+        {#</div>#}
+    {#</div>#}
     {#{% block script %}#}
         <script type="application/javascript">
             var nav = '{{ nav }}';

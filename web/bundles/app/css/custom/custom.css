@@ -101,3 +101,80 @@ a[disabled] {
 img.img-bordered {
     border: solid 4px #f1c40f !important;
 }
+.navbar .navbar-nav {
+    display: inline-block;
+    float: none;
+    vertical-align: top;
+}
+
+.navbar .navbar-collapse {
+    text-align: center;
+}
+
+
+
+.btn {
+    padding: 14px 24px;
+    border: 0 none;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.btn:focus, .btn:active:focus, .btn.active:focus {
+    outline: 0 none!important;
+}
+
+.btn-primary {
+    background-color: #cc6666!important;
+    border-color: #cc6666!important;
+}
+
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active, .open > .dropdown-toggle.btn-primary {
+    background: rgba(204, 102, 102, .8)!important;
+    border-color: rgba(204, 102, 102, .8)!important;
+}
+
+/*.btn-primary:active, .btn-primary.active {*/
+    /*background: #cc6666!important;*/
+    /*box-shadow: none!important;*/
+/*}*/
+.nav-pills>li.active>a, .nav-pills>li.active>a:focus, .nav-pills>li.active>a:hover {
+    color: #fff;
+    background-color: #cc6666!important;
+}
+
+
+.navbar-inverse {
+    background-color: #484848!important;
+    border-color: #484848!important;
+    background-image: none!important;
+}
+.navbar-inverse .navbar-nav>li>a {
+    color: #bbb!important;
+}
+.navbar-inverse .navbar-nav > .active-nav-back-end > a::after {
+    position: absolute;
+    content: '';
+    bottom: 0;
+    left: 14px;
+    right: 14px;
+    height: 4px;
+    background: #ffffff;
+}
+/*.navbar-inverse .navbar-nav > .active > a, .navbar-inverse .navbar-nav > .active > a:hover, .navbar-inverse .navbar-nav > .active > a:focus {*/
+     /*color: #ffffff!important;*/
+     /*background-color: #484848!important;*/
+/*}*/
+.navbar-inverse .navbar-nav > .active-nav-back-end{
+    color: #ffffff!important;
+    background: none!important;
+    border:none!important;
+}
+.navbar-inverse .navbar-nav > .active-nav-back-end > a,
+.navbar-inverse .navbar-nav > .active-nav-back-end > a:hover,
+.navbar-inverse .navbar-nav > .active-nav-back-end > a:focus {
+    color: #ffffff!important;
+    background: none!important;
+    border: none!important;
+}

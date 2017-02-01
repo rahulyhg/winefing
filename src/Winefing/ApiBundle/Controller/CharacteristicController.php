@@ -26,6 +26,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Winefing\ApiBundle\Entity\MediaFormatEnum;
 use JMS\Serializer\SerializationContext;
 use Winefing\ApiBundle\Entity\ScopeEnum;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
 
 class CharacteristicController extends Controller implements ClassResourceInterface
@@ -50,6 +51,7 @@ class CharacteristicController extends Controller implements ClassResourceInterf
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Format');
         $characteristic->setFormat($repository->findOneById($request->request->get('format')));
         $characteristic->setActivated($request->request->get('activated'));
+        $characteristic->setCode($request->request->get('code'));
 
         $validator = $this->get('validator');
         $errors = $validator->validate($characteristic);
@@ -65,11 +67,13 @@ class CharacteristicController extends Controller implements ClassResourceInterf
 
     public function putAction(Request $request){
         $em = $this->getDoctrine()->getManager();
+        $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Characteristic');
         $characteristic = $repository->findOneById($request->request->get('id'));
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Format');
         $characteristic->setFormat($repository->findOneById($request->request->get('format')));
         $characteristic->setActivated($request->request->get('activated'));
+        $characteristic->setCode($request->request->get('code'));
 
         $validator = $this->get('validator');
         $errors = $validator->validate($characteristic);
@@ -79,13 +83,14 @@ class CharacteristicController extends Controller implements ClassResourceInterf
         }
         $em->persist($characteristic);
         $em->flush();
-        return new Response();
+        $json = $serializer->serialize($characteristic, 'json', SerializationContext::create()->setGroups(array('id')));
+        return new Response($json);
     }
 
     public function postFileAction(Request $request)
     {
         $mediaFormat = $this->container->get('winefing.media_format_controller');
-        $uploadedFile = $request->files->get('picture');
+        $uploadedFile = $request->files->get('media');
         $fileName = md5(uniqid()) . '.' . $uploadedFile->getClientOriginalExtension();
         $extentionCorrect = $mediaFormat->checkFormat($uploadedFile->getClientOriginalExtension(), MediaFormatEnum::Icon);
         if($extentionCorrect != 1) {
@@ -135,7 +140,6 @@ class CharacteristicController extends Controller implements ClassResourceInterf
         $characteristicCategory->setActivated($request->request->get("activated"));
         $em = $this->getDoctrine()->getManager();
         $em->flush();
-        return new Response(json_encode([200, "success"]));
     }
     public function cgetMissingAction($id, $scope) {
         $serializer = $this->container->get('jms_serializer');
@@ -160,5 +164,21 @@ class CharacteristicController extends Controller implements ClassResourceInterf
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Characteristic');
         $characteristics = $repository->findMissingCharacteristics($ids, $scope);
         return new Response($serializer->serialize($characteristics, 'json', SerializationContext::create()->setGroups(array('default', 'format', 'trs'))));
+    }
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "index","characteristic", "webPath"},
+     *  description="Return the web path for the entity image",
+     *  statusCodes={
+     *         200="Returned when successful",
+     *     }
+     *
+     * )
+     */
+    public function getMediaPathAction() {
+        $webPath = $this->container->get('winefing.webpath_controller');
+        $picturePath = $webPath->getPath($this->getParameter('characteristic_directory'));
+        return new Response(json_encode($picturePath));
     }
 }

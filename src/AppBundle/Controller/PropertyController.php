@@ -150,7 +150,7 @@ class PropertyController extends Controller
      */
     public function putPropertyCharacteristics($idProperty, Request $request){
         $property = $this->getProperty($idProperty);
-        $characteristicCategories = $this->getCharacteristicValuesByCategory($property->getId());
+        $characteristicCategories = $this->getCharacteristicCategory($property, $request->getLocale());
         if ($request->isMethod('POST')) {
             $characteristicValueForm = $request->request->get("characteristicValueForm");
             if (!empty($characteristicValueForm)) {

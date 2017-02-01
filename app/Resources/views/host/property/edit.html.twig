@@ -59,7 +59,7 @@
                     {% if length == 0 %}
                         <p>{% trans %}label.no_rental_for_property{% endtrans %}.</p>
                     {% endif %}
-                    <a href="{{ path('rental_new') }}">
+                    <a href="{{ path('rental_new', {'property': app.request.get('id')}) }}">
                         <button class="btn btn-primary ">
                             {% trans %}label.new_rental{% endtrans %}
                         </button>

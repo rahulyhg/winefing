@@ -71,6 +71,14 @@ class Characteristic
     private $activated;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="code", type="string", length=50)
+     * @Groups({"default"})
+     */
+    private $code;
+
+    /**
      * @var
      * @Groups({"default"})
      * @Type("string")
@@ -235,6 +243,22 @@ class Characteristic
                 break;
             }
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function getCode()
+    {
+        return $this->code;
+    }
+
+    /**
+     * @param string $code
+     */
+    public function setCode($code)
+    {
+        $this->code = $code;
     }
 }
 

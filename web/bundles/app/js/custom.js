@@ -122,8 +122,22 @@ function removeFile(id, url) {
             success: function (data, textStatus, jqXHR) {
                 //remove file from the dropzone
                 $('#'+id).remove();
+                $.toast({
+                    heading: 'Success',
+                    text: 'And these were just the basic demos! Scroll down to check further details on how to customize the output.',
+                    showHideTransition: 'slide',
+                    icon: 'success',
+                    position: 'top-right'
+                })
             },
             error: function (jqXHR, textStatus, errorThrown) {
+                $.toast({
+                    heading: 'Error',
+                    text: 'Report any <a href="https://github.com/kamranahmedse/jquery-toast-plugin/issues">issues</a>',
+                    showHideTransition: 'fade',
+                    icon: 'error',
+                    position: 'top-right'
+                });
             }
         });
     }
@@ -152,9 +166,22 @@ function presentationPicture(id, scope) {
             } else {
                 removePresentationCss(a);
             }
+            $.toast({
+                heading: 'Success',
+                text: 'And these were just the basic demos! Scroll down to check further details on how to customize the output.',
+                showHideTransition: 'slide',
+                icon: 'success',
+                position: 'top-right'
+            })
         },
         error: function (jqXHR, textStatus, errorThrown) {
-
+            $.toast({
+                heading: 'Error',
+                text: 'Report any <a href="https://github.com/kamranahmedse/jquery-toast-plugin/issues">issues</a>',
+                showHideTransition: 'fade',
+                icon: 'error',
+                position: 'top-right'
+            })
         }
     });
 }

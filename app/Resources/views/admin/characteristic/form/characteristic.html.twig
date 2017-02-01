@@ -13,10 +13,20 @@
                     <fieldset class="form-group" id="characteristicCategory" style="display: none">
                         {{ form_widget(form.characteristicCategory,  { 'attr': {'class': 'form-control'} }) }}
                     </fieldset>
-                    <fieldset class="form-group" id="scope">
-                        {{ form_label(form.format) }}
-                        {{ form_widget(form.format) }}
-                    </fieldset>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <fieldset class="form-group">
+                                {{ form_label(form.format) }}
+                                {{ form_widget(form.format) }}
+                            </fieldset>
+                        </div>
+                        <div class="col-md-6">
+                            <fieldset class="form-group">
+                                {{ form_label(form.code) }}
+                                {{ form_widget(form.code) }}
+                            </fieldset>
+                        </div>
+                    </div>
                     <label>Name</label>
                     {% for characteristicTr in form.characteristicTrs %}
                         <fieldset class="form-group">
