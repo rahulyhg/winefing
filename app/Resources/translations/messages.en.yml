@@ -47,6 +47,7 @@ label.property_name_exemple: Château du pâpe, Gîte des Lilas...
 label.rental_name_exemple: Chambre royal, gîte des lilas...
 label.new_address: New address
 label.property_pictures_explication: Only property frontage or commun room (such as the castel's living room).
+label.rental_pictures_explication: You can put up to 10 pictures of the rental. Don't hesitate to take details of the rental.
 label.prices: Prices
 label.rentals: Rentals
 label.my_properties: My properties
@@ -159,3 +160,59 @@ label.reset_password: Reset password
 label.explore: Explore
 label.the_owner: The owner
 confirmation.delete: Are your sure to delete this element ?
+label.when: When
+
+label.make_a_reservation: Make a reservation
+label.see_more: See more
+
+error.generic_title: Error
+error.generic_message: A error has eccor. If this error continue, contact the web site administration.
+success.generic_title: Success
+success.delete_image: The image is well deleting.
+success.image_presentation: The image is well defined as the presentation image.
+success.image_no_presentation: The image is well defined no longer the presentation image.
+
+label.rental_number: 1 rental|%number% rentals
+
+label.presentation_picture: Presentation picture
+help.presentation_picture: This is the principal picture. If you want to add extra picture, you can do that in a second time.
+label.night: night|nights
+label.people_number_plurial: 1 person|%number% people
+help.rental_price: The price has to be incated for one night.
+help.minimum_rental_period: This is the minimum rental period day how many day the user has to book for this rental
+label.room: Room
+label.whole_housing: Whole housing
+label.rental_category: Rental Category
+error.generic_form_error: The form has some errors.
+success.generic_edit_form: The modification are well efectuated.
+success.add_rental: Congratulation, the rental is well added.
+success.image_added: The image is well added.
+label.mandatory_informations: Mandatory informations
+label.complementary_informations: Complementary informations
+label.step: Step %number%
+success.account_well_created: Congratulation ! Your account is well created.
+label.notification_by: Notification by %format%
+label.tags: Tags
+label.domain_description: Domain's description
+label.domain_history: Domain's history
+label.the_details: The details
+label.more_information: + information
+label.book: Book
+label.see_more_picture: See more picture
+success.domain_added_winelist: The domain is well added to your wine list.
+success.domain_removed_winelist: The domain is well removed to your wine list.
+label.search_result: Search result
+label.welcom_winefing: Welcome to Winefing
+label.order_for_rental: Order for the rental
+label.days_number: Days number
+label.total_price: Total price
+label.select_date: Select date
+label.offer: Offer
+label.message: Message
+label.signature: Signature
+help.average_price: This is correspond to the average price. This price correspond to a fluctuation of different price.
+help.total_price: The price include the website fees.
+label.bill: The bill
+help.rental_offer: You want to offer at someone the journey ? blablabla
+label.no_thanks: No thanks
+label.gift_card: Gift card

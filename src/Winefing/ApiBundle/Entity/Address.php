@@ -418,6 +418,9 @@ class Address
         $this->users[] = $user;
         return $this;
     }
+    public function clearUsers() {
+        $this->users = new ArrayCollection();
+    }
 
     /**
      * @return string

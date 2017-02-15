@@ -1,9 +1,11 @@
 {% extends 'host/base.html.twig' %}
 {% block table %}
     <div class="row">
-        <div style="text-align: center">
+        <div>
             <a href="{{ path('rental_new') }}">
-                <button class="btn btn-primary">Ajouter</button>
+                <button class="btn btn-primary btn-circle btn-xl">
+                    <span class="glyphicon glyphicon-plus"></span>
+                </button>
             </a>
         </div>
         <br>
@@ -16,21 +18,18 @@
                         <div class="col-md-4 col-sm-6 col-xs-12">
                             <div class="property-container">
                                 <div class="property-image">
-                                    <img src="{{ rental_directory ~ rentals[i].mediaPresentation }}" alt="{{ rentals[i].name }}" alt="mikha real estate theme">
-                                    <div class="property-status">
-                                        <span>For Rent</span>
+                                    <img src="{{ rental_directory ~ rentals[i].mediaPresentation }}" alt="{{ rentals[i].name }}">
+                                    <div class="property-features-grey text-center">
+                                        <span class="glyphicon glyphicon-user property-features-span-margin">
+                                            {{ 'label.people_number_plurial' | transchoice(rentals[i].peopleNumber, {"%number%":rentals[i].peopleNumber}) }}
+                                        </span>
+                                        <span class="glyphicon glyphicon-euro property-features-span-margin">
+                                            {{ rentals[i].price ~ '/'~'label.night' | trans({})}}
+                                        </span>
                                     </div>
-                                </div>
-                                <div class="property-features">
-                                    <span><i class="fa fa-home"></i> 5,000 m<sup>2</sup></span>
-                                    <span><i class="fa fa-hdd-o"></i> 2 Bed</span>
-                                    <span><i class="fa fa-male"></i> 2 Bath</span>
                                 </div>
                                 <div class="property-content">
                                     <h3><a href="{{ path('rental_edit', {'id': rentals[i].id }) }}">{{ rentals[i].name }}</a> <small>{{ rentals[i].description }}</small></h3>
-                                    <a href="{{ path('rental_edit', {'id': rentals[i].id }) }}">
-                                        <button class="btn btn-primary pull-right">Modifier</button>
-                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -40,9 +39,4 @@
             {% endfor %}
         </div>
     </div>
-    <script>
-        jQuery(document).ready(function() {
-            FancyBox.initFancybox();
-        });
-    </script>
 {% endblock %}

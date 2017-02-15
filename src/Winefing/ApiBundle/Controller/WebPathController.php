@@ -29,6 +29,6 @@ class WebPathController
         else {
             $protocol = 'http://';
         }
-        return $protocol.$_SERVER['HTTP_HOST'].'/'.$directory.'/';
+        return $protocol.$_SERVER['HTTP_HOST'].'/'.$directory;
     }
 }

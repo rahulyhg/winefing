@@ -18,6 +18,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Templating\Helper\AssetsHelper;
 use JMS\Serializer\SerializationContext;
+use Winefing\ApiBundle\Entity\DayPrice;
 use Winefing\ApiBundle\Entity\RentalOrder;
 use Winefing\ApiBundle\Entity\StatusOrderEnum;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
@@ -66,14 +67,21 @@ class RentalOrderController extends Controller implements ClassResourceInterface
             }
             $total += $price;
             $dayPrice = new DayPrice();
-            $dayPrice->setDate($date);
+            $dt = new \DateTime();
+            $dt->setTimestamp($date);
+            $dayPrice->setDate($dt);
             $dayPrice->setPrice($price);
             $rentalOrder->addDayPrice($dayPrice);
             $date = strtotime('+1 days', $date);
             $i++;
         }
-        $rentalOrder->setStartDate($start);
-        $rentalOrder->setEndDate($end);
+        $dt = new \DateTime();
+        $dt->setTimestamp($start);
+        $rentalOrder->setStartDate($dt);
+
+        $dt->setTimestamp($end);
+        $rentalOrder->setEndDate($dt);
+
         $rentalOrder->setDayNumber($i);
         $rentalOrder->setAveragePrice(round(($total/$i), 2));
         $rentalOrder->setAmount($total);
@@ -113,8 +121,13 @@ class RentalOrderController extends Controller implements ClassResourceInterface
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Address');
         $rentalOrder->setClientAddress($repository->findOneById($request->request->get('clientAddress')));
 
-        $rentalOrder->setStartDate($request->request->get('startDate'));
-        $rentalOrder->setEndDate($request->request->get('endDate'));
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Rental');
+        $rentalOrder->setRental($repository->findOneById($request->request->get('rental')));
+        $dt = new \DateTime();
+        $dt->setTimestamp($request->request->get('startDate'));
+        $rentalOrder->setStartDate($dt);
+        $dt->setTimestamp($request->request->get('endDate'));
+        $rentalOrder->setEndDate($dt);
         $rentalOrder->setBillDate(new \DateTime());
 
         $rentalOrder->setAveragePrice($request->request->get('averagePrice'));
@@ -123,7 +136,7 @@ class RentalOrderController extends Controller implements ClassResourceInterface
         $rentalOrder->setTotalHT($request->request->get('totalHT'));
         $rentalOrder->setTotalTTC($request->request->get('totalTTC'));
         $rentalOrder->setComission($request->request->get('comission'));
-        $rentalOrder->set($request->request->get('comission'));
+        $rentalOrder->setAmount($request->request->get('amount'));
 
         $rentalOrder->setStatus(StatusOrderEnum::initiate);
 

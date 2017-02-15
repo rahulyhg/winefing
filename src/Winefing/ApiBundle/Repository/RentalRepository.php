@@ -33,4 +33,28 @@ class RentalRepository extends \Doctrine\ORM\EntityRepository
             ->getQuery();
         return $query->getOneOrNullResult();
     }
+    function findOneWithPrice($order) {
+        $query = $this->createQueryBuilder('rental')
+            ->orderBy('rental.price', $order)
+            ->setMaxResults(1)
+            ->getQuery();
+        return $query->getOneOrNullResult();
+    }
+    function findWithDomain($domainId) {
+        $query = $this->createQueryBuilder('rental')
+            ->join("rental.property", "property")
+            ->join("property.domain", "domain")
+            ->where('domain.id = :domainId')
+            ->setParameter('domainId', $domainId)
+            ->getQuery();
+        return $query->getResult();
+    }
+    function findWithProperty($propertyId) {
+        $query = $this->createQueryBuilder('rental')
+            ->join("rental.property", "property")
+            ->where('property.id = :propertyId')
+            ->setParameter('propertyId', $propertyId)
+            ->getQuery();
+        return $query->getResult();
+    }
 }

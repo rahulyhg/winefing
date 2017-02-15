@@ -21,12 +21,12 @@ class Domain
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"default"})
+     * @Groups({"id","default"})
      */
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\WineRegion")
+     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\WineRegion", inversedBy="domains")
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"default"})
      */
@@ -68,6 +68,12 @@ class Domain
     private $characteristicValues;
 
     /**
+     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Tag", inversedBy="domains")
+     * @Groups({"tags"})
+     */
+    private $tags;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=60)
@@ -78,7 +84,7 @@ class Domain
     /**
      * @var string
      *
-     * @ORM\Column(name="description", type="string", length=2000, nullable=true)
+     * @ORM\Column(name="description", type="string", length=3000, nullable=true)
      * @Groups({"default"})
      */
     private $description;
@@ -86,7 +92,7 @@ class Domain
     /**
      * @var string
      *
-     * @ORM\Column(name="history", type="string", length=2000, nullable=true)
+     * @ORM\Column(name="history", type="string", length=3000, nullable=true)
      * @Groups({"default"})
      */
     private $history;
@@ -95,14 +101,35 @@ class Domain
      * @Groups({"default"})
      * @Type("string")
      */
-    private $mediaPresentation;
+    private $mediasPresentation;
+
+    /**
+     * @Groups({"domainMediasPresentation"})
+     * @Type("Winefing\ApiBundle\Entity\DomainMediasPresentation")
+     */
+    private $domainMediasPresentation;
+
+    /**
+     * @var
+     * @Groups({"default"})
+     * @Type("string")
+     */
+    private $characteristicValuesByCategory;
 
     public function _construct() {
         $this->medias = new ArrayCollection();
         $this->characteristicValues = new ArrayCollection();
         $this->properties = new ArrayCollection();
+        $this->tags = new ArrayCollection();
     }
 
+    /**
+     * @param Properties $properties
+     */
+    public function setProperties($properties)
+    {
+        $this->properties = $properties;
+    }
 
     /**
      * Get id
@@ -278,6 +305,12 @@ class Domain
         foreach($this->getCharacteristicValues() as $characteristicValue) {
             $characteristicValue->setTr($language);
         }
+        //set wine Region
+        $this->wineRegion->setTr($language);
+        //set tags
+        foreach($this->tags as $tag) {
+            $tag->setTr($language);
+        }
     }
     public function getCharacteristicValuesActivated() {
         $characteristicValuesActivated = new ArrayCollection();
@@ -297,12 +330,14 @@ class Domain
             foreach ($this->medias as $media) {
                 if ($media->isPresentation()) {
                     $this->mediaPresentation = $media->getName();
+                    $this->medias->removeElement($media);
                     break;
 
                 }
             }
             if(empty($this->mediaPresentation)) {
                 $this->mediaPresentation = $this->medias[0]->getName();
+                $this->medias->removeElement($this->medias[0]);
 
             }
         } else {
@@ -318,5 +353,66 @@ class Domain
     {
         return $this->mediaPresentation;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getTags()
+    {
+        return $this->tags;
+    }
+
+    /**
+     * @param mixed $tags
+     */
+    public function setTags($tags)
+    {
+        $this->tags = $tags;
+    }
+    public function addTag(Tag $tag) {
+        $this->tags[] = $tag;
+    }
+
+
+    /**
+     * @return mixed
+     */
+    public function getMediasPresentation()
+    {
+        return $this->mediasPresentation;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDomainMediasPresentation()
+    {
+        return $this->domainMediasPresentation;
+    }
+
+    /**
+     * @param mixed $domainMediasPresentation
+     */
+    public function setDomainMediasPresentation($domainMediasPresentation)
+    {
+        $this->domainMediasPresentation = $domainMediasPresentation;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCharacteristicValuesByCategory()
+    {
+        return $this->characteristicValuesByCategory;
+    }
+
+    /**
+     * @param mixed $characteristicValuesByCategory
+     */
+    public function setCharacteristicValuesByCategory($characteristicValuesByCategory)
+    {
+        $this->characteristicValuesByCategory = $characteristicValuesByCategory;
+    }
+
 }
 

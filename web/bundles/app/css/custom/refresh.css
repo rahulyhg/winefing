@@ -1,0 +1,192 @@
+body.propertypage div#flashbox {
+    height: 749px;
+    position: relative;
+}
+div#flashbox {
+    height: 569px;
+    position: relative;
+    margin: 0 -104px;
+    overflow: hidden;
+}
+ul#sliderthumbs {
+    position: absolute;
+    right: 104px;
+    bottom: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 465px;
+    height: 126px;
+}
+ul#sliderthumbs li.initial {
+    /* float: left; */
+    padding: 0;
+    width: 185px;
+    height: 126px;
+}
+ul#sliderthumbs li {
+    display: block;
+    float: left;
+    margin: 0;
+    padding: 0;
+}
+ul#sliderthumbs li.more {
+    display: none;
+}
+ul#sliderthumbs li {
+    display: block;
+    float: left;
+    margin: 0;
+    padding: 0;
+}
+
+/*For the box*/
+#propertyintrobox {
+    background: #FFFFFF;
+    width: 600px;
+    height: 175px;
+    margin: -193px 0 53px 0px;
+    position: relative;
+    z-index: 2;
+    padding: 18px 0 0 26px;
+}
+
+ul#sliderthumbs li.opengallery {
+    font-family: proxima_nova_ltregular, Helvetica, Arial;
+    cursor: pointer;
+    color: #FFFFFF;
+    font-size: 11px;
+    line-height: 15px;
+    background: #301B2E url(/uf/i/v3/arrow-right-purple-purple.png) 28px 81px no-repeat;
+    width: 95px;
+    height: 76px;
+    padding: 50px 0 0 0;
+    text-align: center;
+}
+ul#sliderthumbs li {
+    display: block;
+    float: left;
+    margin: 0;
+    padding: 0;
+}
+ul#sliderthumbs li.initial {
+    /* float: left; */
+    padding: 0;
+    width: 185px;
+    height: 126px;
+}
+ul#sliderthumbs li {
+    display: block;
+    float: left;
+    margin: 0;
+    padding: 0;
+}
+ul#sliderthumbs li.initial img {
+    width: 185px;
+    height: 126px;
+}
+ul#sliderthumbs li img {
+    display: block;
+}
+div#propertytabswrapper {
+    background: #FFFFFF;
+    margin: -20px 0 0 0;
+    padding: 20px 0px 0 0;
+}
+div.sharebuttons {
+    float: right;
+    margin: 10px 0 0 0;
+}
+#propertyintrobox {
+    background: #FFFFFF;
+    width: 600px;
+    height: 175px;
+    margin: -193px 0 53px 0px;
+    position: relative;
+    z-index: 2;
+    padding: 18px 0 0 26px;
+}
+#propertyintrobox p.location, #propertyintrobox p.location em, #propertyintrobox p.location a, #propertyintrobox p.location em a {
+    margin: -2px 0 18px 0;
+    color: #7EB4A9;
+    font-size: 20px;
+    font-family: proxima_nova_ltregular, Helvetica, Arial;
+    font-style: normal;
+    text-decoration: none;
+}
+/*button map*/
+a#propertylocation, a#shareproperty {
+    background-image: url(/uf/i/v3/property-buttons-2017@2x.png);
+    background-size: 84px 30px;
+}
+a#propertylocation, a#shareproperty, a#viewgallery {
+    display: block;
+    width: 28px;
+    height: 30px;
+    background: #65BAA7 url(/uf/i/v3/property-buttons-2017.png) 0 0 no-repeat;
+    position: absolute;
+    top: 0;
+    right: 29px;
+    z-index: 2;
+}
+#propertyintrobox a {
+    color: #301B2E;
+}
+
+/*button property*/
+a#propertylocation, a#shareproperty {
+    background-image: url(/uf/i/v3/property-buttons-2017@2x.png);
+    background-size: 84px 30px;
+}
+a#shareproperty {
+    background-position: -28px 0;
+    right: 0px;
+}
+a#propertylocation, a#shareproperty, a#viewgallery {
+    display: block;
+    width: 28px;
+    height: 30px;
+    background: #65BAA7 url(/uf/i/v3/property-buttons-2017.png) 0 0 no-repeat;
+    position: absolute;
+    top: 0;
+    right: 29px;
+    z-index: 2;
+}
+/*nav container*/
+body.propertypage div#content .v3tabs {
+    margin: 0;
+}
+#content .v3tabs {
+    height: 56px;
+    padding-bottom: 32px;
+}
+#navcontainer {
+    clear: both;
+}
+#content .v3tabs ul {
+    padding: 0;
+    height: 56px;
+}
+ul#navlist, ul#smallnavlist, ul#propertysmallnavlist {
+    list-style-type: none;
+    padding-bottom: 26px;
+    border-bottom: 1px solid #CCCCCC;
+    margin: 0;
+}
+#content .v3tabs ul li#active {
+    border-top: 3px solid #301B2E;
+    border-width: 3px 0 0 0;
+    padding: 0;
+    margin: 0 -1px 0 0;
+    background: #FFFFFF;
+    height: 53px;
+    position: relative;
+    z-index: 2;
+}
+ul#navlist li#active, ul#smallnavlist li#active, ul#propertysmallnavlist li#active {
+    border-bottom: 1px solid #FFFFFF;
+    background-color: #FFFFFF;
+}
+#content .v3tabs ul li:nth-child(1) {
+    padding-left: 0;
+}

@@ -98,13 +98,13 @@ class ManagerController extends Controller
     }
 
     /**
-     * @Route("/user/edit", name="user_edit")
+     * @Route("/user/{id}/edit/{nav}", name="user_edit")
      */
-    public function getHost(Request $request) {
+    public function getHost($id, $nav = 'profil',Request $request) {
         $api = $this->container->get('winefing.api_controller');
         $serializer = $this->container->get('jms_serializer');
 
-        $user = $this->getUser();
+        $user = $this->getUserById($id);
         $userForm =  $this->createForm(UserType::class, $user);
         $userForm->handleRequest($request);
         if($userForm->isSubmitted() && $userForm->isValid()) {
@@ -118,43 +118,50 @@ class ManagerController extends Controller
         $passwordForm = $this->createForm(PasswordEditType::class, $user);
         $passwordForm->handleRequest($request);
         if($passwordForm->isSubmitted() && $passwordForm->isValid()) {
-            if($request->request->get('password')["currentPassword"] != $user->getPassword()) {
+            $nav = 'password';
+            $encoder = $this->container->get('security.password_encoder');
+            var_dump($request->request->get('password_edit')["currentPassword"]);
+            $password = $request->request->get('password_edit')["currentPassword"];
+            var_dump($encoder->isPasswordValid($user, (string) $password));
+            if(!$encoder->isPasswordValid($user, $request->request->get('password_edit')["currentPassword"])) {
                 $this->addFlash('passwordError', $this->get('translator')->trans('error.not_current_password'));
             } else {
-                $passwordForm = $request->request->get('password');
+                $passwordForm["password"] = $request->request->get('password_edit')["password"]["first"];
                 $passwordForm['user'] = $user->getId();
                 $this->submitPassword($passwordForm);
                 $this->addFlash('passwordSuccess', $this->get('translator')->trans('success.password_edit'));
+                return $this->redirect($this->generateUrl('user_edit', array('id' => $user->getId(), 'nav'=>$nav)));
             }
-            return $this->redirect($this->generateUrl('user_edit', array('id' => $user->getId())) . '#password');
         }
 
-        $response = $api->get($this->get('router')->generate('api_get_subscriptions_user_group', array('userGroup'=> implode(',', $user->getRoles()))));
+        $response = $api->get($this->get('router')->generate('api_get_subscriptions_by_user', array('user'=> $user->getId(), 'language'=>$request->getLocale())));
         $subscriptions = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\Subscription>', 'json');
-        $subscriptionFormatList = $this->subscriptionsByFormat($subscriptions);
-
+        $subscriptionFormatList = $this->subscriptionsByFormat($subscriptions, $user);
         if ($request->isMethod('POST')) {
             $picture = $request->files->get('picture');
-            $subscription = $request->request->get('subscription');
+            $subscription = $request->request->get('subscriptionForm');
             if($picture !=null) {
+                $nav = 'picture';
                 $body["user"] = $user->getId();
                 $this->submitPicture($picture, $body);
                 $this->addFlash('pictureSuccess', $this->get('translator')->trans('success.picture_edit'));
-                return $this->redirect($this->generateUrl('user_edit', array('id' => $user->getId())) . '#picture');
+                return $this->redirect($this->generateUrl('user_edit', array('id' => $user->getId(), 'nav'=>$nav)));
             }
             if($subscription != null) {
+                $nav = 'subscriptions';
                 $subscription["user"] = $user->getId();
                 $this->submitSubscriptions($subscription);
                 $this->addFlash('subscriptionsSuccess', $this->get('translator')->trans('success.modifications_saved'));
-                return $this->redirect($this->generateUrl('user_edit', array('id' => $user->getId())) . '#subscriptions');
+                return $this->redirect($this->generateUrl('user_edit', array('id' => $user->getId(), 'nav'=>$nav)));
             }
         }
 
-        return $this->render($this->getTwigView($user), array(
+        return $this->render('userEdit.html.twig', array(
             'userForm' => $userForm->createView(),
             'picture' => $user->getPicture(),
             'subscriptionFormatList' => $subscriptionFormatList,
-            'passwordForm' => $passwordForm->createView()
+            'passwordForm' => $passwordForm->createView(),
+            'nav'=>$nav
         ));
     }
     public function getTwigView($user) {
@@ -166,7 +173,7 @@ class ManagerController extends Controller
         }
         return $template;
     }
-    public function subscriptionsByFormat($subscriptions) {
+    public function subscriptionsByFormat($subscriptions, $user) {
         $subscriptionFormatList = array();
         foreach($subscriptions as $subscription) {
             $subscriptionFormatList[$subscription->getFormat()][] = $subscription;
@@ -226,5 +233,31 @@ class ManagerController extends Controller
 //        } else {
 //            return $this->redirectToRoute('home');
 //        }
+    }
+    /**
+     * New Host User
+     * @param $user
+     * @return mixed
+     */
+    public function submit($user)
+    {
+        $api = $this->container->get('winefing.api_controller');
+        $api->put($this->get('router')->generate('api_put_user'), $user);
+    }
+
+    public function getUserById($id) {
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
+        $user = $repository->findOneById($id);
+        return $user;
+    }
+    public function submitSubscriptions($subscription)
+    {
+        $api = $this->container->get('winefing.api_controller');
+        $api->patch($this->get('router')->generate('api_patch_user_subscriptions'), $subscription);
+    }
+    public function submitPassword($password)
+    {
+        $api = $this->container->get('winefing.api_controller');
+        $api->patch($this->get('router')->generate('api_patch_user_password'), $password);
     }
 }

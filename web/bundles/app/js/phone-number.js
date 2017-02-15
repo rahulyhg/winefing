@@ -1,6 +1,10 @@
-$('#domain_registration_user_phoneNumber').intlTelInput({
+var errorMsg = $("#error-phone-number"),
+    telInputDiv = $("#phone_number_group_div"),
+    validMsg = $("#valid-phone-number");
+telInput.intlTelInput({
         nationalMode: false,
         initialCountry: "auto",
+        allowDropdown: true,
         geoIpLookup: function (callback) {
             $.get('https://ipinfo.io', function () {
             }, "jsonp").always(function (resp) {
@@ -11,10 +15,6 @@ $('#domain_registration_user_phoneNumber').intlTelInput({
         utilsScript: "../../../assets/vendor/intl-tel-input/build/js//utils.js"
     }
 );
-var telInput = $("#domain_registration_user_phoneNumber"),
-    errorMsg = $("#error-phone-number"),
-    telInputDiv = $("#phone_number_group_div"),
-    validMsg = $("#valid-phone-number");
 
 var reset = function() {
     telInputDiv.removeClass("has-error");

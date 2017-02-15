@@ -1,10 +1,14 @@
 {% extends 'host/rental/new/base.html.twig' %}
 {% block new %}
     <br>
-    <p style="font-style: italic"> {% trans %}label.property_pictures_explication{% endtrans %}</p>
+    <h4>
+        {% trans %}label.presentation_picture{% endtrans %}
+        <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans %}help.presentation_picture{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
+    </h4>
     <br>
     <form name="media" method="post" enctype="multipart/form-data">
-        <input name="media[medias][]" type="file" multiple="true" class="form-control">
-        <input type="submit" class="btn btn-success btn-lg pull-right" value="{% trans %}label.submit{% endtrans %}" >
+        <input name="media[media]" type="file" multiple="false" class="form-control" accept="image/*">
+        <br>
+        <input type="submit" class="btn btn-primary btn-lg pull-right" value="{% trans %}label.submit{% endtrans %}" >
     </form>
 {% endblock %}

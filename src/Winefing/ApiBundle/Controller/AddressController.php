@@ -78,6 +78,7 @@ class AddressController extends Controller implements ClassResourceInterface
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Address');
         $address = $repository->findOneById($request->request->get('id'));
         $newAddress = clone $address;
+        $newAddress->clearUsers();
         $validator = $this->get('validator');
         $errors = $validator->validate($newAddress);
         if (count($errors) > 0) {
@@ -101,7 +102,7 @@ class AddressController extends Controller implements ClassResourceInterface
         $address->setPostalCode($request->request->get('postalCode'));
         $address->setLocality($request->request->get('locality'));
         $address->setName($request->request->get('name'));
-        $address->setAdditionalInformation($request->request->get('additionaleInformation'));
+        $address->setAdditionalInformation($request->request->get('additionalInformation'));
         $address->setLat(1.0);
         $address->setLng(1.0);
         $address->setName($request->request->get('name'));

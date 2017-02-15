@@ -30,5 +30,15 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
         $users = $query->getResult();
         return $users;
     }
+    public function findOneWithUserAndDomain($userId, $domainId) {
+        $query = $this->createQueryBuilder('user')
+            ->join('user.wineList', 'domain')
+            ->where('domain.id = :domainId and user.id = :userId')
+            ->setParameter('domainId', $domainId)
+            ->setParameter('userId', $userId)
+            ->setMaxResults(1)
+            ->getQuery();
+        return $query->getOneOrNullResult();
+    }
 
 }

@@ -13,16 +13,16 @@
         <div class="col-sm-9">
             <div class="tab-content">
                 <div class="tab-pane fade in active" id="presentation">
-                    {% if app.session.flashBag.has('domainSuccess') %}
+                    {% if app.session.flashBag.has('presentationSuccess') %}
                         <div class="alert alert-success">
-                            {% for msg in app.session.flashBag.get('domainSuccess') %}
+                            {% for msg in app.session.flashBag.get('presentationSuccess') %}
                                 {{ msg }}
                             {% endfor %}
                         </div>
                     {% endif %}
-                    {% if app.session.flashBag.has('domainError') %}
+                    {% if app.session.flashBag.has('presentationError') %}
                         <div class="alert alert-danger">
-                            {% for msg in app.session.flashBag.get('domainError') %}
+                            {% for msg in app.session.flashBag.get('presentationError') %}
                                 {{ msg }}
                             {% endfor %}
                         </div>
@@ -44,114 +44,94 @@
                                     {{ form_widget(propertyForm.name,  { 'attr': {'class': 'form-control'} }) }}
                                 </div>
                                 <div>
-                                    <label for="postal_code">*{% trans %}label.description{% endtrans %} </label>
+                                    <label>{% trans %}label.description{% endtrans %} </label>
                                     {{ form_errors(propertyForm.description)}}
                                     {{ form_widget(propertyForm.description,  { 'attr': {'class': 'form-control'} }) }}
+                                </div><br>
+                                <div>
+                                    <button type="submit" class="btn btn-primary pull-right">{% trans %}label.submit{% endtrans %}</button>
                                 </div>
-                                <button type="submit" class="btn btn-primary pull-right">{% trans %}label.submit{% endtrans %}</button>
                             {{ form_end(propertyForm) }}
                         </div>
                     </div>
                 </div>
                 <div class="tab-pane fade in" id="rentals">
-                    <h4>{% trans %}label.rentals{% endtrans %}</h4>
                     {% set length = rentals|length %}
-                    {% if length == 0 %}
-                        <p>{% trans %}label.no_rental_for_property{% endtrans %}.</p>
-                    {% endif %}
-                    <a href="{{ path('rental_new', {'property': app.request.get('id')}) }}">
-                        <button class="btn btn-primary ">
-                            {% trans %}label.new_rental{% endtrans %}
-                        </button>
-                    </a>
                     {% set i = 0 %}
-                    {% for j in 0..(length/3)|round(0, 'ceil') %}
-                        <div class="col-sm-12">
-                            <ul class="nav nav-pills nav-stacked">
-                                {% for property in i..(i+2) if (i < length) %}
-                                    <div class="col-sm-3">
-                                        <div class="card">
-                                            <img style="width:auto;" class="card-img-top" src="{{ rental_directory ~ rentals[i].mediaPresentation }}" alt="{{ rentals[i].name }}">
-                                            <div class="card-block">
-                                                <h4 class="card-title">{{ rentals[i].name }}</h4>
-                                                <p class="card-text">{{ rentals[i].description }}</p>
-                                                <a href="{{ path('rental_edit', {'id': rentals[i].id }) }}" class="btn btn-primary">{% trans %}label.edit{% endtrans %}</a>
-                                            </div>
-                                        </div>
+                    <div>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <div>
+                                    <span style="font-size: 18px;font-family: 'Raleway', sans-serif;font-weight: 800">{% trans %}label.rentals{% endtrans %}</span>
+                                    <a href="{{ path('rental_new', {'property': app.request.get('id')}) }}">
+                                        <button class="btn btn-primary btn-circle btn-lg">
+                                            <span class="glyphicon glyphicon-plus"></span>
+                                        </button>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                {% if length == 0 %}
+                                    <p>{% trans %}label.no_rental_for_property{% endtrans %}.</p>
+                                {% endif %}
+                                {% for j in 0..(length/3)|round(0, 'ceil') %}
+                                    <div class="col-sm-12">
+                                        <ul class="nav nav-pills nav-stacked">
+                                            {% for property in i..(i+2) if (i < length) %}
+                                                <div class="col-sm-3">
+                                                    <div class="property-container">
+                                                        <div class="property-image">
+                                                            <img style="width:100%;height: 100%" class="card-img-top" src="{{ rental_directory ~ rentals[i].mediaPresentation }}" alt="{{ rentals[i].name }}">
+                                                            <div class="property-features-grey text-center">
+                                                               <span class="glyphicon glyphicon-time property-features-span-margin">
+                                                                    {{ rentals[i].minimumRentalPeriod }}
+                                                                </span>
+                                                                <span class="glyphicon glyphicon-user property-features-span-margin">
+                                                                    {{ rentals[i].peopleNumber }}
+                                                                </span>
+                                                                <span class="glyphicon glyphicon-euro property-features-span-margin">
+                                                                    {{ rentals[i].price }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="property-content">
+                                                            <h3><a href="{{ path('rental_edit', {'id': rentals[i].id }) }}">{{ rentals[i].name }}</a> <small>{{ rentals[i].description }}</small></h3>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {% set i = i+1 %}
+                                            {% endfor %}
+                                        </ul>
                                     </div>
-                                    {% set i = i+1 %}
                                 {% endfor %}
-                            </ul>
+                            </div>
                         </div>
-                    {% endfor %}
+                    </div>
                 </div>
                 <div class="tab-pane fade in" id="medias">
-                    {% if app.session.flashBag.has('picturesSuccess') %}
-                        <div class="alert alert-success">
-                            {% for msg in app.session.flashBag.get('picturesSuccess') %}
-                                {{ msg }}
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                    {% if app.session.flashBag.has('picturesError') %}
-                        <div class="alert alert-danger">
-                            {% for msg in app.session.flashBag.get('picturesError') %}
-                                {{ msg }}
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                    <h4>{% trans %}label.pictures{% endtrans %}</h4>
-                    {% set imagePerSlide = 3 %}
-                    {% set totalRow =  ((medias|length)/imagePerSlide)|round(0, 'ceil') %}
-                    {% if totalRow > 0 %}
-                        <div id="Carousel" class="carousel slide">
-                            <ol class="carousel-indicators">
-                                {% for i in 0..totalRow -1 %}
-                                    {% set class ="" %}
-                                    {% if loop.first %}
-                                        {% set class ="active" %}
-                                    {% endif %}
-                                    <li data-target="#Carousel" data-slide-to="{{ i }}" class="{{ class }}"></li>
-                                {% endfor %}
-                            </ol>
-                            <!-- Carousel items -->
-                            <div class="carousel-inner">
-                                {% set j = 0 %}
-                                {% for i in 0..totalRow - 1 %}
-                                    {% set class = "item"%}
-                                    {% if loop.first %}
-                                        {% set class ="item active" %}
-                                    {% endif %}
-                                    <div class="{{ class }}">
-                                        <div class="row">
-                                            {% for f in 0..imagePerSlide - 1 if j <= medias|length - 1%}
-                                                <div class="col-md-4">
-                                                    <a href="{{ property_directory ~ medias[j].name }}" rel="gallery2" class="fancybox img-hover-v1">
-                                                        <img src="{{ property_directory ~ medias[j].name }}" style="max-width:100%;">
-                                                    </a>
-                                                </div>
-                                                {% set j = j + 1 %}
-                                            {% endfor %}
-                                        </div><!--.row-->
-                                    </div><!--.item-->
-                                {% endfor %}
-                            </div><!--.carousel-inner-->
-                            {% if totalRow > 1 %}
-                                <a data-slide="prev" href="#Carousel" class="left carousel-control">‹</a>
-                                <a data-slide="next" href="#Carousel" class="right carousel-control">›</a>
-                            {% endif %}
-                        </div><!--.Carousel-->
-                    {% endif %}
-                    <br>
-                    <p>Ajouter des photos :</p>
-                    <form name="media" method="post" enctype="multipart/form-data">
-                        <div class="form-group">
-                            <input type="file" name="media[medias][]" multiple class="form-control">
-                        </div>
-                        <button type="submit" class="btn btn-primary pull-right">{% trans %}label.submit{% endtrans %}</button>
-                    </form>
+                    <h4>
+                        {% trans %}label.pictures{% endtrans %}
+                        <a href="#" data-toggle="tooltip" data-placement="right" title="{% trans %}help.pictures{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
+                    </h4>
+                    <p>{% trans %}label.add_pictures{% endtrans %}</p>
+                    <div class="dropzone upload-drop-zone" id="my-dropzone-container">
+                    </div>
                 </div>
                 <div class="tab-pane fade in" id="address">
+                    {% if app.session.flashBag.has('addressSuccess') %}
+                        <div class="alert alert-success">
+                            {% for msg in app.session.flashBag.get('addressSuccess') %}
+                                {{ msg }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% if app.session.flashBag.has('addressError') %}
+                        <div class="alert alert-danger">
+                            {% for msg in app.session.flashBag.get('addressError') %}
+                                {{ msg }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h4>{% trans %}label.address{% endtrans %}</h4>
@@ -174,6 +154,20 @@
                     </div>
                 </div>
                 <div class="tab-pane fade in" id="informations">
+                    {% if app.session.flashBag.has('informationsSuccess') %}
+                        <div class="alert alert-success">
+                            {% for msg in app.session.flashBag.get('informationsSuccess') %}
+                                {{ msg }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% if app.session.flashBag.has('informationsError') %}
+                        <div class="alert alert-danger">
+                            {% for msg in app.session.flashBag.get('informationsError') %}
+                                {{ msg }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                     <form method="post" name="characteristicValueForm" >
                         {% include('host/characteristic/valueForm.html.twig') %}
                         <button type="submit" class="btn btn-primary pull-right">{% trans %}label.submit{% endtrans %}</button>
@@ -182,7 +176,11 @@
             </div>
         </div>
     </div>
-    <script>
+{% endblock %}
+{% block script %}
+    {{ parent() }}
+    <script type="application/javascript">
+        //to change when the person when to add a new address
         $('#form_address').on('change', function() {
             if($(this).val() == '') {
                 $('#addressDiv').show();
@@ -190,5 +188,47 @@
                 $('#addressDiv').hide();
             }
         });
+
+        var nav = '{{ nav }}';
+        var medias= {{ medias|raw }};
+
+        //variable used in the dropzone-custom.js file, to init the dropzone.
+        var upload = '{{ property_directory }}';
+        var size = 10-(medias.length);
+        var uploadDirectory = '{{ path('property_upload_picture', {'id': app.request.get('id')}) }}';
+        var directDefaultMessage = '{{ 'label.drop_files_here' | trans({}) }}';
+        var toastMessageImgPresentation = '{{ 'success.image_presentation' | trans({}) }}';
+        var toastMessageImgDeleting = '{{ 'success.delete_image' | trans({}) }}';
+        var toastMessageImgNoPresentation = '{{ 'success.image_no_presentation' | trans({}) }}';
+
+
+        //variable used in the custom.js, in different javascript function user by the dropzone.
+        scope = "PROPERTY";
+        deletePath = "{{ path('property_delete_picture', {'id': 'id'}) }}";
+        urlMediaPresentation = "{{ path('api_patch_media_presentation_by_scope', {'id': 'id'}) }}";
+        Dropzone.autoDiscover = false;
+        confirmationDelete = '{{ 'confirmation.delete' | trans({}, "messages") }}';
+
+        //initiate the fancybox = slider
+        FancyBox.initFancybox();
+
+        //variable for the address form
+        jQuery(document).ready(function() {
+            //initiate the google map new address
+            adressId = 'address_formattedAddress';
+            componentFormId = {
+                street_number: 'address_streetAddress',
+                route: 'address_route',
+                locality: 'address_locality',
+                country: 'address_country',
+                postal_code: 'address_postalCode'
+            };
+
+
+        });
     </script>
+    {% javascripts 'bundles/app/js/address.js' 'bundles/app/js/nav.js' 'bundles/app/js/dropzone-custom.js'%}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+    <script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyBXbn5jGttQkXWIfV91bBmsMg-HS_o_f7o&signed_in=true&libraries=places&callback=initAutocomplete" async defer></script>
 {% endblock %}

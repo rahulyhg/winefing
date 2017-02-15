@@ -178,3 +178,256 @@ img.img-bordered {
     background: none!important;
     border: none!important;
 }
+
+.quick-search {
+    padding: 25px 40px;
+    background: white;
+    box-shadow: 0px 3px 5px #d8d8d8!important;
+    height: 120px;
+}
+.property-features-grey {
+    position: absolute!important;
+    width: 100%;
+    bottom: 0;
+    display: block;
+    padding: 5px 10px;
+    background-color: rgba(34,34,34,0.75);
+    color: #fff;
+}
+.btn-circle.btn-xl {
+    width: 70px;
+    height: 70px;
+    padding: 10px 16px;
+    font-size: 24px;
+    line-height: 1.33;
+    border-radius: 35px!important;
+}
+.property-features-span-margin {
+    margin-right: 15px;
+}
+.btn-circle {
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    padding: 6px 0;
+    font-size: 12px;
+    line-height: 1.428571429;
+    border-radius: 15px!important;
+}
+.btn-circle.btn-lg {
+    width: 50px;
+    height: 50px;
+    padding: 10px 16px;
+    font-size: 18px;
+    line-height: 1.33;
+    border-radius: 25px!important;
+}
+
+.full {
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    background-position: 50% 50%;
+    width: 1900px;
+}
+
+/* Indicators list style */
+.article-slide .carousel-indicators {
+    bottom: 0;
+    left: 0;
+    margin-left: 5px;
+    width: 100%;
+    height:20%;
+}
+/* Indicators list style */
+.article-slide .carousel-indicators li {
+    border: medium none;
+    border-radius: 0;
+    float: right;
+    height: 54px;
+    margin-bottom: 5px;
+    margin-left: 0;
+    margin-right: 5px !important;
+    margin-top: 0;
+    width: 100px;
+}
+/* Indicators images style */
+.article-slide .carousel-indicators img {
+    border: 2px solid #FFFFFF;
+    float: left;
+    height: 54px;
+    left: 0;
+    width: 100px;
+}
+/* Indicators active image style */
+.article-slide .carousel-indicators .active img {
+    border: 2px solid #428BCA;
+    opacity: 0.7;
+}
+.nopadding {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+button.btn-card-love {
+    display: block;
+    background-color: rgba(204, 102, 102, .3);
+    border: none;
+    width: 45px;
+    height: 45px;
+    position: absolute;
+    top: 0;
+    right: 29px;
+    z-index: 2;
+}
+#wineList.active {
+    background-color: #cc6666!important;
+}
+span.btn-card-love {
+    color:white
+}
+span.btn-card-love:hover {
+    color:#444;
+}
+.charact-box {
+    background: #f7f7f7;
+    margin: 0;
+    padding: 39px 30px 30px 30px;
+}
+.charact-box-white {
+    background: #ffffff;
+    margin: 0;
+    padding: 39px 30px 30px 30px;
+}
+.border-charact-box {
+    border: 1px solid #C3C3C3;
+    padding: 4px;
+}
+.charact-box-title {
+    background: #cc6666;
+    color: #FFF;
+    line-height: 36px;
+    margin: 0px 77px -18px 77px;
+    text-align: center;
+    position: relative;
+    z-index: 2;"
+}
+@media (max-width: 758px) {
+    #propertyintrobox {
+        width: 350px!important;
+    }
+}
+/*for the order button on a domain view*/
+@media (max-width: 767px) {
+    #order {
+        margin-bottom: 20px!important;
+    }
+    .img-big-filter {
+        height: auto!important;
+    }
+    .img-big-domain-card {
+        height: auto!important;
+    }
+}
+@media (min-width: 1600px) {
+    .img-big-domain-card {
+        height: 600px!important;
+    }
+    .img-little-domain-card {
+        height: 300px!important;
+    }
+}
+.more-information {
+    font-size: 12px;
+    line-height: 24px;
+    color: #6b6e80;
+    font-style: italic
+}
+.img-circle {
+    border-radius: 50%;
+}
+.picture-zoom {
+    width: 30px;
+    height: 30px;
+    padding: 8px;
+    font-style: 14px!important;
+    background: #fff;
+    text-align: center;
+    display: inline-block!important;
+    position: absolute!important;
+    margin-left: 10px;
+    margin-top: 10px;
+    color:#444;
+    border-radius: 50% !important
+}
+.picture-zoom-principal {
+    padding: 4px;
+    background: #fff;
+    color: #444;
+    border-radius: 50% !important;
+    vertical-align: middle;
+}
+.picture-zoom:hover {
+    background-color: #cc6666;!important;
+    color: white;!important;
+}
+.picture-zoom-principal:hover {
+    background-color: #cc6666;!important;
+    color: white;!important;
+}
+/*for the filter view and the explore*/
+.img-big-filter {
+    height: 505px;
+    width: 100%
+}
+.img-little-filter {
+    height: 240px!important;
+    width: 100%
+}
+.img-big-domain-card {
+    height: 500px;
+    width: 100%
+}
+.img-little-domain-card {
+    height: 250px;
+    width: 100%
+}
+.cover-img {
+    z-index: 1;
+    padding: 100px 0;
+    position: relative;
+    text-align: center;
+    background-size: cover;
+    background-position: center center;
+}
+.cover-img h1 {
+    color: #fff;
+    font-size: 70px;
+    font-weight: 600;
+    line-height: 80px;
+    text-transform: uppercase;
+}
+.list-unstyled {
+    list-style: none;
+}
+/*@import url(https://fonts.googleapis.com/css?family=Lato:400,900,700,300);*/
+/*.heading4{font-size:18px;font-weight:400;font-family:'Lato', sans-serif;color:#111111;margin:0px 0px 5px 0px;}*/
+/*.heading1{font-size:30px;line-height:20px;font-family:'Lato', sans-serif;text-transform:uppercase;color:#1b2834;font-weight:900;}*/
+/*.content-quality{float:left;width:193px;}*/
+/*.content-quality p{margin-left:10px;font-family:'Open Sans', sans-serif;font-size:14px;font-weight:600;line-height:17px;}*/
+/*.content-quality p span{display:block;}*/
+/*.tabtop li a{font-family:'Lato', sans-serif;font-weight:700;color:#1b2834;border-radius:0px;margin-right:22.008px;border:1px solid #ebebeb !important;}*/
+/*.tabtop .active a:before{content:"♦";position:absolute;top:15px;left:82px;color:#e31837;font-size:30px;}*/
+/*.tabtop li a:hover{color:#e31837 !important;text-decoration:none;}*/
+/*.tabtop .active a:hover{color:#fff !important;}*/
+/*.tabtop .active a{background-color:#e31837 !important;color:#FFF !important;}*/
+/*.margin-tops{margin-top:30px;}*/
+/*.tabtop li a:last-child{padding:10px 22px;}*/
+/*.thbada{padding:10px 28px !important;}*/
+/*section p{font-family:'Lato', sans-serif;}*/
+/*.margin-tops4{margin-top:20px;}*/
+/*.tabsetting{border-top:5px solid #ebebeb;padding-top:6px;}*/
+/*.services{background-color:#d4d4d4;min-height:710px;padding:65px 0 27px 0;}*/
+/*.services a:hover{color:#000;}*/
+/*.services h1{margin-top:0px !important;}*/
+/*.heading-container p{font-family:'Lato', sans-serif;text-align:center;font-size:16px !important;text-transform:uppercase;}*/

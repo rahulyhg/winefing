@@ -10,4 +10,5 @@ namespace Winefing\ApiBundle\Repository;
  */
 class WineRegionRepository extends \Doctrine\ORM\EntityRepository
 {
+
 }

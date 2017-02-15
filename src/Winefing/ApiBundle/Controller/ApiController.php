@@ -66,17 +66,20 @@ class ApiController {
         return $client->request('PUT', $this->getUrl($uri), ['headers' => ['X-Token' => $this->token], 'json' => $params]);
     }
 
-    public function get($uri){
+    public function get($uri, $queryParams = ''){
+//        $client = new Client();
+//        $headers = [
+//            'Authorization' => 'Bearer '.$this->token
+//        ];
+//
+//        return $client->request(
+//            'GET',
+//            $this->getUrl($uri),
+//            array('headers'=>$headers,'query' =>$queryParams)
+//        );
+//
         $client = new Client();
-        $headers = [
-            'Authorization' => 'Bearer '.$this->token
-        ];
-
-        return $client->request(
-            'GET',
-            $this->getUrl($uri),
-            array('headers'=>$headers)
-        );
+        return $client->request('GET', $this->getUrl($uri), ['query' => $queryParams]);
     }
 
     public function delete($uri){

@@ -16,10 +16,8 @@ class RentalOrderGiftType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('signature', null, array('label'=> 'label.signature', 'attr'=> array('maxlength'=>"60", 'required'=> false, 'class'=>'form-control')))
-            ->add('message', TextareaType::class, array('label'=> 'label.message','attr'=> array('maxlength'=>"255", 'required'=> false, 'class'=>'form-control')))
-            ->add('agree', CheckboxType::class, array('label'=>false, 'mapped'=>false))
-            ->add('submit', SubmitType::class, array('label'=>false))
+            ->add('signature', null, array('label'=> 'label.signature', 'attr'=> array('maxlength'=>"60", 'required'=> true, 'class'=>'form-control')))
+            ->add('message', TextareaType::class, array('label'=> 'label.message','attr'=> array('maxlength'=>"500", 'required'=> true, 'class'=>'form-control', 'style' => 'height:150px')))
         ;
     }
     

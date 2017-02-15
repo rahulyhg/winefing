@@ -34,6 +34,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Winefing\ApiBundle\Entity\RentalOrderGift;
 use Winefing\ApiBundle\Entity\StatusCodeEnum;
 use AppBundle\Form\RentalOrderGiftType;
+use JMS\Serializer\SerializationContext;
 
 class RentalController extends Controller
 {
@@ -42,9 +43,16 @@ class RentalController extends Controller
      * @return mixed
      * @Route("paiement/rental/gift", name="rental_paiement_gift")
      */
-    public function paiementRentalGift() {
+    public function paiementRentalGift(Request $request) {
         $rentalOrderGift = new RentalOrderGift();
         $rentalOrderGiftForm = $this->createForm(RentalOrderGiftType::class, $rentalOrderGift);
+        $rentalOrderGiftForm->get('signature')->setData($this->getUser()->getFirstName());
+        $rentalOrderGiftForm->handleRequest($request);
+        if($rentalOrderGiftForm->isSubmitted() && $rentalOrderGiftForm->isSubmitted()) {
+            $rentalOrderGift = $rentalOrderGiftForm->getData();
+            $this->setRentalOrderGiftRentalOrder($rentalOrderGift);
+            return $this->redirectToRoute('rental_paiement');
+        }
         return $this->render('user/rental/paiement/gift.html.twig', array('rentalOrderGift'=>$rentalOrderGiftForm->createView()));
     }
     /**
@@ -54,8 +62,11 @@ class RentalController extends Controller
      */
     public function paiement(Request $request){
         $user = $this->getUser();
-        $rental = $this->getRental($this->get('session')->get('rental'));
-        $bill = $this->getPricesRentalAndPeriod($rental->getId(), $this->get('session')->get('startDate'), $this->get('session')->get('endDate'));
+        $serializer = $this->container->get('jms_serializer');
+        $rentalOrderSession = $serializer->deserialize($this->get('session')->get('rentalOrder'), 'Winefing\ApiBundle\Entity\RentalOrder', 'json');
+        $rentalOrder = $this->getRentalOrder($rentalOrderSession->getRental()->getId(), $rentalOrderSession->getStartDate()->getTimestamp(), $rentalOrderSession->getEndDate()->getTimestamp());
+        $this->fusionRentalOrder($rentalOrder, $rentalOrderSession);
+
         $creditCard = new CreditCard();
         $creditCardForm = $this->createForm(CreditCardType::class, $creditCard);
         $creditCardForm->handleRequest($request);
@@ -63,26 +74,50 @@ class RentalController extends Controller
             var_dump(str_replace(" ", "", $creditCardForm['cardNumber']->getData()));
 
             //create address for the bill
-            $bill['clientAddress'] = $this->createBillingAddress($this->get('session')->get('address'));
+            $clientAddress = $this->createBillingAddress($rentalOrder->getClientAddress());
+            $rentalOrder->setClientAddress($clientAddress);
 
+            //rentalOrderGift
+            $rentalOrderGift = $rentalOrder->getRentalOrderGift();
+            $rentalOrderGiftAddress = $clientAddress;
 
-            //create order
-            //create day price
-            //link order with day price
-            if($creditCardForm['save']->getData()) {
-                //create the credit card on lemon way
-                var_dump($this->registerCard($user, $creditCardForm));
+            //set rentalOrder user
+            $rentalOrder->setUser($this->getUser());
 
-                //save information in winefing data base
+            //create the rentalOrder with statut 0
+            $rentalOrder = $this->createRentalOrder($rentalOrder);
+//            //create the gift
+            if($rentalOrder->getRentalOrderGift()) {
+                $rentalOrderGift->setAddress($rentalOrderGiftAddress);
+                $this->createRentalOrderGift($rentalOrder, $rentalOrderGift);
             }
-            if(!$user->getWallet()) {
-                $this->createWallet($user);
-            }
+            return $this->redirectToRoute('home');
+
+//
+//            //pay
+//
+//
+//            //edit the order status
+//
+//            //create order
+//            //create day price
+//            //link order with day price
+//            if($creditCardForm['save']->getData()) {
+//                //create the credit card on lemon way
+//                var_dump($this->registerCard($user, $creditCardForm));
+//                //save information in winefing data base
+//            }
+//            //create the user Wallet if it's not existing
+//            if(!$user->getWallet()) {
+//                $this->createWallet($user);
+//            }
         }
-        $address = new Address();
-        $addressForm = $this->createForm(AddressType::class, $address);
-        return $this->render('user/rental/paiement/paiement.html.twig', ['creditCardForm'=>$creditCardForm->createView(),
-            'addressForm'=>$addressForm->createView(),'bill'=>$bill]);
+        return $this->render('user/rental/paiement/paiement.html.twig', ['creditCardForm'=>$creditCardForm->createView(), 'rentalOrder'=>$rentalOrder]);
+    }
+    public function fusionRentalOrder(&$rentalOrder, $rentalOrderSession) {
+        $rentalOrder->setRentalOrderGift($rentalOrderSession->getRentalOrderGift());
+        $rentalOrder->setClientAddress($rentalOrderSession->getClientAddress());
+        $rentalOrder->setRental($rentalOrderSession->getRental());
     }
     public function moneyInWithCardId($user) {
         $lemonWay = $this->container->get('winefing.lemonway_controller');
@@ -128,28 +163,80 @@ class RentalController extends Controller
         $addressForm = $this->createForm(AddressUserType::class, $address, $options);
         $addressForm->handleRequest($request);
         $body['user'] = $user->getId();
-
+        //if the address form is submitted, add the address and data base
+        // and then add the address to the rentalOrder save in session
         if($addressForm->isSubmitted() && $addressForm->isValid()) {
             $response = $api->post($this->get('_router')->generate('api_post_address'),  $request->request->get('address_user'));
             $address = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Address', 'json');
             $body['address'] = $address->getId();
             $api->patch($this->get('_router')->generate('api_patch_address_user'), $body);
-            $this->get('session')->set('address', $address->getId());
-            return $this->redirectToRoute('rental_paiement');
-        }elseif (!empty($addressId)) {
-            $this->get('session')->set('address', $addressId);
-            return $this->redirectToRoute('rental_paiement');
+            $this->setAddressRentalOrder($address->getId());
+            return $this->redirectToRoute('rental_paiement_gift');
+        }
+        //check if the user chooses an address already existing
+        if (!empty($addressId)) {
+            $this->setAddressRentalOrder($addressId);
+            return $this->redirectToRoute('rental_paiement_gift');
         }
         return $this->render('user/rental/paiement/address.html.twig', ['addressForm'=>$addressForm->createView(), 'addresses'=> $addresses]);
     }
 
+    /**
+     * set the client address on the rental order store in session until the paiement.
+     * @param $addressId
+     */
+    public function setAddressRentalOrder($addressId) {
+        $serializer = $this->container->get('jms_serializer');
+        $rentalOrder = $serializer->deserialize($this->get('session')->get('rentalOrder'), 'Winefing\ApiBundle\Entity\RentalOrder', 'json');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Address');
+        $address = $repository->findOneById($addressId);
+        $rentalOrder->setClientAddress($address);
+        $this->get('session')->set('rentalOrder', $serializer->serialize($rentalOrder, 'json', SerializationContext::create()->setGroups(array('default', 'rental', 'clientAddress'))));
+    }
+    /**
+     * set the rental order gift on the rental order store in session until the paiement.
+     * @param $addressId
+     */
+    public function setRentalOrderGiftRentalOrder($rentalOrderGift) {
+        $serializer = $this->container->get('jms_serializer');
+        $rentalOrder = $serializer->deserialize($this->get('session')->get('rentalOrder'), 'Winefing\ApiBundle\Entity\RentalOrder', 'json');
+        $rentalOrder->setRentalOrderGift($rentalOrderGift);
+        $this->get('session')->set('rentalOrder', $serializer->serialize($rentalOrder, 'json', SerializationContext::create()->setGroups(array('default', 'rental', 'clientAddress', 'rentalOrderGift'))));
+    }
+
     public function createBillingAddress($address) {
-        $body['id'] = $address;
         $api = $this->container->get('winefing.api_controller');
         $serializer = $this->container->get('jms_serializer');
-        $response = $api->post($this->get('_router')->generate('api_post_address_copy'),  $body);
+        $response = $api->post($this->get('_router')->generate('api_post_address_copy'),  json_decode($serializer->serialize($address, 'json',SerializationContext::create()->setGroups(array('default'))), true));
         $address = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Address', 'json');
         return $address;
+    }
+    public function createRentalOrder($rentalOrder) {
+        $api = $this->container->get('winefing.api_controller');
+        $serializer = $this->container->get('jms_serializer');
+        $rentalOrderNew['clientAddress'] = $rentalOrder->getClientAddress()->getId();
+        $rentalOrderNew['user'] = $this->getUser()->getId();
+        $rentalOrderNew['rental'] = $rentalOrder->getRental()->getId();
+        $rentalOrderNew['startDate'] = $rentalOrder->getStartDate()->getTimestamp();
+        $rentalOrderNew['endDate'] = $rentalOrder->getEndDate()->getTimestamp();
+        $rentalOrderNew['averagePrice'] = $rentalOrder->getAveragePrice();
+        $rentalOrderNew['dayNumber'] = $rentalOrder->getDayNumber();
+        $rentalOrderNew['totalTax'] = $rentalOrder->getTotalTax();
+        $rentalOrderNew['totalHT'] = $rentalOrder->getTotalHT();
+        $rentalOrderNew['totalTTC'] = $rentalOrder->getTotalTTC();
+        $rentalOrderNew['comission'] = $rentalOrder->getComission();
+        $rentalOrderNew['amount'] = $rentalOrder->getAmount();
+        $response = $api->post($this->get('_router')->generate('api_post_rental_order'),  $rentalOrderNew);
+        $rentalOrder = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\RentalOrder', 'json');
+        return $rentalOrder;
+    }
+    public function createRentalOrderGift($rentalOrder, $rentalOrderGift) {
+        $api = $this->container->get('winefing.api_controller');
+        $newRentalOrderGift['rentalOrder'] = $rentalOrder->getId();
+        $newRentalOrderGift['address'] = $rentalOrderGift->getAddress()->getId();
+        $newRentalOrderGift['message'] = $rentalOrderGift->getMessage();
+        $newRentalOrderGift['signature'] = $rentalOrderGift->getSignature();
+        $api->post($this->get('_router')->generate('api_post_rental_order_gift'),  $newRentalOrderGift);
     }
 
     /**
@@ -159,12 +246,12 @@ class RentalController extends Controller
      * @param $end
      * @return array[date] = $price
      */
-    public function getPricesRentalAndPeriod($rental, $start, $end) {
-        $serializer = $this->container->get('winefing.serializer_controller');
+    public function getRentalOrder($rental, $start, $end) {
+        $serializer = $this->container->get('jms_serializer');
         $api = $this->container->get('winefing.api_controller');
-        $response = $api->get($this->get('_router')->generate('api_get_rental_prices_by_date', array('rental'=>$rental, 'start'=>strtotime($start), 'end'=>strtotime($end))));
-        $prices = $serializer->decode($response->getBody()->getContents(),'json');
-        return $prices;
+        $response = $api->get($this->get('_router')->generate('api_get_rental_order_before_post', array('rental'=>$rental, 'start'=>$start, 'end'=>$end)));
+        $rentalOrder = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\RentalOrder', 'json');
+        return $rentalOrder;
 
     }
 

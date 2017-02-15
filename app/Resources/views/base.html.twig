@@ -9,10 +9,13 @@
     <meta name="description" content="winefing">
     <meta name="author" content="a.carval">
     <link href='https://fonts.googleapis.com/css?family=Raleway:400,600,800' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.2/css/bootstrap-select.min.css">
+
     <!-- Latest compiled and minified CSS -->
     {#<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css" integrity="sha384-AysaV+vQoT3kOAXZkl02PThvDr8HYKPZhNT5h/CXfBThSRXQ6jW5DO2ekP5ViFdi" crossorigin="anonymous">#}
-    {% stylesheets '@other_css''@custom_css''@unify_css''@bootstrap_css''@arillo_css' '@phone_number_css' '@toast_css'filter='cssrewrite' %}
+    {% stylesheets '@other_css''@custom_css''@unify_css''@bootstrap_css''@arillo_css' '@phone_number_css' '@toast_css'
+    '@bootstrap_select_css' '@bootstrap_slider_range_css'
+    '@clockpicker_css'
+    filter='cssrewrite' %}
     <link rel="stylesheet" href="{{ asset_url }}" />
     {% endstylesheets %}
     <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
@@ -21,12 +24,11 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css.map" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker3.min.css.map" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.standalone.min.css" rel="stylesheet">
+    <!-- datepicker -->
     <!-- selectpicker -->
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.2/css/bootstrap-select.min.css">
     <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.12.4.min.js"></script>
 
-    <!-- selectpicker -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.2/js/bootstrap-select.min.js"></script>
     <!-- START PLUGIN SUMMERNOTE -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.js"></script>
     <!-- END PLUGIN SUMMERNOTE -->
@@ -37,118 +39,44 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
     {% block javascripts %}
-        {% javascripts 'bundles/app/js/form-control.js' 'bundles/app/js/host-registration.js' 'bundles/app/js/custom.js' 'bundles/app/js/dropzone.js' 'bundles/app/js/jquery.fancybox.pack.js' 'bundles/app/js/jquery.fancybox.js' 'bundles/app/js/card.js'
-        'bundles/app/js/fancy-box.js' 'assets/vendor/intl-tel-input/build/js/intlTelInput.js' 'assets/vendor/jquery-toast-plugin/dist/jquery.toast.min.js' %}
+        {% javascripts 'assets/vendor/bootstrap-select/dist/js/bootstrap-select.min.js'
+                        'bundles/app/js/form-control.js'
+                        'bundles/app/js/host-registration.js'
+                        'bundles/app/js/custom.js'
+                        'bundles/app/js/dropzone.js'
+                        'bundles/app/js/jquery.fancybox.pack.js'
+                        'bundles/app/js/jquery.fancybox.js'
+                        'bundles/app/js/card.js'
+                        'bundles/app/js/fancy-box.js'
+                        'assets/vendor/intl-tel-input/build/js/intlTelInput.js'
+                        'assets/vendor/jquery-toast-plugin/dist/jquery.toast.min.js'
+                        'assets/vendor/seiyria-bootstrap-slider/dist/bootstrap-slider.min.js'
+                        'assets/vendor/clockpicker/dist/jquery-clockpicker.min.js'
+                        'bundles/app/js/unify/app.js'
+        %}
             <script type="text/javascript" src="{{ asset_url }}"></script>
         {% endjavascripts %}
     {% endblock javascripts %}
 </head>
 
-    <body>
-        {#<section id="header_home">#}
-            {#<div id="header" class="header-slide" style="display:flex;">#}
-                {#<!-- begin:navbar -->#}
-                {% block nav %}
-                    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                        {{ 'in' }}
-                        {% if is_granted("ROLE_HOST") %}
-                            {{ include('nav/host.html.twig') }}
-                        {% elseif is_granted("ROLE_USER") %}
-                            {{ include('nav/user.html.twig') }}
-                        {% elseif is_granted("ROLE_MANAGMENT") or is_granted("ROLE_BLOG") or is_granted("ROLE_TECHNIQUE") %}
-                            {{ include('nav/admin.html.twig') }}
-                        {% endif %}
-                    {% else %}
-                        {{ include('nav/notConnected.html.twig') }}
+    <body class="header-fixed">
+        <!--=== Header v6 ===-->
+        <div class="header-v6 header-dark-transparent header-sticky">
+            {% block nav %}
+                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                    {% if is_granted("ROLE_HOST") %}
+                        {{ include('nav/host.html.twig') }}
+                    {% elseif is_granted("ROLE_USER") %}
+                        {{ include('nav/user.html.twig') }}
+                    {% elseif is_granted("ROLE_MANAGMENT") or is_granted("ROLE_BLOG") or is_granted("ROLE_TECHNIQUE") %}
+                        {{ include('nav/admin.html.twig') }}
                     {% endif %}
-                {% endblock %}
-                {#<div class="container" style="color:#fff; margin:auto;">#}
-                    {#<div class="row">#}
-                        {#<div class="col-md-12 text-center">#}
-                            {#<h2>Réservez un séjour au vignoble et vivez une expérience unique</h2>#}
-                        {#</div>#}
-                    {#</div>#}
-                {#</div>#}
-            {#</div>#}
-            {#<div class="container advance-search">#}
-                {#<div class="row">#}
-                    {#<div class="col-md-3 col-sm-6">#}
-                        {#<div class="quick-search">#}
-                            {#<div class="row">#}
-                                {#<div class="col-md-12 col-sm-12 col-xs-12">#}
-                                    {#<div class="form-group">#}
-                                        {#<label for="minprice">Région ?</label>#}
-                                        {#<select class="form-control">#}
-                                            {#<option></option>#}
-                                            {#<option>Bordelais</option>#}
-                                            {#<option>Languedoc</option>#}
-                                            {#<option>Provence</option>#}
-                                            {#<option>Bourgogne</option>#}
-                                            {#<option>Corse</option>#}
-                                            {#<option>Loire</option>#}
-                                        {#</select>#}
-                                    {#</div>#}
-                                {#</div>#}
-                            {#</div>#}
-                        {#</div>#}
-                    {#</div>#}
-                    {#<div class="col-md-3 col-sm-6">#}
-                        {#<div class="quick-search">#}
-                            {#<div class="row">#}
-                                {#<div class="col-md-12 col-sm-12 col-xs-12 search_padding">#}
-                                    {#<div class="form-group">#}
-                                        {#<label for="minprice">Quand ?</label>#}
-                                        {#<input name="from" class="reservation-date hasDatepicker" id="from" placeholder="25/01/2017" min="2016-12-31" type="date" style="line-height:28px;">#}
-                                        {#<div class="datepicker-plus datepicker_plus_wrapper" style="display:none; transform: .5s;">#}
-                                            {#<span>-&gt;</span>#}
-                                            {#<input name="to" class="reservation-date hasDatepicker" id="to" placeholder="25/01/2017" max="2018-12-31" type="date" style="line-height:28px;">#}
-                                        {#</div>#}
-                                    {#</div>#}
-                                {#</div>#}
-                            {#</div>#}
-                        {#</div>#}
-                    {#</div>#}
-                    {#<div class="col-md-3 col-sm-6">#}
-                        {#<div class="quick-search">#}
-                            {#<div class="row">#}
-                                {#<div class="col-md-12 col-sm-12 col-xs-12">#}
-                                    {#<div class="form-group">#}
-                                        {#<label for="minprice">Nombre de personnes ?</label>#}
-                                        {#<select class="form-control">#}
-                                            {#<option></option>#}
-                                            {#<option>1</option>#}
-                                            {#<option>2</option>#}
-                                            {#<option>3</option>#}
-                                            {#<option>4</option>#}
-                                            {#<option>5</option>#}
-                                            {#<option>6 ou +</option>#}
-                                        {#</select>#}
-                                    {#</div>#}
-                                {#</div>#}
-                            {#</div>#}
-                        {#</div>#}
-                    {#</div>#}
-                    {#<div class="col-md-3 col-sm-6">#}
-                        {#<div class="quick-search">#}
-                            {#<div class="row">#}
-                                {#<div class="col-md-12 col-sm-12 col-xs-12" style="padding:31px 0;">#}
-                                    {#<input name="submit" value="Rechercher" class="btn btn-danger btn-lg btn-block" wtx-context="EF0C23EB-5622-438F-B531-9F77580B0A35" type="submit">#}
-                                {#</div>#}
-                            {#</div>#}
-                        {#</div>#}
-                    {#</div>#}
-                {#</div>#}
-            {#</div>#}
-        {#</section>#}
+                {% else %}
+                    {{ include('nav/notConnected.html.twig') }}
+                {% endif %}
+            {% endblock %}
+        </div>
         <!--=== End Header v6 ===-->
-        {#<!-- Interactive Slider v2 -->#}
-        {#<div class="interactive-slider-v2">#}
-            {#<div class="container">#}
-                {#<h1>Welcome to Unify</h1>#}
-                {#<p>Clean and fully responsive Template.</p>#}
-            {#</div>#}
-        {#</div>#}
-        {#<!-- End Interactive Slider v2 -->#}
         <div>
             {% block body %}
             {% endblock %}
@@ -238,8 +166,26 @@
                 </div>
             </div>
         </div>
+        <div id="endBody">
+
+        </div>
         <!-- end:modal-signup -->
     {% block script %}
+        <script>
+            //var for the toast message header
+            jQuery(document).ready(function() {
+                //for the header
+                App.init();
+            });
+            var toastMessageImgAdded = '{{ 'success.image_added' | trans({}) }}';
+            var toastHeadingSuccess = '{{ 'success.generic_title' | trans({}) }}';
+            var toastHeadingError = '{{ 'error.generic_title' | trans({}) }}';
+            var toastMessageError = '{{ 'error.generic_message' | trans({}) }}';
+            //initiate the tooltip
+            $('[data-toggle="tooltip"]').tooltip();
+            //for the characteristic of time type
+            $('.clockpicker').clockpicker();
+        </script>
     {% endblock %}
     </body>
 </html>

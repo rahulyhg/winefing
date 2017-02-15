@@ -33,8 +33,8 @@ class WineRegionController extends Controller
     public function cgetAction() {
         $api = $this->container->get('winefing.api_controller');
         $response = $api->get($this->generateUrl('api_get_wine_regions'));
-        $serializer = $this->container->get('winefing.serializer_controller');
-        $wineRegions = $serializer->decode($response->getBody()->getContents());
+        $serializer = $this->container->get('jms_serializer');
+        $wineRegions = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\WineRegion>', 'json');
         return $this->render('admin/wineRegion/index.html.twig', array("wineRegions" => $wineRegions));
     }
 
@@ -92,7 +92,7 @@ class WineRegionController extends Controller
         }
         $request->getSession()
             ->getFlashBag()
-            ->add('success', "The wine Region is well created/modified.");
+            ->add('success', $this->get('translator')->trans('success.modifications_saved'));
         return $this->redirectToRoute('wine_regions');
 
     }
@@ -104,7 +104,7 @@ class WineRegionController extends Controller
         $api->delete($this->get('router')->generate('api_delete_wine_region', array('id' => $id)));
         $request->getSession()
             ->getFlashBag()
-            ->add('success', "The wine Region is well created/modified.");
+            ->add('success', $this->get('translator')->trans('success.modifications_saved'));
         return $this->redirectToRoute('wine_regions');
     }
 }

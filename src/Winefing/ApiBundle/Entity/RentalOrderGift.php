@@ -3,7 +3,10 @@
 namespace Winefing\ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
+use Doctrine\Common\Collections\ArrayCollection;
+use JMS\Serializer\Annotation\Type;
+use JMS\Serializer\Annotation\Expose;
+use JMS\Serializer\Annotation\Groups;
 /**
  * RentalOrderGift
  *
@@ -18,13 +21,15 @@ class RentalOrderGift
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"id","default"})
      */
     private $id;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="message", type="string", length=255)
+     * @ORM\Column(name="message", type="string", length=500)
+     * @Groups({"default"})
      */
     private $message;
 
@@ -32,6 +37,7 @@ class RentalOrderGift
      * @var string
      *
      * @ORM\Column(name="signature", type="string", length=255)
+     * @Groups({"default"})
      */
     private $signature;
 
@@ -41,6 +47,12 @@ class RentalOrderGift
      * @ORM\Column(name="address", type="string", length=255)
      */
     private $address;
+
+    /**
+     * @ORM\OneToOne(targetEntity="Winefing\ApiBundle\Entity\RentalOrder", mappedBy="rentalOrderGift")
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $rentalOrder;
 
 
     /**
@@ -123,6 +135,22 @@ class RentalOrderGift
     public function getAddress()
     {
         return $this->address;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRentalOrder()
+    {
+        return $this->rentalOrder;
+    }
+
+    /**
+     * @param mixed $rentalOrder
+     */
+    public function setRentalOrder($rentalOrder)
+    {
+        $this->rentalOrder = $rentalOrder;
     }
 }
 

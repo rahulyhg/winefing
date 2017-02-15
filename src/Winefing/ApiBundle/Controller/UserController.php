@@ -264,6 +264,7 @@ class UserController extends Controller implements ClassResourceInterface
             $user->setBirthDate(date_create_from_format('U', $request->request->get('birthDate')));
         }
         $user->setSex($request->request->get('sex'));
+        $user->setPhoneNumber($request->request->get('phoneNumber'));
         $validator = $this->get('validator');
         $errors = $validator->validate($user);
         if (count($errors) > 0) {
@@ -376,10 +377,10 @@ class UserController extends Controller implements ClassResourceInterface
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Subscription');
         $userRepository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
         $em = $this->getDoctrine()->getManager();
-        $user = $userRepository->findBy(array('id'=>$request->request->get('user')));
+        $user = $userRepository->findOneById($request->request->get('user'));
         $user->resetSubscriptions();
-        foreach($request->request->get('subscriptions') as $subscription) {
-            if($subscription["checkbox"] == 1) {
+        foreach($request->request->get('subscription') as $subscription) {
+            if($subscription["value"] == 1) {
                 $user->addSubscription($repository->findOneById($subscription["id"]));
             }
         }
@@ -449,7 +450,13 @@ class UserController extends Controller implements ClassResourceInterface
         $user = $repository->findOneById($request->request->get('user'));
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Domain');
         $domain = $repository->findOneById($request->request->get('domain'));
-        $user->addElementInWineList($domain);
+        if($user->getWineList()->contains($domain)) {
+            //if the route is call and the domain is already in the wineList,
+            // is that the user don't want any more the domain in the wine list
+            $user->removeElementInWineList($domain);
+        } else {
+            $user->addElementInWineList($domain);
+        }
         $validator = $this->get('validator');
         $errors = $validator->validate($user);
         if (count($errors) > 0) {

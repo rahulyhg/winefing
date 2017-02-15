@@ -31,13 +31,16 @@ class DomainType extends AbstractType
     {
         $builder
             ->add('name', null, array('attr'=> array('maxlength'=>"60")))
-            ->add('description', TextareaType::class, array('attr'=> array('maxlength'=>"2000", 'style' => 'height:250px')))
-            ->add('history', TextareaType::class, array('label'=>'label.domain_history','required' => false, 'attr'=> array('maxlength'=>"2000", 'style' => 'height:250px')))
-            ->add('wineRegion', EntityType::class,  array('class' => 'WinefingApiBundle:WineRegion', 'attr'=> array('class'=> 'form-control'),
+            ->add('description', TextareaType::class, array('attr'=> array('maxlength'=>"3000", 'style' => 'height:250px')))
+            ->add('history', TextareaType::class, array('label'=>'label.domain_history','required' => false, 'attr'=> array('maxlength'=>"3000", 'style' => 'height:250px')))
+            ->add('wineRegion', EntityType::class,  array('class' => 'WinefingApiBundle:WineRegion', 'attr'=> array('class'=> 'selectpicker'),
                 'choice_label' => function ($wineRegion) use ($options) {
                     return $wineRegion->getDisplayName($options['language']);
                 }))
-        ;
+            ->add('tags', EntityType::class,  array('class' => 'WinefingApiBundle:Tag','attr'=> array('multiple'=>true,'class'=> 'selectpicker'),
+                'choice_label' => function ($tag) use ($options) {
+                    return $tag->getDisplayName($options['language']);
+                }));
     }
     public function configureOptions(OptionsResolver $resolver)
     {

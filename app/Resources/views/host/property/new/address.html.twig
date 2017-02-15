@@ -7,7 +7,7 @@
         {{ form_end(addressListChoice) }}
         {% set hidden = 'hidden' %}
         <div id="buttonNextAddress">
-            <a class="btn btn-primary btn-lg pull-right" href="{{ path('property_pictures', {'idProperty' : app.request.get('idProperty')}) }}">{% trans %}label.next{% endtrans %}</a>
+            <a class="btn btn-primary btn-lg pull-right" href="{{ path('property_picture', {'idProperty' : app.request.get('idProperty')}) }}">{% trans %}label.next{% endtrans %}</a>
         </div>
     {% endif %}
     <br>
@@ -17,15 +17,34 @@
         <button type="submit" class="btn btn-primary pull-right">{% trans %}label.submit{% endtrans %}</button>
         {{ form_end(addressForm) }}
     </div>
-    {% block script %}
-        <script>
-            $('#form_address').on('change', function() {
-                if($(this).val() == '') {
-                    $('#addressDiv').show();
-                } else {
-                    $('#addressDiv').hide();
-                }
-            });
-        </script>
-    {% endblock %}
+{% endblock %}
+{% block script %}
+    {{ parent() }}
+    <script>
+        $('#form_address').on('change', function() {
+            if($(this).val() == '') {
+                $('#addressDiv').show();
+            } else {
+                $('#addressDiv').hide();
+            }
+        });
+    </script>
+    <script type="application/javascript">
+        //variable for the address form
+        jQuery(document).ready(function() {
+            //initiate the google map new address
+            adressId = 'address_formattedAddress';
+            componentFormId = {
+                street_number: 'address_streetAddress',
+                route: 'address_route',
+                locality: 'address_locality',
+                country: 'address_country',
+                postal_code: 'address_postalCode'
+            };
+        });
+    </script>
+    {% javascripts 'bundles/app/js/address.js'%}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+    <script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyBXbn5jGttQkXWIfV91bBmsMg-HS_o_f7o&signed_in=true&libraries=places&callback=initAutocomplete" async defer></script>
 {% endblock %}

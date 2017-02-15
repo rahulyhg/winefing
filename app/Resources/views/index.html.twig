@@ -1,5 +1,73 @@
 {% extends 'base.html.twig' %}
 {% block body %}
+    <!-- Interactive Slider v2 -->
+    <div class="interactive-slider-v2">
+        <div class="container">
+            <h1>Welcome to Winefing</h1>
+            <p>Wine Hosting, Wide open</p>
+        </div>
+    </div>
+    <!-- End Interactive Slider v2 -->
+    <div>
+        {#<!-- End Interactive Slider v2 -->#}
+        {{ form_start(filterForm) }}
+            <div class="container advance-search">
+                <div class="row" style="margin-top: -15px;position: relative;z-index: 2">
+                    <div class="col-md-3 col-sm-6">
+                        <div class="quick-search">
+                            <div class="row">
+                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                    <div class="form-group">
+                                    <label for="minprice">{% trans %}label.wine_region{% endtrans %} ?</label>
+                                    {{ form_widget(filterForm.wineRegion) }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="quick-search">
+                            <div class="row">
+                                <div class="col-md-12 col-sm-12 col-xs-12 search_padding">
+                                    <div class="form-group" style="margin-left: -20px;margin-right: -20px;margin-top: 10px">
+                                        <label for="minprice">{% trans %}label.when{% endtrans %} ?</label>
+                                        <div id="sandbox-container">
+                                            <div class="input-daterange input-group" id="datepicker">
+                                                {{ form_row(filterForm.startDate) }}
+                                                <span class="input-group-addon">{% trans %}label.to{% endtrans %}</span>
+                                                {{ form_row(filterForm.endDate) }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="quick-search">
+                            <div class="row">
+                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                    <div class="form-group">
+                                        <label for="minprice">{% trans %}label.people_number{% endtrans %} ?</label>
+                                        {{ form_widget(filterForm.peopleNumber) }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="quick-search">
+                            <div class="row">
+                                <div class="col-md-12 col-sm-12 col-xs-12" style="padding:31px 0;text-align: center">
+                                    {{ form_widget(filterForm.submit) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {{ form_end(filterForm) }}
+    </div>
     <div>
         <div class="container content">
             <div class="row">
@@ -204,6 +272,18 @@
     </div>
     <script>
         FancyBox.initFancybox();
+        $(document).ready(function() {
+            $('#sandbox-container .input-daterange').datepicker({
+                startDate: ""+getFormattedDate(new Date)+"'",
+                format: 'dd-mm-yyyy',
+                orientation: "bottom auto",
+                autoclose: true
+            });
+            $('.selectpicker').selectpicker({
+                noneSelectedText:'',
+                width: '100%'
+            });
+        });
     </script>
 {% endblock %}
 

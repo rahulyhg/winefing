@@ -30,7 +30,8 @@ use AppBundle\Form\DomainRegistrationType;
 use AppBundle\Form\DomainNewType;
 use Winefing\ApiBundle\Entity\Domain;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
-
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 class RegistrationController extends Controller
 {
     public function testMailIsSentAndContentIsOk()
@@ -133,7 +134,7 @@ class RegistrationController extends Controller
                 $domainNew['wineRegion'] = $request->request->get('domain_registration')['wineRegion'];
                 $domainNew["address"] = $address->getId();
                 $domainNew["user"] = $user->getId();
-                $this->submitDomain($domainNew);
+                $domain = $this->submitDomain($domainNew);
 
                 //create the wallet on lemon way
                 try {
@@ -152,8 +153,9 @@ class RegistrationController extends Controller
                 $this->sendEmailRegistration($body);
 
                 //login user
-                $this->logIn($user);
-                return $this->redirectToRoute('domain_edit');
+                $this->logIn($user, $request);
+                $this->addFlash('success', $this->get('translator')->trans('success.account_well_created'));
+                return $this->redirectToRoute('domain_edit', array('id'=>$domain->getId()));
             } else {
                 $this->addFlash('contactError', $this->get('translator')->trans('error.email_already_exist'));
             }
@@ -235,9 +237,22 @@ class RegistrationController extends Controller
         $api = $this->container->get('winefing.api_controller');
         $api->patch($this->get('router')->generate('api_patch_user_subscriptions'), $subscription);
     }
-    public function logIn($user) {
+    public function logIn($user, $request) {
         $token = new UsernamePasswordToken($user, null, 'main', $user->getRoles());
-        $this->get('session')->set('_security_main', serialize($token));
+        $this->get("security.token_storage")->setToken($token);
+
+        // Fire the login event
+        // Logging the user in above the way we do it doesn't do this automatically
+        $event = new InteractiveLoginEvent($request, $token);
+        $this->get("event_dispatcher")->dispatch("security.interactive_login", $event);
+//        if($user->isHost()) {
+            //save the domain id parameter
+            $api = $this->container->get('winefing.api_controller');
+            $serializer = $this->container->get("jms_serializer");
+            $response = $api->get($this->get('router')->generate('api_get_domain_by_user', array('userId' => $user->getId())));
+            $domain = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Domain', 'json');
+            $this->get('session')->set('domainId', $domain->getId());
+//        }
     }
     /**
      * Permet de créer un wallet sur Lemon Way si ce dernier n'a pas déjà été créé.

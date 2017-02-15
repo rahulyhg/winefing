@@ -47,6 +47,7 @@ label.property_name_exemple: Château du pâpe, Gîte des Lilas...
 label.rental_name_exemple: Chambre royal, gîte des lilas...
 label.new_address: Nouvelle addresse
 label.property_pictures_explication: Ne mettre que des photos de la propriété ou des parties communes de la propriété (ne pas mettre les chambres).
+label.rental_pictures_explication: Vous pouvez mettre jusqu'à 10 photos de la location. N'hésitez pas à prendre en photos les détails également, tel que la vue depuis la chambre.
 label.prices: Prix
 label.rentals: Locations
 label.my_properties: Mes propriétés
@@ -63,8 +64,7 @@ label.price: Prix
 label.domain: Domain
 label.price_explanation: Le prix doit être indiqué TTC par nuit.
 label.people_number_explanation: Le nombre de personne que le logement peut contenir
-label.minimum_rental_period: Période de location minimu
-label.minimum_rental_period_explanation: La période minimum (en jour) que doit sélectionner l'utilisateur.
+label.minimum_rental_period: Période de location minimum
 label.promotions: Promotions
 label.date: Date
 label.reduction: Reduction
@@ -168,3 +168,60 @@ label.reset_password: Changer le mot de passe
 label.explore: Explorer
 label.the_owner: Le propriétaire
 confirmation.delete: Etes-vous sur de vouloir supprimer cet élément ?
+label.when: Quand
+
+label.make_a_reservation: Faire une réservation
+label.see_more: En voir plus
+
+error.generic_title: Erreur
+error.generic_message: Une erreur vient de se produire. Si cette dernière persiste, veuillez contacter l'administration du site.
+success.generic_title: Succès
+success.delete_image: L'image est bien supprimée.
+success.image_presentation: L'image est bien définie comme image de présentation.
+success.image_no_presentation: L'image n'est plus définie comme étant l'image de présentation.
+
+label.rental_number: 1 location|%number% locations
+label.presentation_picture: Photo de présentation
+help.presentation_picture: Cette photo sera définie comme étant la photo principale, celle qui sera affichée en premier. Vous pourrez ajouter des photos suplémentaires dans un second temps.
+label.night: nuit|nuits
+
+label.people_number_plurial: 1 personne|%number% personnes
+help.rental_price: Le prix est indiqué pour une nuit
+help.minimum_rental_period: La période minimum (en jour) que doit sélectionner l'utilisateur.
+
+label.room: Chambre
+label.whole_housing: Logement entier
+label.rental_category: Type de logement
+error.generic_form_error: Le formulaire comporte des erreurs.
+success.generic_edit_form: Les modifications ont bien été effectuée.
+success.add_rental: Félicitation, la location a bien été ajouté !
+success.image_added: L'image à bien été ajouté.
+label.mandatory_informations: Informations obligatoires
+label.complementary_informations: Informations complémentaire
+label.step: Etape %number%
+success.account_well_created: Félicitation ! Votre compte est bien créé.
+label.notification_by: Notification par %format%
+label.tags: Tags
+label.domain_description: Description du domaine
+label.domain_history: Histoire du domaine
+label.the_details: Les détails
+label.more_information: Plus d'informations
+label.book: Réserver
+label.see_more_picture: Voir plus de photos
+success.domain_added_winelist: Le domain est bien ajouté à votre wine list.
+success.domain_removed_winelist: Le domain est bien retiré de votre wine list.
+label.search_result: Resultat de recherche
+label.welcom_winefing: Bienvenue sur Winefing
+label.order_for_rental: Réservation pour la location
+label.days_number: Nombre de jour
+label.total_price: Prix total
+label.select_date: Sélectionner les dates
+label.offer: Offrir
+label.message: Message
+label.signature: Signature
+help.average_price: Ce prix correspond au prix moyen par nuit. Le prix peut varié d'une nuit à une autre.
+help.total_price: Le prix inclue les frais de service du site web.
+label.bill: La facture
+help.rental_offer: Vous souhaitez offrir le séjour à une personne ? Ajouter un mot personnalisé pour que la magie soit à son comble.
+label.no_thanks: Non merci
+label.gift_card: Carte cadeau

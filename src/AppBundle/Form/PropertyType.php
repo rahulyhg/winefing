@@ -31,7 +31,7 @@ class PropertyType extends AbstractType
     {
         $builder
             ->add('name', null, array('attr'=> array('maxlength'=>"60")))
-            ->add('description', TextareaType::class, array('attr'=> array('maxlength'=>"60", 'required' => false, 'style' => 'height:250px')))
+            ->add('description', TextareaType::class, array('required' => false,'attr'=> array('maxlength'=>"500", 'style' => 'height:250px')))
             ->add('propertyCategory', EntityType::class,  array('class' => 'WinefingApiBundle:PropertyCategory', 'attr'=> array('class'=> 'form-control'),
                 'choice_label' => function ($wineRegion) use ($options) {
                     return $wineRegion->getDisplayName($options['language']);

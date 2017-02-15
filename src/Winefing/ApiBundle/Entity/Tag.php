@@ -5,6 +5,7 @@ namespace Winefing\ApiBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Winefing\ApiBundle\Entity\LanguageEnum;
 use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\Type;
 
 /**
  * Tag
@@ -37,7 +38,18 @@ class Tag
      */
     private $articles;
 
-    private $title;
+    /**
+     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Domain", mappedBy="tags", fetch="EXTRA_LAZY", cascade={"persist", "merge", "detach"})
+     * @Groups({"domains"})
+     */
+    private $domains;
+
+    /**
+     * @var
+     * @Groups({"default"})
+     * @Type("string")
+     */
+    private $name;
 
 
     /**
@@ -53,6 +65,7 @@ class Tag
     public function _construct() {
         $this->tagTrs[] = new ArrayCollection();
         $this->articles[] = new ArrayCollection();
+        $this->domains[] = new ArrayCollection();
     }
 
     public function addTagTr(TagTr $tagTr) {
@@ -68,14 +81,72 @@ class Tag
         return $this->tagTrs;
     }
 
-    public function getTitle(){
-        foreach($this->getTagTrs() as $tagTr) {
-            if ($tagTr->getLanguage()->getCode() == LanguageEnum::Français) {
-                $this->title = $tagTr->getName();
+    /**
+     * @return mixed
+     */
+    public function getDomains()
+    {
+        return $this->domains;
+    }
+
+    /**
+     * @param mixed $domains
+     */
+    public function setDomains($domains)
+    {
+        $this->domains = $domains;
+    }
+
+
+    public function getDisplayName($language){
+        foreach($this->tagTrs as $tag){
+            if($tag->getLanguage()->getCode() == $language) {
+                return $tag->getName();
                 break;
             }
         }
-        return $this->title;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getArticles()
+    {
+        return $this->articles;
+    }
+
+    /**
+     * @param mixed $articles
+     */
+    public function setArticles($articles)
+    {
+        $this->articles = $articles;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param mixed $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    public function setTr($language) {
+        foreach($this->tagTrs as $tagTr) {
+            if($tagTr->getLanguage()->getCode() == $language) {
+                $this->name = $tagTr->getName();
+                break;
+            }
+        }
+    }
+
 }
 

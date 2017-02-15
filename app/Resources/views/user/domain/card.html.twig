@@ -1,179 +1,374 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6">
-                <h3 class="text-left" style="color:#cc6666; font-weight:400;">{{ domain.name }}</h3>
-            </div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-8 nopadding">
+            <a href="{{ domain_directory ~ domain.domainMediasPresentation.domainMediaPresentation }}" title="{{ domain.name }}" data-rel="gallery" class="fancybox img-hover-v1">
+                <img src="{{ domain_directory ~ domain.domainMediasPresentation.domainMediaPresentation }}" class="img-big-domain-card">
+            </a>
         </div>
-        <div class="row">
-            <div class="col-xs-12 col-md-8 col-sm-12">
-                <div class="row">
-                    <div class="col-xs-12 col-md-12 col-sm-12">
-                        <div id="slider-property" class="carousel slide" data-ride="carousel">
-                            <ol class="carousel-indicators">
-                                <li data-target="#slider-property" data-slide-to="0" class="">
-                                    <img src="https://dev.winefing.fr/winefing/web/Resources/pictures/property/default.png" alt="">
-                                </li>
-                                <li data-target="#slider-property" data-slide-to="1" class="active">
-                                    <img src="https://dev.winefing.fr/winefing/web/Resources/pictures/property/default.png" alt="">
-                                </li>
-                                <li data-target="#slider-property" data-slide-to="2">
-                                    <img src="https://dev.winefing.fr/winefing/web/Resources/pictures/property/default.png" alt="">
-                                </li>
-                            </ol>
-                            <div class="carousel-inner">
-                                <div class="item">
-                                    <img src="https://dev.winefing.fr/winefing/web/Resources/pictures/property/default.png" alt="">
-                                </div>
-                                <div class="item active">
-                                    <img src="https://dev.winefing.fr/winefing/web/Resources/pictures/property/default.png" alt="">
-                                </div>
-                                <div class="item">
-                                    <img src="https://dev.winefing.fr/winefing/web/Resources/pictures/property/default.png" alt="">
-                                </div>
-                            </div>
-                            <a class="left carousel-control" href="#slider-property" data-slide="prev">
-                                <span class="glyphicon glyphicon-chevron-left"></span>
-                            </a>
-                            <a class="right carousel-control" href="#slider-property" data-slide="next">
-                                <span class="glyphicon glyphicon-chevron-right"></span>
-                            </a>
-                        </div>
+        <div class="hidden-sm hidden-xs col-md-4 nopadding">
+            {#<div class="property-image-list">#}
+                <a href="{{ property_directory ~ domain.domainMediasPresentation.propertyMediaPresentation }}" title="{{ domain.name }}" data-rel="gallery" class="fancybox img-hover-v1">
+                    <img src="{{ property_directory ~ domain.domainMediasPresentation.propertyMediaPresentation }}" class="img-little-domain-card">
+                </a>
+            {#</div>#}
+            <br>
+            <div>
+                <a href="{{ rental_directory ~ domain.domainMediasPresentation.rentalMediaPresentation }}" title="{{ domain.name }}" data-rel="gallery" class="fancybox">
+                    <img src="{{ rental_directory ~ domain.domainMediasPresentation.rentalMediaPresentation }}" class="img-little-domain-card">
+                    <div class="property-features-grey text-center">
+                        <span>{% trans %}label.see_more_picture{% endtrans %}</span>
+                        <span class="glyphicon glyphicon-search picture-zoom-principal"></span>
                     </div>
-                </div>
-            </div>
-            <div class="col-xs-12 col-md-4 col-sm-12">
-                <div class="row">
-                    <div class="col-xs-12 col-md-12 col-sm-12">
-                        <img src="https://dev.winefing.fr/winefing/web/Resources/pictures/property/default.png">
-                    </div>
-                    <div class="col-xs-12 col-md-12 col-sm-12">
-                        <div class="property-image-list">
-                            <img src="https://dev.winefing.fr/winefing/web/Resources/pictures/property/default.png">
-                        </div>
-                    </div>
-                </div>
+                </a>
             </div>
         </div>
     </div>
-    </section>
-    <div>
-        <div class="container">
-            <div class="row">
-                <div class="col-xs-12 col-sm-8 col-md-8">
-                    <h4 class="text-left" style="font-weight:400; color:#cc6666;">L'histoire du domaine</h4>
-                    <div class="property-text">
-                        <p>{{ domain.description }}</p>
+    <div class="hidden">
+        {% for media in domain.medias %}
+            <a href="{{ domain_directory ~ media.name }}" title="{{ domain.name }}" data-rel="gallery" class="fancybox img-hover-v1">
+            </a>
+        {% endfor %}
+    </div>
+    <div class="container content" style="padding-bottom: 0px!important">
+        <div class="property-details" id="darcy-house">
+                <div id="propertyintrobox">
+                    <h1 id="uniquename">{{ domain.name }}</h1>
+                    <p class="location">
+                        <em id="uniquelocation">{{ domain.wineRegion.name }}</em></p>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6 col-md-6">
+                            <a href="#reservation">
+                             <input id="order" class="btn btn-primary" value="{% trans %}label.book{% endtrans %}">
+                            </a>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-6">
+                            <div class="btn btn-primary">Acheter sur Twil</div>
+                        </div>
                     </div>
+                    <button id="wineList" class="btn-card-love {% if wineList == 1 %}active{% endif %}">
+                        <span class="glyphicon glyphicon-heart btn-card-love"></span>
+                    </button>
                 </div>
-                <div class="col-xs-12 col-sm-4 col-md-4" style="display:flex;">
-                    <p class="text-center" style="margin:auto; padding:75px;"><a href="#" class="btn btn-danger">Plus de détails »</a></p>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <h4 class="text-left" style="font-weight:400; color:#cc6666;">La propriété</h4>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-6 col-sm-6 col-md-6">
-                    <h4 class="text-left" style="font-weight:600; color:#2f2f2f;">Les équipements</h4>
-                    <ul style="padding:0 13px;">
-                        <li> Jusqu'à 15 personnes</li>
-                        <li> Draps fournis</li>
-                        <li> Petit-déjeuner</li>
-                        <li> TV avec Bein Sports</li>
-                        <li> Wi-Fi</li>
-                    </ul>
-                </div>
-                <div class="col-xs-6 col-sm-6 col-md-6">
-                    <h4 class="text-left" style="font-weight:600; color:#2f2f2f;">Les activités</h4>
-                    <ul style="padding:0 13px;">
-                        <li> Dégustation de grand cru</li>
-                        <li> Visite du vignoble</li>
-                        <li> Création de votre propre vin</li>
-                    </ul>
-                </div>
-            </div>
         </div>
     </div>
-    {% for property in domain.properties %}
-        <div class="{% if loop.index is not divisible by(2) %}bg-grey{% endif %}">
+    <div class="container content" style="padding-top: 0px">
+        <!--home-content-top starts from here-->
+        <section class="home-content-top">
             <div class="container">
-                <div class="row">
-                    <div class="col-xs-12 col-sm-8 col-md-8">
-                        <h4 class="text-left" style="font-weight:400; color:#cc6666;">{{ property.name }}</h4>
-                    </div>
-                </div>
-                <div class="row">
-                    {% for rental in property.rentals %}
-                        <div class="col-xs-12 col-sm-6 col-md-4">
-                            <div class="property-content-list">
-                                <div class="property-image-list">
-                                    <div class="image_15 image_callamand_1"></div>
-                                    <div class="property-price">
-                                        <h4>{{ rental.name }}</h4>
-                                        <span>{{ rental.price }} € <small> / nuit</small></span>
+                <!--our-quality-shadow-->
+                <div class="tabbable-panel margin-tops4 ">
+                    <div class="tabbable-line">
+                        <ul class="hidden-xs hidden-sm nav nav-tabs tabtop  tabsetting" style="margin-bottom: 20px">
+                            <li class="active"> <a href="#presentation" data-toggle="tab">{% trans %}label.presentation{% endtrans %}</a> </li>
+                            <li> <a href="#wineRegion" data-toggle="tab">{% trans %}label.wine_region{% endtrans %}</a> </li>
+                            <li> <a href="#wineOwner" data-toggle="tab">{% trans %}label.the_owner{% endtrans %}</a> </li>
+                            <li> <a href="#address" data-toggle="tab">{% trans %}label.address{% endtrans %}</a> </li>
+                        </ul>
+                        <div class="tab-content margin-tops">
+                            <div class="tab-pane active fade in" id="presentation">
+                                <br>
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <h4>{% trans %}label.domain_description{% endtrans %}</h4>
+                                        <p style="text-align: justify">{{ domain.description }}</p>
+                                        <br>
+                                        <div>
+                                            {% if domain.history %}
+                                                <h4>{% trans %}label.domain_history{% endtrans %}</h4>
+                                                <p style="text-align: justify">{{ domain.history }}</p>
+                                            {% endif %}
+                                        </div>
                                     </div>
-                                    <div class="property-status">
-                                        <span>{{ rental.peopleNumber }}</span>
-                                    </div>
-                                    <div class="property-features">
-                                        <span><i class="fa fa-home"></i> 7,000 m<sup>2</sup></span>
-                                        <span><i class="fa fa-male"></i> 2 Bath</span>
-                                        <span><i class="fa fa-building-o"></i> 2 Floors</span>
-                                        <span><i class="fa fa-car"></i> 2 Garages</span>
+                                    <div class="col-xs-12 col-md-4">
+                                        <p class="charact-box-title">{% trans %}label.the_details{% endtrans %}</p>
+                                        <div class="charact-box">
+                                            {% for characteristicCategoryName, characteristicValues in domain.characteristicValuesByCategory %}
+                                                <h4 class="text-center" style="font-weight:600; color:#2f2f2f;">{{ characteristicCategoryName }}</h4>
+                                                {% for characteristicValue in characteristicValues if characteristicValue.characteristic.activated == 1 %}
+                                                    <div>
+                                                        {% if characteristicValue.characteristic.picture %}
+                                                            <img style="width:35px;vertical-align:middle" type="image/svg+xml" src="{{ characteristic_directory ~ characteristicValue.characteristic.picture }}">
+                                                        {% endif %}
+                                                        <span>
+                                                            {% if characteristicValue.characteristic.format.name == format_monnaie %}
+                                                                {{ characteristicValue.characteristic.name ~ ': '~ characteristicValue.value ~ '€' }}
+                                                            {% elseif characteristicValue.characteristic.format.name == format_boolean %}
+                                                                {% if characteristicValue.value == '1' %}
+                                                                    {{ characteristicValue.characteristic.name }}
+                                                                {% else %}
+                                                                    <span style="text-decoration:line-through;color: rgba(189, 195, 199,1.0)">{{ characteristicValue.characteristic.name }}</span>
+                                                                {% endif %}
+                                                            {% elseif characteristicValue.characteristic.format.name == format_time %}
+                                                                {{ characteristicValue.characteristic.name }}
+                                                            {% else %}
+                                                                {{ characteristicValue.characteristic.name  ~ ': '~ characteristicValue.value }}
+                                                            {% endif %}
+                                                        </span>
+                                                    </div>
+                                                {% endfor %}
+                                            {% endfor %}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="property-text property-description-center">
-                                <h3><a href="#">{{ rental.name }}</a>
-                                    <div class="border"></div>
-                                    <small>Arrivée : 15h ; Départ : 11h</small></h3>
-                                <p>{{ rental.description }}</p>
+                            <div class="tab-pane fade" id="wineRegion">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <h4>{{ domain.wineRegion.name }}</h4>
+                                        <br>
+                                        <p style="text-align: justify">{{ domain.wineRegion.description }}</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <img class="img-responsive" width="100%" src="{{ wine_region_directory ~ 'default.jpg' }}">
+                                    </div>
+                                </div>
                             </div>
-                            <p><a href="#" class="btn btn-danger" style="width:100%;">Order</a></p>
-                            <p><a href="#" class="btn btn-danger" style="width:100%;">Réserver</a></p>
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-    {% endfor %}
-    <div>
-        <div class="col-md-12">
-            <div id="map-property"></div>
-        </div>
-    </div>
-    <div class="bg-grey">
-        <div class="container">
-            <div class="row">
-                <div class="col-xs-12 col-sm-6 col-md-6">
-                    <h4 class="text-left" style="font-weight:600; color:#cc6666;">{% trans %}label.the_owner{% endtrans %}</h4>
-                    <div class="col-md-6 col-no-padding">
-                        <img class="img-responsive rounded-3x" src="{{ user_directory ~ domain.user.picture }}">
-                    </div>
-                    <div class="col-md-6">
-                        <div class="owner_text">
-                            <h5 class="text-left" style="font-weight:400; color:#cc6666;">{{ domain.user.firstName }}</h5>
-                            <p>{{ domain.user.description }}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-12 col-sm-6 col-md-6">
-                    <h4 class="text-left" style="font-weight:600; color:#cc6666;">{% trans %}label.wine_region{% endtrans %}</h4>
-                    <div class="col-md-6 col-no-padding">
-                        <div class="image_owner image_owner_2"></div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="owner_text">
-                            <h5 class="text-left" style="font-weight:400; color:#cc6666;">{{ domain.wineRegion.name }}</h5>
-                            <p>{{ domain.wineRegion.name }}</p>
+                            <div class="tab-pane fade" id="wineOwner">
+                                <div class="row">
+                                    <div class="col-xs-12 col-md-4">
+                                        <img class="img-responsive" width="100%" src="{{ user_directory ~ domain.user.picture }}">
+                                    </div>
+                                    <div class="col-xs-12 col-md-8">
+                                        <h4 class="text-left">{{ domain.user.firstName }}</h4>
+                                        <p>{{ domain.user.description }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="address" style="margin: 0px 0px 0px 0px!important">
+                                <div id="map"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
     </div>
+    <div id="reservation">
+        {% for property in domain.properties %}
+            {#for the gallery one (the principal gallery)#}
+            <div class="hidden">
+                {% for media in property.medias %}
+                    <a href="{{ property_directory ~ media.name }}" title="{{ domain.name }}" data-rel="gallery" class="fancybox img-hover-v1">
+                    </a>
+                {% endfor %}
+            </div>
+            <div class="{% if loop.index is not divisible by(2) %}bg-grey{% endif %}">
+                <div class="container">
+                            <div class="row">
+                                <div class="col-xs-12 col-md-12">
+                                    <br>
+                                    <a data-toggle ="collapse" data-parent = "#accordion" href = "#{{ property.id }}">
+                                        <h4 class="text-left" style="font-weight:400; color:#cc6666;display:inline-block;margin-right: 5px">{% trans %}label.property{% endtrans %}{{' - '~ property.name }}</h4>
+                                        <span class="more-information glyphicon glyphicon-chevron-right"></span><p>{% trans %}label.more_information{% endtrans %}</p>
+                                    </a>
+                                </div>
+                            </div>
+                            <br>
+                            <div id="{{ property.id }}" class="collapse">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <p class="charact-box-title">{% trans %}label.the_details{% endtrans %}</p>
+                                        <div class="charact-box-{% if loop.index is not divisible by(2) %}white{% endif %}">
+                                            {% for characteristicCategoryName, characteristicValues in property.characteristicValuesByCategory %}
+                                                <h4 class="text-center" style="font-weight:600; color:#2f2f2f;">{{ characteristicCategoryName }}</h4>
+                                                {% for characteristicValue in characteristicValues if characteristicValue.characteristic.activated == 1 %}
+                                                    <div>
+                                                        {% if characteristicValue.characteristic.picture %}
+                                                            <img style="width:35px;vertical-align:middle" type="image/svg+xml" src="{{ characteristic_directory ~ characteristicValue.characteristic.picture }}">
+                                                        {% endif %}
+                                                        <span>
+                                                            {% if characteristicValue.characteristic.format.name == format_monnaie %}
+                                                                {{ characteristicValue.characteristic.name ~ ': '~ characteristicValue.value ~ '€' }}
+                                                            {% elseif characteristicValue.characteristic.format.name == format_boolean %}
+                                                                {% if characteristicValue.value == '1' %}
+                                                                    {{ characteristicValue.characteristic.name }}
+                                                                {% else %}
+                                                                    <span style="text-decoration:line-through;color: rgba(189, 195, 199,1.0)">{{ characteristicValue.characteristic.name }}</span>
+                                                                {% endif %}
+                                                            {% elseif characteristicValue.characteristic.format.name == format_time %}
+                                                                {{ characteristicValue.characteristic.name ~ ': '~ characteristicValue.value }}
+                                                            {% else %}
+                                                                {{ characteristicValue.characteristic.name  ~ ': '~ characteristicValue.value }}
+                                                            {% endif %}
+                                                        </span>
+                                                    </div>
+                                                {% endfor %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <h4>{% trans %}label.description{% endtrans %}</h4>
+                                        <p>{{ property.description }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        {#</div>#}
+                    <br>
+                    <div class="row">
+                        {% set rentals = property.rentals %}
+                        {% set length = rentals|length %}
+                        {% set i = 0 %}
+                        {% for j in 0..(length/3)|round(0, 'ceil') %}
+                            <div class="row container-realestate">
+                                {% for rental in i..(i+2) if (i < length) %}
+                                    <div class="hidden">
+                                        {#for the gallery one (the principal gallery)#}
+                                        {% for media in rentals[i].medias %}
+                                            <a href="{{ rental_directory ~ media.name }}" title="{{ rentals[i].name }}" data-rel="gallery" class="fancybox img-hover-v1">
+                                            </a>
+                                            <a href="{{ rental_directory ~ media.name }}" title="{{ rentals[i].name }}" data-rel="gallery gallery-{{ rentals[i].id }}" class="fancybox img-hover-v1">
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="col-md-4 col-sm-6 col-xs-12">
+                                        <div class="property-container">
+                                            <div class="property-image">
+                                                <a href="{{ rental_directory ~ rentals[i].mediaPresentation }}" title="{{ rentals[i].name }}" data-rel="gallery gallery-{{ rentals[i].id }}" class="fancybox img-hover-v1">
+                                                    <img src="{{ rental_directory ~ rentals[i].mediaPresentation }}" alt="{{ rentals[i].name }}">
+                                                    <div class="hidden-xs">
+                                                        <span class="glyphicon glyphicon-search picture-zoom"></span>
+                                                    </div>
+                                                </a>
+                                                <div class="property-features-grey text-center">
+                                                    <span class="glyphicon glyphicon-user property-features-span-margin">
+                                                        {{ 'label.people_number_plurial' | transchoice(rentals[i].peopleNumber, {"%number%":rentals[i].peopleNumber}) }}
+                                                    </span>
+                                                    <span class="glyphicon glyphicon-euro property-features-span-margin">
+                                                        {{ rentals[i].price ~ '/'~'label.night' | trans({})}}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="property-content">
+                                                <h3>
+                                                <a data-toggle ="collapse" data-parent = "#accordion" href = "#{{ rentals[i].id }}">
+                                                    <span style="font-size: 16px">{{ rentals[i].name }}</span>
+                                                    <span class="more-information"><span class="glyphicon glyphicon-chevron-right">{% trans %}label.more_information{% endtrans %}</span></span>
+                                                </a>
+                                                <div id = "{{ rentals[i].id }}" class="collapse" style="margin-top: 20px">
+                                                    <small>
+                                                        {% for characteristicCategoryName, characteristicValues in rentals[i].characteristicValuesByCategory %}
+                                                            <h5 class="text-left" style="font-weight:600; color:#2f2f2f;">{{ characteristicCategoryName }}</h5>
+                                                            {% for characteristicValue in characteristicValues if characteristicValue.characteristic.activated == 1 %}
+                                                                <div>
+                                                                    {% if characteristicValue.characteristic.picture %}
+                                                                        <img style="width:35px;vertical-align:middle" type="image/svg+xml" src="{{ characteristic_directory ~ characteristicValue.characteristic.picture }}">
+                                                                    {% endif %}
+                                                                    <span>
+                                                                        {% if characteristicValue.characteristic.format.name == format_monnaie %}
+                                                                            {{ characteristicValue.characteristic.name ~ ': '~ characteristicValue.value ~ '€' }}
+                                                                        {% elseif characteristicValue.characteristic.format.name == format_boolean %}
+                                                                            {% if characteristicValue.value == '1' %}
+                                                                                {{ characteristicValue.characteristic.name }}
+                                                                            {% else %}
+                                                                                <span style="text-decoration:line-through;color: rgba(189, 195, 199,1.0)">{{ characteristicValue.characteristic.name }}</span>
+                                                                            {% endif %}
+                                                                        {% elseif characteristicValue.characteristic.format.name == format_time %}
+                                                                            {{ characteristicValue.characteristic.name ~ ': '~ characteristicValue.value }}
+                                                                        {% else %}
+                                                                            {{ characteristicValue.characteristic.name  ~ ': '~ characteristicValue.value }}
+                                                                        {% endif %}
+                                                                    </span>
+                                                                </div>
+                                                            {% endfor %}
+                                                        {% endfor %}
+                                                    </small>
+                                                </div>
+
+                                                </h3>
+                                                <div class="row" style="margin-bottom: -10px!important">
+                                                    <input type="button" value="{% trans %}label.book{% endtrans %}" style="width:100%" onclick="rentalOrder('{{ path('rental', {'id':rentals[i].id, 'startDate':app.request.get('startDate'), 'endDate':  app.request.get('enDate')}) }}')" class="btn btn-primary pull-right">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% set i = i+1 %}
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+{% block script %}
+    {{ parent() }}
+    <script>
+        FancyBox.initFancybox();
+        var toastMessageDomainAdded = '{{ 'success.domain_added_winelist' | trans({}) }}';
+        var toastMessageDomainRemoved = '{{ 'success.domain_removed_winelist' | trans({}) }}';
+        $('#wineList').on('click', function() {
+            if ('{{ is_granted('IS_AUTHENTICATED_FULLY') }}') {
+                $.ajax({
+                    url: '{{ path('domain_add_to_wishlist', {'id':app.request.get('id'), 'userId': app.user.id }) }}',
+                    type: 'PATCH',
+                    async: false,
+                    success: function (data, textStatus, jqXHR) {
+                        //remove file from the dropzone
+                        var message = toastMessageDomainAdded;
+                        if($('#wineList').hasClass('active')) {
+                            message = toastMessageDomainRemoved;
+                            $('#wineList').removeClass('active');
+                        } else {
+                            $('#wineList').addClass('active');
+                        }
+                        $.toast({
+                            heading: toastHeadingSuccess,
+                            text: message,
+                            showHideTransition: 'slide',
+                            icon: 'success',
+                            position: 'top-right'
+                        });
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        $.toast({
+                            heading: toastHeadingError,
+                            text: toastMessageError,
+                            showHideTransition: 'fade',
+                            icon: 'error',
+                            position: 'top-right'
+                        });
+                    }
+                });
+            } else {
+                $('#login').modal('show');
+            }
+        });
+
+        function rentalOrder(url) {
+            if ('{{ is_granted('IS_AUTHENTICATED_FULLY') }}') {
+                $.ajax({
+                    url: url,
+                    type: 'PATCH',
+                    async: false,
+                    success: function (data, textStatus, jqXHR) {
+                        $('#endBody').html(data);
+                        $('#rental').modal('show');
+
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log('error');
+                    }
+                });
+            } else {
+                $('#login').modal('show');
+            }
+        }
+        {#function initMap() }#}
+            {#var uluru = {lat: {{ domain.address.lat }}, lng: {{ domain.address.lng }}};#}
+            {#var map = new google.maps.Map(document.getElementById('map'), }#}
+                {#center: uluru,#}
+                {#scrollwheel: false,#}
+                {#zoom: 14#}
+            {#});#}
+            {#var marker = new google.maps.Marker(}#}
+                {#position: uluru,#}
+                {#map: map#}
+            {#});#}
+        {#}#}
+    </script>
+    {#<script async defer#}
+            {#src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBXbn5jGttQkXWIfV91bBmsMg-HS_o_f7o&callback=initMap">#}
+    {#</script>#}
 {% endblock %}

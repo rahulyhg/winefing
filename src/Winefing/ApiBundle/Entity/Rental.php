@@ -61,7 +61,7 @@ class Rental
     /**
      * @var string
      *
-     * @ORM\Column(name="description", type="string", length=255, nullable=true)
+     * @ORM\Column(name="description", type="string", length=500, nullable=true)
      * @Groups({"default"})
      */
     private $description;
@@ -99,6 +99,21 @@ class Rental
      * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\RentalPromotion", mappedBy="rentals", fetch="EXTRA_LAZY", cascade={"persist", "merge", "detach"})
      */
     private $rentalPromotions;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="rentalCategory", type="string", length=255)
+     * @Groups({"default"})
+     */
+    private $rentalCategory;
+
+    /**
+     * @var
+     * @Groups({"default"})
+     * @Type("string")
+     */
+    private $characteristicValuesByCategory;
 
 
     public function addRentalPromotion(RentalPromotion $rentalPromotion) {
@@ -312,6 +327,54 @@ class Rental
             }
         }
         return $characteristicValuesActivated;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRentalPromotions()
+    {
+        return $this->rentalPromotions;
+    }
+
+    /**
+     * @param mixed $rentalPromotions
+     */
+    public function setRentalPromotions($rentalPromotions)
+    {
+        $this->rentalPromotions = $rentalPromotions;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRentalCategory()
+    {
+        return $this->rentalCategory;
+    }
+
+    /**
+     * @param string $rentalCategory
+     */
+    public function setRentalCategory($rentalCategory)
+    {
+        $this->rentalCategory = $rentalCategory;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCharacteristicValuesByCategory()
+    {
+        return $this->characteristicValuesByCategory;
+    }
+
+    /**
+     * @param mixed $characteristicValuesByCategory
+     */
+    public function setCharacteristicValuesByCategory($characteristicValuesByCategory)
+    {
+        $this->characteristicValuesByCategory = $characteristicValuesByCategory;
     }
 }
 

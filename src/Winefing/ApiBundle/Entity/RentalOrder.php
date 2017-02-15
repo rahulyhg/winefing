@@ -27,6 +27,13 @@ class RentalOrder
     private $id;
 
     /**
+     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\User", inversedBy="rentalOrders")
+     * @ORM\JoinColumn(nullable=false)
+     * @Groups({"user"})
+     */
+    private $user;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="billDate", type="date")
@@ -35,7 +42,7 @@ class RentalOrder
     private $billDate;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Address")
+     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Address", cascade="ALL")
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"clientAddress"})
      */
@@ -51,15 +58,22 @@ class RentalOrder
 
     /**
      * @var dayPrices
-     * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\RentalOrder", mappedBy="rentalOrder", fetch="EXTRA_LAZY", cascade="ALL")
+     * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\DayPrice", mappedBy="rentalOrder", fetch="EXTRA_LAZY", cascade="ALL")
      * @Groups({"dayPrices"})
      */
     private $dayPrices;
 
     /**
+     * @ORM\OneToOne(targetEntity="Winefing\ApiBundle\Entity\RentalOrderGift", inversedBy="rental", cascade="ALL")
+     * @ORM\JoinColumn(nullable=true)
+     * @Groups({"rentalOrderGift"})
+     */
+    private $rentalOrderGift;
+
+    /**
      * @var string
      *
-     * @ORM\Column(name="startDate", type="string", length=255)
+     * @ORM\Column(name="startDate", type="datetime")
      * @Groups({"default"})
      */
     private $startDate;
@@ -67,7 +81,7 @@ class RentalOrder
     /**
      * @var string
      *
-     * @ORM\Column(name="endDate", type="string", length=255)
+     * @ORM\Column(name="endDate", type="datetime")
      * @Groups({"default"})
      */
     private $endDate;
@@ -126,12 +140,12 @@ class RentalOrder
      * @ORM\Column(name="status", type="integer")
      * @Groups({"default"})
      */
-    private $status;
+    private $status = 0;
 
     /**
      * @var float
      *
-     * @ORM\Column(name="reduction", type="float")
+     * @ORM\Column(name="reduction", type="float", nullable=true)
      * @Groups({"default"})
      */
     private $reduction;
@@ -139,7 +153,7 @@ class RentalOrder
     /**
      * @var float
      *
-     * @ORM\Column(name="lemonWayTransactionId", type="float")
+     * @ORM\Column(name="lemonWayTransactionId", type="float", nullable=true)
      * @Groups({"default"})
      */
     private $lemonWayTransactionId;
@@ -730,6 +744,38 @@ class RentalOrder
     public function setLemonWayTransactionId($lemonWayTransactionId)
     {
         $this->lemonWayTransactionId = $lemonWayTransactionId;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRentalOrderGift()
+    {
+        return $this->rentalOrderGift;
+    }
+
+    /**
+     * @param mixed $rentalOrderGift
+     */
+    public function setRentalOrderGift($rentalOrderGift)
+    {
+        $this->rentalOrderGift = $rentalOrderGift;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
+     * @param mixed $user
+     */
+    public function setUser($user)
+    {
+        $this->user = $user;
     }
 
 }

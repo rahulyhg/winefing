@@ -77,6 +77,7 @@ class TagController extends Controller
             $tag = $serializer->decode($response->getBody()->getContents());
         }
         foreach($tagTrs as $tagTr) {
+            var_dump($tagTr);
             $tagTr["tag"] = $tag["id"];
             if(empty($tagTr["id"])) {
                 $api->post($this->get('_router')->generate('api_post_tag_tr'), $tagTr);

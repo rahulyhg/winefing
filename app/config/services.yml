@@ -27,7 +27,7 @@ services:
         arguments: ["@doctrine.orm.entity_manager", "@jms_serializer" ]
     winefing.component.authentication.handler.login_success_handler:
         class:  %winefing.login_success_handler.class%
-        arguments:  ["@router", "@winefing.api_controller", "@winefing.webpath_controller", '@service_container']
+        arguments:  ["@router", "@winefing.api_controller", "@winefing.webpath_controller", '@session', '@jms_serializer']
     app.api_token_authenticator:
         class: Winefing\ApiBundle\Controller\TokenAuthenticator
         arguments: ["@doctrine.orm.entity_manager"]

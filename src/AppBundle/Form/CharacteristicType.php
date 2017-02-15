@@ -29,11 +29,11 @@ class CharacteristicType extends AbstractType
     {
         $builder
             ->add('id',  HiddenType::class, array('required' => false))
-            ->add('code', ChoiceType::class, array('placeholder'=>'', 'choices' => array(CharacteristicCodeEnum::WineType => CharacteristicCodeEnum::WineType)))
+            ->add('code', ChoiceType::class, array('required' => false,'placeholder'=>'', 'choices' => array(CharacteristicCodeEnum::WineType => CharacteristicCodeEnum::WineType)))
             ->add('format', EntityType::class,  array(
                 'class' => 'WinefingApiBundle:Format',
                 'choice_label' => 'name'))
-            ->add('picture', FileType::class, ['required' => false, 'data_class' => null])
+            ->add('picture', FileType::class, ['required' => false, 'data_class' => null, 'attr'=> ['accept'=>'image/svg']])
             ->add('characteristicTrs', CollectionType::class, array(
                 'entry_type' => CharacteristicTrType::class))
             ->add('activated', CheckboxType::class, ['required' => false])

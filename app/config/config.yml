@@ -73,11 +73,16 @@ twig:
         article_directory: '%protocol%://%host_name%/%article_directory%/'
         domain_directory: '%protocol%://%host_name%/%domain_directory%/'
         user_directory: '%protocol%://%host_name%/%user_directory%/'
+        wine_region_directory: '%protocol%://%host_name%/%wine_region_directory%/'
         property_directory: '%protocol%://%host_name%/%property_directory%/'
-        rental_directory: '%protocol%://%host_name%/%rental_directory%/'
+        rental_directory: '%protocol%://%host_name%/%rental_directory%'
         box_directory: '%protocol%://%host_name%/%box_directory%/'
+        gift_card_directory: '%protocol%://%host_name%/%gift_card_directory%/'
+        banner_directory: '%protocol%://%host_name%/%banner_directory%/'
         mail_chimp_token: '82eeea1796fe25cf7d185ec3ce2af340-us14'
         mail_chimp_url: 'https://us14.api.mailchimp.com/export/1.0/'
+        domain_id: '%domain_id%'
+        rental_order_gift_price: '%rental_order_gift_price%'
 
 # Doctrine Configuration
 doctrine:
@@ -129,9 +134,18 @@ assetic:
     filters:
         cssrewrite: ~
     assets:
+        clockpicker_css:
+            inputs:
+                - 'assets/vendor/clockpicker/dist/bootstrap-clockpicker.min.css'
         phone_number_css:
             inputs:
                 - 'assets/vendor/intl-tel-input/build/css/intlTelInput.css'
+        bootstrap_select_css:
+            inputs:
+                - 'assets/vendor/bootstrap_select/dist/css/bootstrap-select.min.css'
+        bootstrap_slider_range_css:
+            inputs:
+                - 'assets/vendor/seiyria-bootstrap-slider/dist/css/bootstrap-slider.min.css'
         bootflat_css:
             inputs:
                 - 'assets/vendor/Bootflat/bootflat/css/bootflat.min.css'

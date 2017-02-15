@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Form\DomainFilterType;
 use AppBundle\Form\UserRegistrationType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -20,6 +21,15 @@ class HomeController extends Controller
      */
     public function indexAction(Request $request)
     {
+        $filterForm = $this->createForm(DomainFilterType::class, null, array('language'=>$request->getLocale(), 'action' => $this->generateUrl('domains_by_criteria'),
+            'method' => 'GET',
+        ));
+        //remove the tag field
+        $filterForm->remove('tags');
+        $filterForm->handleRequest($request);
+        if($filterForm->isSubmitted() && $filterForm->isValid()) {
+
+        }
 //        $token = ->findOneByUser(98);
 //        $this->token = $this->getToken($token->getToken());
 
@@ -74,6 +84,6 @@ class HomeController extends Controller
 //            $body
 //        );
 //        var_dump($response->getBody()->getContents());
-        return $this->render('index.html.twig');
+        return $this->render('index.html.twig', array('filterForm'=>$filterForm->createView()));
     }
 }

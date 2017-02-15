@@ -1,0 +1,284 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    {% if is_granted("ROLE_HOST") %}
+        {{ include('host/nav.html.twig') }}
+    {% elseif is_granted("ROLE_USER") %}
+        {{ include('user/nav.html.twig') }}
+    {% elseif is_granted("ROLE_MANAGMENT") or is_granted("ROLE_BLOG") or is_granted("ROLE_TECHNIQUE") %}
+        {{ include('admin/nav.html.twig') }}
+    {% endif %}
+    <div class="container">
+        <div class="content">
+            <div class="row">
+                <div class="col-sm-3">
+                    <ul class="nav nav-pills nav-stacked">
+                        <li class="active"><a href="#profil" data-toggle="tab">{% trans %}label.edit_profil{% endtrans %} </a></li>
+                        <li><a href="#picture" data-toggle="tab">{% trans %}label.profil_picture{% endtrans %} </a></li>
+                        <li><a href="#password" data-toggle="tab">{% trans %}label.edit_password{% endtrans %} </a></li>
+                        <li><a href="#subscriptions" data-toggle="tab">{% trans %}label.notifications{% endtrans %} </a></li>
+                    </ul>
+                </div>
+                <div class="col-sm-9">
+                    <div class="tab-content">
+                        <div class="tab-pane fade in active" id="profil">
+                            {% if app.session.flashBag.has('userSuccess') %}
+                                <div class="alert alert-success">
+                                    {% for msg in app.session.flashBag.get('userSuccess') %}
+                                        {{ msg }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            {% if app.session.flashBag.has('userError') %}
+                                <div class="alert alert-danger">
+                                    {% for msg in app.session.flashBag.get('userError') %}
+                                        {{ msg }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            {{ form_start(userForm, {'attr':{'id':'user'}}) }}
+                            {{ form_errors(userForm) }}
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h4>{% trans %}label.mandatory_informations{% endtrans %}</h4>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>*{% trans %}label.first_name{% endtrans %} </label>
+                                                {{ form_errors(userForm.firstName)}}
+                                                {{ form_widget(userForm.firstName,  { 'attr': {'class': 'form-control'} }) }}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>*{% trans %}label.last_name{% endtrans %} </label>
+                                                {{ form_errors(userForm.lastName)}}
+                                                {{ form_widget(userForm.lastName,  { 'attr': {'class': 'form-control'} }) }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>*{% trans %}label.birth_date{% endtrans %} </label>
+                                        {{ form_errors(userForm.birthDate)}}
+                                        <div id="sandbox-container">
+                                            <div class="input-group date">
+                                                {{ form_widget(userForm.birthDate) }}<span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>*{% trans %}label.sex{% endtrans %} </label>
+                                        {{ form_errors(userForm.sex)}}
+                                        {{ form_widget(userForm.sex,  { 'attr': {'class': 'form-control'} }) }}
+                                    </div>
+                                    <div class="form-group">
+                                        <label>*{% trans %}label.email{% endtrans %} </label>
+                                        <div class="input-group">
+                                            {{ form_errors(userForm.email)}}
+                                            {{ form_widget(userForm.email,  { 'attr': {'class': 'form-control'} }) }}<span class="input-group-addon">@</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div id="phone_number_group_div"class="form-group has-feedback">
+                                            <label>*{{ form_label(userForm.phoneNumber) }}</label>
+                                            {{ form_errors(userForm.phoneNumber) }}<br>
+                                            {{ form_widget(userForm.phoneNumber) }}
+                                            <span id="valid-phone-number" class="hide">&nbsp;&nbsp;<span class="glyphicon glyphicon-ok"></span>&nbsp;&nbsp;{% trans %}label.valid{% endtrans %}</span>
+                                            <span id="error-phone-number" class="hide">&nbsp;&nbsp;<span class="glyphicon glyphicon-remove"></span>&nbsp;&nbsp;{% trans %}label.invalid_number{% endtrans %}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h4>{% trans %}label.complementary_informations{% endtrans %}</h4>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="form-group">
+                                        <label>{% trans %}label.description{% endtrans %} </label>
+                                        {{ form_errors(userForm.description)}}
+                                        {{ form_widget(userForm.description,  { 'attr': {'class': 'form-control'} }) }}
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="button" onclick="submitUser();" value="{% trans %}label.submit{% endtrans %}" class="btn btn-primary pull-right">
+                            {{ form_end(userForm) }}
+                        </div>
+                        <div class="tab-pane fade in" id="picture">
+                            {% if app.session.flashBag.has('pictureSuccess') %}
+                                <div class="alert alert-success">
+                                    {% for msg in app.session.flashBag.get('pictureSuccess') %}
+                                        {{ msg }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            {% if app.session.flashBag.has('pictureError') %}
+                                <div class="alert alert-danger">
+                                    {% for msg in app.session.flashBag.get('pictureError') %}
+                                        {{ msg }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <img src="{{ user_directory ~ picture}}" width="200px" height="auto">
+                            <br><br>
+                            <h4>{% trans %}label.edit_picture{% endtrans %} :</h4>
+                            <form name="picture" method="post" enctype='multipart/form-data'>
+                                <input name="picture" type="file" required>
+                                <button type="submit" class="btn btn-primary pull-right">{% trans %}label.submit{% endtrans %}</button>
+                            </form>
+                        </div>
+                        <div class="tab-pane fade in" id="password">
+                            {% if app.session.flashBag.has('passwordSuccess') %}
+                                <div class="alert alert-success">
+                                    {% for msg in app.session.flashBag.get('passwordSuccess') %}
+                                        {{ msg }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            {% if app.session.flashBag.has('passwordError') %}
+                                <div class="alert alert-danger">
+                                    {% for msg in app.session.flashBag.get('passwordError') %}
+                                        {{ msg }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h4>{% trans %}label.edit_password{% endtrans %}</h4>
+                                </div>
+                                <div class="panel-body">
+                                    {{ form_start(passwordForm, {'attr':{'id':'password'}}) }}
+                                        {{ form_errors(passwordForm) }}
+                                        <div class="form-group {% if passwordForm.currentPassword.vars.errors|length >0 %}has-error{% endif %}">
+                                            {{ form_row(passwordForm.currentPassword) }}
+                                        </div>
+                                        <div class="form-group {% if passwordForm.password.first.vars.errors|length >0 %}has-error{% endif %}">
+                                            <label>{% trans %}label.password{% endtrans %}
+                                                <a href="#" id="password-indication"data-toggle="tooltip" data-placement="top" title="{% trans %}error.password_format{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
+                                            </label>
+                                            {{ form_errors(passwordForm.password.first)}}
+                                            {{ form_widget(passwordForm.password.first, {'attr':{'onkeyup':'checkPassword(this);'}}) }}
+                                        </div>
+                                        <div class="form-group {% if passwordForm.password.second.vars.errors|length >0 %}has-error{% endif %}">
+                                            {{ form_errors(passwordForm.password.second)}}
+                                            {{ form_row(passwordForm.password.second, {'attr':{'onkeyup':'checkPassword(this);'}}) }}
+                                        </div>
+                                        <input type="button" onclick="checkPasswordBeforeSubmit();" value="{% trans %}label.submit{% endtrans %}" class="btn btn-primary pull-right">
+                                    {{ form_end(passwordForm) }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade in" id="subscriptions">
+                            {% if app.session.flashBag.has('subscriptionsSuccess') %}
+                                <div class="alert alert-success">
+                                    {% for msg in app.session.flashBag.get('subscriptionsSuccess') %}
+                                        {{ msg }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            {% if app.session.flashBag.has('subscriptionsError') %}
+                                <div class="alert alert-danger">
+                                    {% for msg in app.session.flashBag.get('subscriptionsError') %}
+                                        {{ msg }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <form name="subscriptionForm" method="post">
+                                {% set i = 0 %}
+                                {% for format,subscriptions in subscriptionFormatList %}
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4>{{ 'label.notification_by'|trans({'%format%': format|lower}) }}</h4>
+                                        </div>
+                                        <div class="panel-body">
+                                            {% for subscription in subscriptions %}
+                                                {% set name = "subscriptionForm[subscription]["~i~"][value]" %}
+                                                <div class="form-group">
+                                                    <input name="subscriptionForm[subscription][{{ i }}][id]" value="{{ subscription.id }}" hidden>
+                                                    {% set checked = "" %}
+                                                    {% if subscription.checked %}
+                                                        {% set checked = "checked" %}
+                                                    {% endif %}
+                                                    {{ subscription.name }}
+                                                    <input name="{{ name }}" type="checkbox" value="0" hidden checked>
+                                                    <input name="{{ name }}" type="checkbox" {{ checked }} value="1">
+                                                </div>
+                                                {% set i = i+1 %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                                <button type="submit" class="btn btn-primary pull-right">{% trans %}label.submit{% endtrans %}</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    {{ parent() }}
+    <script>
+        var nav = '{{ nav }}';
+        passwordFirst = $('#password_edit_password_first');
+        passwordSecond = $('#password_edit_password_second');
+        //not submit the form if the password is not ok
+        function checkPasswordBeforeSubmit() {
+            document.password_edit.submit();
+            {#isValid= false;#}
+            {#if(checkFormatPassword(passwordFirst)){#}
+                {#if(checkCorrepondance(passwordSecond, passwordFirst, passwordSecond)) {#}
+                    {#console.log('in');#}
+                    {#document.password_edit.submit();#}
+                {#} else {#}
+                    {#$.toast({#}
+                        {#heading: toastHeadingError,#}
+                        {#text: '{{ 'label.password_correspondance' | trans({}) }}',#}
+                        {#showHideTransition: 'fade',#}
+                        {#icon: 'error',#}
+                        {#position: 'top-right'#}
+                    {#});#}
+                {#}#}
+            {#} else {#}
+                {#$.toast({#}
+                    {#heading: toastHeadingError,#}
+                    {#text: '{{ 'error.password_format' | trans({}) }}',#}
+                    {#showHideTransition: 'fade',#}
+                    {#icon: 'error',#}
+                    {#position: 'top-right'#}
+                {#});#}
+            {#}#}
+        }
+        var nav = '{{ nav }}';
+        function submitUser() {
+            if($('#error-phone-number').is(":visible")) {
+                $.toast({
+                    heading: toastHeadingError,
+                    text: '{{ 'label.invalid_number' | trans({}) }}',
+                    showHideTransition: 'fade',
+                    icon: 'error',
+                    position: 'top-right'
+                })
+            } else {
+                document.getElementById('user').submit();
+            }
+        }
+        var telInput = $('#user_phoneNumber');
+        $(document).ready(function() {
+
+            var minBirthDate =  new Date();
+            minBirthDate.setFullYear(minBirthDate.getFullYear()-18);
+            $('#sandbox-container .input-group.date').datepicker({
+                endDate: ""+getFormattedDate(minBirthDate)+"'",
+                format: 'dd-mm-yyyy',
+                autoclose: true
+            });
+        });
+    </script>
+    {% javascripts 'bundles/app/js/phone-number.js' 'bundles/app/js/nav.js' 'bundles/app/js/address.js'%}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

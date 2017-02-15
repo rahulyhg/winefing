@@ -39,9 +39,16 @@ class WineRegion
     private $wineRegionTrs;
 
     /**
+     * @var Domain
+     * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\Domain", mappedBy="wineRegion", fetch="EAGER", cascade="ALL")
+     * @Groups({"domains"})
+     */
+    private $domains;
+
+    /**
      * @var string
      *
-     * @ORM\Column(name="picture", type="string", length=255)
+     * @ORM\Column(name="picture", type="string", length=255, nullable=true)
      * @Groups({"default"})
      */
     private $picture;
@@ -52,6 +59,19 @@ class WineRegion
      * @Type("string")
      */
     private $name;
+
+    /**
+     * @var
+     * @Groups({"default"})
+     * @Type("string")
+     */
+    private $description;
+
+    public function __construct()
+    {
+        $this->domains = new ArrayCollection();
+        $this->wineRegionTrs = new ArrayCollection();
+    }
 
 
     /**
@@ -96,6 +116,7 @@ class WineRegion
 
     public function _construct() {
         $this->wineRegionTrs = new ArrayCollection();
+        $this->domains = new ArrayCollection();
     }
 
     public function getDisplayName($language){
@@ -122,6 +143,7 @@ class WineRegion
         foreach($this->getWineRegionTrs() as $tr) {
             if($tr->getLanguage()->getCode() == $language) {
                 $this->name = $tr->getName();
+                $this->description = $tr->getDescription();
                 break;
             }
         }
@@ -142,6 +164,39 @@ class WineRegion
     {
         $this->picture = $picture;
     }
+
+    /**
+     * @return Domain
+     */
+    public function getDomains()
+    {
+        return $this->domains;
+    }
+
+    /**
+     * @param Domain $domains
+     */
+    public function setDomains($domains)
+    {
+        $this->domains = $domains;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param mixed $description
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
+
 
 }
 

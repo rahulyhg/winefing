@@ -40,4 +40,13 @@ class PropertyRepository extends \Doctrine\ORM\EntityRepository
             ->getQuery();
         return $query->getOneOrNullResult();
     }
+    function findWithDomain($domainId) {
+        $query = $this->createQueryBuilder('property')
+            ->join("property.domain", "domain")
+            ->where('domain.id = :domainId')
+            ->setParameter('domainId', $domainId)
+            ->getQuery();
+        $properties = $query->getResult();
+        return $properties;
+    }
 }

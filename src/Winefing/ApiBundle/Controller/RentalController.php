@@ -27,6 +27,37 @@ class RentalController extends Controller implements ClassResourceInterface
     /**
      * @ApiDoc(
      *  resource=true,
+     *  description="Get the minimum or maximum price of all the rental on the website ",
+     *  views = { "index", "rental" },
+     *  output= {
+     *      "class"="Winefing\ApiBundle\Entity\Rental",
+     *      "groups"={"id", "default", "medias", "characteristicValues", "property"}
+     *     },
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         204={
+     *           "Returned when no content",
+     *         }
+     *     },
+     *  requirements={
+     *     {
+     *          "name"="id", "dataType"="integer", "required"=true, "description"="rental id"
+     *      }
+     *     }
+     * )
+     * GET Route annotation.
+     */
+    public function getByPriceAction($order)
+    {
+        $serializer = $this->container->get('jms_serializer');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Rental');
+        $rental = $repository->findOneWithPrice($order);
+        $json = $serializer->serialize($rental, 'json', SerializationContext::create()->setGroups(array('id', 'default')));
+        return new Response($json);
+    }
+    /**
+     * @ApiDoc(
+     *  resource=true,
      *  description="Get a entity by its id.",
      *  views = { "index", "rental" },
      *  output= {
@@ -63,7 +94,7 @@ class RentalController extends Controller implements ClassResourceInterface
      *  views = { "index", "rental" },
      *  output= {
      *      "class"="Winefing\ApiBundle\Entity\Rental",
-     *      "groups"={"id", "default", "characteristicValues"}
+     *      "groups"={"id", "default", "characteristicValues", "medias"}
      *     },
      *  statusCodes={
      *         200="Returned when successful",
@@ -90,7 +121,7 @@ class RentalController extends Controller implements ClassResourceInterface
             $rental->setMediaPresentation();
             $rental->setTr($language);
         }
-        $json = $serializer->serialize($rentals, 'json', SerializationContext::create()->setGroups(array('id', 'default', 'characteristicValues')));
+        $json = $serializer->serialize($rentals, 'json', SerializationContext::create()->setGroups(array('id', 'default', 'characteristicValues', 'medias')));
         return new Response($json);
     }
     /**
@@ -127,6 +158,38 @@ class RentalController extends Controller implements ClassResourceInterface
         $rental = $repository->findOneById($id);
         $rental->setTr($language);
         $json = $serializer->serialize($rental, 'json', SerializationContext::create()->setGroups(array('id', 'default', 'medias', 'characteristicValues', 'property')));
+        return new Response($json);
+    }
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "index","rental" },
+     *  description="Return all the user's rentals. Returns a collection of Object.",
+     *  output= {
+     *      "class"="Winefing\ApiBundle\Entity\Rental",
+     *      "groups"={"default"}
+     *     },
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         204={
+     *           "Returned when no content",
+     *         }
+     *     },
+     *  requirements={
+     *     {
+     *          "name"="domainId", "dataType"="integer", "required"=true, "description"="domain id"
+     *      }
+     *     }
+     * )
+     */
+    public function cgetByDomainAction($domainId) {
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Rental');
+        $rentals = $repository->findWithDomain($domainId);
+        foreach($rentals as $rental) {
+            $rental->setMediaPresentation();
+        }
+        $serializer = $this->container->get('jms_serializer');
+        $json = $serializer->serialize($rentals, 'json', SerializationContext::create()->setGroups(array('default')));
         return new Response($json);
     }
     /**
@@ -214,6 +277,7 @@ class RentalController extends Controller implements ClassResourceInterface
         $rental->setDescription($request->request->get('description'));
         $rental->setPeopleNumber($request->request->get('peopleNumber'));
         $rental->setMinimumRentalPeriod($request->request->get('minimumRentalPeriod'));
+        $rental->setRentalCategory($request->request->get('rentalCategory'));
         $rental->setPrice($request->request->get('price'));
         $validator = $this->get('validator');
         $errors = $validator->validate($rental);
@@ -255,6 +319,7 @@ class RentalController extends Controller implements ClassResourceInterface
         $rental->setDescription($request->request->get('description'));
         $rental->setPeopleNumber($request->request->get('peopleNumber'));
         $rental->setMinimumRentalPeriod($request->request->get('minimumRentalPeriod'));
+        $rental->setRentalCategory($request->request->get('rentalCategory'));
         $rental->setPrice($request->request->get('price'));
         $validator = $this->get('validator');
         $errors = $validator->validate($rental);

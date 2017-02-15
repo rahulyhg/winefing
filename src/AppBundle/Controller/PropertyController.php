@@ -40,13 +40,20 @@ class PropertyController extends Controller
     /**
      * Get all the properties for the current user
      * @return
-     * @Route("/properties", name="properties")
+     * @Route("host/domain/{id}/properties", name="host_domain_properties")
      */
-    public function cgetAction() {
-        $userId = $this->getUser()->getId();
+    public function cgetAction($id, Request $request) {
+
+        //check if the user can access to the edit property view
+        if($this->getUser()->isHost()) {
+            $domain = $this->getDomainByUser($this->getUser()->getId());
+            if($domain->getId() != $id) {
+                throw $this->createAccessDeniedException('You cannot access this page!');
+            }
+        }
         $api = $this->container->get('winefing.api_controller');
         $serializer = $this->container->get('jms_serializer');
-        $response = $api->get($this->get('_router')->generate('api_get_properties_by_user', array('userId' => $userId)));
+        $response = $api->get($this->get('_router')->generate('api_get_properties_by_domain', array('domainId' => $id, 'language'=>$request->getLocale())));
         $properties = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\Property>', 'json');
         return $this->render('host/property/index.html.twig', array(
             'properties' => $properties));
@@ -57,7 +64,7 @@ class PropertyController extends Controller
      * This part allows to edit, the property's information or the property's address or the property's pictures.
      * @param $id, Request $request
      * @return
-     * @Route("/property/edit/{id}/{nav}", name="property_edit")
+     * @Route("/property/{id}/edit/{nav}", name="property_edit")
      */
     public function putAction($id, $nav = '#presentation', Request $request) {
         $return = array();
@@ -65,12 +72,20 @@ class PropertyController extends Controller
         $propertyForm =  $this->createForm(PropertyType::class, $property, array('language'=>$request->getLocale()));
         $propertyForm->handleRequest($request);
         if ($propertyForm->isSubmitted()) {
+            $nav = 'presentation';
             if($propertyForm->isValid()) {
-                $propertyForm = $request->request->all()['property'];
-                $propertyForm["id"] = $property->getId();
-                $this->submit($propertyForm);
+                $propertyEdit = $request->request->all()['property'];
+                $propertyEdit["id"] = $property->getId();
+                $this->submit($propertyEdit);
+                $request->getSession()
+                    ->getFlashBag()
+                    ->add('presentationSuccess', $this->get('translator')->trans('success.generic_edit_form'));
+                return $this->redirect($this->generateUrl('property_edit', array('id' => $property->getId(), 'nav' => $nav)));
+            } else {
+                $request->getSession()
+                    ->getFlashBag()
+                    ->add('presentationError', $this->get('translator')->trans('error.generic_form_error'));
             }
-            return $this->redirect($this->generateUrl('property_edit', array('id'=> $property->getId())));
         }
         $return['propertyForm'] = $propertyForm->createView();
         $address = $this->getAddress($property);
@@ -81,34 +96,40 @@ class PropertyController extends Controller
         $addressForm = $this->createForm(AddressType::class, $address);
         $addressForm->handleRequest($request);
         if ($addressForm->isSubmitted()) {
+            $nav = 'address';
             if ($addressForm->isValid()) {
                 $addressForm = $request->request->all()['address'];
                 $addressForm["property"] = $property->getId();
                 $addressForm["id"] = $address->getId();
                 $this->submitAddress($addressForm);
-                var_dump($property->getId());
+                $request->getSession()
+                    ->getFlashBag()
+                    ->add('addressSuccess', $this->get('translator')->trans('success.generic_edit_form'));
+                return $this->redirect($this->generateUrl('property_edit', array('id' => $property->getId(), 'nav' => $nav)));
+            } else {
+                $request->getSession()
+                    ->getFlashBag()
+                    ->add('addressError', $this->get('translator')->trans('error.generic_form_error'));
             }
-            return $this->redirect($this->generateUrl('property_edit', array('id' => $property->getId(), 'nav'=>'#address')));
         }
         if ($request->isMethod('POST')) {
-            $media = $request->files->get('media');
             $characteristicValueForm = $request->request->get("characteristicValueForm");
-            if (!empty($media)) {
-                $media["property"] = $property->getId();
-                $this->submitPictures($media);
-                return $this->redirect($this->generateUrl('property_edit', array('id' => $property->getId(), 'nav'=>'#medias')));
-            } elseif (!empty($characteristicValueForm)) {
+            if (!empty($characteristicValueForm)) {
+                $nav = 'informations';
                 $characteristicValueForm["property"] = $property->getId();
                 $this->submitCharacteristicPropertyValues($characteristicValueForm);
-                return $this->redirect($this->generateUrl('property_edit', array('id' => $property->getId(), 'nav'=>'#informations')));
+                $request->getSession()
+                    ->getFlashBag()
+                    ->add('informationsSuccess', $this->get('translator')->trans('success.generic_edit_form'));
+                return $this->redirect($this->generateUrl('property_edit', array('id' => $property->getId(), 'nav' => $nav)));
             }
         }
-
-
+        $serializer = $this->container->get('jms_serializer');
         $return['addressForm'] = $addressForm->createView();
         $return['characteristicCategories'] = $this->getCharacteristicCategory($property, $request->getLocale());
-        $return['medias'] = $property->getMedias();
+        $return['medias'] = $serializer->serialize($property->getMedias(), 'json');
         $return['rentals'] = $this->getRentals($property->getId(), $request->getLocale());
+        $return['nav'] = $nav;
         return $this->render('host/property/edit.html.twig', $return);
     }
     public function getRentals($propertyId, $language) {
@@ -184,7 +205,7 @@ class PropertyController extends Controller
                 $addressForm["property"] = $property->getId();
                 $addressForm["id"] = $address->getId();
                 $this->submitAddress($addressForm);
-                return $this->redirectToRoute('property_pictures', array('idProperty' => $idProperty));
+                return $this->redirectToRoute('property_picture', array('idProperty' => $idProperty));
             }
         }
 
@@ -192,18 +213,19 @@ class PropertyController extends Controller
         return $this->render('host/property/new/address.html.twig', $return);
     }
     /**
-     * Create and handle the submition of a new property's picture (entity Media).
+     * Create and handle the submition of a the property's picture of presentation (entity Media).
      * This correspond to the "step-3" of the creation of a new property.
      * @param $idProperty, Request $request
      * @return
-     * @Route("/property/{idProperty}/pictures", name="property_pictures")
+     * @Route("/property/{idProperty}/picture", name="property_picture")
      */
     public function putPropertyPictures($idProperty, Request $request) {
         if ($request->isMethod('POST')) {
             $media = $request->files->get('media');
-            if (count($media)['medias'] > 0) {
+            if ($request->files->get('media')['media']) {
                 $media["property"] = $idProperty;
-                $this->submitPictures($media);
+                $media["presentation"] = 1;
+                $this->submitPicture($media);
             }
             return $this->redirect($this->generateUrl('property_edit', array('id' => $idProperty)) . '#presentation');
         }
@@ -298,21 +320,43 @@ class PropertyController extends Controller
         return $property;
     }
     /**
-     * Submit all the pictures : call for each picture the post api route to save the and upload the picture, and then the route allowing to create the link between the picture and the property
+     * Submit picture : call the post api route to save the and upload the picture, and then the route allowing to create the link between the picture and the property
      * @param array
      */
-    public function submitPictures($media)
+    public function submitPicture($media)
     {
         $api = $this->container->get('winefing.api_controller');
         $serializer = $this->container->get('jms_serializer');
         $body["property"] = $media["property"];
-        foreach($media["medias"] as $media) {
-            $uploadDirectory["upload_directory"] = $this->getParameter('property_directory_upload');
-            $response = $api->file($this->get('router')->generate('api_post_media'), $uploadDirectory, $media);
-            $media = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Media', "json");
-            $body["media"] = $media->getId();
-            $api->put($this->get('router')->generate('api_put_media_property'), $body);
-        }
+        $media["upload_directory"] = $this->getParameter('property_directory_upload');
+        $response = $api->file($this->get('router')->generate('api_post_media'),
+            $media,
+            $media['media']);
+        $jsonResponse = $response->getBody()->getContents();
+        $media = $serializer->deserialize($jsonResponse, 'Winefing\ApiBundle\Entity\Media', "json");
+        $body["media"] = $media->getId();
+        $api->put($this->get('router')->generate('api_put_media_property'), $body);
+        return $jsonResponse;
+    }
+    /**
+     * @Route("/property/delete/picture/{id}", name="property_delete_picture")
+     */
+    public function domainDeletePicture($id) {
+        $api = $this->container->get('winefing.api_controller');
+        $api->delete($this->get('router')->generate('api_delete_media', array('id'=>$id, "directoryUpload"=>"property_directory_upload")));
+        return new Response();
+    }
+    /**
+     * @Route("/property/{id}/upload/picture", name="property_upload_picture")
+     */
+    public function propertyUploadPicture($id, Request $request) {
+        $media = array();
+        $logger = $this->get('logger');
+        $logger->info($request->files->get('file'));
+        ($request->files->get('file'));
+        $media['media'] = $request->files->get('file');
+        $media["property"] = $id;
+        return new Response($this->submitPicture($media));
     }
     /**
      * Submit the property's address : if the address is new, call the post api route otherwise call the put api route and then the route allowing to create the link between the address and the property.
@@ -375,5 +419,13 @@ class PropertyController extends Controller
         $characteristicValues = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\CharacteristicValue>', "json");
         $characteristicService = $this->container->get('winefing.characteristic_service');
         return $characteristicService->getByCharacteristicCategory($characteristicValues);
+    }
+
+    public function getDomainByUser($userId) {
+        $api = $this->container->get('winefing.api_controller');
+        $serializer = $this->container->get('jms_serializer');
+        $response = $response = $api->get($this->get('_router')->generate('api_get_domain_by_user', array('userId' => $userId)));
+        $domain = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Domain', 'json');
+        return $domain;
     }
 }

@@ -31,6 +31,13 @@ class User implements UserInterface, \Serializable
     protected $id;
 
     /**
+     * @var RentalOrders
+     * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\RentalOrder", mappedBy="user", fetch="EAGER", cascade="ALL")
+     * @Groups({"rentalOrders"})
+     */
+    private $rentalOrders;
+
+    /**
      * @var CreditCards
      * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\CreditCard", mappedBy="user", fetch="EXTRA_LAZY", cascade="ALL")
      * @Groups({"creditCards"})
@@ -40,11 +47,13 @@ class User implements UserInterface, \Serializable
 
     /**
      * @ORM\Column(type="string", length=25, unique=true)
+     * @Groups({"default"})
      */
     private $username;
 
     /**
      * @ORM\Column(name="is_active", type="boolean")
+     * @Groups({"default"})
      */
     private $isActive;
 
@@ -509,9 +518,9 @@ class User implements UserInterface, \Serializable
     }
     public function isHost() {
         $success = false;
-//        if(in_array(UserGroupEnum::Host, $this->roles)) {
-//            $success = true;
-//        }
+        if(in_array(UserGroupEnum::Host, $this->getRoles())) {
+            $success = true;
+        }
         return $success;
     }
     public function isAdmin() {
@@ -540,6 +549,9 @@ class User implements UserInterface, \Serializable
 
     public function addElementInWineList(Domain $domain) {
         $this->wineList[] = $domain;
+    }
+    public function removeElementInWineList(Domain $domain) {
+        $this->wineList->removeElement($domain);
     }
 
     public function addElementInBoxList(Box $box) {
@@ -667,6 +679,22 @@ class User implements UserInterface, \Serializable
     public function setPhoneNumberVerify($phoneNumberVerify)
     {
         $this->phoneNumberVerify = $phoneNumberVerify;
+    }
+
+    /**
+     * @return RentalOrders
+     */
+    public function getRentalOrders()
+    {
+        return $this->rentalOrders;
+    }
+
+    /**
+     * @param RentalOrders $rentalOrders
+     */
+    public function setRentalOrders($rentalOrders)
+    {
+        $this->rentalOrders = $rentalOrders;
     }
 
 }

@@ -267,7 +267,7 @@
 }
 .bg-grey {
     background: #f7f7f7;
-    border-top: solid 1px #eee;
-    border-bottom: solid 1px #eee;
+    /*border-top: solid 1px #eee;*/
+    /*border-bottom: solid 1px #eee;*/
 }
 /*----Responsive End----*/

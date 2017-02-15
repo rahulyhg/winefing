@@ -16,7 +16,6 @@ use FOS\RestBundle\Routing\ClassResourceInterface;
 use Doctrine\ORM\EntityManager;
 use Doctrine\Common\Collections\ArrayCollection;
 use Winefing\ApiBundle\Entity\WineRegion;
-use Winefing\ApiBundle\Entity\WineRegionTr;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
@@ -25,8 +24,7 @@ use FOS\RestBundle\Controller\Annotations\FileParam;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Winefing\ApiBundle\Entity\LanguageEnum;
-
+use JMS\Serializer\SerializationContext;
 
 
 class WineRegionController extends Controller implements ClassResourceInterface
@@ -37,10 +35,10 @@ class WineRegionController extends Controller implements ClassResourceInterface
      */
     public function cgetAction()
     {
-        $serializer = $this->container->get('winefing.serializer_controller');
+        $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:WineRegion');
         $wineRegions = $repository->findAll();
-        return new Response($serializer->serialize($wineRegions));
+        return new Response($serializer->serialize($wineRegions, 'json', SerializationContext::create()->setGroups(array('default', 'trs', 'language', 'country'))));
     }
 
 //    public function getAction($id)
@@ -73,8 +71,8 @@ class WineRegionController extends Controller implements ClassResourceInterface
         }
         $em->persist($wineRegion);
         $em->flush();
-        $serializer = $this->container->get('winefing.serializer_controller');
-        return new Response($serializer->serialize($wineRegion));
+        $serializer = $this->container->get('jms_serializer');
+        return new Response($serializer->serialize($wineRegion, 'json', SerializationContext::create()->setGroups(array('id'))));
     }
 
     /**
@@ -95,8 +93,8 @@ class WineRegionController extends Controller implements ClassResourceInterface
         }
         $em->persist($wineRegion);
         $em->flush();
-        $serializer = $this->container->get('winefing.serializer_controller');
-        return new Response($serializer->serialize($wineRegion));
+        $serializer = $this->container->get('jms_serializer');
+        return new Response($serializer->serialize($wineRegion, 'json', SerializationContext::create()->setGroups(array('id'))));
     }
 
     /**
@@ -111,7 +109,6 @@ class WineRegionController extends Controller implements ClassResourceInterface
         $em = $this->getDoctrine()->getManager();
         $em->remove($webPage);
         $em->flush();
-        return new Response(json_encode([200, "success"]));
     }
 
 }

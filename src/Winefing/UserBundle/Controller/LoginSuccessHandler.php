@@ -16,31 +16,33 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Router;
 use Winefing\ApiBundle\Controller\ApiController;
 use Winefing\ApiBundle\Controller\WebPathController;
-use Symfony\Component\DependencyInjection\ContainerInterface as Container;
+use Symfony\Component\HttpFoundation\Session\Session;
+use JMS\Serializer\Serializer;
 
 class LoginSuccessHandler implements AuthenticationSuccessHandlerInterface
 {
     protected $router;
     protected $api;
     protected $webPath;
-    protected $container;
+    protected $session;
+    protected $serializer;
 
-    public function __construct(Router $router, ApiController $apiController, WebPathController $webPath, Container $container)
+    public function __construct(Router $router, ApiController $apiController, WebPathController $webPath, Session $session, Serializer $serializer)
     {
         $this->router = $router;
         $this->api = $apiController;
         $this->webPath = $webPath;
-        $this->container = $container;
+        $this->session = $session;
+        $this->serializer = $serializer;
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token)
     {
-        $this->container->get('session')->set('id', $token->getUser()->getId());
-//        $response = $this->api->get($this->get('router')->generate('api_get_subscriptions_user_group', array('userGroup'=> UserGroupEnum::Host)));
-        //set last login user
-        //if admin redirect to dashboard
-        //else redirect to the page before connected
-//        return $this->redirectToRoute('home');
+        if($token->getUser()->isHost()) {
+            $response = $this->api->get($this->router->generate('api_get_domain_by_user', array('userId' => $token->getUser()->getId())));
+            $domain = $this->serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Domain', 'json');
+            $request->getSession()->set('domainId', $domain->getId());
+        }
         return new RedirectResponse($this->router->generate('home'));
     }
 

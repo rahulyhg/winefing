@@ -1,34 +1,61 @@
-<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+<!-- Navbar -->
+<div class="navbar mega-menu" role="navigation">
     <div class="container">
         <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-top">
+        <div class="menu-container">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a  class="navbar-brand" href="{{ path('home') }}"><img src="{{asset('Logosaumon_fond transparent.png')}}" alt="Winefing"></a>
+
+            <!-- Navbar Brand -->
+            <div class="navbar-brand">
+                <a href="{{ path('home') }}">
+                    <img class="default-logo" src="{{asset('Logosaumon_fond transparent.png')}}" alt="Winefing">
+                    <img class="shrink-logo" src="{{asset('Logoblanc_fondtransparent-06.png')}}" alt="Winefing">
+                </a>
+            </div>
+            <!-- ENd Navbar Brand -->
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="navbar-top">
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href="#">{% trans %}label.help{% endtrans %}</a></li>
-                <li><a href="#">Mes avis</a></li>
-                <li><a href="#">Réservations</a></li>
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img style="width: 35px"  src="{{ user_directory ~ app.user.picture }}"><b class="caret"></b></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="{{ path('domain_edit') }}">Mon domain</a></li>
-                        <li><a href="{{ path('properties') }}">Mes propriétés</a></li>
-                        <li><a href="{{ path('host_rentals') }}">Mes locations</a></li>
-                        <li><a href="{{ path('user_edit') }}">Modifier le profil</a></li>
-                        <li><a href="{{ path('logout') }}">Déconnection</a></li>
-                    </ul>
-                </li>
-            </ul>
-        </div><!-- /.navbar-collapse -->
-    </div><!-- /.container -->
-</nav>
-<!-- end:navbar -->
+        <div class="collapse navbar-collapse navbar-responsive-collapse">
+            <div class="menu-container">
+                <ul class="nav navbar-nav">
+                    <li><a href="#">{% trans %}label.help{% endtrans %}</a></li>
+                    <li><a href="#">Mes avis</a></li>
+                    <li><a href="#">Réservations</a></li>
+                    <!-- Demo Pages -->
+                    <li class="dropdown mega-menu-fullwidth">
+                        <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown">
+                            <img style="width: 35px"  src="{{ user_directory ~ app.user.picture }}">
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <div class="mega-menu-content disable-icons">
+                                    <div class="container">
+                                        <div class="row equal-height">
+                                            <div class="col-md-3 equal-height-in">
+                                                <ul class="list-unstyled equal-height-list">
+                                                    <li><a href="{{ path('domain_edit', {'id': app.session.get('domainId')}) }}">Mon domain</a></li>
+                                                    <li><a href="{{ path('host_domain_properties', {'id':app.session.get('domainId')}) }}">Mes propriétés</a></li>
+                                                    <li><a href="{{ path('host_rentals', {'id':app.session.get('domainId')}) }}">Mes locations</a></li>
+                                                    <li><a href="{{ path('user_edit', {'id':app.user.id}) }}">Modifier le profil</a></li>
+                                                    <li><a href="{{ path('logout') }}">Déconnection</a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- End Demo Pages -->
+                </ul>
+            </div>
+        </div><!--/navbar-collapse-->
+    </div>
+</div>
+<!-- End Navbar -->

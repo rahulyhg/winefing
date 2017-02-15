@@ -24,7 +24,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use JMS\Serializer\SerializationContext;
-
+use Winefing\ApiBundle\Entity\UserGroupEnum;
 
 
 class SubscriptionController extends Controller implements ClassResourceInterface
@@ -37,11 +37,26 @@ class SubscriptionController extends Controller implements ClassResourceInterfac
         $subscriptions = $repository->findAll();
         return new Response($serializer->serialize($subscriptions, 'json', SerializationContext::create()->setGroups(array('id', 'default'))));
     }
-    public function cgetUserGroupAction($userGroup) {
+    public function cgetByUserAction($user, $language) {
         $serializer = $this->container->get('jms_serializer');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
+        $user = $repository->findOneById($user);
+        if($user->isHost()) {
+            $userGroup = UserGroupEnum::Host;
+        } elseif($user->isAdmin()) {
+            $userGroup = UserGroupEnum::Admin;
+        } else {
+            $userGroup = UserGroupEnum::User;
+        }
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Subscription');
         $subscriptions = $repository->findByUserGroup($userGroup);
-        return new Response($serializer->serialize($subscriptions, 'json', SerializationContext::create()->setGroups(array('id', 'default', 'trs'))));
+        foreach($subscriptions as $subscription) {
+            if($user->getSubscriptions()->contains($subscription)) {
+                $subscription->setChecked(1);
+            }
+            $subscription->setTr($language);
+        }
+        return new Response($serializer->serialize($subscriptions, 'json', SerializationContext::create()->setGroups(array('id', 'default'))));
     }
     public function postAction(Request $request)
     {

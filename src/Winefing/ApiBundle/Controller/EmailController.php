@@ -40,22 +40,22 @@ class EmailController extends Controller implements ClassResourceInterface
      * )
      */
     public function postRegistrationAction(Request $request) {
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
-        $user = $repository->findOneById($request->request->get('user'));
-        $message = \Swift_Message::newInstance()
-            ->setSubject($this->get('translator')->trans('label.welcome', array(), 'messages', $request->request->get('language')))
-            ->setFrom($this->container->getParameter('mailer_user'))
-            ->setTo('sebastienmrcpro@gmail.com')
-            ->setBody(
-                $this->renderView(
-                // app/Resources/views/Emails/registration.html.twig
-                    'email/registration.html.twig',
-                    array('user'=>$user, 'language'=>$request->request->get('language'), 'verifyEmail'=>$this->get('_router')->generate('email_verify',
-                        array('email'=>$user->getEmail()), UrlGeneratorInterface::ABSOLUTE_URL))
-            ),
-                'text/html'
-            );
-        $this->get('mailer')->send($message);
+//        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
+//        $user = $repository->findOneById($request->request->get('user'));
+//        $message = \Swift_Message::newInstance()
+//            ->setSubject($this->get('translator')->trans('label.welcome', array(), 'messages', $request->request->get('language')))
+//            ->setFrom($this->container->getParameter('mailer_user'))
+//            ->setTo('sebastienmrcpro@gmail.com')
+//            ->setBody(
+//                $this->renderView(
+//                // app/Resources/views/Emails/registration.html.twig
+//                    'email/registration.html.twig',
+//                    array('user'=>$user, 'language'=>$request->request->get('language'), 'verifyEmail'=>$this->get('_router')->generate('email_verify',
+//                        array('email'=>$user->getEmail()), UrlGeneratorInterface::ABSOLUTE_URL))
+//            ),
+//                'text/html'
+//            );
+//        $this->get('mailer')->send($message);
     }
     /**
      * @ApiDoc(
@@ -74,22 +74,23 @@ class EmailController extends Controller implements ClassResourceInterface
      * )
      */
     public function postPasswordForgottenAction(Request $request) {
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
-        $user = $repository->findOneById($request->request->get('user'));
-        $message = \Swift_Message::newInstance()
-            ->setSubject($this->get('translator')->trans('label.reset_password', array(), 'messages', $request->request->get('language')))
-            ->setFrom($this->container->getParameter('mailer_user'))
-            ->setTo('sebastienmrcpro@gmail.com')
-            ->setBody(
-                $this->renderView(
-                // app/Resources/views/Emails/registration.html.twig
-                    'email/resetPassword.html.twig',
-                    array('user'=>$user, 'language'=>$request->request->get('language'), 'verifyEmail'=>$this->get('_router')->generate('email_verify',
-                        array('email'=>$user->getEmail()), UrlGeneratorInterface::ABSOLUTE_URL))
-                ),
-                'text/html'
-            );
-        $this->get('mailer')->send($message);
+//        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
+//        $user = $repository->findOneById($request->request->get('user'));
+//        $message = \Swift_Message::newInstance()
+//            ->setSubject($this->get('translator')->trans('label.reset_password', array(), 'messages', $request->request->get('language')))
+//            ->setFrom($this->container->getParameter('mailer_user'))
+////            ->setTo('sebastienmrcpro@gmail.com')
+//            ->setTo('sebastienmrcpro@gmail.com')
+//            ->setBody(
+//                $this->renderView(
+//                // app/Resources/views/Emails/registration.html.twig
+//                    'email/resetPassword.html.twig',
+//                    array('user'=>$user, 'language'=>$request->request->get('language'), 'verifyEmail'=>$this->get('_router')->generate('email_verify',
+//                        array('email'=>$user->getEmail()), UrlGeneratorInterface::ABSOLUTE_URL))
+//                ),
+//                'text/html'
+//            );
+//        $this->get('mailer')->send($message);
     }
 
 }

@@ -1,6 +1,16 @@
 /**
  * Created by audreycarval on 25/10/2016.
  */
+
+/**
+ * Before send the address form, check that no input is disabled
+ */
+function disabledInputAddress() {
+    if(($('#address_country').val().length > 0) && ($('#address_locality').val().length > 0) && ($('#address_streetAddress').val().length > 0) && ($('#address_route').val().length > 0)) {
+        $('#address :input').removeAttr('disabled');
+    }
+    document.address.submit();
+}
 function setPathDeleteButton(path) {
     console.log(path);
     $("#delete").attr("href", path);
@@ -98,7 +108,7 @@ function removePresentationCss(imgPresentation) {
     $(imgPresentation).closest('.dz-details').prev('.dz-image').removeAttr('style');
 
     //change the data value
-    $(imgPresentation).attr('data-value', false);
+    $(imgPresentation).attr('data-media', false);
 }
 //remove to a yellow digusting color
 function addPresentationCss(element) {
@@ -109,7 +119,7 @@ function addPresentationCss(element) {
     $(element).children().removeAttr().attr('class','glyphicon glyphicon-star').attr('style', 'cursor: pointer!important;color:#f1c40f!important;');
 
     //change the data value
-    $(element).attr('data-value', true);
+    $(element).attr('data-media', true);
 }
 //remove a picture from the database and the dropzone
 function removeFile(id, url) {
@@ -123,8 +133,8 @@ function removeFile(id, url) {
                 //remove file from the dropzone
                 $('#'+id).remove();
                 $.toast({
-                    heading: 'Success',
-                    text: 'And these were just the basic demos! Scroll down to check further details on how to customize the output.',
+                    heading: toastHeadingSuccess,
+                    text: toastMessageImgDeleting,
                     showHideTransition: 'slide',
                     icon: 'success',
                     position: 'top-right'
@@ -132,8 +142,8 @@ function removeFile(id, url) {
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 $.toast({
-                    heading: 'Error',
-                    text: 'Report any <a href="https://github.com/kamranahmedse/jquery-toast-plugin/issues">issues</a>',
+                    heading: toastHeadingError,
+                    text: toastMessageError,
                     showHideTransition: 'fade',
                     icon: 'error',
                     position: 'top-right'
@@ -148,8 +158,11 @@ function presentationPicture(id, scope) {
     var url = urlMediaPresentation;
     var presentation = true;
     var a = $('#'+id).find("a#presentation");
-    if ($(a).attr('data-value') === 'true') {
+    var toastMessage = toastMessageImgPresentation;
+    if ($(a).attr('data-media') === 'true') {
+        console.log('in');
         presentation = false;
+        toastMessage = toastMessageImgNoPresentation;
     }
     $.ajax({
         url: url.replace("id", id),
@@ -157,8 +170,8 @@ function presentationPicture(id, scope) {
         data: {'presentation': presentation, 'scope': scope},
         async: false,
         success: function (data, textStatus, jqXHR) {
-            if(presentation) {
-                var imgPresentation = $("a[data-value='true']");
+            if(presentation === true) {
+                var imgPresentation = $("a[data-media='true']");
                 if(imgPresentation) {
                     removePresentationCss(imgPresentation);
                 }
@@ -167,8 +180,8 @@ function presentationPicture(id, scope) {
                 removePresentationCss(a);
             }
             $.toast({
-                heading: 'Success',
-                text: 'And these were just the basic demos! Scroll down to check further details on how to customize the output.',
+                heading: toastHeadingSuccess,
+                text: toastMessage,
                 showHideTransition: 'slide',
                 icon: 'success',
                 position: 'top-right'
@@ -176,8 +189,8 @@ function presentationPicture(id, scope) {
         },
         error: function (jqXHR, textStatus, errorThrown) {
             $.toast({
-                heading: 'Error',
-                text: 'Report any <a href="https://github.com/kamranahmedse/jquery-toast-plugin/issues">issues</a>',
+                heading: toastHeadingError,
+                text: toastMessageError,
                 showHideTransition: 'fade',
                 icon: 'error',
                 position: 'top-right'
@@ -203,4 +216,30 @@ function setAddElement(file, media) {
 }
 //*********************************************END DROPZONE*************************************************************************//
 
+//for the datepicker, retourn the date in a good formatage
+function getFormattedDate(date) {
+    var year = date.getFullYear();
+    var month = (1 + date.getMonth()).toString();
+    month = month.length > 1 ? month : '0' + month;
+    var day = date.getDate().toString();
+    day = day.length > 1 ? day : '0' + day;
+    return day  + '-' + month + '-' + year;
+}
+//check password format and correspondance
+function checkPassword(input) {
+    if(checkFormatPassword(input)) {
+        $(input).parent().closest('.form-group').removeClass().addClass("form-group has-success");
+        $('#password-indication').tooltip('hide');
+        checkCorrepondance(this, passwordFirst, passwordSecond);
+    } else {
+        $(input).parent().closest('.form-group').removeClass().addClass("form-group has-error");
+        if(passwordFirst.val().length==1) {
+            $('#password-indication').tooltip({'trigger': 'manual'}).tooltip('show');
+        }
+    }
+}
+
+$('.carousel').carousel({
+    interval: false
+});
 

@@ -93,7 +93,7 @@ class Property
     /**
      * @var string
      *
-     * @ORM\Column(name="description", type="string", length=255, nullable=true)
+     * @ORM\Column(name="description", type="string", length=500, nullable=true)
      * @Groups({"default"})
      */
     private $description;
@@ -111,6 +111,18 @@ class Property
      */
     private $maxPrice;
 
+    /**
+     * @Type("Winefing\ApiBundle\Entity\PropertyStatistic")
+     * @Groups({"stat"})
+     */
+    private $propertyStatistic;
+
+    /**
+     * @var
+     * @Groups({"default"})
+     * @Type("string")
+     */
+    private $characteristicValuesByCategory;
 
     /**
      * Get id
@@ -260,6 +272,7 @@ class Property
         if(count($this->medias) > 0) {
             foreach ($this->medias as $media) {
                 if ($media->isPresentation()) {
+                    $this->medias->removeElement($media);
                     $this->mediaPresentation = $media->getName();
                     break;
 
@@ -267,6 +280,7 @@ class Property
             }
             if(empty($this->mediaPresentation)) {
                 $this->mediaPresentation = $this->medias[0]->getName();
+                $this->medias->removeElement($this->medias[0]);
 
             }
         } else {
@@ -289,6 +303,14 @@ class Property
     public function getRentals()
     {
         return $this->rentals;
+    }
+
+    /**
+     * @param Rentals $rentals
+     */
+    public function setRentals($rentals)
+    {
+        $this->rentals = $rentals;
     }
 
     /**
@@ -366,5 +388,35 @@ class Property
         return $characteristicValuesActivated;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getPropertyStatistic()
+    {
+        return $this->propertyStatistic;
+    }
 
+    /**
+         * @param mixed $propertyStatistic
+         */
+        public function setPropertyStatistic($propertyStatistic)
+    {
+        $this->propertyStatistic = $propertyStatistic;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCharacteristicValuesByCategory()
+    {
+        return $this->characteristicValuesByCategory;
+    }
+
+    /**
+     * @param mixed $characteristicValuesByCategory
+     */
+    public function setCharacteristicValuesByCategory($characteristicValuesByCategory)
+    {
+        $this->characteristicValuesByCategory = $characteristicValuesByCategory;
+    }
 }

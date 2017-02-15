@@ -24,6 +24,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use FOS\RestBundle\Controller\Annotations\Get;
 use JMS\Serializer\SerializationContext;
+use Winefing\ApiBundle\Entity\PropertyStatistic;
 
 
 class PropertyController extends Controller implements ClassResourceInterface
@@ -64,10 +65,44 @@ class PropertyController extends Controller implements ClassResourceInterface
      * @ApiDoc(
      *  resource=true,
      *  views = { "index", "property" },
+     *  description="Return all the domain's properties. Returns a collection of Object.",
+     *  output= {
+     *      "class"="Winefing\ApiBundle\Entity\Property",
+     *      "groups"={"default"}
+     *     },
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         204={
+     *           "Returned when no content",
+     *         }
+     *     },
+     *  requirements={
+     *     {
+     *          "name"="domainId", "dataType"="integer", "required"=true, "description"="domain id"
+     *      }
+     *     }
+     * )
+     */
+    public function cgetByDomainAction($domainId, $language) {
+        $serializer = $this->container->get('jms_serializer');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Property');
+        $properties = $repository->findWithDomain($domainId);
+        foreach($properties as $property) {
+            $property->setMediaPresentation();
+            $property->setTr($language);
+            $property->setPropertyStatistic(new PropertyStatistic($property));
+        }
+        return new Response($serializer->serialize($properties, 'json', SerializationContext::create()->setGroups(array('default', 'propertyCategory', 'stat'))));
+    }
+
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "index", "property" },
      *  description="Return all the properties with basic informations in the user's language",
      *  output= {
      *      "class"="Winefing\ApiBundle\Entity\Property",
-     *      "groups"={"domain","domain", "default", "characteristicValues", "propertyCategory"}
+     *      "groups"={"domain", "default", "characteristicValues", "propertyCategory"}
      *     },
      *  statusCodes={
      *         200="Returned when successful",
@@ -95,11 +130,13 @@ class PropertyController extends Controller implements ClassResourceInterface
                 $property->setMediaPresentation();
                 $property->setTr($language);
                 $property->setMinMaxPrice();
-                $property->getDomain()->setTr($language);
+                $domain = $property->getDomain();
+                $domain->setTr($language);
+                $property->setDomain($domain);
             }
             $i++;
         }
-        return new Response($serializer->serialize($properties, 'json', SerializationContext::create()->setGroups(array('domain','domain','default', 'characteristicValues', 'propertyCategory'))));
+        return new Response($serializer->serialize($properties, 'json', SerializationContext::create()->setGroups(array('domain','default', 'characteristicValues', 'propertyCategory'))));
     }
     /**
      * @ApiDoc(

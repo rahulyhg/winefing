@@ -13,29 +13,92 @@
                     <div id="collapseOne" class="panel-collapse collapse">
                         <div class="panel-body">
                             {% set detail = '' %}
-                            {% for dayPrice in bill.dayPrices %}
-                                {% set date =  dayPrice['day']|date('d-m-Y')%}
-                                {% set price = dayPrice['price'] %}
+                            {% for dayPrice in rentalOrder.dayPrices %}
+                                {% set date =  dayPrice.date|date('d-m-Y')%}
+                                {% set price = dayPrice.price %}
                                 {% set detail = detail ~ "<label>" ~ date ~ ": "  ~ price ~ "</label> <br>" %}
                             {% endfor %}
                             <div class="row">
                                 <br>
-                                <div class="col-sm-6">
-                                    <label>{{ bill.averagePrice ~'$ *' }} {{ bill.dayNumber }} {% trans %}label.days{% endtrans %}</label>
-                                    <a data-html="true" style="border:none" type="button" title="{% trans %}label.price_details{% endtrans %}" data-container="body" data-toggle="popover" data-placement="bottom" data-content="{{ detail }}">
-                                        <spam class="glyphicon glyphicon-question-sign"></spam>
-                                    </a>
-                                    <label> : </label>
+                                <div class="col-sm-4">
+                                    <div class="property-container">
+                                        <div class="property-image">
+                                            <a href="{{ rental_directory ~ rentalOrder.rental.mediaPresentation }}" title="{{ rentalOrder.rental.name }}" data-rel="gallery" class="fancybox img-hover-v1">
+                                                <img src="{{ rental_directory ~ rentalOrder.rental.mediaPresentation }}" alt="{{ rentalOrder.rental.name }}">
+                                                <div class="hidden-xs">
+                                                    <span class="glyphicon glyphicon-search picture-zoom"></span>
+                                                </div>
+                                                <div class="property-features-grey text-center">
+                                                    {{ rentalOrder.rental.name }}
+                                                </div>
+                                            </a>
+                                        </div>
+                                        <div class="property-content">
+                                            <div class="service-box-v1" style="text-align: center">
+                                                <ul class="list-unstyled">
+                                                    <li>
+                                                        <label>{{ rentalOrder.averagePrice ~'€ *' }} {{ rentalOrder.dayNumber ~''~'label.night' | transchoice(rentalOrder.dayNumber) }}</label>
+                                                        <a data-html="true" style="border:none" type="button" title="{% trans %}label.price_details{% endtrans %}" data-container="body" data-toggle="popover" data-placement="bottom" data-content="{{ detail }}">
+                                                            <spam class="glyphicon glyphicon-question-sign"></spam>
+                                                        </a>
+                                                        <label> : </label>
+                                                        <span>{{ rentalOrder.amount ~'€'}}</span>
+                                                    </li>
+                                                    {% if rentalOrder.rentalOrderGift %}
+                                                        <li>
+                                                            <label>{% trans %}label.gift_card{% endtrans %} :</label>
+                                                            <span>{{ rental_order_gift_price ~'€'}}</span>
+                                                        </li>
+                                                    {% endif %}
+                                                    <li>
+                                                        <label>{% trans %}label.service_fees{% endtrans %}</label>
+                                                        <span>{{ rentalOrder.comission ~ '€' }}</span>
+                                                    </li>
+                                                    <li>
+                                                        <label>{% trans %}label.total{% endtrans %}</label>
+                                                        <span>{{ rentalOrder.totalTTC  ~ '€' }}</span>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="col-sm-6">
-                                    <label>{{ bill.amount ~'$'}}</label>
+                                <div class="col-sm-4">
+                                    <div class="service-box-v1">
+                                        <div class="service-block service-block-default no-margin-bottom" style="text-align: left!important;padding-top: 3px!important;">
+                                            <h4>{% trans %}label.billing_address{% endtrans %}</h4>
+                                                <p style="margin-bottom:3px!important"><strong>{{ rentalOrder.clientAddress.name }}</strong><br>
+                                                {{ rentalOrder.clientAddress.additionalInformation }}<br>
+                                                {{ rentalOrder.clientAddress.streetAddress ~ '' ~rentalOrder.clientAddress.route }}<br>
+                                                {{ rentalOrder.clientAddress.postalCode ~ '' ~rentalOrder.clientAddress.locality }}<br>
+                                                {{ rentalOrder.clientAddress.country }}</p>
+                                            </div>
+                                        </div>
+                                    {% if (rentalOrder.rentalOrderGift) %}
+                                        <div class="service-box-v1" >
+                                            <div class="service-block service-block-default no-margin-bottom" style="text-align: left!important;padding-top: 3px!important;">
+                                                <h4>{% trans %}label.delivery_address{% endtrans %}</h4>
+                                                <p style="margin-bottom:3px!important"><strong>{{ rentalOrder.clientAddress.name }}</strong><br>
+                                                    {{ rentalOrder.clientAddress.additionalInformation }}<br>
+                                                    {{ rentalOrder.clientAddress.streetAddress ~ '' ~rentalOrder.clientAddress.route }}<br>
+                                                    {{ rentalOrder.clientAddress.postalCode ~ '' ~rentalOrder.clientAddress.locality }}<br>
+                                                    {{ rentalOrder.clientAddress.country }}</p>
+                                            </div>
+                                        </div>
+                                    {% endif %}
                                 </div>
-                                <br>
-                                <label>{% trans %}label.service_fees{% endtrans %}</label>
-                                <label>{{ bill.comission ~ '$' }}</label>
-                                <br>
-                                <label>{% trans %}label.total{% endtrans %}</label>
-                                <label>{{ bill.totalTTC  ~ '$' }}</label>
+                                <div class="col-sm-4">
+                                    {% if (rentalOrder.rentalOrderGift) %}
+                                        <p class="charact-box-title">{% trans %}label.message{% endtrans %}</p>
+                                        <div class="charact-box" style="font-style: italic">
+                                            <span>{{ rentalOrder.rentalOrderGift.message }}</span>
+                                            <br><br>
+                                            <div style="text-align: right">
+                                                <span >{{ rentalOrder.rentalOrderGift.signature }}</span>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -43,8 +106,7 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
-                            <span class="glyphicon glyphicon-eur">
-                            </span>  {% trans %}label.pay{% endtrans %}
+                            {% trans %}label.pay{% endtrans %} : {{ rentalOrder.totalTTC ~'€' }}
                             <object style="float: left;" type="image/svg+xml" data="{{ credit_card_directory ~'credit-card.svg'}}" height="20px">
                             </object>
                             <object style="float: left;" type="image/svg+xml" data="{{ credit_card_directory ~'mastercard.svg'}}" height="20px">
@@ -57,73 +119,6 @@
                         <div class="panel-body">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <form class="form-horizontal" role="form">
-                                        <fieldset>
-                                            <legend>Payment</legend>
-                                            <div class="form-group">
-                                                <label class="col-sm-3 control-label" for="card-holder-name">Name on Card</label>
-                                                <div class="col-sm-9">
-                                                    <input type="text" class="form-control" name="card-holder-name" id="card-holder-name" placeholder="Card Holder's Name">
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="col-sm-3 control-label" for="card-number">Card Number</label>
-                                                <div class="col-sm-9">
-                                                    <input type="text" class="form-control" name="card-number" id="card-number" placeholder="Debit/Credit Card Number">
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="col-sm-3 control-label" for="expiry-month">Expiration Date</label>
-                                                <div class="col-sm-9">
-                                                    <div class="row">
-                                                        <div class="col-xs-3">
-                                                            <select class="form-control col-sm-2" name="expiry-month" id="expiry-month">
-                                                                <option>Month</option>
-                                                                <option value="01">Jan (01)</option>
-                                                                <option value="02">Feb (02)</option>
-                                                                <option value="03">Mar (03)</option>
-                                                                <option value="04">Apr (04)</option>
-                                                                <option value="05">May (05)</option>
-                                                                <option value="06">June (06)</option>
-                                                                <option value="07">July (07)</option>
-                                                                <option value="08">Aug (08)</option>
-                                                                <option value="09">Sep (09)</option>
-                                                                <option value="10">Oct (10)</option>
-                                                                <option value="11">Nov (11)</option>
-                                                                <option value="12">Dec (12)</option>
-                                                            </select>
-                                                        </div>
-                                                        <div class="col-xs-3">
-                                                            <select class="form-control" name="expiry-year">
-                                                                <option value="13">2013</option>
-                                                                <option value="14">2014</option>
-                                                                <option value="15">2015</option>
-                                                                <option value="16">2016</option>
-                                                                <option value="17">2017</option>
-                                                                <option value="18">2018</option>
-                                                                <option value="19">2019</option>
-                                                                <option value="20">2020</option>
-                                                                <option value="21">2021</option>
-                                                                <option value="22">2022</option>
-                                                                <option value="23">2023</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="col-sm-3 control-label" for="cvv">Card CVV</label>
-                                                <div class="col-sm-3">
-                                                    <input type="text" class="form-control" name="cvv" id="cvv" placeholder="Security Code">
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <div class="col-sm-offset-3 col-sm-9">
-                                                    <button type="button" class="btn btn-success">Pay Now</button>
-                                                </div>
-                                            </div>
-                                        </fieldset>
-                                    </form>
                                     {{ form_start(creditCardForm) }}
                                     <div class="panel panel-default">
                                         <div class="panel-body">
@@ -185,57 +180,62 @@
             </div>
         </div>
     </div>
+{% endblock %}
+{% block script %}
+    {{ parent() }}
     <script>
+        //initiate the fancybox = slider
+        FancyBox.initFancybox();
         $(document).ready(function(){
             $('[data-toggle="popover"]').popover();
             var card = new Card({
                 form: document.querySelector('form'),
                 container: '.card-wrapper',
                 placeholders: {
-                        number: '**** **** **** ****',
-                        name: 'Audrey Carval',
-                        expiry: '**/****',
-                        cvc: '***'
-            }
+                    number: '**** **** **** ****',
+                    name: '{{ app.user.firstName ~ ' '~ app.user.lastName }}',
+                    expiry: '**/****',
+                    cvc: '***'
+                }
             });
         });
         $('#credit_card_cardNumber').on('change', function() {
             console.log(card.type);
         });
-//        var card = new Card({
-//            // a selector or DOM element for the form where users will
-//            // be entering their information
-//            form: 'form', // *required*
-//            // a selector or DOM element for the container
-//            // where you want the card to appear
-//            container: '.card-wrapper', // *required*
-//
-//            formSelectors: {
-//                numberInput: 'input#number', // optional — default input[name="number"]
-//                expiryInput: 'input#expiry', // optional — default input[name="expiry"]
-//                cvcInput: 'input#cvc', // optional — default input[name="cvc"]
-//                nameInput: 'input#name' // optional - defaults input[name="name"]
-//            },
-//
-//            width: 200, // optional — default 350px
-//            formatting: true, // optional - default true
-//
-//            // Strings for translation - optional
-//            messages: {
-//                validDate: 'valid\ndate', // optional - default 'valid\nthru'
-//                monthYear: 'mm/yyyy', // optional - default 'month/year'
-//            },
-//
-//            // Default placeholders for rendered fields - optional
-//            placeholders: {
-//                number: '•••• •••• •••• ••••',
-//                name: 'Full Name',
-//                expiry: '••/••',
-//                cvc: '•••'
-//            },
-//
-//            // if true, will log helpful messages for setting up Card
-//            debug: false // optional - default false
-//        });
+        //        var card = new Card({
+        //            // a selector or DOM element for the form where users will
+        //            // be entering their information
+        //            form: 'form', // *required*
+        //            // a selector or DOM element for the container
+        //            // where you want the card to appear
+        //            container: '.card-wrapper', // *required*
+        //
+        //            formSelectors: {
+        //                numberInput: 'input#number', // optional — default input[name="number"]
+        //                expiryInput: 'input#expiry', // optional — default input[name="expiry"]
+        //                cvcInput: 'input#cvc', // optional — default input[name="cvc"]
+        //                nameInput: 'input#name' // optional - defaults input[name="name"]
+        //            },
+        //
+        //            width: 200, // optional — default 350px
+        //            formatting: true, // optional - default true
+        //
+        //            // Strings for translation - optional
+        //            messages: {
+        //                validDate: 'valid\ndate', // optional - default 'valid\nthru'
+        //                monthYear: 'mm/yyyy', // optional - default 'month/year'
+        //            },
+        //
+        //            // Default placeholders for rendered fields - optional
+        //            placeholders: {
+        //                number: '•••• •••• •••• ••••',
+        //                name: 'Full Name',
+        //                expiry: '••/••',
+        //                cvc: '•••'
+        //            },
+        //
+        //            // if true, will log helpful messages for setting up Card
+        //            debug: false // optional - default false
+        //        });
     </script>
 {% endblock %}

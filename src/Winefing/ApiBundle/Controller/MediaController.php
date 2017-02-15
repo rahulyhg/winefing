@@ -39,7 +39,11 @@ class MediaController extends Controller implements ClassResourceInterface
         $fileName = md5(uniqid()) . '.' . $uploadedFile->getClientOriginalExtension();
         $media = new Media();
         $media->setName($fileName);
-        $media->setPresentation(false);
+        if(array_key_exists ('presentation' , $request->request->all())) {
+            $media->setPresentation($request->request->get('presentation'));
+        } else {
+            $media->setPresentation(false);
+        }
         $uploadedFile->move(
             $request->request->get('upload_directory'),
             $fileName

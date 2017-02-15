@@ -3,7 +3,9 @@
     <div class="row">
         <div>
             <a href="{{ path('property_new') }}">
-                <button class="btn btn-primary">Ajouter</button>
+                <button class="btn btn-primary btn-circle btn-xl">
+                    <span class="glyphicon glyphicon-plus"></span>
+                </button>
             </a>
         </div>
         <br>
@@ -16,15 +18,20 @@
                         <div class="col-md-4 col-sm-6 col-xs-12">
                             <div class="property-container">
                                 <div class="property-image">
-                                    <img src="{{ property_directory ~ properties[i].mediaPresentation }}" alt="{{ properties[i].name }}" alt="mikha real estate theme">
-                                    <div class="property-status">
-                                        <span>For Rent</span>
+                                    <img src="{{ property_directory ~ properties[i].mediaPresentation }}" alt="{{ properties[i].name }}">
+                                    <div class="property-features-grey text-center">
+                                        <span class="glyphicon glyphicon-tag property-features-span-margin">
+                                            {{ properties[i].propertyCategory.name}}
+                                        </span>
+                                        {% if properties[i].propertyStatistic.nbRental > 0 %}
+                                            <span class="glyphicon glyphicon-home property-features-span-margin">
+                                                {{ 'label.rental_number' | transchoice(properties[i].propertyStatistic.nbRental, {"%number%":properties[i].propertyStatistic.nbRental}) }}
+                                            </span>
+                                            <span class="glyphicon glyphicon-euro property-features-span-margin">
+                                                {{ properties[i].propertyStatistic.minPrice ~ "-" ~ properties[i].propertyStatistic.maxPrice }}
+                                            </span>
+                                        {% endif %}
                                     </div>
-                                </div>
-                                <div class="property-features">
-                                    <span><i class="fa fa-home"></i> 5,000 m<sup>2</sup></span>
-                                    <span><i class="fa fa-hdd-o"></i> 2 Bed</span>
-                                    <span><i class="fa fa-male"></i> 2 Bath</span>
                                 </div>
                                 <div class="property-content">
                                     <h3><a href="{{ path('property_edit', {'id': properties[i].id }) }}">{{ properties[i].name }}</a> <small>{{ properties[i].description }}</small></h3>

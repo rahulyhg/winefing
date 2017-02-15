@@ -1,37 +1,62 @@
 {% extends 'host/rental/new/base.html.twig' %}
 {% block new %}
     {{ form_start(rentalForm) }}
-    <div class="form-group">
-        <label for="address">{% trans %}label.name{% endtrans %} </label>
-        {{ form_row(rentalForm.name,  { 'attr': {'class': 'form-control'} }) }}
-    </div>
-    <p style="font-style: italic">{% trans %}label.property_name_exemple{% endtrans %}</p>
-    <div class="form-group">
-        <label for="address">{% trans %}label.property{% endtrans %} </label>
-        {{ form_row(rentalForm.property,  { 'attr': {'class': 'form-control', 'id' :'property'} }) }}
-    </div>
-    <div class="form-group">
-        <label>{% trans %}label.price{% endtrans %} </label>
-        {{ form_errors(rentalForm.price,  { 'attr': {'class': 'form-control'} }) }}
-        <div class="input-group">
-            {{ form_widget(rentalForm.price,  { 'attr': {'class': 'form-control'} }) }}
-            <div class="input-group-addon">€</div>
+        <div class="form-group">
+            <label>*{% trans %}label.name{% endtrans %} </label>
+            {{ form_row(rentalForm.name,  { 'attr': {'class': 'form-control'} }) }}
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
-            <div class="form-group">
-                <label>{% trans %}label.people_number{% endtrans %} </label>
-                {{ form_row(rentalForm.peopleNumber,  { 'attr': {'class': 'form-control'} }) }}
+        <p style="font-style: italic">Ex.:{% trans %}label.rental_name_exemple{% endtrans %}</p>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>*{% trans %}label.property{% endtrans %} </label>
+                    {{ form_row(rentalForm.property,  { 'attr': {'class': 'form-control', 'id' :'property'} }) }}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>*{% trans %}label.rental_category{% endtrans %} </label>
+                    {{ form_row(rentalForm.rentalCategory,  { 'attr': {'class': 'form-control'} }) }}
+                </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                <label>{% trans %}label.minimum_rental_period{% endtrans %} </label>
-                {{ form_row(rentalForm.minimumRentalPeriod,  { 'attr': {'class': 'form-control'} }) }}
+        <br>
+        <div class="form-group">
+            <label>
+                *{% trans %}label.price{% endtrans %}/{% trans %}label.night{% endtrans %}
+                <a href="#" data-toggle="tooltip" data-placement="right" title="{% trans %}help.rental_price{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
+            </label>
+            {{ form_errors(rentalForm.price,  { 'attr': {'class': 'form-control'} }) }}
+            <div class="input-group">
+                {{ form_widget(rentalForm.price,  { 'attr': {'class': 'form-control'} }) }}
+                <div class="input-group-addon">€</div>
             </div>
         </div>
-    </div>
-    <button type="submit" class="btn btn-primary btn-lg pull-right" type="button" >{% trans %}label.next{% endtrans %}</button>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>
+                        *{% trans %}label.people_number{% endtrans %}
+                    </label>
+                    <div class="input-group">
+                        {{ form_row(rentalForm.peopleNumber,  { 'attr': {'class': 'form-control'} }) }}
+                        <div class="input-group-addon"><span class="glyphicon glyphicon-user"></span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>
+                        *{% trans %}label.minimum_rental_period{% endtrans %}
+                        <a href="#" data-toggle="tooltip" data-placement="right" title="{% trans %}help.minimum_rental_period{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
+                    </label>
+                    <div class="input-group">
+                        {{ form_row(rentalForm.minimumRentalPeriod,  { 'attr': {'class': 'form-control'} }) }}
+                        <div class="input-group-addon"><span class="glyphicon glyphicon-time"></span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg pull-right" type="button" >{% trans %}label.next{% endtrans %}</button>
     {{ form_end(rentalForm) }}
 {% endblock %}

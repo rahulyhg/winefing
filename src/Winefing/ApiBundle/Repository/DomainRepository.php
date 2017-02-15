@@ -10,7 +10,7 @@ namespace Winefing\ApiBundle\Repository;
  */
 class DomainRepository extends \Doctrine\ORM\EntityRepository
 {
-    function findOneByUserId($userId)
+    function findOneWithUser($userId)
     {
         $query = $this->createQueryBuilder('domain')
             ->join("domain.user", "user")
@@ -18,7 +18,7 @@ class DomainRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter('userId', $userId)
             ->setMaxResults(1)
             ->getQuery();
-        return $query->getResult();
+        return $query->getOneOrNullResult();
     }
     function findGroupByWineRegion()
     {
@@ -37,5 +37,35 @@ class DomainRepository extends \Doctrine\ORM\EntityRepository
             ->setMaxResults(1)
             ->getQuery();
         return $query->getOneOrNullResult();
+    }
+    function findWithCriterias($criterias) {
+        //basic
+        $queryBuilder = $this->createQueryBuilder('domain')
+            ->innerJoin("domain.wineRegion", "wineRegion")
+            ->innerJoin("domain.properties", "property")
+            ->innerJoin("property.rentals", "rental")
+            ->where("rental.peopleNumber >= :peopleNumer")
+            ->setParameter("peopleNumer", $criterias["peopleNumber"]);
+
+        //check for the wineRegion parameter
+        if(!empty($criterias["wineRegion"])) {
+            $queryBuilder
+                ->andWhere("wineRegion.id in (:wineRegion)")
+                ->setParameter("wineRegion", array_values($criterias["wineRegion"]));
+        }
+        //check for the location available
+        if(!empty($criterias["startDate"])) {
+
+        }
+        //check for the price slider
+        if(!empty($criterias["price"])) {
+            $price = explode(",",$criterias["price"]);
+            $queryBuilder
+            ->andWhere("rental.price >= :minPrice and <= :maxPrice")
+            ->setParameter("minPrice", $price[0])
+            ->setParameter("maxPrice", $price[1]);
+        }
+        $query = $queryBuilder->getQuery();
+        return $query->getResult();
     }
 }

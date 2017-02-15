@@ -35,9 +35,9 @@ class UserType extends AbstractType
             ->add('firstName', null, array('attr'=> array('maxlength'=>"60")))
             ->add('lastName', null, array('attr'=> array('maxlength'=>"60")))
             ->add('birthDate', DateType::class, ['label'=>false, 'format'=>'dd-MM-yyyy', 'widget' => 'single_text', 'html5'=> false, 'attr'=>['class'=>'input-sm form-control']])
-            ->add('phoneNumber', null, array('attr'=> array('maxlength'=>"10")))
+            ->add('phoneNumber', null)
             ->add('email', EmailType::class)
-            ->add('description', TextareaType::class, array('required' => false, 'attr'=> array('maxlength'=>"60", 'style' => 'height:250px')))
+            ->add('description', TextareaType::class, array('required' => false, 'attr'=> array('maxlength'=>"500", 'style' => 'height:250px')))
             ->add('sex', ChoiceType::class,  array(
                 'choices' => array('label.female' => 'F', 'label.male' => 'M'), 'required'    => false, 'empty_data'  => null));
     }

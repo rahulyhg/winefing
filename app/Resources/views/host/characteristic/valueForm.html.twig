@@ -21,17 +21,27 @@
                     {% elseif characteristicValue.characteristic.format.name == format_int %}
                         <input type="number" name="{{ name }}" class="form-control" value="{{ characteristicValue.value }}">
                     {% elseif characteristicValue.characteristic.format.name == format_float %}
-                        <input type="number" name="{{ name }}" class="form-control" value="{{ characteristicValue.value }}">
+                        <input type="number" step="0.01" name="{{ name }}" class="form-control" value="{{ characteristicValue.value }}">
                     {% elseif characteristicValue.characteristic.format.name == format_percentage %}
-                        <input name="{{ name }}" class="form-control" value="{{ characteristicValue.value }}">
+                        <input type="number" step="0.01" name="{{ name }}" class="form-control" value="{{ characteristicValue.value }}">
                     {% elseif characteristicValue.characteristic.format.name == format_varchar %}
                         <input name="{{ name }}" class="form-control" value="{{ characteristicValue.value }}">
                     {% elseif characteristicValue.characteristic.format.name == format_text %}
                         <textarea name="{{ name }}" class="form-control" style="height: 150px">{{ characteristicValue.value }}</textarea>
                     {% elseif characteristicValue.characteristic.format.name == format_monnaie %}
-                        <input name="{{ name }}" class="form-control" value="{{ characteristicValue.value }}">
+                        <div class="input-group">
+                            <input type="number" step="0.01" name="{{ name }}" class="form-control" value="{{ characteristicValue.value }}">
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-euro"></span>
+                            </span>
+                        </div>
                     {% elseif characteristicValue.characteristic.format.name == format_time %}
-                        <input type="time" name="{{ name }}" class="form-control" value="{{ characteristicValue.value }}">
+                        <div class="input-group clockpicker" data-autoclose="true">
+                            <input type="text" name="{{ name }}" class="form-control" value="{{ characteristicValue.value }}">
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-time"></span>
+                            </span>
+                        </div>
                     {% elseif characteristicValue.characteristic.format.name == format_date_time %}
                         <input type="datetime" name="{{ name }}" class="form-control" value="{{ characteristicValue.value }}">
                     {% elseif characteristicValue.characteristic.format.name == format_date %}

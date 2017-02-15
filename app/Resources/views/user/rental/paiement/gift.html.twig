@@ -2,9 +2,23 @@
 {% block new %}
     <div class="row">
             <div class="col-md-6">
+                <div style="margin-bottom: 30px;">
+                    <img src="{{ gift_card_directory ~ 'trois_cartes.JPG' }}" class="img-responsive">
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <img src="{{ gift_card_directory ~ 'Château de Camarsac.jpg' }}" class="img-responsive">
+                    </div>
+                    <div class="col-md-6">
+                        <img src="{{ gift_card_directory ~ 'Château Grand Callamand.jpg' }}" class="img-responsive">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
                 <div>
-                    <h3>{% trans %}label.gift{% endtrans %}</h3>
-                    <br>
+                    <h3>{% trans %}label.offer{% endtrans %}</h3>
+                    <spam>{% trans %}help.rental_offer{% endtrans %}</spam>
+                    <br><br>
                     {{ form_start(rentalOrderGift) }}
                         <div class="form-group">
                         {{ form_label(rentalOrderGift.message) }}
@@ -16,8 +30,13 @@
                             {{ form_errors(rentalOrderGift.signature) }}
                             {{ form_widget(rentalOrderGift.signature) }}
                         </div>
-                        {{ form_widget(rentalOrderGift.submit) }}
+                        <button type="submit" class="btn btn-default btn-primary pull-right" style="margin-left: 10px">{% trans %}label.submit{% endtrans %}</button>
                     {{ form_end(rentalOrderGift) }}
+                </div>
+                <div>
+                    <a href="{{ path('rental_paiement') }}">
+                        <input type="button" style="background-color: #444!important; border-color: #444!important;" class="btn btn-default btn-primary pull-right" value="{% trans %}label.no_thanks{% endtrans %}">
+                    </a>
                 </div>
             </div>
     </div>

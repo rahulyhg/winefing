@@ -5,31 +5,54 @@
         <div class="col-sm-3">
             <ul class="nav nav-pills nav-stacked" id="nav">
                 <li class="active"><a href="#presentation" data-toggle="tab"><i class="glyphicon glyphicon-home"></i> {% trans %}label.presentation{% endtrans %}</a></li>
-                <li><a href="#informations" data-toggle="tab"><i class="glyphicon glyphicon-home"></i> {% trans %}label.informations{% endtrans %}</a></li>
                 <li><a href="#medias" data-toggle="tab"><i class="glyphicon glyphicon-zoom-in"></i> {% trans %}label.pictures{% endtrans %}</a></li>
+                <li><a href="#informations" data-toggle="tab"><i class="glyphicon glyphicon-home"></i> {% trans %}label.informations{% endtrans %}</a></li>
             </ul>
         </div>
         <div class="col-sm-9">
             <div class="tab-content">
                 <div class="tab-pane fade in active" id="presentation">
+                    {% if app.session.flashBag.has('rentalSuccess') %}
+                        <div class="alert alert-success">
+                            {% for msg in app.session.flashBag.get('rentalSuccess') %}
+                                {{ msg }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% if app.session.flashBag.has('rentalError') %}
+                        <div class="alert alert-danger">
+                            {% for msg in app.session.flashBag.get('rentalError') %}
+                                {{ msg }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                     {{ form_start(rentalForm) }}
                         <div class="panel panel-default">
                             <div class="panel-heading">
                                 <h4>{% trans %}label.presentation{% endtrans %}</h4>
                             </div>
                             <div class="panel-body">
-                                <div class="form-group">
-                                    <label>*{% trans %}label.property{% endtrans %} </label>
-                                    {{ form_errors(rentalForm.property) }}
-                                    {{ form_widget(rentalForm.property,  { 'attr': {'class': 'form-control'} }) }}
-                                </div>
-                                <div class="form-group">
+                                <div class="form-group {% if rentalForm.name.vars.errors|length %}has-error{% endif %}">
                                     <label>*{% trans %}label.name{% endtrans %} </label>
-                                    {{ form_errors(rentalForm.name) }}
-                                    {{ form_widget(rentalForm.name,  { 'attr': {'class': 'form-control'} }) }}
+                                    {{ form_row(rentalForm.name,  { 'attr': {'class': 'form-control'} }) }}
                                 </div>
-                                <div class="form-group">
-                                    <label >*{% trans %}label.description{% endtrans %} </label>
+                                <p style="font-style: italic">Ex.:{% trans %}label.rental_name_exemple{% endtrans %}</p>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group {% if rentalForm.property.vars.errors|length %}has-error{% endif %}">
+                                            <label>*{% trans %}label.property{% endtrans %} </label>
+                                            {{ form_row(rentalForm.property,  { 'attr': {'class': 'form-control', 'id' :'property'} }) }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group {% if rentalForm.rentalCategory.vars.errors|length %}has-error{% endif %}">
+                                            <label>*{% trans %}label.rental_category{% endtrans %} </label>
+                                            {{ form_row(rentalForm.rentalCategory,  { 'attr': {'class': 'form-control'} }) }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group {% if rentalForm.description.vars.errors|length %}has-error{% endif %}">
+                                    <label >{% trans %}label.description{% endtrans %} </label>
                                     {{ form_errors(rentalForm.description) }}
                                     {{ form_widget(rentalForm.description,  { 'attr': {'class': 'form-control'} }) }}
                                 </div>
@@ -41,24 +64,39 @@
                                 <h4>{% trans %}label.price{% endtrans %}</h4>
                             </div>
                             <div class="panel-body">
-                                <div class="form-group">
-                                    <label>{% trans %}label.minimum_rental_period{% endtrans %} </label>
-                                    {{ form_errors(rentalForm.minimumRentalPeriod) }}
-                                    {{ form_widget(rentalForm.minimumRentalPeriod,  { 'attr': {'class': 'form-control'} }) }}
+                                <div class="form-group {% if rentalForm.price.vars.errors|length %}has-error{% endif %}">
+                                    <label>
+                                        *{% trans %}label.price{% endtrans %}/{% trans %}label.night{% endtrans %}
+                                        <a href="#" data-toggle="tooltip" data-placement="right" title="{% trans %}help.rental_price{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
+                                    </label>
+                                    {{ form_errors(rentalForm.price,  { 'attr': {'class': 'form-control'} }) }}
+                                    <div class="input-group">
+                                        {{ form_widget(rentalForm.price,  { 'attr': {'class': 'form-control'} }) }}
+                                        <div class="input-group-addon">€</div>
+                                    </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-sm-6">
-                                        <div class="form-group">
-                                            <label>*{% trans %}label.price{% endtrans %} </label>
-                                            {{ form_errors(rentalForm.price) }}
-                                            {{ form_widget(rentalForm.price,  { 'attr': {'class': 'form-control'} }) }}
+                                    <div class="col-md-6">
+                                        <div class="form-group {% if rentalForm.peopleNumber.vars.errors|length %}has-error{% endif %}">
+                                            <label>
+                                                *{% trans %}label.people_number{% endtrans %}
+                                            </label>
+                                            <div class="input-group">
+                                                {{ form_row(rentalForm.peopleNumber,  { 'attr': {'class': 'form-control'} }) }}
+                                                <div class="input-group-addon"><span class="glyphicon glyphicon-user"></span></div>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="col-sm-6">
-                                        <div class="form-group">
-                                            <label>*{% trans %}label.people_number{% endtrans %} </label>
-                                            {{ form_errors(rentalForm.peopleNumber) }}
-                                            {{ form_widget(rentalForm.peopleNumber,  { 'attr': {'class': 'form-control', 'step' : 1} }) }}
+                                    <div class="col-md-6">
+                                        <div class="form-group {% if rentalForm.minimumRentalPeriod.vars.errors|length %}has-error{% endif %}">
+                                            <label>
+                                                *{% trans %}label.minimum_rental_period{% endtrans %}
+                                                <a href="#" data-toggle="tooltip" data-placement="right" title="{% trans %}help.minimum_rental_period{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
+                                            </label>
+                                            <div class="input-group">
+                                                {{ form_row(rentalForm.minimumRentalPeriod,  { 'attr': {'class': 'form-control'} }) }}
+                                                <div class="input-group-addon"><span class="glyphicon glyphicon-time"></span></div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -68,58 +106,30 @@
                     {{ form_end(rentalForm) }}
                 </div>
                 <div class="tab-pane fade in" id="medias">
-                    <h4>{% trans %}label.pictures{% endtrans %}</h4>
-                    {% set imagePerSlide = 3 %}
-                    {% set totalRow =  ((medias|length)/imagePerSlide)|round(0, 'ceil') %}
-                    {% if totalRow > 0 %}
-                        <div id="Carousel" class="carousel slide">
-                            <ol class="carousel-indicators">
-                                {% for i in 0..totalRow -1 %}
-                                    {% set class ="" %}
-                                    {% if loop.first %}
-                                        {% set class ="active" %}
-                                    {% endif %}
-                                    <li data-target="#Carousel" data-slide-to="{{ i }}" class="{{ class }}"></li>
-                                {% endfor %}
-                            </ol>
-                            <!-- Carousel items -->
-                            <div class="carousel-inner">
-                                {% set j = 0 %}
-                                {% for i in 0..totalRow - 1 %}
-                                    {% set class = "item"%}
-                                    {% if loop.first %}
-                                        {% set class ="item active" %}
-                                    {% endif %}
-                                    <div class="{{ class }}">
-                                        <div class="row">
-                                            {% for f in 0..imagePerSlide - 1 if j <= medias|length - 1%}
-                                                <div class="col-md-4">
-                                                    <a href="{{ rental_directory ~ medias[j].name }}" rel="gallery2" class="fancybox img-hover-v1">
-                                                        <img src="{{ rental_directory ~ medias[j].name }}" style="max-width:100%;">
-                                                    </a>
-                                                </div>
-                                                {% set j = j + 1 %}
-                                            {% endfor %}
-                                        </div><!--.row-->
-                                    </div><!--.item-->
-                                {% endfor %}
-                            </div><!--.carousel-inner-->
-                            {% if totalRow > 1 %}
-                                <a data-slide="prev" href="#Carousel" class="left carousel-control">‹</a>
-                                <a data-slide="next" href="#Carousel" class="right carousel-control">›</a>
-                            {% endif %}
-                        </div><!--.Carousel-->
-                    {% endif %}
-                    <br>
-                    <p>Ajouter des photos :</p>
-                    <form name="media" method="post" enctype="multipart/form-data">
-                        <div class="form-group">
-                            <input type="file" name="media[medias][]" multiple class="form-control">
-                        </div>
-                        <button type="submit" class="btn btn-primary pull-right">{% trans %}label.submit{% endtrans %}</button>
-                    </form>
+                    <h4>
+                        {% trans %}label.pictures{% endtrans %}
+                        <a href="#" data-toggle="tooltip" data-placement="right" title="{% trans %}help.pictures{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
+                    </h4>
+                    <p style="font-style: italic"> {% trans %}label.rental_pictures_explication{% endtrans %}</p>
+                    <p>{% trans %}label.add_pictures{% endtrans %}</p>
+                    <div class="dropzone upload-drop-zone" id="my-dropzone-container">
+                    </div>
                 </div>
                 <div class="tab-pane fade in" id="informations">
+                    {% if app.session.flashBag.has('informationsSuccess') %}
+                        <div class="alert alert-success">
+                            {% for msg in app.session.flashBag.get('informationsSuccess') %}
+                                {{ msg }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% if app.session.flashBag.has('informationsSuccess') %}
+                        <div class="alert alert-danger">
+                            {% for msg in app.session.flashBag.get('informationsError') %}
+                                {{ msg }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                     <form method="post" name="characteristicValueForm">
                         {% include('host/characteristic/valueForm.html.twig') %}
                         <button type="submit" class="btn btn-primary pull-right">{% trans %}label.submit{% endtrans %}</button>
@@ -148,3 +158,49 @@
         });
     </script>
 {% endblock %}
+{% block script %}
+    {{ parent() }}
+    <script type="application/javascript">
+
+        var nav = '{{ nav }}';
+        var medias= {{ medias|raw }};
+
+        //variable used in the dropzone-custom.js file, to init the dropzone.
+        var upload = '{{ rental_directory }}';
+        var size = 10-(medias.length);
+        var uploadDirectory = '{{ path('rental_upload_picture', {'id': app.request.get('id')}) }}';
+        var directDefaultMessage = '{{ 'label.drop_files_here' | trans({}) }}';
+        var toastMessageImgPresentation = '{{ 'success.image_presentation' | trans({}) }}';
+        var toastMessageImgNoPresentation = '{{ 'success.image_no_presentation' | trans({}) }}';
+        var toastMessageImgDeleting = '{{ 'success.delete_image' | trans({}) }}';
+
+        //variable used in the custom.js, in different javascript function user by the dropzone.
+        scope = "RENTAL";
+        deletePath = "{{ path('rental_delete_picture', {'id': 'id'}) }}";
+        urlMediaPresentation = "{{ path('api_patch_media_presentation_by_scope', {'id': 'id'}) }}";
+        Dropzone.autoDiscover = false;
+        confirmationDelete = '{{ 'confirmation.delete' | trans({}, "messages") }}';
+
+        //initiate the fancybox = slider
+        FancyBox.initFancybox();
+
+        //variable for the address form
+        jQuery(document).ready(function() {
+            //initiate the google map new address
+            adressId = 'address_formattedAddress';
+            componentFormId = {
+                street_number: 'address_streetAddress',
+                route: 'address_route',
+                locality: 'address_locality',
+                country: 'address_country',
+                postal_code: 'address_postalCode'
+            };
+
+
+        });
+    </script>
+    {% javascripts 'bundles/app/js/nav.js' 'bundles/app/js/dropzone-custom.js'%}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+

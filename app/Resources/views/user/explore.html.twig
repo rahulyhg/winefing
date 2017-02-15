@@ -12,16 +12,16 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-6 col-md-8">
                         <div class="property-image-list">
-                            <div class="image_4 image_callamand_1"></div>
-                            <div class="property-features text-center">
+                            <img class="img-responsive" src="{{ domain_directory ~ 'default.png' }}" alt="" />
+                            <div class="property-features-grey text-center">
                                 <span>Grand Callamand</span>
                             </div>
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-6 col-md-4">
                         <div class="property-image-list">
-                            <div class="image_8 image_callamand_2"></div>
-                            <div class="property-features text-center">
+                            <img class="img-responsive" src="{{ domain_directory ~ 'default.png' }}" alt="" />
+                            <div class="property-features-grey text-center">
                                 <span>Réservez votre chambre</span>
                             </div>
                         </div>
@@ -41,7 +41,7 @@
             </div>
         </div>
         {% for domain in domains %}
-            <div class="{% if loop.index is divisibleby(2)  %}bg-grey{% endif %}">
+            <div class="{% if loop.index is not divisibleby(2)  %}bg-grey{% endif %}">
                 <div class="content">
                     <div class="container">
                         <div class="row">
@@ -52,48 +52,58 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-xs-12 col-sm-6 col-md-3">
+                            <div class="col-xs-12 col-sm-8 col-md-8">
+                                <div class="view view-tenth" >
+                                    <img style="height: 500px;width: 100%" src="{{ domain_directory ~ 'default.png' }}" alt="{{ domain.name }}"/>
+                                    <div class="property-features-grey text-center">
+                                        <span>{{ domain.name }}</span>
+                                    </div>
+                                    <div class="mask">
+                                        <h2>{{ domain.name }}</h2>
+                                        <p>{{ domain.description }}.</p>
+                                        <a href="{{ path('domain' {'id':domain.id}) }}" class="info">{% trans %}{% endtrans %}</a>
+                                    </div>
+                                </div>
+                                {#<div class="property-image-list">#}
+                                    {#<img src="{{ domain_directory ~ 'default.png' }}">#}
+                                    {#<div class="property-features-grey property-features-grey-center text-center">#}
+                                        {#<span>{{ domain.name }}</span>#}
+                                        {#<p style="padding:25px 35px;">{{ domain.description }}</p>#}
+                                    {#</div>#}
+                                {#</div>#}
+                            </div>
+                            <div class="hidden-xs col-sm-4 col-md-4">
                                 <div class="property-image-list">
                                     <a href="#">
-                                        <div class="image_3 image_camarsac_1"></div>
-                                        <div class="property-features text-center">
-                                            <span>Piscine, Dégustation, Bien-être</span>
+                                        <img class="img-responsive" src="{{ domain_directory ~ 'default.png' }}" alt="" />
+                                        <div class="property-features-grey text-center">
+                                            <span>{% trans %}label.make_a_reservation{% endtrans %}</span>
                                         </div>
                                     </a>
                                 </div>
-                            </div>
-                            <div class="col-xs-12 col-sm-6 col-md-6">
-                                <div class="property-image-list">
-                                    <img src="{{ domain_directory ~ 'default.png' }}">
-                                    <div class="property-features property-features-center text-center">
-                                        <span>{{ domain.name }}</span>
-                                        <p style="padding:25px 35px;">{{ domain.description }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xs-12 col-sm-12 col-md-3">
+                                <br>
                                 <div class="property-image-list">
                                     <a href="#">
-                                        <div class="image_3 image_camarsac_3"></div>
-                                        <div class="property-features text-center">
-                                            <span>Réservez votre chambre</span>
+                                        <img class="img-responsive" src="{{ domain_directory ~ 'default.png' }}" alt="" />
+                                        <div class="property-features-grey text-center">
+                                            <span>{% trans %}label.make_a_reservation{% endtrans %}</span>
                                         </div>
                                     </a>
                                 </div>
                             </div>
                         </div>
-                        <p  style="float:right;"><a href="#" class="btn btn-danger">Découvrir les autres domaines Bordelais</a></p>
+                        <p  style="float:right;"><a href="#" class="btn btn-danger">{% trans %}label.see_more{% endtrans %} >></a></p>
                     </div>
                 </div>
             </div>
         {% endfor %}
         <script>
             $(".property-image-list").mouseenter(function(){
-                $(this).children(".property-features-center").css({"top":"0", "padding":"25px 10px"})
+                $(this).children(".property-features-grey-center").css({"top":"0", "padding":"25px 10px"})
             });
 
             $(".property-image-list").mouseleave(function(){
-                $(this).children(".property-features-center").css({"top":"86%", "padding":""})
+                $(this).children(".property-features-grey-center").css({"top":"86%", "padding":""})
             });
         </script>
 {% endblock %}

@@ -49,48 +49,37 @@
                         <div class="panel-body">
                             {{ form_start(domainForm) }}
                                 <div class="form-group {% if domainForm.wineRegion.vars.errors|length %}has-error{% endif %}">
-                                    <label for="postal_code">*{% trans %}label.wine_region{% endtrans %} </label>
+                                    <label>*{% trans %}label.wine_region{% endtrans %} </label>
                                     {{ form_errors(domainForm.wineRegion) }}
                                     {{ form_widget(domainForm.wineRegion,  { 'attr': {'class': 'form-control'} }) }}
                                 </div>
                                 <div class="form-group {% if domainForm.name.vars.errors|length %}has-error{% endif %}">
-                                    <label for="address">*{% trans %}label.name{% endtrans %} </label>
+                                    <label>*{% trans %}label.name{% endtrans %} </label>
                                     {{ form_errors(domainForm.name) }}
                                     {{ form_widget(domainForm.name,  { 'attr': {'class': 'form-control'} }) }}
                                 </div>
                                 <div class="form-group {% if domainForm.description.vars.errors|length %}has-error{% endif %}">
-                                    <label for="postal_code">*{% trans %}label.description{% endtrans %} </label>
+                                    <label>*{% trans %}label.description{% endtrans %} </label>
                                     {{ form_errors(domainForm.description) }}
                                     {{ form_widget(domainForm.description,  { 'attr': {'class': 'form-control'} }) }}
                                 </div>
                                 <div class="form-group {% if domainForm.history.vars.errors|length %}has-error{% endif %}">
-                                    <label for="postal_code">{% trans %}label.domain_history{% endtrans %}</label>
+                                    <label >{% trans %}label.domain_history{% endtrans %}</label>
                                     <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans %}help.domain_history{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
                                     {{ form_errors(domainForm.history) }}
                                     {{ form_widget(domainForm.history,  { 'attr': {'class': 'form-control'} }) }}
                                 </div>
+                                {% if is_granted("ROLE_ADMIN") %}
+                                    <label>Tags</label>
+                                    <br>
+                                    {{ form_widget(domainForm.tags) }}
+                                {% endif %}
                                 <button type="submit" class="btn btn-primary pull-right">{% trans %}label.submit{% endtrans %}</button>
                             {{ form_end(domainForm) }}
                         </div>
                     </div>
                 </div>
                 <div class="tab-pane fade in" id="pictures">
-                    {# start error - success message #}
-                    {% if app.session.flashBag.has('successPresentation') %}
-                        <div class="alert alert-success">
-                            {% for msg in app.session.flashBag.get('successPicture') %}
-                                {{ msg }}
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                    {% if app.session.flashBag.has('errorPresentation') %}
-                        <div class="alert alert-danger">
-                            {% for msg in app.session.flashBag.get('errorPicture') %}
-                                {{ msg }}
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                    {# end error - success message #}
                     <h4>
                         {% trans %}label.pictures{% endtrans %}
                         <a href="#" data-toggle="tooltip" data-placement="right" title="{% trans %}help.pictures{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
@@ -121,10 +110,11 @@
                             <h4>{% trans %}label.address{% endtrans %}</h4>
                         </div>
                         <div class="panel-body">
-                            {{ form_start(addressForm) }}
+                            {{ form_start(addressForm, {'attr':{'id':'address'}}) }}
                                 {% include('host/address/form.html.twig') %}
-                                <button type="submit" class="btn btn-primary pull-right">{% trans %}label.submit{% endtrans %}</button>
                             {{ form_end(addressForm) }}
+                            <input type="button" onclick="disabledInputAddress();" value="{% trans %}label.submit{% endtrans %}"class="btn btn-primary pull-right">
+
                         </div>
                     </div>
                 </div>
@@ -155,67 +145,51 @@
             </div>
         </div>
     </div>
-    {#<div>#}
-        {#<div class="tabbable tabs-left clearfix">#}
-            {#<ul class="nav nav-tabs">#}
-                {#<li class="active">#}
-                    {#<a href="#">Lol</a>#}
-                {#</li>#}
-                {#<li>#}
-                    {#<a href="#">Lol</a>#}
-                {#</li>#}
-            {#</ul>#}
-            {#<div class="content">#}
-                {#<div class="tab-pane fade active in">#}
-                    {#<p>lol</p>#}
-                {#</div>#}
-                {#<div class="tab-pane fade">#}
-                    {#<p>lol</p>#}
-                {#</div>#}
-            {#</div>#}
-        {#</div>#}
-    {#</div>#}
-    {#{% block script %}#}
-        <script type="application/javascript">
-            var nav = '{{ nav }}';
-            var medias= {{ medias|raw }};
+{% endblock %}
+{% block script %}
+    {{ parent() }}
+    <script type="application/javascript">
 
-            //variable used in the dropzone-custom.js file, to init the dropzone.
-            var upload = '{{ domain_directory }}';
-            var size = 10-(medias.length);
-            var uploadDirectory = '{{ path('domain_upload_picture') }}';
-            var directDefaultMessage = '{{ 'label.drop_files_here' | trans({}) }}';
+        var nav = '{{ nav }}';
+        var medias= {{ medias|raw }};
 
-            //variable used in the custom.js, in different javascript function user by the dropzone.
-            scope = "DOMAIN";
-            deletePath = "{{ path('domain_delete_picture', {'id': 'id'}) }}";
-            urlMediaPresentation = "{{ path('api_patch_media_presentation_by_scope', {'id': 'id'}) }}";
-            Dropzone.autoDiscover = false;
-            confirmationDelete = '{{ 'confirmation.delete' | trans({}, "messages") }}';
+        //variable used in the dropzone-custom.js file, to init the dropzone.
+        var upload = '{{ domain_directory }}';
+        var size = 10-(medias.length);
+        var uploadDirectory = '{{ path('domain_upload_picture', {'id': app.request.get('id')}) }}';
+        var directDefaultMessage = '{{ 'label.drop_files_here' | trans({}) }}';
+        var toastMessageImgPresentation = '{{ 'success.image_presentation' | trans({}) }}';
+        var toastMessageImgDeleting = '{{ 'success.delete_image' | trans({}) }}';
+        var toastMessageImgNoPresentation = '{{ 'success.image_no_presentation' | trans({}) }}';
 
-            jQuery(document).ready(function() {
 
-                //initiate the tooltip
-                $('[data-toggle="tooltip"]').tooltip();
+        //variable used in the custom.js, in different javascript function user by the dropzone.
+        scope = "DOMAIN";
+        deletePath = "{{ path('domain_delete_picture', {'id': 'id'}) }}";
+        urlMediaPresentation = "{{ path('api_patch_media_presentation_by_scope', {'id': 'id'}) }}";
+        Dropzone.autoDiscover = false;
+        confirmationDelete = '{{ 'confirmation.delete' | trans({}, "messages") }}';
 
-                //initiate the fancybox = slider
-                FancyBox.initFancybox();
+        //initiate the fancybox = slider
+        FancyBox.initFancybox();
 
-                //initiate the google map new address
-                adressId = 'address_formattedAddress';
-                componentFormId = {
-                    street_number: 'address_streetAddress',
-                    route: 'address_route',
-                    locality: 'address_locality',
-                    country: 'address_country',
-                    postal_code: 'address_postalCode'
-                };
-            });
+        //variable for the address form
+        jQuery(document).ready(function() {
+            //initiate the google map new address
+            adressId = 'address_formattedAddress';
+            componentFormId = {
+                street_number: 'address_streetAddress',
+                route: 'address_route',
+                locality: 'address_locality',
+                country: 'address_country',
+                postal_code: 'address_postalCode'
+            };
 
-        </script>
-        {% javascripts 'bundles/app/js/address.js' 'bundles/app/js/nav.js' 'bundles/app/js/dropzone-custom.js'%}
-            <script src="{{ asset_url }}"></script>
-        {% endjavascripts %}
-        <script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyBXbn5jGttQkXWIfV91bBmsMg-HS_o_f7o&signed_in=true&libraries=places&callback=initAutocomplete" async defer></script>
-    {#{% endblock %}#}
+
+        });
+    </script>
+    {% javascripts 'bundles/app/js/address.js' 'bundles/app/js/nav.js' 'bundles/app/js/dropzone-custom.js'%}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+    <script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyBXbn5jGttQkXWIfV91bBmsMg-HS_o_f7o&signed_in=true&libraries=places&callback=initAutocomplete" async defer></script>
 {% endblock %}
