@@ -169,10 +169,9 @@
 /*Navbar Menu*/
 .header-v6 .navbar-nav > li > a {
 	color: #fff;
-	font-size: 13px;
+	font-size: 16px;
 	font-weight: 400;
 	letter-spacing: 1px;
-	text-transform: uppercase;
 }
 
 .header-v6 .nav > li > a:hover,

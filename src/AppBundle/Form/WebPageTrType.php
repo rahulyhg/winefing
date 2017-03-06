@@ -40,7 +40,7 @@ class WebPageTrType extends AbstractType
             ->add('language', EntityType::class,  array(
                 'class' => 'WinefingApiBundle:Language',
                 'choice_label' => 'name'))
-            ->add('activated', CheckboxType::class, array('required' => false))
+//            ->add('activated', CheckboxType::class, array('required' => false))
         ;
     }
     public function configureOptions(OptionsResolver $resolver)

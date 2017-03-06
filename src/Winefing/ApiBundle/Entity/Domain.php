@@ -26,7 +26,7 @@ class Domain
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\WineRegion", inversedBy="domains")
+     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\WineRegion", inversedBy="domains", cascade={"persist", "merge", "detach"})
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"default"})
      */
@@ -68,7 +68,7 @@ class Domain
     private $characteristicValues;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Tag", inversedBy="domains")
+     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Tag", inversedBy="domains", fetch="EXTRA_LAZY")
      * @Groups({"tags"})
      */
     private $tags;
@@ -101,7 +101,7 @@ class Domain
      * @Groups({"default"})
      * @Type("string")
      */
-    private $mediasPresentation;
+    private $mediaPresentation;
 
     /**
      * @Groups({"domainMediasPresentation"})
@@ -116,7 +116,13 @@ class Domain
      */
     private $characteristicValuesByCategory;
 
-    public function _construct() {
+    /**
+     * @Type("Winefing\ApiBundle\Entity\DomainStatistic")
+     * @Groups({"stat"})
+     */
+    private $domainStatistic;
+
+    public function __construct() {
         $this->medias = new ArrayCollection();
         $this->characteristicValues = new ArrayCollection();
         $this->properties = new ArrayCollection();
@@ -228,7 +234,7 @@ class Domain
     /**
      * @param mixed $wineRegion
      */
-    public function setWineRegion($wineRegion)
+    public function setWineRegion(WineRegion $wineRegion)
     {
         $this->wineRegion = $wineRegion;
     }
@@ -347,7 +353,7 @@ class Domain
     }
 
     /**
-     * @param mixed $mediaPresentation
+     * @param mixed
      */
     public function getMediaPresentation()
     {
@@ -362,24 +368,18 @@ class Domain
         return $this->tags;
     }
 
-    /**
-     * @param mixed $tags
-     */
-    public function setTags($tags)
-    {
-        $this->tags = $tags;
-    }
+//    /**
+//     * @param mixed $tags
+//     */
+//    public function setTags($tags)
+//    {
+//        $this->tags = $tags;
+//    }
     public function addTag(Tag $tag) {
         $this->tags[] = $tag;
     }
-
-
-    /**
-     * @return mixed
-     */
-    public function getMediasPresentation()
-    {
-        return $this->mediasPresentation;
+    public function resetTags() {
+        $this->tags = new ArrayCollection();
     }
 
     /**
@@ -414,5 +414,20 @@ class Domain
         $this->characteristicValuesByCategory = $characteristicValuesByCategory;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getDomainStatistic()
+    {
+        return $this->domainStatistic;
+    }
+
+    /**
+     * @param mixed $domainStatistic
+     */
+    public function setDomainStatistic($domainStatistic)
+    {
+        $this->domainStatistic = $domainStatistic;
+    }
 }
 

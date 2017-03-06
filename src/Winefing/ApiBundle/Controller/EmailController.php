@@ -92,5 +92,52 @@ class EmailController extends Controller implements ClassResourceInterface
 //            );
 //        $this->get('mailer')->send($message);
     }
+    public function validateRentalOrder() {
+
+    }
+    public function validateRefuseOrder() {
+
+    }
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "index","email" },
+     *  parameters={
+     *      {
+     *          "name"="user", "dataType"="integer", "required"=true, "description"="user id"
+     *      },
+     *  },
+     *  description="Send an email for the registration",
+     *  statusCodes={
+     *         204="Returned when no content",
+     *
+     *     }
+     * )
+     */
+    public function postPaiementAction(Request $request) {
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
+        $user = $repository->findOneById($request->request->get('user'));
+        $message = \Swift_Message::newInstance()
+            ->setSubject($this->get('translator')->trans('label.welcome', array(), 'messages', $request->request->get('language')))
+            ->setFrom($this->container->getParameter('mailer_user'))
+            ->setTo('carval.audrey@gmail.com')
+            ->setBody(
+                $this->renderView(
+                // app/Resources/views/Emails/registration.html.twig
+                    'email/paiement.html.twig',
+                    array('user'=>$user, 'language'=>$request->request->get('language'))
+            ),
+                'text/html'
+            );
+        $this->get('mailer')->send($message);
+    }
+    public function postContactAction(Request $request) {
+        $message = \Swift_Message::newInstance()
+            ->setSubject('Nouveau message de la part de '.$request->request->get('name').' email : '.$request->request->get('email'))
+            ->setFrom($this->container->getParameter('mailer_user'))
+            ->setTo($this->getParameter('winefing_email'))
+            ->setBody($request->request->get('message'));
+        $this->get('mailer')->send($message);
+    }
 
 }

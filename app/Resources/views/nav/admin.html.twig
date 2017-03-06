@@ -1,35 +1,30 @@
-<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-    <div class="container">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-top">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a  class="navbar-brand" href="{{ path('home') }}"><img style="width: 35px"  src="{{asset('Logosaumon_fond transparent.png')}}" alt="Winefing"></a>
-        </div>
-
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="navbar-top">
-            <ul class="nav navbar-nav navbar-right">
-                <li class="{% if app.request.attributes.get('_route') == 'registration_host' %}active{% endif %}"><a href="{{ path("registration_host", {'step' : 'contact'}) }}">Viticulteur</a></li>
-                <li><a href="#" class="signin" data-toggle="modal" data-target="#modal-signin">{% trans %}label.help{% endtrans %}</a></li>
-                <li><a href="#modal-signin" class="signin" data-toggle="modal" data-target="#modal-signin">{% trans %}label.registration{% endtrans %}</a></li>
-                {% if app.user %}
-                    {% if is_granted("ROLE_HOST") %}
-                        <p>host</p>
-                    {% elseif is_granted("ROLE_USER") %}
-                        <p>host</p>
-                    {% elseif is_granted("ROLE_MANAGMENT") or is_granted("ROLE_BLOG") or is_granted("ROLE_TECHNIQUE") %}
-                        <p>admin</p>
-                    {% endif %}
-                {% else %}
-                    <button type="button" value="Connexion" class="btn signup" onclick="loadForm('{{ path('fos_user_security_login')}}', 'login')">{% trans %}label.login{% endtrans %}</button>
-                {% endif %}
-            </ul>
-        </div><!-- /.navbar-collapse -->
-    </div><!-- /.container -->
-</nav>
-<!-- end:navbar -->
+<!-- End Navbar -->
+<ul class="nav navbar-nav">
+    <li class="{% if app.request.get('_route') == 'home' %}active{% endif %}"><a href="{{ path('home') }}">{% trans %}label.home{% endtrans %}</a></li>
+    <li class="{% if app.request.get('_route') == 'explore' %}active{% endif %}"><a href={{ path('explore') }}>{% trans %}label.explore{% endtrans %}</a></li>
+    <li class="{% if app.request.get('_route') == 'boxes' %}active{% endif %}"><a href="{{ path('boxes') }}">{% trans %}label.offer{% endtrans %}</a></li>
+    <li class="{% if app.request.get('_route') == 'articles' %}active{% endif %}"><a href={{ path('articles') }}>{% trans %}label.blog{% endtrans %}</a></li>
+    <!-- Demo Pages -->
+    <li class="dropdown">
+        <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown">
+            <img class="circular-min-landscape" src="{{ user_directory ~ app.user.picture }}">
+        </a>
+        <ul class="dropdown-menu">
+            <li>
+                <div class="mega-menu-content disable-icons">
+                    <div class="container">
+                        <div class="row equal-height">
+                            <div class="col-md-3 equal-height-in">
+                                <ul class="list-unstyled equal-height-list">
+                                    <li><a href="{{ path('users_by_group', {'group': role_host}) }}">Administration</a></li>
+                                    <li><a href="{{ path('logout') }}">{% trans %}label.logout{% endtrans %}</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </li>
+    <!-- End Demo Pages -->
+</ul>

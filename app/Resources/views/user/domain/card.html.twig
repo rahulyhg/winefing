@@ -235,7 +235,10 @@
                                                         {{ 'label.people_number_plurial' | transchoice(rentals[i].peopleNumber, {"%number%":rentals[i].peopleNumber}) }}
                                                     </span>
                                                     <span class="glyphicon glyphicon-euro property-features-span-margin">
-                                                        {{ rentals[i].price ~ '/'~'label.night' | trans({})}}
+                                                        {{ rentals[i].price ~ '/'~'label.night' | transchoice(1, {})}}
+                                                    </span>
+                                                    <span style="    font-size: 8px;margin-left: -15px; font-style: italic;position: inherit">
+                                                        {{ '*'~'label.night_minimum' | transchoice(rentals[i].minimumRentalPeriod, {'%number%': rentals[i].minimumRentalPeriod})}}
                                                     </span>
                                                 </div>
                                             </div>
@@ -277,7 +280,7 @@
 
                                                 </h3>
                                                 <div class="row" style="margin-bottom: -10px!important">
-                                                    <input type="button" value="{% trans %}label.book{% endtrans %}" style="width:100%" onclick="rentalOrder('{{ path('rental', {'id':rentals[i].id, 'startDate':app.request.get('startDate'), 'endDate':  app.request.get('enDate')}) }}')" class="btn btn-primary pull-right">
+                                                    <input type="button" value="{% trans %}label.book{% endtrans %}" style="width:100%" onclick="rentalOrder('{{ path('rental', {'id':rentals[i].id, 'startDate':app.request.get('startDate'), 'endDate':  app.request.get('endDate')}) }}')" class="btn btn-primary pull-right">
                                                 </div>
                                             </div>
                                         </div>
@@ -290,6 +293,9 @@
                 </div>
             </div>
         {% endfor %}
+        <div class="container">
+            <p style="font-style: italic">*{% trans %}help.price_variation{% endtrans %}</p>
+        </div>
     </div>
 {% endblock %}
 {% block script %}

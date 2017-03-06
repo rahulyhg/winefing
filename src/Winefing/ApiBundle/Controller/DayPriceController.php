@@ -43,7 +43,9 @@ class DayPriceController extends Controller implements ClassResourceInterface
         $em = $this->getDoctrine()->getManager();
         $serializer = $this->container->get('jms_serializer');
         $dayPrice = new DayPrice();
-        $dayPrice->setDate(new \DateTime($request->request->get('date')));
+        $dt = new \DateTime();
+        $dt->setTimestamp($request->request->get('date'));
+        $dayPrice->setDate($dt);
         $dayPrice->setPrice($request->request->get('price'));
 
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:RentalOrder');

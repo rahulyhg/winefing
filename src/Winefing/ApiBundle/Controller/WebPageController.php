@@ -27,6 +27,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Winefing\ApiBundle\Entity\LanguageEnum;
 
+use JMS\Serializer\SerializationContext;
 
 
 class WebPageController extends Controller implements ClassResourceInterface
@@ -65,19 +66,15 @@ class WebPageController extends Controller implements ClassResourceInterface
         return new Response($json);
     }
 
-//    public function getAction($id)
-//    {
-//        $encoders = array(new JsonEncoder());
-//        $normalizers = array(new ObjectNormalizer());
-//        $serializer = new Serializer($normalizers, $encoders);
-//        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:WebPage');
-//        $webPage = $repository->findOneById($id);
-//        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
-//        $missingLanguages = $repository->findMissingLanguagesForWebPage($webPage);
-//        $webPage->setMissingLanguages(new ArrayCollection($missingLanguages));
-//        $json = $serializer->serialize($webPage, 'json');
-//        return new Response($json);
-//    }
+    public function getAction($code, $language)
+    {
+        $serializer = $this->container->get('jms_serializer');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:WebPage');
+        $webPage = $repository->findOneByCode($code);
+        $webPage->setTr($language);
+        $json = $serializer->serialize($webPage, 'json', SerializationContext::create()->setGroups(array('default')));
+        return new Response($json);
+    }
     /**
      * Create or update a webPage from the submitted data.<br/>
      */

@@ -1,0 +1,169 @@
+{% extends 'base.html.twig' %}
+{% block meta %}
+    {{ parent() }}
+    <meta property="og:url"           content="{{ url('article', {'id': article.id}) }}" />
+    <meta property="og:type"          content="website" />
+    <meta property="og:title"         content="{{ article.title }}" />
+    <meta property="og:description"   content="{{ article.shortDescription }}" />
+    <meta property="og:image"         content="{{ article_directory ~article.picture }}" />
+{% endblock %}
+{% block body %}
+    {#<div id="fb-root"></div>#}
+    <script>
+        window.fbAsyncInit = function() {
+            FB.init({
+                appId      : '1655366874765495',
+                xfbml      : true,
+                version    : 'v2.8'
+            });
+            FB.AppEvents.logPageView();
+        };
+
+        (function(d, s, id){
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {return;}
+            js = d.createElement(s); js.id = id;
+            js.src = "//connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+    </script>
+
+    <!-- Interactive Slider v2 -->
+    <div class="cover-img" style="background: url({{ banner_directory ~'blog.png' }})">
+        <h1>{% trans %}label.blog{% endtrans %}</h1>
+    </div>
+    <!-- End Interactive Slider v2 -->
+    <!--=== Blog Posts ===-->
+    <div class="bg-color-light">
+        <div class="container content-sm">
+            <!-- News v3 -->
+            <div class="news-v3 bg-color-white margin-bottom-30">
+                <img style="width: 100%" class="img-responsive full-width" src="{{ article_directory ~ article.picture }}" alt="{{ article.title }}">
+                <div class="news-v3-in">
+                    <ul class="list-inline posted-info">
+                        <li>{% trans %}label.by{% endtrans %} <a href="{{ path('articles', {'article_filter': {'user': article.user.id}}) }}">{{ article.user.fullName }}</a></li>
+                        <li>{% trans %}label.in{% endtrans %}
+                            {% for articleCategory in article.articleCategories %}
+                                <a href="{{ path('articles', {'article_filter': {'articleCategory': articleCategory.id}}) }}">{{ articleCategory.name }}</a>
+                                {% if loop.index < article.articleCategories|length %}
+                                    <span>,</span>
+                                {% else %}
+                                    <span>.</span>
+                                {% endif %}
+                            {% endfor %}
+                        </li>
+                        <li>Posted {{ article.created|date('D, d F Y', "Europe/Paris") }}</li>
+                    </ul>
+                    <h2>{{ article.title }}</h2>
+                    {{ article.content|raw }}
+                    <div class="share-button">
+                        {%  set hashtags='' %}
+                        {% for tag in article.tags %}
+                            {% set hashtags = hashtags ~ tag.name|replace({"'":''})|title|replace({' ':''}) %}
+                            {% if loop.index < article.tags|length %}
+                                {% set hashtags = hashtags ~ ','%}
+                            {% endif %}
+                        {% endfor %}
+                        <a class="twitter-share-button"
+                           href="{{ url('article', {'id': article.id}) }}"
+                           data-size="large"
+                           data-hashtags="{{ hashtags }}"
+                           data-via="winefing"
+                           data-text="{{ 'label.great_article'|trans()~ ': '~article.title }}">
+                            Tweet</a>
+                        <div size="large" class="fb-share-button"
+                             style="margin-left: 20px!important"
+                             data-href="{{ url('article', {'id': article.id}) }}"
+                             data-layout="button">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End News v3 -->
+
+            <!-- Blog Post Author -->
+            <div class="blog-author margin-bottom-30">
+                <img src="{{ user_directory ~ article.user.picture }}" alt="{{ article.user.fullName }}">
+                <div class="blog-author-desc">
+                    <div class="overflow-h">
+                        <h4>{{ article.user.fullName }}</h4>
+                        <ul class="list-inline">
+
+                            {% set route = winefing_facebook %}
+                            {% if article.user.facebook %}
+                                {% set route = article.user.facebook %}
+                            {% endif %}
+                            <li><a href="{{ route }}" target="_blank"><i class="fa fa-facebook"></i></a></li>
+
+                            {% set route = winefing_twitter %}
+                            {% if article.user.twitter %}
+                                {% set route = article.user.twitter %}
+                            {% endif %}
+                            <li><a href="{{ route }}" target="_blank"><i class="fa fa-twitter"></i></a></li>
+
+                            {% set route = winefing_google %}
+                            {% if article.user.google %}
+                                {% set route = article.user.google %}
+                            {% endif %}
+                            <li><a href="{{ route }}" target="_blank"><i class="fa fa-google-plus"></i></a></li>
+
+                            {% set route = winefing_instagram %}
+                            {% if article.user.instagram %}
+                                {% set route = article.user.instagram %}
+                            {% endif %}
+                            <li><a href="{{ route }}" target="_blank"><i class="fa fa-instagram"></i></a></li>
+                        </ul>
+                    </div>
+                    <p>
+                        {{ article.user.description }}
+                    </p>
+                </div>
+            </div>
+            <!-- End Blog Post Author -->
+
+            <!-- Authored Blog -->
+            <div class="row news-v2 margin-bottom-50">
+                <h2 class="margin-bottom-20">{{ 'label.similar_articles'|trans() }}</h2>
+                <hr>
+                {% for articleSimilar in articles %}
+                    <div class="col-sm-4 sm-margin-bottom-30">
+                        <div class="news-v2-badge">
+                            <img width="100%" class="img-responsive" src="{{ article_directory ~ articleSimilar.picture }}" alt="{{ articleSimilar.title }}">
+                            <p>
+                                <small>{{ articleSimilar.created|date('D, d F Y') }}</small>
+                            </p>
+                        </div>
+                        <div class="news-v2-desc">
+                            <h3><a href="{{ path('article', {'id': article.id}) }}">{{ articleSimilar.title }}</a></h3>
+                            <small>{{ 'label.by'|trans ~ ' '~articleSimilar.user.fullName ~'|'~'label.in'|trans() }}
+                                {% for articleCategory in articleSimilar.articleCategories %}
+                                    <a href="{{ path('articles', {'article_filter':{'articleCategory': articleCategory.id}}) }}">{{ articleCategory.name }}</a>
+                                    {% if loop.index < articleSimilar.articleCategories|length %}
+                                        <span>,</span>
+                                    {% else %}
+                                        <span>.</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </small>
+                            <p>
+                                {{ articleSimilar.shortDescription }}
+                            </p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <!-- End Authored Blog -->
+            <h2 class="margin-bottom-20">{{ 'label.comments'|trans() }}</h2>
+            <hr>
+            <div data-width="100%"class="fb-comments" data-href="{{ url('article', {'id':article.id}) }}" data-numposts="5"></div>
+            <!-- End Form -->
+        </div><!--/end container-->
+    </div>
+    <!--=== End Blog Posts ===-->
+{% endblock %}
+{% block script %}
+{{ parent() }}
+    <script>
+
+    </script>
+{% endblock %}

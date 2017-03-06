@@ -28,8 +28,8 @@ class BoxItemTrType extends AbstractType
         $builder
             ->add('id',  HiddenType::class, array(
                 'required' => false))
-            ->add('name', null, array('attr'=>array('class'=>'form-control')))
-            ->add('description', TextareaType::class, array('attr'=>array('class'=>'form-control')))
+            ->add('name', null, array('attr'=>array('class'=>'form-control', 'maxlength'=>'255')))
+            ->add('description', TextareaType::class, array('attr'=>array('class'=>'form-control', 'maxlength'=>'255')))
             ->add('language', EntityType::class,  array(
                 'class' => 'WinefingApiBundle:Language',
                 'choice_label' => 'name'));

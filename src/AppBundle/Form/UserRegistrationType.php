@@ -29,16 +29,14 @@ class UserRegistrationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('firstName', null, array('label' => 'label.first_name', 'attr'=>array('class'=> 'form-control')))
-            ->add('lastName', null, array('label' => 'label.last_name', 'attr'=>array('class'=> 'form-control')))
+            ->add('firstName', null, array('required'=>true, 'label' => 'label.first_name', 'attr'=>array('class'=> 'form-control', 'placeholder'=>'label.first_name')))
+            ->add('lastName', null, array('required'=>true, 'label' => 'label.last_name', 'attr'=>array('class'=> 'form-control', 'placeholder'=>'label.last_name')))
             ->add('password', RepeatedType::class, array('type' => PasswordType::class,
                 'first_options'  => array('label' => 'label.password', 'data'=>'', 'attr'=>array('class'=> 'form-control', 'placeholder'=>'label.password')),
                 'second_options' => array('label' => false, 'data'=>'', 'attr'=>array('class'=> 'form-control', 'placeholder'=>'label.confirmation_password'))))
             ->add('email', RepeatedType::class, array('type' => EmailType::class,
                 'first_options'  => array('label' => 'label.email', 'data'=>'', 'attr'=>array('class'=> 'form-control', 'placeholder'=>'label.email')),
                 'second_options' => array('label' => false, 'data'=>'', 'attr'=>array('class'=> 'form-control', 'placeholder'=>'label.confirmation_email'))))
-            ->add('submit', SubmitType::class, array('label' => 'label.submit',
-                'attr' => array('class' => 'btn btn-primary pull-right')))
             ->add('agree', CheckboxType::class, array('label'=>false, 'mapped'=>false, 'required'=>true))
             ->add('subscription', CheckboxType::class, array('label'=>false, 'mapped'=>false, 'required'=>false, 'attr'=>array('checked'=>true)))
 

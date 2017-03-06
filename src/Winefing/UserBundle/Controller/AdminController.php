@@ -30,17 +30,15 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 class AdminController extends Controller
 {
     /**
-     * @Route("admin/user/new/{id}", name="user_new_form")
+     * @Route("lolilo/user/new/{id}", name="user_new_form")
      */
     public function newFormAction($id = '') {
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
-        $user = $repository->findOneById($id);
-        $action = $this->generateUrl('users_admin_submit');
-        if(empty($user)){
-            $user = new User();
+        $user = new User();
+        if(!empty($id)){
+            $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
+            $user = $repository->findOneById($id);
         }
-        $options['action']= $action;
-        $userForm = $this->createForm(AdminUserType::class, $user, $options);
+        $userForm = $this->createForm(AdminUserType::class, $user, array('action'=>$this->generateUrl('users_admin_submit')));
         return $this->render('admin/user/form.html.twig', array(
             'user' => $userForm->createView()
         ));

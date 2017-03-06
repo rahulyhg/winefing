@@ -30,6 +30,7 @@ class TagType extends AbstractType
         $builder
             ->add('id',  HiddenType::class, array(
                 'required' => false))
+            ->add('picture', FileType::class, ['required' => false, 'data_class' => null, 'attr'=> ['accept'=>'image/*']])
             ->add('tagTrs', CollectionType::class, array(
                 'entry_type' => TagTrType::class))
         ;

@@ -1,8 +1,87 @@
 {% extends 'user/rental/paiement/base.html.twig' %}
 {% block new %}
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-8">
+            {% if form_errors(creditCardForm) %}
+                <div class="alert alert-danger">
+                    {{ form_errors(creditCardForm) }}
+                </div>
+            {% elseif app.session.flashBag.has('error') %}
+                <div class="alert alert-danger">
+                    {% for msg in app.session.flashBag.get('error') %}
+                        {{ msg }}
+                    {% endfor %}
+                </div>
+            {% endif %}
             <div class="panel-group" id="accordion">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            {% trans %}label.total{% endtrans %} {{ rentalOrder.totalTTC ~'€' }}
+                        </h4>
+                    </div>
+                    <div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    {{ form_start(creditCardForm) }}
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group {% if creditCardForm.cardName.vars.errors|length %}has-error{% endif %}">
+                                                    {{ form_row(creditCardForm.cardName) }}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group {% if creditCardForm.cardType.vars.errors|length %}has-error{% endif %}">
+                                                    {{ form_row(creditCardForm.cardType) }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group {% if creditCardForm.cardNumber.vars.errors|length %}has-error{% endif %}">
+                                            {{ form_row(creditCardForm.cardNumber) }}
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group {% if creditCardForm.cardCode.vars.errors|length %}has-error{% endif %}">
+                                                    {{ form_row(creditCardForm.cardCode) }}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group {% if creditCardForm.cardDate.vars.errors|length %}has-error{% endif %}">
+                                                    {{ form_row(creditCardForm.cardDate) }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div style="font-weight: normal!important;font-style: italic">
+                                            <spam>{% trans %}label.when_pay_agree_sales_conditions{% endtrans %}</spam>
+                                            {#{{ form_widget(creditCardForm.cgv) }}#}
+                                            {#<br>#}
+                                            {#<spam>{% trans %}label.save_credit_card{% endtrans %}</spam>#}
+                                            {#<a href="#" target="_blank">#}
+                                                {#{% trans %}label.here{% endtrans%}.#}
+                                            {#</a>#}
+                                            {#{{ form_widget(creditCardForm.save) }}#}
+                                        </div>
+                                        <div class="form-group" style="margin-top: 10px">
+                                            {{ form_row(creditCardForm.submit) }}
+                                        </div>
+                                    {{ form_end(creditCardForm) }}
+                                </div>
+                                <div class="col-md-6">
+                                    <div class='card-wrapper'></div>
+                                    <br>
+                                    <div>
+                                        <a href="https://www.lemonway.com/fr/" target="_blank">
+                                            <img class="img-responsive" style="text-align:center;width: 200px;" src="{{ asset('LemonWay_Logo_WEB.png') }}">
+                                        </a>
+                                        <p style="font-style: italic">{% trans %}label.paiement_safe{% endtrans %}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
@@ -12,86 +91,48 @@
                     </div>
                     <div id="collapseOne" class="panel-collapse collapse">
                         <div class="panel-body">
-                            {% set detail = '' %}
-                            {% for dayPrice in rentalOrder.dayPrices %}
-                                {% set date =  dayPrice.date|date('d-m-Y')%}
-                                {% set price = dayPrice.price %}
-                                {% set detail = detail ~ "<label>" ~ date ~ ": "  ~ price ~ "</label> <br>" %}
-                            {% endfor %}
                             <div class="row">
-                                <br>
-                                <div class="col-sm-4">
-                                    <div class="property-container">
-                                        <div class="property-image">
-                                            <a href="{{ rental_directory ~ rentalOrder.rental.mediaPresentation }}" title="{{ rentalOrder.rental.name }}" data-rel="gallery" class="fancybox img-hover-v1">
-                                                <img src="{{ rental_directory ~ rentalOrder.rental.mediaPresentation }}" alt="{{ rentalOrder.rental.name }}">
-                                                <div class="hidden-xs">
-                                                    <span class="glyphicon glyphicon-search picture-zoom"></span>
-                                                </div>
-                                                <div class="property-features-grey text-center">
-                                                    {{ rentalOrder.rental.name }}
-                                                </div>
-                                            </a>
-                                        </div>
-                                        <div class="property-content">
-                                            <div class="service-box-v1" style="text-align: center">
-                                                <ul class="list-unstyled">
-                                                    <li>
-                                                        <label>{{ rentalOrder.averagePrice ~'€ *' }} {{ rentalOrder.dayNumber ~''~'label.night' | transchoice(rentalOrder.dayNumber) }}</label>
-                                                        <a data-html="true" style="border:none" type="button" title="{% trans %}label.price_details{% endtrans %}" data-container="body" data-toggle="popover" data-placement="bottom" data-content="{{ detail }}">
-                                                            <spam class="glyphicon glyphicon-question-sign"></spam>
-                                                        </a>
-                                                        <label> : </label>
-                                                        <span>{{ rentalOrder.amount ~'€'}}</span>
-                                                    </li>
-                                                    {% if rentalOrder.rentalOrderGift %}
-                                                        <li>
-                                                            <label>{% trans %}label.gift_card{% endtrans %} :</label>
-                                                            <span>{{ rental_order_gift_price ~'€'}}</span>
-                                                        </li>
-                                                    {% endif %}
-                                                    <li>
-                                                        <label>{% trans %}label.service_fees{% endtrans %}</label>
-                                                        <span>{{ rentalOrder.comission ~ '€' }}</span>
-                                                    </li>
-                                                    <li>
-                                                        <label>{% trans %}label.total{% endtrans %}</label>
-                                                        <span>{{ rentalOrder.totalTTC  ~ '€' }}</span>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-4">
+                                <div class="col-sm-6">
                                     <div class="service-box-v1">
                                         <div class="service-block service-block-default no-margin-bottom" style="text-align: left!important;padding-top: 3px!important;">
-                                            <h4>{% trans %}label.billing_address{% endtrans %}</h4>
-                                                <p style="margin-bottom:3px!important"><strong>{{ rentalOrder.clientAddress.name }}</strong><br>
-                                                {{ rentalOrder.clientAddress.additionalInformation }}<br>
-                                                {{ rentalOrder.clientAddress.streetAddress ~ '' ~rentalOrder.clientAddress.route }}<br>
-                                                {{ rentalOrder.clientAddress.postalCode ~ '' ~rentalOrder.clientAddress.locality }}<br>
-                                                {{ rentalOrder.clientAddress.country }}</p>
-                                            </div>
+                                            <h4>{% trans %}label.billing_address{% endtrans %}
+                                                <a href="{{ path('rental_paiement_billing_address') }}">
+                                                    <span style="float: right" class="glyphicon glyphicon-pencil"></span>
+                                                </a>
+                                            </h4>
+                                            <p style="margin-bottom:3px!important">
+                                                <strong>{{ rentalOrder.billingAddress.name }}</strong>
+                                                <br>
+                                                {{ rentalOrder.billingAddress.additionalInformation }}<br>
+                                                {{ rentalOrder.billingAddress.streetAddress ~ '' ~rentalOrder.billingAddress.route }}<br>
+                                                {{ rentalOrder.billingAddress.postalCode ~ '' ~rentalOrder.billingAddress.locality }}<br>
+                                                {{ rentalOrder.billingAddress.country }}</p>
                                         </div>
+                                    </div>
                                     {% if (rentalOrder.rentalOrderGift) %}
                                         <div class="service-box-v1" >
                                             <div class="service-block service-block-default no-margin-bottom" style="text-align: left!important;padding-top: 3px!important;">
                                                 <h4>{% trans %}label.delivery_address{% endtrans %}</h4>
-                                                <p style="margin-bottom:3px!important"><strong>{{ rentalOrder.clientAddress.name }}</strong><br>
-                                                    {{ rentalOrder.clientAddress.additionalInformation }}<br>
-                                                    {{ rentalOrder.clientAddress.streetAddress ~ '' ~rentalOrder.clientAddress.route }}<br>
-                                                    {{ rentalOrder.clientAddress.postalCode ~ '' ~rentalOrder.clientAddress.locality }}<br>
-                                                    {{ rentalOrder.clientAddress.country }}</p>
+                                                <p style="margin-bottom:3px!important"><strong>{{ rentalOrder.billingAddress.name }}</strong><br>
+                                                    {{ rentalOrder.billingAddress.additionalInformation }}<br>
+                                                    {{ rentalOrder.billingAddress.streetAddress ~ '' ~rentalOrder.billingAddress.route }}<br>
+                                                    {{ rentalOrder.billingAddress.postalCode ~ '' ~rentalOrder.billingAddress.locality }}<br>
+                                                    {{ rentalOrder.billingAddress.country }}</p>
                                             </div>
                                         </div>
                                     {% endif %}
                                 </div>
-                                <div class="col-sm-4">
+                                <div class="col-sm-6">
                                     {% if (rentalOrder.rentalOrderGift) %}
-                                        <p class="charact-box-title">{% trans %}label.message{% endtrans %}</p>
+                                        <p class="charact-box-title">{% trans %}label.message{% endtrans %}
+                                            <a href="{{ path('rental_paiement_gift') }}">
+                                                <span style="color: white;margin-left: 15px" class="glyphicon glyphicon-pencil"></span>
+                                            </a>
+                                        </p>
                                         <div class="charact-box" style="font-style: italic">
-                                            <span>{{ rentalOrder.rentalOrderGift.message }}</span>
+                                            <span>
+                                                {{ rentalOrder.rentalOrderGift.message }}
+                                            </span>
                                             <br><br>
                                             <div style="text-align: right">
                                                 <span >{{ rentalOrder.rentalOrderGift.signature }}</span>
@@ -103,83 +144,80 @@
                         </div>
                     </div>
                 </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            {% trans %}label.pay{% endtrans %} : {{ rentalOrder.totalTTC ~'€' }}
-                            <object style="float: left;" type="image/svg+xml" data="{{ credit_card_directory ~'credit-card.svg'}}" height="20px">
-                            </object>
-                            <object style="float: left;" type="image/svg+xml" data="{{ credit_card_directory ~'mastercard.svg'}}" height="20px">
-                            </object>
-                            <object style="float: left;" type="image/svg+xml" data="{{ credit_card_directory ~'visa.svg'}}" height="20px">
-                            </object>
-                        </h4>
-                    </div>
-                    <div>
-                        <div class="panel-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    {{ form_start(creditCardForm) }}
-                                    <div class="panel panel-default">
-                                        <div class="panel-body">
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group {% if creditCardForm.cardName.vars.errors|length %}has-error{% endif %}">
-                                                        {{ form_row(creditCardForm.cardName) }}
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-group {% if creditCardForm.cardType.vars.errors|length %}has-error{% endif %}">
-                                                        {{ form_row(creditCardForm.cardType) }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-group {% if creditCardForm.cardNumber.vars.errors|length %}has-error{% endif %}">
-                                                {{ form_row(creditCardForm.cardNumber) }}
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group {% if creditCardForm.cardCode.vars.errors|length %}has-error{% endif %}">
-                                                        {{ form_row(creditCardForm.cardCode) }}
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-group {% if creditCardForm.cardDate.vars.errors|length %}has-error{% endif %}">
-                                                        {{ form_row(creditCardForm.cardDate) }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <br>
-                                    <div style="font-weight: normal!important;font-style: italic">
-                                        <spam>{% trans %}label.agree_sales_conditions{% endtrans %}</spam>
-                                        <a href="#" target="_blank">
-                                            {% trans %}label.here{% endtrans%}.
-                                        </a>
-                                        {{ form_widget(creditCardForm.cgv) }}
-                                        <br>
-                                        <spam>{% trans %}label.save_credit_card{% endtrans %}</spam>
-                                        <a href="#" target="_blank">
-                                            {% trans %}label.here{% endtrans%}.
-                                        </a>
-                                        {{ form_widget(creditCardForm.save) }}
-                                    </div>
-                                    <div class="form-group">
-                                        {{ form_row(creditCardForm.submit) }}
-                                    </div>
-                                    {{ form_end(creditCardForm) }}
-                                </div>
-                                <div class="col-md-6">
-                                    <div class='card-wrapper'></div>
-                                </div>
-                            </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            {% set detail = '' %}
+            {% for dayPrice in rentalOrder.dayPrices %}
+                {% set date =  dayPrice.date|date('d-m-Y')%}
+                {% set price = dayPrice.price %}
+                {% set detail = detail ~ "<label>" ~ date ~ ": "  ~ price ~ "</label> <br>" %}
+            {% endfor %}
+            <div class="property-container">
+                <div class="property-image">
+                    <a href="{{ rental_directory ~ rentalOrder.rental.mediaPresentation }}" title="{{ rentalOrder.rental.name }}" data-rel="gallery" class="fancybox img-hover-v1">
+                        <img src="{{ rental_directory ~ rentalOrder.rental.mediaPresentation }}" alt="{{ rentalOrder.rental.name }}">
+                        <div class="hidden-xs">
+                            <span class="glyphicon glyphicon-search picture-zoom"></span>
                         </div>
+                        <div class="property-features-grey text-center">
+                            {{ rentalOrder.rental.name }}
+                        </div>
+                    </a>
+                </div>
+                <div class="property-content">
+                    <div class="service-box-v1" style="text-align: center">
+                        <ul class="list-unstyled">
+                            <li>
+                                <label>{{ rentalOrder.averagePrice ~'€ *' }} {{ rentalOrder.dayNumber ~' '~'label.night' | transchoice(rentalOrder.dayNumber) }}</label>
+                                <a data-html="true" style="border:none" type="button" title="{% trans %}label.price_details{% endtrans %}" data-container="body" data-toggle="popover" data-placement="bottom" data-content="{{ detail }}">
+                                    <spam class="glyphicon glyphicon-question-sign"></spam>
+                                </a>
+                                <label> : </label>
+                                <span>{{ rentalOrder.amount ~'€'}}</span>
+                            </li>
+                            {% if rentalOrder.rentalOrderGift %}
+                                <li>
+                                    <label>{% trans %}label.gift_card{% endtrans %} :</label>
+                                    <span >{{ rental_order_gift_price ~'€'}}</span>
+                                    <a onclick="setPathDeleteButton('{{ path('remove_rental_paiement_gift') }}');">
+                                        <span style="margin-left: 10px" class="glyphicon glyphicon-trash"></span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                            <li>
+                                <label>{% trans %}label.service_fees{% endtrans %}</label>
+                                <span>{{ rentalOrder.clientComission ~ '€' }}</span>
+                            </li>
+                            <li>
+                                <label>{% trans %}label.total{% endtrans %}</label>
+                                <span>{{ rentalOrder.totalTTC  ~ '€' }}</span>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <span id="modalDelete">
+        <div class="modal fade" tabindex="-1" role="dialog" id="confirmation">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">{% trans %}label.delete{% endtrans %}</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>{% trans %}warning.delete_rental_order_gift{% endtrans %}</p>
+                    </div><!-- /.modal-content -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">{% trans %}label.cancel{% endtrans %}</button>
+                        <a id="delete" type="submit" class="btn btn-primary pull-right">{% trans %}label.delete{% endtrans %}</a>
+                    </div>
+                </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
+        </div>
+    </span>
 {% endblock %}
 {% block script %}
     {{ parent() }}

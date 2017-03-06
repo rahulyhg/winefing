@@ -12,4 +12,5 @@ abstract class StatusOrderEnum extends BasicEnum {
     const validate = 1;
     const pay = 2;
     const cancel = 3;
+    const refuse = 4;
 }

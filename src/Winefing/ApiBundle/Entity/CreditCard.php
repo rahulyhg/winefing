@@ -40,23 +40,6 @@ class CreditCard
      * @Groups({"default"})
      */
     private $owner;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="number", type="string", length=255)
-     * @Groups({"default"})
-     */
-    private $number;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="expirationDate", type="string", length=255)
-     * @Groups({"default"})
-     */
-    private $expirationDate;
-
     /**
      * @var string
      *
@@ -74,54 +57,6 @@ class CreditCard
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set number
-     *
-     * @param string $number
-     *
-     * @return CreditCard
-     */
-    public function setNumber($number)
-    {
-        $this->number = $number;
-
-        return $this;
-    }
-
-    /**
-     * Get number
-     *
-     * @return string
-     */
-    public function getNumber()
-    {
-        return $this->number;
-    }
-
-    /**
-     * Set expirationDate
-     *
-     * @param string $expirationDate
-     *
-     * @return CreditCard
-     */
-    public function setExpirationDate($expirationDate)
-    {
-        $this->expirationDate = $expirationDate;
-
-        return $this;
-    }
-
-    /**
-     * Get expirationDate
-     *
-     * @return string
-     */
-    public function getExpirationDate()
-    {
-        return $this->expirationDate;
     }
 
     /**

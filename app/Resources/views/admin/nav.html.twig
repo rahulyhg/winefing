@@ -1,4 +1,4 @@
-<nav class="navbar navbar-inverse">
+<nav class="navbar navbar-inverse navbar-static-top">
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
@@ -13,7 +13,7 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-                <li class="dropdown {% if route == 'languages' or route =='formats' or route == 'countries'%}active{% endif %}">
+                <li class="dropdown {% if route == 'languages' or route =='formats' or route == 'countries'%}active-nav-back-end{% endif %}">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Technique<span class="caret"></span></a>
                     <ul class="dropdown-menu active">
                         <li class="{% if route == 'languages' %}submenu-admin-active{% endif %}"><a class="active" href="{{ path('languages') }}">Langues</a></li>
@@ -21,7 +21,7 @@
                         <li class="{% if route == 'countries' %}submenu-admin-active{% endif %}"><a class="active" href="{{ path('countries') }}">Pays</a></li>
                     </ul>
                 </li>
-                <li class="dropdown {% if route == 'characteristics_categories'%}active{% endif %}">
+                <li class="dropdown {% if route == 'characteristics_categories'%}active-nav-back-end{% endif %}">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Charactéristiques<span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li class="{% if route == 'characteristics_categories' and app.request.get('scopeName') == 'domain'%}submenu-admin-active{% endif %}"><a href="{{ path('characteristics_categories', {'scopeName' : 'domain'}) }}">Domaine</a></li>
@@ -29,7 +29,7 @@
                         <li class="{% if route == 'characteristics_categories' and app.request.get('scopeName') == 'rental' %}submenu-admin-active{% endif %}"><a href="{{ path('characteristics_categories', {'scopeName' : 'rental'}) }}">Location</a></li>
                     </ul>
                 </li>
-                <li class="dropdown {% if route == 'users_admin' or route =='' %}active{% endif %}">
+                <li class="dropdown {% if route == 'users_by_group' or route =='' %}active-nav-back-end{% endif %}">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Utilisateurs<span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li class="{% if route == 'users_by_group' and app.request.get('group') == role_admin%}submenu-admin-active{% endif %}"><a href="{{ path('users_by_group', {'group' : role_admin}) }}">Admin</a></li>
@@ -48,19 +48,23 @@
                         <li class="{% if route == 'propertyCategories' %}submenu-admin-active{% endif %}"><a href="{{ path('propertyCategories') }}">Type de propriété</a></li>
                     </ul>
                 </li>
-                <li class="dropdown {% if route == 'articleCategory' or route =='articles'%}active{% endif %}">
+                <li class="dropdown {% if route == 'articleCategory' or route =='admin_articles'%}active-nav-back-end{% endif %}">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Blog<span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li class="{% if route == 'articleCategory' %}submenu-admin-active{% endif %}"><a href="{{ path('articleCategory') }}">Catégories</a></li>
-                        <li class="{% if route == 'articles' or route == 'articleTr_new_form' %}submenu-admin-active{% endif %}"><a href="{{ path('articles') }}">Articles</a></li>
+                        <li class="{% if route == 'admin_articles' or route == 'articleTr_new_form' %}submenu-admin-active{% endif %}"><a href="{{ path('admin_articles') }}">Articles</a></li>
                     </ul>
                 </li>
-                <li class="dropdown {% if route == 'boxes' or route =='box_new'%}active{% endif %}">
+                <li class="dropdown {% if route == 'boxes' or route =='box_new'%}active-nav-back-end{% endif %}">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Box<span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li class="{% if route == 'boxes_admin' %}submenu-admin-active{% endif %}"><a href="{{ path('boxes_admin') }}">Les boxes</a></li>
                         <li class="{% if route == 'box_new'%}submenu-admin-active{% endif %}"><a href="{{ path('box_new') }}">Ajouter</a></li>
                     </ul>
+                </li>
+                {% set routeUserEdit = path('user_edit', {'id' : app.user.id}) %}
+                <li class="{% if route == 'user_edit'%}active-nav-back-end{% endif %}">
+                    <a href="{{ routeUserEdit }}">{% trans %}label.my_profil{% endtrans %} </a>
                 </li>
             </ul>
         </div><!-- /.navbar-collapse -->

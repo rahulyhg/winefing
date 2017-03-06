@@ -24,7 +24,9 @@
                     {% endfor %}
                 </td>
                 <td>
-                    <input type="button" class="btn btn-danger" value="{% trans %}label.delete{% endtrans %}" onclick="setPathDeleteButton('{{ path('propertyCategory_delete', {'id' : propertyCategory.id}) }}')"/>
+                    {% if propertyCategory.properties|length == 0 %}
+                        <input type="button" class="btn btn-danger" value="{% trans %}label.delete{% endtrans %}" onclick="setPathDeleteButton('{{ path('propertyCategory_delete', {'id' : propertyCategory.id}) }}')"/>
+                    {% endif %}
                     <input type="button" class="btn btn-primary" value="{% trans %}label.edit{% endtrans %}" id="update" onclick="loadForm('{{ url('propertyCategory_new_form', {'id': propertyCategory.id})}}', 'propertyCategory')"/>
                 </td>
         {% endfor %}

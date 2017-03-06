@@ -59,12 +59,20 @@ class UserController extends Controller implements ClassResourceInterface
     {
         $serializer = $this->container->get("jms_serializer");
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
+        $repositoryRentalOrder = $this->getDoctrine()->getRepository('WinefingApiBundle:RentalOrder');
         if($role == UserGroupEnum::Admin) {
             $users = $repository->findAdmin();
+            $json = $serializer->serialize($users, 'json', SerializationContext::create()->setGroups(array('id','default')));
         } else {
             $users = $repository->findByRoles($role);
+            foreach($users as $user) {
+                $rentalOrders = $repositoryRentalOrder->findWithUser($user->getId());
+                $user->setHostRentalOrders($rentalOrders);
+            }
+            $json = $serializer->serialize($users, 'json', SerializationContext::create()->setGroups(array('id','default','hostRentalOrders', 'domains')));
+
         }
-        return new Response($serializer->serialize($users, 'json', SerializationContext::create()->setGroups(array('default'))));
+        return new Response($json);
     }
     /**
      * @ApiDoc(
@@ -260,6 +268,13 @@ class UserController extends Controller implements ClassResourceInterface
         $user->setEmail($request->request->get('email'));
         $user->setUserName($request->request->get('email'));
         $user->setDescription($request->request->get('description'));
+
+        //for the admin
+        $user->setFacebook($request->request->get('facebook'));
+        $user->setTwitter($request->request->get('twitter'));
+        $user->setInstagram($request->request->get('instagram'));
+        $user->setGoogle($request->request->get('google'));
+
         if(!empty($request->request->get('birthDate'))) {
             $user->setBirthDate(date_create_from_format('U', $request->request->get('birthDate')));
         }
@@ -305,8 +320,8 @@ class UserController extends Controller implements ClassResourceInterface
         if($extentionCorrect != 1) {
             throw new BadRequestHttpException($extentionCorrect);
         }
-        $userManager = $this->get('fos_user.user_manager');
-        $user = $userManager->findBy(array('id'=>$request->request->get('user')));
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
+        $user = $repository->findOneById($request->request->get('user'));
         if(!empty($user->getPicture())) {
             unlink($this->getParameter('user_directory_upload') . $user->getPicture());
         }
@@ -342,8 +357,13 @@ class UserController extends Controller implements ClassResourceInterface
     {
         $em = $this->getDoctrine()->getManager();
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
-        $user = $repository->findBy(array("id" => $request->request->get("id")));
-        $user->setPlainPassword($request->request->get('password'));
+        $user = $repository->findOneById($request->request->get("user"));
+//        $encoder = $this->container->get('security.password_encoder');
+//        if(!$encoder->isPasswordValid($user, $request->request->get('password'))) {
+//            throw new \Exception('lol');
+//        } else {
+            $this->setEncodePassword($user, $request->request->get('password'));
+//        }
         $validator = $this->get('validator');
         $errors = $validator->validate($user);
         if (count($errors) > 0) {
@@ -693,5 +713,24 @@ class UserController extends Controller implements ClassResourceInterface
         $webPath = $this->container->get('winefing.webpath_controller');
         $picturePath = $webPath->getPath($this->getParameter('user_directory'));
         return new Response(json_encode($picturePath));
+    }
+
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "id"},
+     *  description="Return user for a domain id given",
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         204="Returned when no content"
+     *     }
+     *
+     * )
+     */
+    public function getUserByDomainAction($domain) {
+        $serializer = $this->container->get("jms_serializer");
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Domain');
+        $domain = $repository->findOneById($domain);
+        return new Response($serializer->serialize($domain->getUser(), 'json', SerializationContext::create()->setGroups(array('id'))));
     }
 }

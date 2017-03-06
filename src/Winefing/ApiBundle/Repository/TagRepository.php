@@ -10,4 +10,22 @@ namespace Winefing\ApiBundle\Repository;
  */
 class TagRepository extends \Doctrine\ORM\EntityRepository
 {
+    function findForArticles() {
+        $queryBuilder = $this->createQueryBuilder('tag')
+            ->join("tag.articles", "article")
+            ->groupBy('tag.id');
+
+         $query=$queryBuilder->getQuery();
+        return $query->getResult();
+    }
+    function findForDomains($params) {
+        $queryBuilder = $this->createQueryBuilder('tag')
+            ->join("tag.domains", "domain")
+            ->groupBy('tag.id');
+        if(array_key_exists("maxResult", $params)) {
+            $queryBuilder->setMaxResults($params['maxResult']);
+        }
+         $query=$queryBuilder->getQuery();
+        return $query->getResult();
+    }
 }

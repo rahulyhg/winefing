@@ -45,6 +45,7 @@ class RentalOrderGiftController extends Controller implements ClassResourceInter
 
         $rentalOrderGift->setMessage($request->request->get('message'));
         $rentalOrderGift->setSignature($request->request->get('signature'));
+        $rentalOrderGift->setPrice($this->getParameter('rental_order_gift_price'));
         $validator = $this->get('validator');
         $errors = $validator->validate($rentalOrderGift);
         if (count($errors) > 0) {

@@ -1,7 +1,64 @@
 {% extends 'user/box/base.html.twig' %}
 {% block new %}
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                    {% trans %}label.pay{% endtrans %}
+                    </h4>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form_start(creditCardForm) }}
+                            <div class="panel panel-default">
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group {% if creditCardForm.cardName.vars.errors|length %}has-error{% endif %}">
+                                                {{ form_row(creditCardForm.cardName) }}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group {% if creditCardForm.cardType.vars.errors|length %}has-error{% endif %}">
+                                                {{ form_row(creditCardForm.cardType) }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group {% if creditCardForm.cardNumber.vars.errors|length %}has-error{% endif %}">
+                                        {{ form_row(creditCardForm.cardNumber) }}
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group {% if creditCardForm.cardCode.vars.errors|length %}has-error{% endif %}">
+                                                {{ form_row(creditCardForm.cardCode) }}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group {% if creditCardForm.cardDate.vars.errors|length %}has-error{% endif %}">
+                                                {{ form_row(creditCardForm.cardDate) }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            <div style="font-weight: normal!important;font-style: italic">
+                                <spam>{% trans %}label.agree_sales_conditions{% endtrans %}</spam>
+                                -                                    </div>
+                            <div class="form-group">
+                                {{ form_row(creditCardForm.submit) }}
+                            </div>
+                            {{ form_end(creditCardForm) }}
+                        </div>
+                        <div class="col-md-6">
+                            <div class='card-wrapper'></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
             <div class="panel-group" id="accordion">
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -12,107 +69,36 @@
                     </div>
                     <div id="collapseOne" class="panel-collapse collapse">
                         <div class="panel-body">
-                            {#{% set detail = '' %}#}
-                            {#{% for dayPrice in bill.dayPrices %}#}
-                                {#{% set date =  dayPrice['day']|date('d-m-Y')%}#}
-                                {#{% set price = dayPrice['price'] %}#}
-                                {#{% set detail = detail ~ "<label>" ~ date ~ ": "  ~ price ~ "</label> <br>" %}#}
-                            {#{% endfor %}#}
-                            {#<div class="row">#}
-                                {#<br>#}
-                                {#<div class="col-sm-6">#}
-                                    {#<label>{{ bill.averagePrice ~'$ *' }} {{ bill.dayNumber }} {% trans %}label.days{% endtrans %}</label>#}
-                                    {#<a data-html="true" style="border:none" type="button" title="{% trans %}label.price_details{% endtrans %}" data-container="body" data-toggle="popover" data-placement="bottom" data-content="{{ detail }}">#}
-                                        {#<spam class="glyphicon glyphicon-question-sign"></spam>#}
-                                    {#</a>#}
-                                    {#<label> : </label>#}
-                                {#</div>#}
-                                {#<div class="col-sm-6">#}
-                                    {#<label>{{ bill.amount ~'$'}}</label>#}
-                                {#</div>#}
-                                {#<br>#}
-                                {#<label>{% trans %}label.service_fees{% endtrans %}</label>#}
-                                {#<label>{{ bill.comission ~ '$' }}</label>#}
-                                {#<br>#}
-                                {#<label>{% trans %}label.total{% endtrans %}</label>#}
-                                {#<label>{{ bill.totalTTC  ~ '$' }}</label>#}
-                            {#</div>#}
-                        </div>
-                    </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <span style="float: left;margin-right: 7px" class="glyphicon glyphicon-eur">
-                            </span>
-                            <span style="float: left">
-                                {% trans %}label.pay{% endtrans %}
-                            </span>
-                            <object style="margin-left: 8px;" type="image/svg+xml" data="{{ credit_card_directory ~'credit-card.svg'}}" height="20px">
-                            </object>
-                            <object style="margin-left: 8px;" type="image/svg+xml" data="{{ credit_card_directory ~'mastercard.svg'}}" height="20px">
-                            </object>
-                            <object style="margin-left: 8px;" type="image/svg+xml" data="{{ credit_card_directory ~'visa.svg'}}" height="20px">
-                            </object>
-                        </h4>
-                    </div>
-                    <div>
-                        <div class="panel-body">
                             <div class="row">
-                                <div class="col-md-6">
-                                    {{ form_start(creditCardForm) }}
-                                    <div class="panel panel-default">
-                                        <div class="panel-body">
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group {% if creditCardForm.cardName.vars.errors|length %}has-error{% endif %}">
-                                                        {{ form_row(creditCardForm.cardName) }}
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-group {% if creditCardForm.cardType.vars.errors|length %}has-error{% endif %}">
-                                                        {{ form_row(creditCardForm.cardType) }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-group {% if creditCardForm.cardNumber.vars.errors|length %}has-error{% endif %}">
-                                                {{ form_row(creditCardForm.cardNumber) }}
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group {% if creditCardForm.cardCode.vars.errors|length %}has-error{% endif %}">
-                                                        {{ form_row(creditCardForm.cardCode) }}
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-group {% if creditCardForm.cardDate.vars.errors|length %}has-error{% endif %}">
-                                                        {{ form_row(creditCardForm.cardDate) }}
-                                                    </div>
-                                                </div>
-                                            </div>
+                                <div class="col-sm-6">
+                                    <div class="service-box-v1">
+                                        <div class="service-block service-block-default no-margin-bottom" style="text-align: left!important;padding-top: 3px!important;">
+                                            <h4>{% trans %}label.billing_address{% endtrans %}
+                                                <a href="{{ path('rental_paiement_billing_address') }}">
+                                                    <span style="float: right" class="glyphicon glyphicon-pencil"></span>
+                                                </a>
+                                            </h4>
+                                            <p style="margin-bottom:3px!important">
+                                                <strong>{{ boxOrder.billingAddress.name }}</strong>
+                                                <br>
+                                                {{ boxOrder.billingAddress.additionalInformation }}<br>
+                                                {{ boxOrder.billingAddress.streetAddress ~ '' ~boxOrder.billingAddress.route }}<br>
+                                                {{ boxOrder.billingAddress.postalCode ~ '' ~boxOrder.billingAddress.locality }}<br>
+                                                {{ boxOrder.billingAddress.country }}</p>
                                         </div>
                                     </div>
-                                    <br>
-                                    <div style="font-weight: normal!important;font-style: italic">
-                                        <spam>{% trans %}label.agree_sales_conditions{% endtrans %}</spam>
-                                        <a href="#" target="_blank">
-                                            {% trans %}label.here{% endtrans%}.
-                                        </a>
-                                        {{ form_widget(creditCardForm.cgv) }}
-                                        <br>
-                                        <spam>{% trans %}label.save_credit_card{% endtrans %}</spam>
-                                        <a href="#" target="_blank">
-                                            {% trans %}label.here{% endtrans%}.
-                                        </a>
-                                        {{ form_widget(creditCardForm.save) }}
-                                    </div>
-                                    <div class="form-group">
-                                        {{ form_row(creditCardForm.submit) }}
-                                    </div>
-                                    {{ form_end(creditCardForm) }}
                                 </div>
-                                <div class="col-md-6">
-                                    <div class='card-wrapper'></div>
+                                <div class="col-sm-6">
+                                    <div class="service-box-v1">
+                                        <div class="service-block service-block-default no-margin-bottom" style="text-align: left!important;padding-top: 3px!important;">
+                                            <h4>{% trans %}label.delivery_address{% endtrans %}</h4>
+                                            <p style="margin-bottom:3px!important"><strong>{{ boxOrder.deliveringAddress.name }}</strong><br>
+                                                {{ boxOrder.deliveringAddress.additionalInformation }}<br>
+                                                {{ boxOrder.deliveringAddress.streetAddress ~ '' ~boxOrder.deliveringAddress.route }}<br>
+                                                {{ boxOrder.deliveringAddress.postalCode ~ '' ~boxOrder.deliveringAddress.locality }}<br>
+                                                {{ boxOrder.deliveringAddress.country }}</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -120,8 +106,41 @@
                 </div>
             </div>
         </div>
+        <div class="col-md-4">
+            <div class="property-container">
+                <div class="property-image">
+                    <a href="{{ box_directory ~ boxOrder.box.mediaPresentation }}" title="{{ boxOrder.box.name }}" data-rel="gallery" class="fancybox img-hover-v1">
+                        <img src="{{ box_directory ~ boxOrder.box.mediaPresentation }}" alt="{{ boxOrder.box.name }}">
+                        <div class="hidden-xs">
+                            <span class="glyphicon glyphicon-search picture-zoom"></span>
+                        </div>
+                        <div class="property-features-grey text-center">
+                            {{ boxOrder.box.name }}
+                        </div>
+                    </a>
+                </div>
+                <div class="property-content">
+                    <div class="service-box-v1" style="text-align: center">
+                        <ul class="list-unstyled">
+                            {% for boxItem in boxOrder.box.boxItems %}
+                                {% if boxItem.boxItemChoices|length <= 0 %}
+                                    <li>{{ boxItem.name }}</li>
+                                {% endif %}
+                            {% endfor %}
+                            {% for boxItemChoice in boxOrder.boxItemChoices %}
+                                <li>{{ boxItemChoice.name }}</li>
+                            {% endfor %}
+                            <li><strong>{% trans %}label.total_ttc{% endtrans %}{{ ': ' ~ boxOrder.price ~'€.' }}</strong></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+{% endblock %}
+{% block script %}
     <script>
+        {{ parent() }}
         $(document).ready(function(){
             $('[data-toggle="popover"]').popover();
             var card = new Card({

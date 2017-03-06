@@ -37,21 +37,54 @@ class RentalOrder
      * @var string
      *
      * @ORM\Column(name="billDate", type="date")
-     * @Groups({"billDate"})
+     * @Groups({"default"})
      */
     private $billDate;
 
     /**
      * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Address", cascade="ALL")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"clientAddress"})
+     * @Groups({"billingAddress"})
      */
-    private $clientAddress;
+    private $billingAddress;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="rentalName", type="string", length=255)
+     * @Groups({"default"})
+     */
+    private $rentalName;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="propertyName", type="string", length=255)
+     * @Groups({"default"})
+     */
+    private $propertyName;
+
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="domainName", type="string", length=255)
+     * @Groups({"default"})
+     */
+    private $domainName;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="billingName", type="string", length=255)
+     * @Groups({"default"})
+     */
+    private $billingName;
 
 
     /**
      * @var Rental
-     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Rental")
+     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Rental", inversedBy="rentalOrders", fetch="EXTRA_LAZY")
      * @Groups({"rental"})
      */
     private $rental;
@@ -64,7 +97,7 @@ class RentalOrder
     private $dayPrices;
 
     /**
-     * @ORM\OneToOne(targetEntity="Winefing\ApiBundle\Entity\RentalOrderGift", inversedBy="rental", cascade="ALL")
+     * @ORM\OneToOne(targetEntity="Winefing\ApiBundle\Entity\RentalOrderGift", inversedBy="rentalOrder", cascade="ALL")
      * @ORM\JoinColumn(nullable=true)
      * @Groups({"rentalOrderGift"})
      */
@@ -105,10 +138,26 @@ class RentalOrder
     /**
      * @var float
      *
-     * @ORM\Column(name="comission", type="float")
+     * @ORM\Column(name="clientComission", type="float")
      * @Groups({"default"})
      */
-    private $comission;
+    private $clientComission;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="hostComission", type="float")
+     * @Groups({"default"})
+     */
+    private $hostComission;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="hostComissionPercentage", type="float")
+     * @Groups({"default"})
+     */
+    private $hostComissionPercentage;
 
     /**
      * @var int
@@ -157,6 +206,14 @@ class RentalOrder
      * @Groups({"default"})
      */
     private $lemonWayTransactionId;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="lemonWayComission", type="float", nullable=true)
+     * @Groups({"default"})
+     */
+    private $lemonWayComission;
 
     /**
      * @var float
@@ -255,9 +312,31 @@ class RentalOrder
      */
     private $tvaNumber = '22819785577';
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="hostCompanyName", type="string", length=255)
+     * @Groups({"default"})
+     */
+    private $hostCompanyName;
+
+    /**
+     * @ORM\OneToOne(targetEntity="Winefing\ApiBundle\Entity\Address", cascade="ALL")
+     * @ORM\JoinColumn(nullable=true)
+     * @Groups({"hostCompanyAddress"})
+     */
+    private $hostCompanyAddress;
+
+
+
     public function __construct()
     {
         $this->dayPrices = new ArrayCollection();
+    }
+
+    public function __clone()
+    {
+        // TODO: Implement __clone() method.
     }
 
     /**
@@ -271,18 +350,36 @@ class RentalOrder
     /**
      * @return mixed
      */
-    public function getClientAddress()
+    public function getBillingAddress()
     {
-        return $this->clientAddress;
+        return $this->billingAddress;
     }
 
     /**
-     * @param mixed $clientAddress
+     * @param mixed $billingAddress
      */
-    public function setClientAddress($clientAddress)
+    public function setBillingAddress($billingAddress)
     {
-        $this->clientAddress = $clientAddress;
+        $this->billingAddress = $billingAddress;
     }
+
+    /**
+     * @return string
+     */
+    public function getBillingName()
+    {
+        return $this->billingName;
+    }
+
+    /**
+     * @param string $billingName
+     */
+    public function setBillingName($billingName)
+    {
+        $this->billingName = $billingName;
+    }
+
+
 
 
     /**
@@ -392,27 +489,51 @@ class RentalOrder
     }
 
     /**
-     * Set comission
-     *
-     * @param float $comission
-     *
-     * @return RentalOrder
+     * @return float
      */
-    public function setComission($comission)
+    public function getClientComission()
     {
-        $this->comission = $comission;
-
-        return $this;
+        return $this->clientComission;
     }
 
     /**
-     * Get comission
-     *
+     * @param float $clientComission
+     */
+    public function setClientComission($clientComission)
+    {
+        $this->clientComission = $clientComission;
+    }
+
+    /**
      * @return float
      */
-    public function getComission()
+    public function getHostComission()
     {
-        return $this->comission;
+        return $this->hostComission;
+    }
+
+    /**
+     * @param float $hostComission
+     */
+    public function setHostComission($hostComission)
+    {
+        $this->hostComission = $hostComission;
+    }
+
+    /**
+     * @return float
+     */
+    public function getLemonWayComission()
+    {
+        return $this->lemonWayComission;
+    }
+
+    /**
+     * @param float $lemonWayComission
+     */
+    public function setLemonWayComission($lemonWayComission)
+    {
+        $this->lemonWayComission = $lemonWayComission;
     }
 
     /**
@@ -778,5 +899,100 @@ class RentalOrder
         $this->user = $user;
     }
 
+    /**
+     * @return float
+     */
+    public function getHostComissionPercentage()
+    {
+        return $this->hostComissionPercentage;
+    }
+
+    /**
+     * @param float $hostComissionPercentage
+     */
+    public function setHostComissionPercentage($hostComissionPercentage)
+    {
+        $this->hostComissionPercentage = $hostComissionPercentage;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHostCompanyName()
+    {
+        return $this->hostCompanyName;
+    }
+
+    /**
+     * @param string $hostCompanyName
+     */
+    public function setHostCompanyName($hostCompanyName)
+    {
+        $this->hostCompanyName = $hostCompanyName;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHostCompanyAddress()
+    {
+        return $this->hostCompanyAddress;
+    }
+
+    /**
+     * @param mixed $hostCompanyAddress
+     */
+    public function setHostCompanyAddress($hostCompanyAddress)
+    {
+        $this->hostCompanyAddress = $hostCompanyAddress;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRentalName()
+    {
+        return $this->rentalName;
+    }
+
+    /**
+     * @param string $rentalName
+     */
+    public function setRentalName($rentalName)
+    {
+        $this->rentalName = $rentalName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPropertyName()
+    {
+        return $this->propertyName;
+    }
+
+    /**
+     * @param string $propertyName
+     */
+    public function setPropertyName($propertyName)
+    {
+        $this->propertyName = $propertyName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDomainName()
+    {
+        return $this->domainName;
+    }
+
+    /**
+     * @param string $domainName
+     */
+    public function setDomainName($domainName)
+    {
+        $this->domainName = $domainName;
+    }
 }
 

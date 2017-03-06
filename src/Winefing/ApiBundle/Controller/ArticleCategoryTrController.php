@@ -65,9 +65,6 @@ class ArticleCategoryTrController extends Controller implements ClassResourceInt
         }
         $em->persist($articleCategoryTr);
         $em->flush();
-        $serializer = $this->container->get("winefing.serializer_controller");
-        $json = $serializer->serialize($articleCategoryTr);
-        return new Response($json);
     }
 
     /**
@@ -89,9 +86,6 @@ class ArticleCategoryTrController extends Controller implements ClassResourceInt
         }
         $em->persist($articleCategoryTr);
         $em->flush();
-        $serializer = $this->container->get("winefing.serializer_controller");
-        $json = $serializer->serialize($articleCategoryTr);
-        return new Response($json);
     }
 
     public function deleteAction($id)

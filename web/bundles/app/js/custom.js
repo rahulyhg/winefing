@@ -12,7 +12,6 @@ function disabledInputAddress() {
     document.address.submit();
 }
 function setPathDeleteButton(path) {
-    console.log(path);
     $("#delete").attr("href", path);
     $('#confirmation').modal();
 }
@@ -242,4 +241,10 @@ function checkPassword(input) {
 $('.carousel').carousel({
     interval: false
 });
+
+
+function changeLanguage(path, input) {
+    path.replace('_locale', $(input).val());
+    window.location.replace(path);
+}
 

@@ -27,7 +27,7 @@ class DayPrice
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\RentalOrder")
+     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\RentalOrder", inversedBy="dayPrices")
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"rentalOrder"})
      */

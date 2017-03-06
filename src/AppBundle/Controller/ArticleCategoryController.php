@@ -43,8 +43,8 @@ class ArticleCategoryController extends Controller
     public function cgetAction() {
         $api = $this->container->get('winefing.api_controller');
         $response = $api->get($this->get('router')->generate('api_get_article_categories'));
-        $serializer = $this->container->get('winefing.serializer_controller');
-        $articleCategories = $serializer->decode($response->getBody()->getContents());
+        $serializer = $this->container->get('jms_serializer');
+        $articleCategories = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\ArticleCategory>', 'json');
         return $this->render('admin/blog/articleCategory.html.twig', array("articleCategories" => $articleCategories)
         );
     }
@@ -58,13 +58,19 @@ class ArticleCategoryController extends Controller
         $articleCategory = $repository->findOneById($id);
         if(empty($articleCategory)) {
             $articleCategory = new ArticleCategory();
-            $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
-            $languages = $repository->findAll();
-            foreach($languages as $language) {
-                $articleCategoryTr = new ArticleCategoryTr();
-                $articleCategoryTr->setLanguage($language);
-                $articleCategory->addArticleCategoryTr($articleCategoryTr);
+        }
+        $languagesId = array();
+        if($articleCategory->getArticleCategoryTrs() != null) {
+            foreach ($articleCategory->getArticleCategoryTrs() as $tr) {
+                $languagesId[] = $tr->getLanguage()->getId();
             }
+        }
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
+        $missingLanguages = $repository->findMissingLanguages($languagesId);
+        foreach($missingLanguages as $language) {
+            $tr = new ArticleCategoryTr();
+            $tr->setLanguage($language);
+            $articleCategory->addArticleCategoryTr($tr);
         }
         $action = $this->generateUrl('articleCategory_submit');
         $method = 'POST';
@@ -92,7 +98,7 @@ class ArticleCategoryController extends Controller
             $response = $api->put($this->get('router')->generate('api_put_article_category'), $articleCategory);
         }
         $articleCategory = $serializer->decode($response->getBody()->getContents());
-        $this->submitArticleCategoryTrs($articleCategoryTrs, $articleCategory);
+        $this->submitArticleCategoryTrs($api, $articleCategoryTrs, $articleCategory);
         $request->getSession()
             ->getFlashBag()
             ->add('success', "The article's category is well created/modified.");
@@ -104,8 +110,7 @@ class ArticleCategoryController extends Controller
      * @param $articleCategoryTrs
      * @param $articleCategory
      */
-    public function submitArticleCategoryTrs($articleCategoryTrs, $articleCategory) {
-        $api = $this->container->get('winefing.api_controller');
+    public function submitArticleCategoryTrs($api, $articleCategoryTrs, $articleCategory) {
         foreach($articleCategoryTrs as $articleCategoryTr) {
             if(empty($articleCategoryTr["id"])) {
                 $articleCategoryTr["articleCategory"] = $articleCategory["id"];

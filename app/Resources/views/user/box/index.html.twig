@@ -1,49 +1,88 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-    <div class="row">
-        <br>
-        <div>
-            {% set length = boxes|length %}
-            {% set i = 0 %}
-            {% for j in 0..(length/3)|round(0, 'ceil') %}
-                <div class="row container-realestate">
-                    {% for box in i..(i+2) if (i < length) %}
-                        <div class="col-md-4 col-sm-6 col-xs-12">
-                            <div class="property-container">
-                                <div class="property-image">
-                                    <img src="{{ box_directory ~ boxes[i].mediaPresentation }}" alt="{{ boxes[i].name }}" alt="mikha real estate theme">
-                                    <div class="property-status">
-                                        <span>{{ boxes[i].price }}</span>
-                                    </div>
-                                </div>
-                                <div class="property-features">
-                                    <span>{{ boxes[i].name }}</span>
-                                </div>
-                                <div class="property-content">
-                                    <h3><a href="{{ path('rental_edit', {'id': boxes[i].id }) }}">{{ boxes[i].name }}</a>
-                                        <small>
-                                            {% for boxItem in boxes[i].boxItems %}
-                                                {{ boxItem.name }}
-                                                <ul>
-                                                    {% for boxItemChoice in boxItem.boxItemChoices if boxItem.boxItemChoices|length>0 %}
-                                                        <li>{{ boxItemChoice.name }}</li>
-                                                        {% if loop.index < boxItem.boxItemChoices|length %}
-                                                            {% trans %}label.or{% endtrans %}
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                </ul>
-                                            {% endfor %}
-                                        </small></h3>
-                                    <a href="{{ path('box_order', {'id': boxes[i].id }) }}">
-                                        <button class="btn btn-primary pull-right">{% trans %}label.select{% endtrans %}</button>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        {% set i = i+1 %}
-                    {% endfor %}
+    <!-- Interactive Slider v2 -->
+    <div class="cover-img" style="background: url({{ banner_directory ~ 'offer.png' }})">
+        <h2>{% trans %}label.offer{% endtrans %}</h2>
+    </div>
+    <!-- End Interactive Slider v2 -->
+    <div class="container">
+        <div class="content-sm">
+            <div class="row">
+                <h1 class="text-center" style="margin-bottom: 50px">{% trans %}label.the_concept{% endtrans %}</h1>
+                <div class="col-md-6 text-center vcenter">
+                    <div>
+                        <p>
+                            {{ 'text.box_concept'|trans|raw }}
+                        </p>
+                    </div>
+                </div><!--
+                --><div class="hidden-xs col-md-6 text-center vcenter">
+                    <div>
+                        <blockquote>{{ 'label.box_concept_quote'|trans() }}</blockquote>
+                    </div>
+                    <p class="text-right" style="font-style: italic">{{ 'label.team_winefing'|trans() }}</p>
                 </div>
-            {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="bg-grey">
+        <div class="container">
+            <div class="content-sm">
+                <h2 class="text-center">{% trans %}label.box_and_gift_card{% endtrans %}</h2>
+                <div class="row">
+                    <br>
+                    <div>
+                        {% set length = boxes|length %}
+                        {% set i = 0 %}
+                        {% for j in 0..(length/3)|round(0, 'ceil') %}
+                            <div class="row container-realestate">
+                                {% for box in i..(i+2) if (i < length) %}
+                                    {% set route = path('box', {'id': boxes[i].id}) %}
+                                    <div class="col-md-4 col-sm-6 col-xs-12">
+                                        <div class="property-container">
+                                            <div class="property-image">
+                                                <a href="{{ route }}">
+                                                    <img src="{{ box_directory ~ boxes[i].mediaPresentation }}" alt="{{ boxes[i].name }}">
+                                                    <div class="property-status">
+                                                        <span>{{ boxes[i].price ~ '€'}}</span>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                            <div class="property-content">
+                                                <h3><a href="{{ route }}">{{ boxes[i].name }}</a>
+                                                </h3>
+                                                <div class="text-center">
+                                                    <a style="text-decoration: none !important;color:#6b6e80" href="{{ route }}">
+                                                        <strong>{% trans %}label.box_contains{% endtrans %}</strong>
+                                                        <br><br>
+                                                        {% for boxItem in boxes[i].boxItems %}
+                                                            {% if boxItem.boxItemChoices|length<=0  %}
+                                                                {{ boxItem.name }}
+                                                            {% endif %}
+                                                            <ul class="list-unstyled">
+                                                                {% for boxItemChoice in boxItem.boxItemChoices if boxItem.boxItemChoices|length>0 %}
+                                                                    <li>{{ boxItemChoice.name }}</li>
+                                                                    {% if loop.index < boxItem.boxItemChoices|length %}
+                                                                        {% trans %}label.or{% endtrans %}
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            </ul>
+                                                            {% if loop.index < boxes[i].boxItems|length %}
+                                                                <span>+</span>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% set i = i+1 %}
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}

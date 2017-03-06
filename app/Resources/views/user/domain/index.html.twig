@@ -1,26 +1,218 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-    <div class="row">
-        {% for domain in domains %}
-            {{ domain.name }}
-            {{ domain.id }}
-            <button id="whishlist" onclick="addToWishlist('{{ path('domain_add_to_wishlist', {'id': domain.id}) }}')">Whishlist</button>
-            <br>
-        {% endfor %}
-    </div>
+            <div class="row">
+                <div class="cover-img" style="background: url({{ banner_directory ~'wine.png' }})">
+                    <div class="container">
+                        {% if app.request.get('_route') == 'explore' %}
+                            <h1>{{ 'label.explore'|trans() }}</h1>
+                            {#<p style="color: #fff;">Retrouver la sélection de Winefing, un domaine par région pour toujours plus de plaisir ! Youhou.</p>#}
+                        {% else %}
+                            {{ form_start(filterForm, {'method':'GET'}) }}
+                            <div class="col-md-10 col-md-offset-1 col-sm-12" style="margin-top: 40px">
+                                <div class="" style="padding: 25px 40px;background: rgba(255,255,255,.7)">
+                                    <div class="row" style="text-align: center">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>{% trans %}label.wine_region{% endtrans %}</label>
+                                                {{ form_errors(filterForm.wineRegion) }}
+                                                {{ form_widget(filterForm.wineRegion) }}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>{% trans %}label.when{% endtrans %}</label>
+                                                <div id="sandbox-container">
+                                                    <div class="input-daterange input-group" id="datepicker">
+                                                        {{ form_row(filterForm.startDate) }}
+                                                        <span class="input-group-addon">{% trans %}label.to{% endtrans %}</span>
+                                                        {{ form_row(filterForm.endDate) }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>{% trans %}label.people_number{% endtrans %}</label>
+                                                {{ form_widget(filterForm.peopleNumber) }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div class="row" style="text-align: center">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>{% trans %}label.tags{% endtrans %}</label>
+                                                <br>
+                                                {{ form_widget(filterForm.tags) }}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <div class="form-group">
+                                                    <label>{% trans %}label.price{% endtrans %}</label>
+                                                    <br>
+                                                    {{ form_widget(filterForm.price) }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            {{ form_widget(filterForm.submit) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {{ form_end(filterForm) }}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div>
+                {%  for domain in domains %}
+                    {% set params = {'id':domain.id} %}
+                    {% if app.request.get('domain_filter')['startDate'] is defined %}
+                        {% set params = params|merge({"startDate":app.request.get('domain_filter')['startDate']}) %}
+                    {% endif %}
+                    {% if app.request.get('domain_filter')['endDate'] is defined %}
+                        {% set params = params|merge({"endDate":app.request.get('domain_filter')['endDate']}) %}
+                    {% endif %}
+                    {% set domainEditRoute = path('domain', params) %}
+                    <div class="{% if loop.index is not divisibleby(2)  %}bg-grey{% endif %}">
+                        <div class="container">
+                            <div class="content-sm">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="heading-title heading-title-alt">
+                                            {% if app.request.get('_route') == 'explore' %}
+                                                <h1 class="text-center">{{ domain.wineRegion.name }}</h1>
+                                            {% else %}
+                                                <h1 class="text-center">{{ domain.name}}</h1>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-12 col-md-8">
+                                        <div class="view view-tenth" >
+                                            <img class="img-big-filter" src="{{ domain_directory ~ domain.domainMediasPresentation.domainMediaPresentation }}" style="width:100%" alt="{{ domain.name }}"/>
+                                            <div class="property-features-grey text-center">
+                                                <span>{{ domain.name ~ ' - '~ domain.wineRegion.name }}</span>
+                                            </div>
+                                            <div class="mask">
+                                                <h2>{{ domain.name }}</h2>
+                                                <p>{{ domain.description |slice(0, 300) ~ '...'}}</p>
+                                                <a href="{{ domainEditRoute }}" class="info">{% trans %}label.see_more{% endtrans %}</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="hidden-sm hidden-xs col-md-4">
+                                        <div class="property-image-list">
+                                            <a href="{{ domainEditRoute }}#reservation">
+                                                <img class="img-little-filter" class="img-responsive" src="{{ property_directory ~ domain.domainMediasPresentation.propertyMediaPresentation }}" alt="{{ domain.name }}" />
+                                                <div class="property-features-grey text-center">
+                                                    <span>{{ 'label.price_from_to'|trans({'%minPrice%' : domain.domainStatistic.minPrice, '%maxPrice%' : domain.domainStatistic.maxPrice}) }}</span>
+                                                </div>
+                                            </a>
+                                        </div>
+                                        <br>
+                                        <div class="property-image-list">
+                                            <a href="{{ domainEditRoute }}#reservation">
+                                                <img class="img-little-filter"  class="img-responsive" src="{{ rental_directory ~ domain.domainMediasPresentation.rentalMediaPresentation }}" alt="{{ domain.name }}" />
+                                                <div class="property-features-grey text-center">
+                                                    <span>{% trans %}label.make_a_reservation{% endtrans %}</span>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        {% if app.request.get('_route') == 'explore' %}
+                                            <a href="{{ path('domains_by_criteria', {'domain_filter' : {'wineRegion': [domain.wineRegion.id]}}) }}" class="btn btn-primary pull-right">{% trans %}label.see_more_domains{% endtrans %} >></a>
+                                        {% else %}
+                                            <a href="{{ domainEditRoute }}" class="btn btn-primary pull-right">{% trans %}label.see_more{% endtrans %} >></a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                <div class="container">
+                    <div class="content-sm text-center">
+                        {% set currentPage = 1 %}
+                        {% if app.request.get('page') %}
+                            {% set currentPage = app.request.get('page') %}
+                        {% endif %}
+                        {% if app.request.get('_route') == 'domains_by_criteria' and total > 1 %}
+
+                            {# the number of first and last pages to be displayed #}
+                            {% set extremePagesLimit = 3 %}
+
+                            {# the number of pages that are displayed around the active page #}
+                            {% if app.request.get('page') %}
+                                {{ 'in' }}
+                            {% endif %}
+                            {% set paginationPath = path('domains_by_criteria', {'domain_filter': app.request.get('domain_filter') }) %}
+                            {% set nearbyPagesLimit = 2 %}
+                            {% set showAlwaysFirstAndLast = false %}
+                                <ul class="pagination pagination-lg">
+                                    {% if currentPage > 1 %}
+                                        <li><a href="{{ paginationPath }}{{ '?page='~(currentPage-1) }}">&larr;</a></li>
+
+                                        {% for i in range(1, extremePagesLimit) if ( i < currentPage - nearbyPagesLimit ) %}
+                                            <li><a href="{{ path('domains_by_criteria', {'domain_filter': app.request.get('domain_filter'), 'page': i}) }}">{{ i }}</a></li>
+                                        {% endfor %}
+
+                                        {% if extremePagesLimit + 1 < currentPage - nearbyPagesLimit %}
+                                            <li class="disabled"><a href="#">...</a></li>
+                                        {% endif %}
+
+                                        {% for i in range(currentPage-nearbyPagesLimit, currentPage-1) if ( i > 0 ) %}
+                                            <li><a href="{{ path('domains_by_criteria', {'domain_filter': app.request.get('domain_filter'), 'page': i}) }}">{{ i }}</a></li>
+                                        {% endfor %}
+                                    {% elseif showAlwaysFirstAndLast %}
+                                        <li><a href="#">{{ 'label.previous'|trans() }}</a></li>
+                                    {% endif %}
+
+                                    <li class="active"><a href="#">{{ currentPage }}</a></li>
+
+                                    {% if currentPage < total %}
+                                        {% for i in range(currentPage+1, currentPage + nearbyPagesLimit) if ( i <= total ) %}
+                                            <li><a href="{{ path('domains_by_criteria', {'domain_filter': app.request.get('domain_filter'), 'page': i}) }}">{{ i }}</a></li>
+                                        {% endfor %}
+
+                                        {% if  (total - extremePagesLimit) > (currentPage + nearbyPagesLimit) %}
+                                            <li class="disabled"><a href="#">...</a></li>
+                                        {% endif %}
+
+                                        {% for i in range(total - extremePagesLimit+1, total) if ( i > currentPage + nearbyPagesLimit ) %}
+                                            <li><a href="{{ path('domains_by_criteria', {'domain_filter': app.request.get('domain_filter'), 'page': i}) }}">{{ i }}</a></li>
+                                        {% endfor %}
+
+                                        <li><a href="{{ path('domains_by_criteria', {'domain_filter': app.request.get('domain_filter'), 'page': (currentPage+1)}) }}">&rarr;</a></li>
+                                    {% elseif showAlwaysFirstAndLast %}
+                                        <li><a href="{{ path('domains_by_criteria', {'domain_filter': app.request.get('domain_filter'), 'page': (currentPage+1)}) }}">{{ 'label.next'|trans() }}</a></li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+{% endblock %}
+{% block script %}
+    {{ parent() }}
     <script>
-        function addToWishlist(path) {
-            $.ajax({
-                url: path,
-                type: 'PUT',
-                async: false,
-                success: function (data, textStatus, jqXHR) {
-                    console.log('yes');
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.log("no good");
-                }
-            });
-        }
+        $("#slider").slider({});
+        $('#sandbox-container .input-daterange').datepicker({
+            startDate: ""+getFormattedDate(new Date)+"'",
+            format: 'dd-mm-yyyy',
+            orientation: "bottom auto",
+            autoclose: true
+        });
+        $('.selectpicker').selectpicker({
+            noneSelectedText:'',
+            width: '100%'
+        });
     </script>
 {% endblock %}

@@ -114,3 +114,14 @@ $("#suivant2").on('click', function() {
     });
 
 });
+function disabledInputAddress(id) {
+    // var f = name;
+    // console.log(f);
+    for (var component in componentForm) {
+        if(document.getElementById(componentFormId[component]).value.length > 0) {
+            document.getElementById(componentFormId[component]).disabled = false;
+        }
+        document.getElementById(componentFormId[component]).disabled = false;
+    }
+    $('form#'+id).submit();
+}

@@ -1,58 +1,178 @@
-{% extends 'baseLogin.html.twig' %}
+{% extends 'base.html.twig' %}
 {% block body %}
-    <div class="row">
-        <div class="col-md-4">
-            <div>
-                <br>
-                <h3>{% trans %}label.create_an_account{% endtrans %}</h3>
-                {% set class = "form-group has-error" %}
-                {{ form_start(user) }}
-                {{ form_errors(user) }}
+    <div class="cover-img" style="background: url({{ banner_directory ~'sign-in.jpg' }})">
+        <h1>{{ 'label.registration'|trans() }}</h1>
+    </div>
+    <div class="bg-grey">
+        <div class="container">
+            <div class="content-sm">
                 <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group {% if user.firstName.vars.errors|length %}has-error{% endif %}">
-                            <label>*{{ form_label(user.firstName) }}</label>
-                            {{ form_errors(user.firstName) }}
-                            {{ form_widget(user.firstName) }}
+                    <div class="col-sm-5 sm-margin-bottom-50 col-sm-offset-1">
+                        <div class="service-block-v8" style="height: 600px">
+                            <h3 class="text-center">{% trans %}label.create_an_account{% endtrans %}</h3>
+                            {% set class = "form-group has-error" %}
+                            {{ form_start(user, {'attr':{'id': 'user_registration'} }) }}
+                            {{ form_errors(user) }}
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group {% if user.firstName.vars.errors|length %}has-error{% endif %}">
+                                        <label>*{{ form_label(user.firstName) }}</label>
+                                        {{ form_errors(user.firstName) }}
+                                        {{ form_widget(user.firstName) }}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group {% if user.lastName.vars.errors|length %}has-error{% endif %}">
+                                        <label>*{{ form_label(user.lastName) }}</label>
+                                        {{ form_errors(user.lastName) }}
+                                        {{ form_widget(user.lastName) }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group {% if user.email.first.vars.errors|length %}has-error{% endif %}">
+                                <label> *{{ form_label(user.email.first) }}</label>
+                                <ul>
+                                    {% for error in user.email.first.vars.errors %}
+                                        <li>{{ error.message|raw }}</li>
+                                    {% endfor %}
+                                </ul>
+                                {{ form_widget(user.email.first) }}
+                            </div>
+                            <div class="form-group {% if user.email.second.vars.errors|length %}has-error{% endif %}">
+                                {{ form_errors(user.email.second) }}
+                                {{ form_widget(user.email.second) }}
+                            </div>
+                            <div class="form-group {% if user.password.first.vars.errors|length %}has-error{% endif %}">
+                                <label style="float:left">*{{ form_label(user.password.first) }}</label>
+                                <a id="password-indication" href="#" data-toggle="tooltip" title="{% trans %}error.password_format{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
+                                {{ form_errors(user.password.first) }}
+                                {{ form_widget(user.password.first) }}
+                            </div>
+                            <div class="form-group {% if user.password.second.vars.errors|length %}has-error{% endif %}">
+                                {{ form_errors(user.password.second) }}
+                                {{ form_widget(user.password.second) }}
+                            </div>
+                            <div class="form-group {% if user.agree.vars.errors|length %}has-error{% endif %}">
+                                <span style="font-style: italic">{{ 'label.agree_with_terms_of_use'|trans({'%link%' : path('web_page', {'code': web_page_gtu })})|raw }}</a></span>
+                                {{ form_errors(user.agree) }}
+                                {{ form_widget(user.agree) }}
+                            </div>
+                            <div class="form-group {% if user.subscription.vars.errors|length %}has-error{% endif %}">
+                                <span style="font-style: italic">{{ 'label.subscribe_newsletter'|trans() }}</a></span>
+                                {{ form_errors(user.subscription) }}
+                                {{ form_widget(user.subscription) }}
+                            </div>
+                            <div class="form-group text-center">
+                                <input onclick="submitUserRegistration()" class="btn-primary btn" value="{{ 'label.submit'|trans() }}">
+                            </div>
+                            {{ form_end(user) }}
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="form-group {% if user.lastName.vars.errors|length %}has-error{% endif %}">
-                            <label>*{{ form_label(user.lastName) }}</label>
-                            {{ form_errors(user.lastName) }}
-                            {{ form_widget(user.lastName) }}
+                    <div class="col-sm-5 sm-margin-bottom-50">
+                        <div class="service-block-v8"  style="height: 600px">
+                            <h3 class="text-center">{{ 'label.why_create_an_acount'|trans() }}</h3>
+                            <br>
+                            <p class="text-justify ">
+                                {{ 'text.registration'|trans()|raw }}
+                            </p>
+                            <div class="text-center">
+                                <img width="100px"  style="margin-top: 40px" src="{{ asset('bottle-and-glass-shapes.svg') }}">
+                            </div>
                         </div>
+                        {#<img style="width: 100%"src="{{ picture_directory ~'sign-in.jpeg' }}">#}
                     </div>
                 </div>
-                <div class="form-group {% if user.email.first.vars.errors|length %}has-error{% endif %}">
-                    <label> *{{ form_label(user.email.first) }}</label>
-                    {{ form_errors(user.email.first) }}
-                    {{ form_widget(user.email.first) }}
-                </div>
-                <div class="form-group {% if user.email.second.vars.errors|length %}has-error{% endif %}">
-                    {{ form_errors(user.email.second) }}
-                    {{ form_widget(user.email.second) }}
-                </div>
-                <div class="form-group {% if user.password.first.vars.errors|length %}has-error{% endif %}">
-                    <label style="float:left">*{{ form_label(user.password.first) }}</label>
-                    <a href="#" data-toggle="tooltip" title="{% trans %}error.password_format{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
-                    {{ form_errors(user.password.first) }}
-                    {{ form_widget(user.password.first) }}
-                </div>
-                <div class="form-group {% if user.password.second.vars.errors|length %}has-error{% endif %}">
-                    {{ form_errors(user.password.second) }}
-                    {{ form_widget(user.password.second) }}
-                </div>
-                <div class="form-group {% if user.agree.vars.errors|length %}has-error{% endif %}">
-                    <span style="font-style: italic">{% trans %}label.agree_with_terms_of_use{% endtrans %} <a href="#">{% trans %}label.here{% endtrans %}.</a></span>
-                    {{ form_errors(user.agree) }}
-                    {{ form_widget(user.agree) }}
-                </div>
-                {{ form_end(user) }}
             </div>
         </div>
-        <div class="col-md-8" style="padding: 0 !important; margin: 0 !important;">
-            <img style="width: 100%"src="{{ picture_directory ~'sign-in.jpeg' }}">
-        </div>
     </div>
+{% endblock %}
+{% block script %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function(){
+            //Allows to check is the email's format is correct, and if the confirmation correspond.
+            $('#user_registration_email_first, #user_registration_email_second').on('keyup', function() {
+                        if(checkFormatEmail(this)) {
+                            $(this).parent().closest('.form-group').removeClass().addClass("form-group has-success");
+                            checkCorrepondance(this, $('#user_registration_email_first'), $('#user_registration_email_second'));
+                        } else {
+                            $(this).parent().closest('.form-group').removeClass().addClass("form-group has-error");
+                        }
+                    }
+            );
+            //Allows to check is the password's format is correct, and if the confirmation correspond.
+            $('#user_registration_password_first, #user_registration_password_second').on('keyup', function() {
+                        if(checkFormatPassword(this)) {
+                            $(this).parent().closest('.form-group').removeClass().addClass("form-group has-success");
+                            $('#password-indication').tooltip('hide');
+                            checkCorrepondance(this, $('#user_registration_password_first'), $('#user_registration_password_second'));
+                        } else {
+                            $(this).parent().closest('.form-group').removeClass().addClass("form-group has-error");
+                            if($('#user_registration_password_first').val().length==1) {
+                                $('#password-indication').tooltip({'trigger': 'manual'}).tooltip('show');
+                            }
+                        }
+                    }
+            );
+        });
+        function submitUserRegistration() {
+            var curInputs = $('#user_registration').find("input[type='text'],input[type='password'],input[type='email']"),
+                    firstEmail ='',
+                    secondEmail ='',
+                    nbEmailInvalid = 0,
+                    firstPassword ='',
+                    secondPassword='',
+                    isValid = true,
+                    nbPasswordInvalid = 0;
+
+            for(var i=0; i<curInputs.length; i++){
+                // setTimeout(curInputs[i], function() {
+                //     $(this).tooltip('destroy');
+                // }, 2000);
+                $(this).tooltip('destroy');
+                if (!curInputs[i].validity.valid){
+                    isValid = false;
+                    $(curInputs[i]).closest(".form-group").addClass("has-error");
+                    if(curInputs[i].type === 'email') {
+                        nbEmailInvalid++;
+                    } else if(curInputs[i].type === 'password') {
+                        nbPasswordInvalid++;
+                    }
+                } else if(curInputs[i].type === 'email') {
+                    if(!firstEmail) {
+                        firstEmail = curInputs[i];
+                    } else {
+                        secondEmail = curInputs[i];
+                    }
+                }else if(curInputs[i].type === 'password') {
+                    if(!firstPassword) {
+                        firstPassword = curInputs[i];
+                    } else {
+                        secondPassword = curInputs[i];
+                    }
+                }
+                $(curInputs[i]).on('keypress', function(){
+                    $(this).tooltip('hide');
+                });
+            }
+            if(nbEmailInvalid==0) {
+                if(!checkCorrepondance(secondEmail, firstEmail, secondEmail)){
+                    isValid = false;
+                }
+            }else if(nbPasswordInvalid == 0){
+                if(checkCorrepondance(secondPassword, firstPassword, secondPassword)) {
+                    isValid= false;
+                    if(!checkFormatPassword(firstPassword)){
+                        isValid = false;
+                    }
+                }
+            }
+            if(!$('#user_registration_agree').is(':checked')) {
+                isValid = false;
+            }
+            if(isValid) {
+                $('#user_registration').submit();
+            }
+        }
+    </script>
 {% endblock %}

@@ -88,7 +88,7 @@
         {% set classABlog = '' %}
         {% set classLiBlog = 'active' %}
         {% set classDivBlog = 'in' %}
-    {% elseif (app.request.attributes.get('_route') == 'articles')%}
+    {% elseif (app.request.attributes.get('_route') == 'admin_articles')%}
         {% set classABlog = '' %}
         {% set classLiBlog = 'active' %}
         {% set classDivBlog = 'in' %}
@@ -108,7 +108,7 @@
         <div class="collapse {{ classDivBlog }}" id="blog">
             <ul class="nav nav-list admin-navbar-text-align">
                 <li class="{% if app.request.attributes.get('_route') == 'articleCategory' %}submenu-admin-active{% endif %}"><a href="{{ path('articleCategory') }}">Catégories</a></li>
-                <li class="{% if app.request.attributes.get('_route') == 'articles' or app.request.attributes.get('_route') == 'articleTr_new_form' %}submenu-admin-active{% endif %}"><a href="{{ path('articles') }}">Articles</a></li>
+                <li class="{% if app.request.attributes.get('_route') == 'admin_articles' or app.request.attributes.get('_route') == 'articleTr_new_form' %}submenu-admin-active{% endif %}"><a href="{{ path('admin_articles') }}">Articles</a></li>
             </ul>
         </div>
     </li>

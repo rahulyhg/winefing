@@ -20,7 +20,6 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManager;
-use AppBundle\Form\AddressType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
@@ -37,10 +36,11 @@ class DomainType extends AbstractType
                 'choice_label' => function ($wineRegion) use ($options) {
                     return $wineRegion->getDisplayName($options['language']);
                 }))
-            ->add('tags', EntityType::class,  array('class' => 'WinefingApiBundle:Tag','attr'=> array('multiple'=>true,'class'=> 'selectpicker'),
+            ->add('tags', EntityType::class,  array('multiple'=>true,'class' => 'WinefingApiBundle:Tag','attr'=> array('class'=> 'selectpicker'),
                 'choice_label' => function ($tag) use ($options) {
                     return $tag->getDisplayName($options['language']);
-                }));
+                }))
+        ;
     }
     public function configureOptions(OptionsResolver $resolver)
     {

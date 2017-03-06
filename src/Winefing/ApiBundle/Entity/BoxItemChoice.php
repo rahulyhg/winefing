@@ -26,16 +26,14 @@ class BoxItemChoice
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\BoxItem")
+     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\BoxItem", inversedBy="boxItemChoices")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"boxItem"})
      */
     private $boxItem;
 
     /**
-     * @var CharacteristicCategoryTr
      * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\BoxItemChoiceTr", mappedBy="boxItemChoice", fetch="EAGER", cascade="ALL")
-     * @Groups({"default"})
+     * @Groups({"boxItemChoiceTrs"})
      */
     private $boxItemChoiceTrs;
 
@@ -46,8 +44,15 @@ class BoxItemChoice
      */
     private $name;
 
-    public function _construct(){
-        $this->boxItemChoiceTrs[] = new ArrayCollection();
+    /**
+     * @var
+     * @Groups({"default"})
+     * @Type("string")
+     */
+    private $description;
+
+    public function __construct(){
+        $this->boxItemChoiceTrs = new ArrayCollection();
         return $this;
     }
 
@@ -78,7 +83,7 @@ class BoxItemChoice
     }
 
     /**
-     * @return CharacteristicCategoryTr
+     * @return mixed
      */
     public function getBoxItemChoiceTrs()
     {
@@ -108,9 +113,27 @@ class BoxItemChoice
         foreach($this->boxItemChoiceTrs as $boxItemChoiceTr) {
             if($boxItemChoiceTr->getLanguage()->getCode() == $language) {
                 $this->name = $boxItemChoiceTr->getName();
+                $this->description = $boxItemChoiceTr->getDescription();
                 break;
             }
         }
     }
+
+    /**
+     * @return mixed
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param mixed $description
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
+
 }
 

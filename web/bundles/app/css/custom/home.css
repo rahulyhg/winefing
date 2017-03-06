@@ -132,7 +132,17 @@
     opacity:0;
     transition:.5s;
 }
+.image_hover_inverse {
+    color:#fff;
+    background-color:rgba(29,29,29,0.60);
+    padding:90px 100px;
+    transition:.5s;
+    opacity:1;
+}
+.image_hover_inverse:hover {
+    opacity:0;
 
+}
 .image_hover:hover {
     opacity:1;
 }
@@ -173,15 +183,6 @@
 
 /* Image & Font Let_Yourself End */
 
-/* Image Gift */
-
-.image_offer_1 {
-    background-image: url(../../../../Resources/gift/gift_1.jpg);
-}
-
-.image_offer_2 {
-    background-image: url(../../../../Resources/gift/gift_2.jpg);
-}
 
 /* Image Gift End*/
 

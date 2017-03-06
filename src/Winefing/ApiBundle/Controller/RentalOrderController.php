@@ -22,6 +22,7 @@ use Winefing\ApiBundle\Entity\DayPrice;
 use Winefing\ApiBundle\Entity\RentalOrder;
 use Winefing\ApiBundle\Entity\StatusOrderEnum;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use FOS\RestBundle\Controller\Annotations\Get;
 
 
 class RentalOrderController extends Controller implements ClassResourceInterface
@@ -49,7 +50,7 @@ class RentalOrderController extends Controller implements ClassResourceInterface
      *     }
      * )
      */
-    public function getBeforePostAction($rental, $start, $end) {
+    public function getBeforePostAction($rental, $start, $end, Request $request) {
         $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Rental');
         $rental = $repository->findOneById($rental);
@@ -84,18 +85,53 @@ class RentalOrderController extends Controller implements ClassResourceInterface
 
         $rentalOrder->setDayNumber($i);
         $rentalOrder->setAveragePrice(round(($total/$i), 2));
+
+        //price of only the rentals
         $rentalOrder->setAmount($total);
-        $comission = $this->container->getParameter('client_comission');
-        $rentalOrder->setComission($comission);
-        $rentalOrder->setTotalTTC(round($total + $comission, 2));
+
+        //amount of the client comission
+        $clientComission = $this->container->getParameter('client_comission');
+        $rentalOrder->setClientComission($clientComission);
+
+        //price ttc * total pr
+        $hostComission = round($rentalOrder->getAmount() * ($this->container->getParameter('host_comission')/100), 2);
+        $rentalOrder->setHostComission($hostComission);
+        $rentalOrder->setHostComissionPercentage($this->container->getParameter('host_comission'));
+
+        $comissionTotal = $clientComission + $hostComission;
+
+        //rental gift order
+        $rentalGiftOrder = 0.00;
+//        if($request->query->get('rentalGiftOrder')) {
+//            $rentalGiftOrder = $this->container->getParameter('rental_order_gift_price');
+//        }
+        //set the comission percentage to take during lemon way transaction
+        $rentalOrder->setLemonWayComission(round(((($comissionTotal + $rentalGiftOrder)*100)/$total), 2));
+
+        //set the total which have to pay the user
+        $rentalOrder->setTotalTTC(round($total + $clientComission + $rentalGiftOrder, 2));
+
+        //set the information HT for the bill (legal information).
         $rentalOrder->setTotalTax(round($total * ($this->container->getParameter('tax')/100), 2));
         $rentalOrder->setTotalHT($rentalOrder->getTotalTTC() - $rentalOrder->getTotalTax());
         $json = $serializer->serialize($rentalOrder, 'json', SerializationContext::create()->setGroups(array('default', 'dayPrices')));
         return new Response($json);
     }
-
     /**
-     * Liste de tout les languages possible en base
+     * not working 500 error. why ?
+     * @return Response
+     * @Get("rental-order/{id}")
+     */
+    public function getAction($id)
+    {
+        $serializer = $this->container->get('winefing.serializer_controller');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:RentalOrder');
+        $rentalOrder = $repository->findOneById($id);
+        $json = $serializer->serialize($rentalOrder, 'json', SerializationContext::create()->setGroups(array('id', 'default', 'user', 'rental', 'property')));
+        return new Response($json);
+//        return new Response();
+    }
+    /**
      * @return Response
      */
     public function cgetAction()
@@ -119,10 +155,22 @@ class RentalOrderController extends Controller implements ClassResourceInterface
         $rentalOrder->setUser($repository->findOneById($request->request->get('user')));
 
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Address');
-        $rentalOrder->setClientAddress($repository->findOneById($request->request->get('clientAddress')));
+        $address = $repository->findOneById($request->request->get('billingAddress'));
+        $rentalOrder->setBillingAddress($address);
+
+        // A CHANGER !!! !
+        $rentalOrder->setHostCompanyName('test');
+        $rentalOrder->setHostCompanyAddress($address);
+
+        $rentalOrder->setBillingName($request->request->get('billingName'));
 
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Rental');
-        $rentalOrder->setRental($repository->findOneById($request->request->get('rental')));
+        $rental = $repository->findOneById($request->request->get('rental'));
+        $rentalOrder->setRental($rental);
+        $rentalOrder->setRentalName($rental->getName());
+        $rentalOrder->setDomainName($rental->getProperty()->getDomain()->getName());
+        $rentalOrder->setPropertyName($rental->getProperty()->getName());
+
         $dt = new \DateTime();
         $dt->setTimestamp($request->request->get('startDate'));
         $rentalOrder->setStartDate($dt);
@@ -135,7 +183,9 @@ class RentalOrderController extends Controller implements ClassResourceInterface
         $rentalOrder->setTotalTax($request->request->get('totalTax'));
         $rentalOrder->setTotalHT($request->request->get('totalHT'));
         $rentalOrder->setTotalTTC($request->request->get('totalTTC'));
-        $rentalOrder->setComission($request->request->get('comission'));
+        $rentalOrder->setClientComission($request->request->get('clientComission'));
+        $rentalOrder->setHostComission($request->request->get('hostComission'));
+        $rentalOrder->setHostComissionPercentage($request->request->get('hostComissionPercentage'));
         $rentalOrder->setAmount($request->request->get('amount'));
 
         $rentalOrder->setStatus(StatusOrderEnum::initiate);
@@ -148,7 +198,7 @@ class RentalOrderController extends Controller implements ClassResourceInterface
         }
         $em->persist($rentalOrder);
         $em->flush();
-        return new Response($serializer->serialize($rentalOrder, 'json', SerializationContext::create()->setGroups(array('id'))));
+        return new Response($serializer->serialize($rentalOrder, 'json', SerializationContext::create()->setGroups(array('id','default', 'rental', 'billingAddress', 'rentalOrderGift'))));
     }
     public function patchStatusAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
@@ -168,7 +218,7 @@ class RentalOrderController extends Controller implements ClassResourceInterface
     public function patchLemonWayTransactionIdAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:RentalOrder');
-        $rentalOrder = $repository->findOneById($request->request->get('id'));
+        $rentalOrder = $repository->findOneById($request->request->get('rentalOrder'));
         $rentalOrder->setLemonWayTransactionId($request->request->get('lemonWayTransactionId'));
 
         $validator = $this->get('validator');
@@ -188,5 +238,45 @@ class RentalOrderController extends Controller implements ClassResourceInterface
         $em->remove($creditCard);
         $em->flush();
         return new Response(json_encode([200, "success"]));
+    }
+
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "index","rental"},
+     *  description="Return the rental order by user",
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         204="Returned when no content"
+     *     }
+     *
+     * )
+     */
+    public function getByUserAction($user) {
+        $serializer = $this->container->get('jms_serializer');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:RentalOrder');
+        $rentalOrders = $repository->findWithUser($user);
+        $json = $serializer->serialize($rentalOrders, 'json', SerializationContext::create()->setGroups(array('id', 'default')));
+        return new Response($json);
+    }
+
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "index","rental", "default", "user"},
+     *  description="Return the rental order by user",
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         204="Returned when no content"
+     *     }
+     *
+     * )
+     */
+    public function getByDomainAction($domain) {
+        $serializer = $this->container->get('jms_serializer');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:RentalOrder');
+        $rentalOrders = $repository->findWithDomain($domain);
+        $json = $serializer->serialize($rentalOrders, 'json', SerializationContext::create()->setGroups(array('id', 'default', 'user', 'rental', 'property')));
+        return new Response($json);
     }
 }

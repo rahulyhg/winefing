@@ -9,6 +9,7 @@
                 </button>
                 Tags
             </th>
+            <th>Picture</th>
             <th>Actions</th>
         </tr>
         </thead>
@@ -22,6 +23,9 @@
                         <span style="margin-left: 10px">{{ tagTr.name }}</span>
                         <br><br>
                     {% endfor %}
+                </td>
+                <td>
+                    <img src="{{ tag_directory ~ tag.picture }}" width="200px" class="img-responsive">
                 </td>
                 <td>
                     <input type="button" class="btn btn-danger" value="Supprimer" onclick="setPathDeleteButton('{{ path('tag_delete', {'id' : tag.id}) }}')"/>

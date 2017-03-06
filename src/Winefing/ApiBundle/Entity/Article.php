@@ -4,7 +4,6 @@ namespace Winefing\ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Validator\Constraints as Assert;
 use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\Type;
@@ -15,7 +14,7 @@ use JMS\Serializer\Annotation\Type;
  * @ORM\Table(name="article")
  * @ORM\Entity(repositoryClass="Winefing\ApiBundle\Repository\ArticleRepository")
  */
-class Article extends Controller
+class Article
 {
     /**
      * @var int
@@ -59,6 +58,27 @@ class Article extends Controller
     private $missingLanguages;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="picture", type="string", length=255, nullable=true)
+     * @Groups({"default"})
+     */
+    private $picture;
+
+    /**
+     * @var
+     * @Groups({"default"})
+     * @Type("DateTime")
+     */
+    private $created;
+    /**
+     * @var
+     * @Groups({"default"})
+     * @Type("DateTime")
+     */
+    private $updated;
+
+    /**
      * @var
      * @Groups({"default"})
      * @Type("string")
@@ -76,26 +96,8 @@ class Article extends Controller
      * @Type("string")
      */
     private $content;
-    /**
-     * @var
-     * @Groups({"default"})
-     * @Type("string")
-     */
-    private $created;
-    /**
-     * @var
-     * @Groups({"default"})
-     * @Type("string")
-     */
-    private $updated;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="picture", type="string", length=255, nullable=true)
-     * @Groups({"default"})
-     */
-    private $picture;
+
 
 
     /**
@@ -191,7 +193,6 @@ class Article extends Controller
     }
 
     /**
-     * @return Language
      */
     public function getMissingLanguages()
     {
@@ -232,9 +233,20 @@ class Article extends Controller
     /**
      * @param mixed $title
      */
-    public function setTitle($title)
+    public function setTitle()
     {
-        $this->title = $title;
+        $tr = $this->getTr(LanguageEnum::Français);
+        if(empty($tr)) {
+            $tr = $this->getTr(LanguageEnum::English);
+        }
+        $this->title = $tr->getTitle();
+    }
+    public function getTr($language) {
+        foreach($this->articleTrs as $tr) {
+            if($tr->getLanguage()->getCode() == $language) {
+                return $tr;
+            }
+        };
     }
 
     /**
@@ -317,7 +329,14 @@ class Article extends Controller
                 $this->shortDescription = $articleTr->getShortDescription();
                 $this->created = $articleTr->getCreated();
                 $this->updated = $articleTr->getUpdated();
+                break;
             }
+        }
+        foreach($this->tags as $tag) {
+            $tag->setTr($language);
+        }
+        foreach($this->articleCategories as $articleCategory) {
+            $articleCategory->setTr($language);
         }
     }
 }

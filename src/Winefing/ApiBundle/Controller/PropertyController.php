@@ -145,7 +145,7 @@ class PropertyController extends Controller implements ClassResourceInterface
      *  description="Get a entity by its id.",
      *  output= {
      *      "class"="Winefing\ApiBundle\Entity\Property",
-     *      "groups"={"id", "default", "medias", "characteristicValues", "property"}
+     *      "groups"={"id", "default", "medias", "characteristicValues", "property", "domain"}
      *     },
      *  statusCodes={
      *         200="Returned when successful",
@@ -168,7 +168,7 @@ class PropertyController extends Controller implements ClassResourceInterface
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Property');
         $property = $repository->findOneById($id);
         $property->setIsAddressDomain();
-        $json = $serializer->serialize($property, 'json', SerializationContext::create()->setGroups(array('default', 'medias', 'address')));
+        $json = $serializer->serialize($property, 'json', SerializationContext::create()->setGroups(array('default', 'medias', 'address', 'domain')));
         return new Response($json);
     }
 

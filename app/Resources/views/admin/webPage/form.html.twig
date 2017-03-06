@@ -31,10 +31,10 @@
         </div>
         {{ form_label(form.content) }}
         {{ form_widget(form.content,  {'id': 'summernote'}) }}
-        <fieldset class="form-group" id="activated">
-            <input type='hidden' value='0' name='web_page_tr[activated]'>
-            {{ form_widget(form.activated,  { 'attr': {'data-toggle':"toggle", 'data-off':"Not activated", 'data-on':"Activated", 'data-onstyle':"success"} }) }}
-        </fieldset>
+        {#<fieldset class="form-group" id="activated">#}
+            {#<input type='hidden' value='0' name='web_page_tr[activated]'>#}
+            {#{{ form_widget(form.activated,  { 'attr': {'data-toggle':"toggle", 'data-off':"Not activated", 'data-on':"Activated", 'data-onstyle':"success"} }) }}#}
+        {#</fieldset>#}
         <a href="{{ path('web_pages') }}" type="button" class="btn btn-default" data-dismiss="modal">Retour</a>
         <button type="submit" class="btn btn-primary">Valider</button>
     {{ form_end(form)}}

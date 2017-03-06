@@ -196,6 +196,35 @@ class User implements UserInterface, \Serializable
      */
     protected $phoneNumberVerify = 0;
 
+    /**
+     * @var
+     * @Groups({"hostRentalOrders"})
+     * @Type("array<Winefing\ApiBundle\Entity\RentalOrder>")
+     */
+    protected $hostRentalOrders;
+
+    /**
+     * @ORM\Column(name="twitter", type="string", length=255, nullable=true)
+     * @Groups({"default"})
+     */
+    protected $twitter;
+    /**
+     * @ORM\Column(name="facebook", type="string", length=255, nullable=true)
+     * @Groups({"default"})
+     */
+    protected $facebook;
+    /**
+     * @ORM\Column(name="instagram", type="string", length=255, nullable=true)
+     * @Groups({"default"})
+     */
+    protected $instagram;
+
+    /**
+     * @ORM\Column(name="google", type="string", length=255, nullable=true)
+     * @Groups({"default"})
+     */
+    protected $google;
+
     public function __construct()
     {
         $this->subscriptions = new ArrayCollection();
@@ -205,6 +234,8 @@ class User implements UserInterface, \Serializable
         $this->addresses = new ArrayCollection();
         $this->isActive = true;
         $this->creditCards = new ArrayCollection();
+        $this->hostRentalOrders = new ArrayCollection();
+        $this->rentalOrders = new ArrayCollection();
 
         return $this;
     }
@@ -228,9 +259,7 @@ class User implements UserInterface, \Serializable
 
     public function getSalt()
     {
-        // you *may* need a real salt depending on your encoder
-        // see section on salt below
-        return null;
+//        return null;
     }
 
     /**
@@ -563,9 +592,9 @@ class User implements UserInterface, \Serializable
         return serialize(array(
             $this->id,
             $this->email,
-            $this->password,
+            $this->password
             // see section on salt below
-            // $this->salt,
+//             $this->salt,
         ));
     }
 
@@ -575,9 +604,9 @@ class User implements UserInterface, \Serializable
         list (
             $this->id,
             $this->email,
-            $this->password,
+            $this->password
             // see section on salt below
-            // $this->salt
+//             $this->salt
             ) = unserialize($serialized);
     }
 
@@ -695,6 +724,86 @@ class User implements UserInterface, \Serializable
     public function setRentalOrders($rentalOrders)
     {
         $this->rentalOrders = $rentalOrders;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHostRentalOrders()
+    {
+        return $this->hostRentalOrders;
+    }
+
+    /**
+     * @param mixed $hostRentalOrders
+     */
+    public function setHostRentalOrders($rentalOrders)
+    {
+        $this->hostRentalOrders = $rentalOrders;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTwitter()
+    {
+        return $this->twitter;
+    }
+
+    /**
+     * @param mixed $twitter
+     */
+    public function setTwitter($twitter)
+    {
+        $this->twitter = $twitter;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFacebook()
+    {
+        return $this->facebook;
+    }
+
+    /**
+     * @param mixed $facebook
+     */
+    public function setFacebook($facebook)
+    {
+        $this->facebook = $facebook;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getInstagram()
+    {
+        return $this->instagram;
+    }
+
+    /**
+     * @param mixed $instagram
+     */
+    public function setInstagram($instagram)
+    {
+        $this->instagram = $instagram;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getGoogle()
+    {
+        return $this->google;
+    }
+
+    /**
+     * @param mixed $google
+     */
+    public function setGoogle($google)
+    {
+        $this->google = $google;
     }
 
 }

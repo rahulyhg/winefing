@@ -18,6 +18,8 @@ use Doctrine\ORM\EntityManager;
 use JMS\Serializer\Serializer;
 use Winefing\ApiBundle\Entity\UserGroupEnum;
 use Symfony\Component\Form\FormError;
+use Winefing\ApiBundle\Controller\ApiController as Api;
+use Symfony\Component\Routing\Router;
 
 class LemonWayController
 {
@@ -25,12 +27,81 @@ class LemonWayController
     protected $serializer;
     protected $directkit_ws;
     protected $informations;
+    protected $api;
+    protected $router;
+    protected $winefingWalletId = "SC";
 
-    public function __construct(EntityManager $entityManager, Serializer $serializer){
+    public function __construct(EntityManager $entityManager, Serializer $serializer, Api $api, Router $router){
         $this->em = $entityManager;
         $this->serializer = $serializer;
         $this->directkit_ws = 'https://sandbox-api.lemonway.fr/mb/winefing/dev/directkitxml/service.asmx';
         $this->informations = ["wlLogin"=> 'adminmb', "wlPass" => "WhWo//2016", "language" => 'fr', "version"=>1.0, "walletIp"=> '212.51.179.194', 'walletUa'=> 'ua'];
+        $this->api = $api;
+        $this->router = $router;
+    }
+    public function registerIban(User $user, &$ibanForm) {
+        $client = new \Soapclient($this->directkit_ws."?wsdl");
+        $iban = $ibanForm->getData();
+        $ib = array('wallet'=>$user->getId(), 'holder'=> $iban->getCompany()->getName(), 'bic'=> $iban->getBic(), 'iban'=> $iban->getIban());
+        $response = $client->RegisterIBAN(array_merge($this->informations,$ib));
+        if(!empty($response->RegisterIBANResult->E)) {
+            switch ($response->RegisterIBANResult->E->Code){
+                case '221':
+                    $ibanForm->get('iban')->addError(new FormError($response->RegisterIBANResult->E->Msg));
+                    break;
+                default :
+                    throw new \Exception($response->RegisterIBANResult->E->Msg);
+            }
+        }
+    }
+    public function moneyInValidate($transactionId) {
+        $client = new \Soapclient($this->directkit_ws."?wsdl");
+        $response = $client->MoneyInValidate(array_merge($this->informations, array('transactionId'=>$transactionId)));
+        if(empty($response->MoneyInValidateResult->E)) {
+            var_dump($response->MoneyInValidateResult->MONEYIN->HPAY->STATUS);
+//            $this->newCreditCard($response->RegisterCardResult->CARD, $creditCardForm, $user);
+        } else {
+            switch ($response->MoneyInValidateResult->E->Code){
+                default :
+                    throw new \Exception($response->MoneyInValidateResult->E->Msg);
+            }
+        }
+
+    }
+    public function moneyIn($user, $creditCardForm, $rentalOrder) {
+        $client = new \Soapclient($this->directkit_ws."?wsdl");
+        var_dump($rentalOrder->getTotalTTC());
+        $card['wallet'] = $user->getId();
+        $card['amountCom'] = strval(number_format($rentalOrder->getTotalTTC(), 2));
+        $card['amountTot'] = strval(number_format($rentalOrder->getTotalTTC(), 2));
+        $card['isPreAuth'] = 1;
+        $card['returnUrl'] = $this->router->generate('rental_paiement');
+
+        $this->setCard($card, $creditCardForm);
+        $response = $client->MoneyIn(array_merge($this->informations, $card));
+        var_dump($rentalOrder->getId());
+
+        if(empty($response->MoneyInResult->E)) {
+            return $response->MoneyInResult->TRANS->HPAY->ID;
+//            $this->newCreditCard($response->RegisterCardResult->CARD, $creditCardForm, $user);
+        } else {
+            switch ($response->MoneyInResult->E->Code){
+                case '212' :
+                    $creditCardForm->get('cardNumber')->addError(new FormError($response->MoneyInResult->E->Msg));
+                    break;
+                case '266' :
+                    $creditCardForm->get('cardDate')->addError(new FormError($response->MoneyInResult->E->Msg));
+                    break;
+                case '267' :
+                    $creditCardForm->get('cardCode')->addError(new FormError($response->MoneyInResult->E->Msg));
+                    break;
+                case '171' :
+                    $creditCardForm->addError(new FormError($response->MoneyInResult->E->Msg));
+                    break;
+                default :
+                    throw new \Exception($response->MoneyInResult->E->Msg);
+            }
+        }
     }
     /**
      *
@@ -65,9 +136,7 @@ class LemonWayController
         $response = $client->RegisterCard(array_merge($this->informations, $card));
         var_dump($response);
         if(empty($response->RegisterCardResult->E)) {
-            $creditCard = new \Winefing\ApiBundle\Entity\CreditCard();
-            $creditCard->setOwner($creditCardForm['name']->getData());
-            return $this->newCreditCard($response->RegisterCardResult->CARD, $creditCard);
+            $this->newCreditCard($response->RegisterCardResult->CARD, $creditCardForm, $user);
         } else {
             switch ($response->RegisterCardResult->E->Code){
                 case '212' :
@@ -84,15 +153,22 @@ class LemonWayController
             }
         }
     }
-    public function newCreditCard($card, &$creditCard) {
-        $creditCard->setExpirationDate($card->EXTRA->EXP);
-        $creditCard->setNumber($card->EXTRA->NUM);
-        $creditCard->setLemonWayId($card->ID);
+
+    /**
+     * Post credit card
+     * @param $card
+     * @param $creditCardForm
+     */
+    public function newCreditCard($card, $creditCardForm, $user) {
+        $newCreditCard["lemonWayId"] =  $card->ID;
+        $newCreditCard["owner"] =  $creditCardForm->get('cardName')->getData();
+        $newCreditCard["user"] =  $user->getId();
+        $this->api->post($this->router->generate('api_post_credit_card'),  $newCreditCard);
     }
     public function setCard(&$card, $creditCardForm) {
         $card['cardType'] = $creditCardForm['cardType']->getData();
         $card['cardNumber'] = str_replace(" ", "", $creditCardForm['cardNumber']->getData());
-        $card['cardCode'] = $creditCardForm['cardCode']->getData();
+        $card['cardCrypto'] = $creditCardForm['cardCode']->getData();
         $card['cardDate'] = str_replace(" ", "", $creditCardForm['cardDate']->getData());
     }
     public function updateUser(User $user) {

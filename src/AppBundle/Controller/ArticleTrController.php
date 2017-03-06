@@ -64,22 +64,23 @@ class ArticleTrController extends Controller
      */
     public function submitAction(Request $request){
         $api = $this->container->get('winefing.api_controller');
-        $serializer = $this->container->get("winefing.serializer_controller");
+        $serializer = $this->container->get("jms_serializer");
         $article = $request->request->all()["article_tr"]["article"];
         if(empty($article["id"])) {
             $response = $api->post($this->get('router')->generate('api_post_article'), $article);
         } else {
             $response = $api->put($this->get('router')->generate('api_put_article'), $article);
         }
-        $article = $serializer->decode($response->getBody()->getContents());
+        $article = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Article', 'json');
         $picture = $request->files->all()["article_tr"]["article"]["picture"];
-        $param["article"] = $article["id"];
+        $param["article"] = $article->getId();
+        var_dump($param);
         if(!empty($picture)) {
             $api->file($this->get('router')->generate('api_post_article_file'), $param, $picture);
         }
         $articleTr = $request->request->all()["article_tr"];
         unset($articleTr["article"]);
-        $articleTr["article"] = $article["id"];
+        $articleTr["article"] = $article->getId();
         if(empty($articleTr["id"])) {
             $api->post($this->get('router')->generate('api_post_article_tr'), $articleTr);
         } else {
@@ -88,7 +89,7 @@ class ArticleTrController extends Controller
         $request->getSession()
             ->getFlashBag()
             ->add('success', "The article is well created/modified.");
-        return $this->redirectToRoute('articles');
+        return $this->redirectToRoute('admin_articles');
     }
 
     /**

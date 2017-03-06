@@ -1,11 +1,20 @@
 {% extends 'base.html.twig' %}
 {% block body %}
+    <!-- Interactive Slider v2 -->
+    <div class="cover-img" style="background: url({{ banner_directory ~'red-bottles.jpeg' }})">
+        <h1>{% trans %}label.my_profil{% endtrans %}</h1>
+    </div>
+    <!-- End Interactive Slider v2 -->
     {% if is_granted("ROLE_HOST") %}
         {{ include('host/nav.html.twig') }}
     {% elseif is_granted("ROLE_USER") %}
         {{ include('user/nav.html.twig') }}
     {% elseif is_granted("ROLE_MANAGMENT") or is_granted("ROLE_BLOG") or is_granted("ROLE_TECHNIQUE") %}
-        {{ include('admin/nav.html.twig') }}
+        {% if app.request.get('id') == app.user.id %}
+            {{ include('admin/nav.html.twig') }}
+        {% else %}
+            {{ include('host/nav.html.twig') }}
+        {% endif %}
     {% endif %}
     <div class="container">
         <div class="content">
@@ -15,26 +24,17 @@
                         <li class="active"><a href="#profil" data-toggle="tab">{% trans %}label.edit_profil{% endtrans %} </a></li>
                         <li><a href="#picture" data-toggle="tab">{% trans %}label.profil_picture{% endtrans %} </a></li>
                         <li><a href="#password" data-toggle="tab">{% trans %}label.edit_password{% endtrans %} </a></li>
-                        <li><a href="#subscriptions" data-toggle="tab">{% trans %}label.notifications{% endtrans %} </a></li>
+                        {% if is_granted("ROLE_USER") or  is_granted("ROLE_HOST") %}
+                            <li><a href="#subscriptions" data-toggle="tab">{% trans %}label.notifications{% endtrans %} </a></li>
+                        {% endif %}
+                        {% if ibanForm is defined %}
+                            <li><a href="#iban" data-toggle="tab">{% trans %}label.bank_details{% endtrans %} </a></li>
+                        {% endif %}
                     </ul>
                 </div>
                 <div class="col-sm-9">
                     <div class="tab-content">
                         <div class="tab-pane fade in active" id="profil">
-                            {% if app.session.flashBag.has('userSuccess') %}
-                                <div class="alert alert-success">
-                                    {% for msg in app.session.flashBag.get('userSuccess') %}
-                                        {{ msg }}
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                            {% if app.session.flashBag.has('userError') %}
-                                <div class="alert alert-danger">
-                                    {% for msg in app.session.flashBag.get('userError') %}
-                                        {{ msg }}
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
                             {{ form_start(userForm, {'attr':{'id':'user'}}) }}
                             {{ form_errors(userForm) }}
                             <div class="panel panel-default">
@@ -101,49 +101,28 @@
                                         {{ form_errors(userForm.description)}}
                                         {{ form_widget(userForm.description,  { 'attr': {'class': 'form-control'} }) }}
                                     </div>
+                                    <label>Réseaux sociaux (fournir URL)</label>
+                                    <br>
+                                    {% if admin is defined %}
+                                        {{ form_row(userForm.facebook)}}
+                                        {{ form_row(userForm.twitter)}}
+                                        {{ form_row(userForm.instagram)}}
+                                        {{ form_row(userForm.google)}}
+                                    {% endif %}
                                 </div>
                             </div>
                             <input type="button" onclick="submitUser();" value="{% trans %}label.submit{% endtrans %}" class="btn btn-primary pull-right">
                             {{ form_end(userForm) }}
                         </div>
                         <div class="tab-pane fade in" id="picture">
-                            {% if app.session.flashBag.has('pictureSuccess') %}
-                                <div class="alert alert-success">
-                                    {% for msg in app.session.flashBag.get('pictureSuccess') %}
-                                        {{ msg }}
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                            {% if app.session.flashBag.has('pictureError') %}
-                                <div class="alert alert-danger">
-                                    {% for msg in app.session.flashBag.get('pictureError') %}
-                                        {{ msg }}
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                            <img src="{{ user_directory ~ picture}}" width="200px" height="auto">
+                            <img class="circular-landscape" src="{{ user_directory ~ picture}}" width="200px" height="auto">
                             <br><br>
-                            <h4>{% trans %}label.edit_picture{% endtrans %} :</h4>
-                            <form name="picture" method="post" enctype='multipart/form-data'>
-                                <input name="picture" type="file" required>
-                                <button type="submit" class="btn btn-primary pull-right">{% trans %}label.submit{% endtrans %}</button>
-                            </form>
+                            <h4>{{ 'label.edit_picture'|trans() ~ ' ('~ 'label.max_size'|trans({'%maxSize%' : '1Mo'}) ~ ') :' }}</h4>
+                            <br>
+                            {{ form_start(pictureForm) }}
+                            {{ form_end(pictureForm) }}
                         </div>
                         <div class="tab-pane fade in" id="password">
-                            {% if app.session.flashBag.has('passwordSuccess') %}
-                                <div class="alert alert-success">
-                                    {% for msg in app.session.flashBag.get('passwordSuccess') %}
-                                        {{ msg }}
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                            {% if app.session.flashBag.has('passwordError') %}
-                                <div class="alert alert-danger">
-                                    {% for msg in app.session.flashBag.get('passwordError') %}
-                                        {{ msg }}
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
                             <div class="panel panel-default">
                                 <div class="panel-heading">
                                     <h4>{% trans %}label.edit_password{% endtrans %}</h4>
@@ -152,18 +131,31 @@
                                     {{ form_start(passwordForm, {'attr':{'id':'password'}}) }}
                                         {{ form_errors(passwordForm) }}
                                         <div class="form-group {% if passwordForm.currentPassword.vars.errors|length >0 %}has-error{% endif %}">
-                                            {{ form_row(passwordForm.currentPassword) }}
+                                            <label class="control-label">
+                                                *{% trans %}label.password{% endtrans %}
+                                            </label><br>
+                                            {{ form_errors(passwordForm.currentPassword) }}
+                                            <div class="input-group">
+                                                <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                                                {{ form_widget(passwordForm.currentPassword) }}
+                                            </div>
                                         </div>
-                                        <div class="form-group {% if passwordForm.password.first.vars.errors|length >0 %}has-error{% endif %}">
-                                            <label>{% trans %}label.password{% endtrans %}
+                                        <div class="form-group {% if passwordForm.password.first.vars.errors|length > 0 %}has-error{% endif %}">
+                                            <label class="control-label">
+                                                *{% trans %}label.password{% endtrans %}
                                                 <a href="#" id="password-indication"data-toggle="tooltip" data-placement="top" title="{% trans %}error.password_format{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
-                                            </label>
-                                            {{ form_errors(passwordForm.password.first)}}
-                                            {{ form_widget(passwordForm.password.first, {'attr':{'onkeyup':'checkPassword(this);'}}) }}
+                                            </label><br>
+                                            {{ form_errors(passwordForm.password.first) }}
+                                            <div class="input-group">
+                                                <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                                                {{ form_widget(passwordForm.password.first, {'attr':{'onkeyup':'checkPassword(this);'}}) }}
+                                            </div>
                                         </div>
                                         <div class="form-group {% if passwordForm.password.second.vars.errors|length >0 %}has-error{% endif %}">
-                                            {{ form_errors(passwordForm.password.second)}}
-                                            {{ form_row(passwordForm.password.second, {'attr':{'onkeyup':'checkPassword(this);'}}) }}
+                                            <div class="input-group">
+                                                <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                                                {{ form_widget(passwordForm.password.second, {'attr':{'onkeyup':'checkPassword(this);'}}) }}
+                                            </div>
                                         </div>
                                         <input type="button" onclick="checkPasswordBeforeSubmit();" value="{% trans %}label.submit{% endtrans %}" class="btn btn-primary pull-right">
                                     {{ form_end(passwordForm) }}
@@ -171,20 +163,6 @@
                             </div>
                         </div>
                         <div class="tab-pane fade in" id="subscriptions">
-                            {% if app.session.flashBag.has('subscriptionsSuccess') %}
-                                <div class="alert alert-success">
-                                    {% for msg in app.session.flashBag.get('subscriptionsSuccess') %}
-                                        {{ msg }}
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                            {% if app.session.flashBag.has('subscriptionsError') %}
-                                <div class="alert alert-danger">
-                                    {% for msg in app.session.flashBag.get('subscriptionsError') %}
-                                        {{ msg }}
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
                             <form name="subscriptionForm" method="post">
                                 {% set i = 0 %}
                                 {% for format,subscriptions in subscriptionFormatList %}
@@ -213,6 +191,50 @@
                                 <button type="submit" class="btn btn-primary pull-right">{% trans %}label.submit{% endtrans %}</button>
                             </form>
                         </div>
+                        {% if ibanForm is defined %}
+                            <div class="tab-pane fade in" id="iban">
+                                {{ form_start(ibanForm, {'attr': {'id' : 'iban'}}) }}
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4>{% trans %}label.company_informations{% endtrans %}
+                                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans %}help.company_informations{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
+                                            </h4>
+                                        </div>
+                                        <div class="panel-body">
+                                            <div class="form-group">
+                                                *{{ form_label(ibanForm.company.name) }}
+                                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans %}help.company_name{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
+                                                {{ form_errors(ibanForm.company.name) }}
+                                                {{ form_widget(ibanForm.company.name) }}
+                                            </div>
+                                            <br>
+                                            {% set addressForm = ibanForm.company.address %}
+                                            {% include('address/form.html.twig') %}
+                                        </div>
+                                    </div>
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4>{% trans %}label.bank_details{% endtrans %}</h4>
+                                        </div>
+                                        <div class="panel-body">
+                                            <div class="form-group">
+                                                *{{ form_label(ibanForm.bic) }}
+                                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans %}help.bic{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
+                                                {{ form_errors(ibanForm.bic) }}
+                                                {{ form_widget(ibanForm.bic) }}
+                                            </div>
+                                            <div class="form-group {% if ibanForm.iban.vars.errors|length %}has-error{% endif %}">
+                                                *{{ form_label(ibanForm.iban) }}
+                                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans %}help.iban{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
+                                                {{ form_errors(ibanForm.iban) }}
+                                                {{ form_widget(ibanForm.iban) }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <input type="button" onclick="disabledInputAddress('iban');" value="{% trans %}label.submit{% endtrans %}"class="btn btn-primary pull-right">
+                                {{ form_end(ibanForm) }}
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -227,7 +249,7 @@
         passwordSecond = $('#password_edit_password_second');
         //not submit the form if the password is not ok
         function checkPasswordBeforeSubmit() {
-            document.password_edit.submit();
+            document.change_password.submit();
             {#isValid= false;#}
             {#if(checkFormatPassword(passwordFirst)){#}
                 {#if(checkCorrepondance(passwordSecond, passwordFirst, passwordSecond)) {#}
@@ -252,7 +274,6 @@
                 {#});#}
             {#}#}
         }
-        var nav = '{{ nav }}';
         function submitUser() {
             if($('#error-phone-number').is(":visible")) {
                 $.toast({
@@ -268,7 +289,15 @@
         }
         var telInput = $('#user_phoneNumber');
         $(document).ready(function() {
-
+            //initiate the google map new address
+            adressId = 'iban_company_address_formattedAddress';
+            componentFormId = {
+                street_number: 'iban_company_address_streetAddress',
+                route: 'iban_company_address_route',
+                locality: 'iban_company_address_locality',
+                country: 'iban_company_address_country',
+                postal_code: 'iban_company_address_postalCode'
+            };
             var minBirthDate =  new Date();
             minBirthDate.setFullYear(minBirthDate.getFullYear()-18);
             $('#sandbox-container .input-group.date').datepicker({
@@ -277,8 +306,19 @@
                 autoclose: true
             });
         });
+        //not allow space in iban and bic input.
+        $("input#iban_bic, input#iban_iban").on({
+            keydown: function(e) {
+                if (e.which === 32)
+                    return false;
+            },
+            change: function() {
+                this.value = this.value.replace(/\s/g, "");
+            }
+        });
     </script>
-    {% javascripts 'bundles/app/js/phone-number.js' 'bundles/app/js/nav.js' 'bundles/app/js/address.js'%}
+    {% javascripts 'bundles/app/js/phone-number.js' 'bundles/app/js/nav.js'%}
     <script src="{{ asset_url }}"></script>
     {% endjavascripts %}
+    <script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyBXbn5jGttQkXWIfV91bBmsMg-HS_o_f7o&signed_in=true&libraries=places&callback=initAutocomplete" async defer></script>
 {% endblock %}

@@ -10,5 +10,13 @@ namespace Winefing\ApiBundle\Repository;
  */
 class WineRegionRepository extends \Doctrine\ORM\EntityRepository
 {
-
+    function findWithName($name) {
+        $queryBuilder = $this->createQueryBuilder('wineRegion')
+            ->join('wineRegion.wineRegionTrs', 'tr')
+            ->where('tr.name like :name')
+            ->setParameter('name', "%".$name."%")
+            ->setMaxResults(1);
+        $query = $queryBuilder->getQuery();
+        return $query->getOneOrNullResult();
+    }
 }

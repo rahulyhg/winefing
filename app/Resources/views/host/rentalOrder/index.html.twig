@@ -1,5 +1,99 @@
 {% extends 'host/base.html.twig' %}
 {% block table %}
     <div>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>
+                    {% trans %}label.first_name{% endtrans %}
+                </th>
+                <th>
+                    {% trans %}label.rental{% endtrans %}
+                </th>
+                <th>
+                    {% trans %}label.date{% endtrans %}
+                </th>
+                <th>
+                    {% trans %}label.amount{% endtrans %}
+                </th>
+                <th>
+                    {% trans %}label.status{% endtrans %}
+                </th>
+                <th>
+                    {% trans %}label.actions{% endtrans %}
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+                {% for rentalOrder in rentalOrders %}
+                <tr>
+                    <td>
+                        {{ rentalOrder.user.firstName ~ ' ' ~ rentalOrder.user.lastName }}
+                    </td>
+                    <td>
+                        {{ rentalOrder.rental.name ~'-'~rentalOrder.rental.property.name}}
+                    </td>
+                    <td>
+                        {{
+                            'label.from'|trans()
+                            ~ ' '
+                            ~ rentalOrder.startDate|date('d-m-Y')
+                            ~' '
+                            ~ 'label.to'|trans()
+                            ~' '
+                            ~ rentalOrder.endDate|date('d-m-Y')
+                        }}
+                    </td>
+                    <td>
+                        {{ rentalOrder.amount ~' €' }}
+                    </td>
+                    <td>
+                        {% if rentalOrder.status ==  order_refuse %}
+                            {% set label = 'label.refused' %}
+                            {% set class = 'label-danger' %}
+                        {% elseif rentalOrder.status ==  order_cancel %}
+                            {% set label = 'label.canceled' %}
+                            {% set class = 'label-danger' %}
+                        {% elseif rentalOrder.startDate <= date() and rentalOrder.endDate >= date() %}
+                            {% set label = 'label.underway' %}
+                            {% set class = 'label-info' %}
+                        {% elseif rentalOrder.endDate < date() %}
+                            {% set label = 'label.over' %}
+                            {% set class = 'label-info' %}
+                        {% elseif rentalOrder.status ==  order_validate %}
+                            {% set label = 'label.validated' %}
+                            {% set class = 'label-success' %}
+                        {% elseif rentalOrder.status ==  order_pay %}
+                            {% set label = 'label.validated' %}
+                            {% set class = 'label-success' %}
+                        {% elseif rentalOrder.status ==  order_initiate %}
+                            {% set label = 'label.waiting_validation' %}
+                            {% set class = 'label-warning' %}
+                        {% endif %}
+                        <span class="label {{ class }}">{{ label|trans() }}</span>
+                    </td>
+                    <td>
+                        {% if rentalOrder.status != order_refuse and rentalOrder.status != order_cancel %}
+                            {% if rentalOrder.endDate < date() %}
+                                <a href="{{ path('rental_order_bill', {'id' : rentalOrder.id}) }}">
+                                    <input class="btn btn-primary" value="{% trans %}label.bill{% endtrans %}">
+                                </a>
+                            {% elseif rentalOrder.status ==  order_initiate and rentalOrder.endDate > date() %}
+                                <a href="{{ path('rental_order_status', {'id' : rentalOrder.id, 'status' : order_validate}) }}">
+                                    <input style="width: 100px" class="btn btn-sm btn-success" value="{{ 'label.validate'|trans() }}">
+                                </a>
+                                <a href="{{ path('rental_order_status', {'id' : rentalOrder.id, 'status' : order_refuse}) }}">
+                                    <input style="width: 100px" class="btn btn-sm btn-danger" value="{{ 'label.refuse'|trans() }}">
+                                </a>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
+{% endblock %}
+{% block script %}
+    {{ parent() }}
 {% endblock %}

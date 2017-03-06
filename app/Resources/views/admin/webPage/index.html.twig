@@ -40,12 +40,12 @@
                                 <td>
                                     <a href="{{ path('webPageTr_new_form', {'id':webPageTr.id, 'webPageId' : webPage.id, 'languageId' : webPageTr.language.id}) }}" class="btn btn-primary">Editer</a>
                                     <input type="button" class="btn btn-danger" value="Supprimer" onclick="setPathDeleteButton('{{ path('webPageTr_delete', {'id' : webPageTr.id}) }}')"/>
-                                    {% if webPageTr.activated == 1 %}
-                                        {% set checked = 'checked' %}
-                                    {% else %}
-                                        {% set checked = '' %}
-                                    {% endif %}
-                                    <input {{ checked }} onchange="activate('{{ path('webPageTr_activated') }}', 'webPageTrActivatedToggle', '{{ webPageTr.id }}')" id="webPageTrActivatedToggle-{{ webPageTr.id }}" type="checkbox" value="{{ webPageTr.id }}" data-toggle="toggle" data-off="Not activated" data-on="Activated" data-width="126"  data-onstyle="success">
+                                    {#{% if webPageTr.activated == 1 %}#}
+                                        {#{% set checked = 'checked' %}#}
+                                    {#{% else %}#}
+                                        {#{% set checked = '' %}#}
+                                    {#{% endif %}#}
+                                    {#<input {{ checked }} onchange="activate('{{ path('webPageTr_activated') }}', 'webPageTrActivatedToggle', '{{ webPageTr.id }}')" id="webPageTrActivatedToggle-{{ webPageTr.id }}" type="checkbox" value="{{ webPageTr.id }}" data-toggle="toggle" data-off="Not activated" data-on="Activated" data-width="126"  data-onstyle="success">#}
                                 </td>
                             </tr>
                         {% endfor %}

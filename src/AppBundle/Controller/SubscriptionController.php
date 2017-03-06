@@ -35,8 +35,8 @@ class SubscriptionController extends Controller
     public function cgetAction() {
         $api = $this->container->get('winefing.api_controller');
         $response = $api->get($this->generateUrl('api_get_subscriptions'));
-        $serializer = $this->container->get('winefing.serializer_controller');
-        $subscriptions = $serializer->decode($response->getBody()->getContents());
+        $serializer = $this->container->get('jms_serializer');
+        $subscriptions = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\Subscription>', 'json');
         return $this->render('admin/subscription/index.html.twig', array("subscriptions" => $subscriptions));
     }
 

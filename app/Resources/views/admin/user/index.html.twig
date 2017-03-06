@@ -17,18 +17,37 @@
                     </button>Utilisateur
                 {% endif %}
             </th>
-            <th>Téléphone</th>
-            <th>Email</th>
-            <th>Dernière connexion</th>
-            <th>Action</th>
+            {% if app.request.get('group') != role_host %}
+                <th>{% trans %}label.phone_number{% endtrans %}</th>
+                <th>{% trans %}label.email{% endtrans %}</th>
+            {% else %}
+                <th>{% trans %}label.order_initiate{% endtrans %}</th>
+                <th>{% trans %}label.order_validate{% endtrans %}</th>
+            {% endif %}
+            <th>{% trans %}label.last_connexion{% endtrans %}</th>
+            <th>{% trans %}label.action{% endtrans %}</th>
         </tr>
         </thead>
         <tbody>
         {% for user in users %}
             <tr>
                 <td>{{ user.firstName }} {{ user.lastName }}</td>
-                <td>{{ user.phoneNumber }}</td>
-                <td>{{ user.email }}</td>
+                {% if app.request.get('group') != role_host %}
+                    <td>{{ user.phoneNumber }}</td>
+                    <td>{{ user.email }}</td>
+                {% else %}
+                    {% set orderInitiate = 0 %}
+                    {% set orderValidate = 0 %}
+                    {% for rentalOrder in user.hostRentalOrders %}
+                        {% if rentalOrder.status == 0 %}
+                            {% set orderInitiate = orderInitiate + 1 %}
+                        {% else  %}
+                            {% set orderValidate = orderValidate + 1 %}
+                        {% endif %}
+                    {% endfor %}
+                    <td>{{ orderInitiate }}</td>
+                    <td>{{ orderValidate }}</td>
+                {% endif %}
                 <td>{{ user.lastLogin|date('d-m-Y') }}</td>
                 <td>
                     {% if app.request.get('group') == role_host %}
@@ -38,9 +57,17 @@
                             {% set checked = '' %}
                         {% endif %}
                         <input {{ checked }} onchange="verifyUser('{{ path('user_verify') }}', '{{ user.id }}', this.checked)" type="checkbox"  data-toggle="toggle" data-off="Non validé" data-on="Valider" data-width="126"  data-onstyle="success">
+                        {#<input type="button" class="btn btn-danger" value="Supprimer" onclick="setPathDeleteButton('{{ path('user_delete', {'id' : user.id}) }}')"/>#}
+                        {% if user.domains|length > 0 %}
+                            {% set domain = user.domains.first() %}
+                            <a href="{{ path('domain_edit', {'id': domain.id}) }}">
+                                <input type="button"  class="btn btn-primary" value="Editer" />
+                            </a>
+                        {% endif %}
+                    {% else %}
+                        {#<input type="button" class="btn btn-danger" value="Supprimer" onclick="setPathDeleteButton('{{ path('user_delete', {'id' : user.id}) }}')"/>#}
+                        <input type="button"  class="btn btn-primary" value="Editer" id="update" onclick="loadForm('{{ path('user_new_form', {'id' : user.id}) }}', 'user')"/>
                     {% endif %}
-                    <input type="button" class="btn btn-danger" value="Supprimer" onclick="setPathDeleteButton('{{ path('user_delete', {'id' : user.id}) }}')"/>
-                    <input type="button"  class="btn btn-primary" value="Editer" id="update" onclick="loadForm('{{ path('user_new_form', {'id' : user.id}) }}', 'user')"/>
                 </td>
             </tr>
         {% endfor %}

@@ -47,8 +47,8 @@ class EventCategoryTr
     private $name;
 
 
-    public function _construct(){
-        $this->eventCategory[] = new ArrayCollection();
+    public function __construct(){
+        $this->eventCategory = new ArrayCollection();
     }
 
 

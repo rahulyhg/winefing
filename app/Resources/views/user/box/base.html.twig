@@ -1,8 +1,8 @@
 {% extends 'base.html.twig' %}
 {% block body %}
     {% set route = app.request.attributes.get('_route') %}
-    <div class="container">
-        <div class="stepwizard col-md-offset-3">
+    <div class="cover-img" style="background: url({{ banner_directory ~'red-bottles.jpeg' }})">
+        <div class="stepwizard col-md-offset-3" style="margin-top: 40px">
             <div class="stepwizard-row setup-panel">
                 <div class="stepwizard-step">
                     <a type="button" class="btn btn-circle {% if route != 'box_select_item_choices' %}{{ 'disabled btn-default' }}{% else %}{{  'btn-primary' }}{% endif %}">1</a>
@@ -22,10 +22,14 @@
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-12">
-                {% block new %}
-                {% endblock %}
+    </div>
+    <div class="container">
+        <div class="content-sm">
+            <div class="row">
+                <div class="col-md-12">
+                    {% block new %}
+                    {% endblock %}
+                </div>
             </div>
         </div>
     </div>

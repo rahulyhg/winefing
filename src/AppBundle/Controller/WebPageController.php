@@ -47,4 +47,14 @@ class WebPageController extends Controller
         $webPages = $serializer->decode($response->getBody()->getContents());
         return $this->render('admin/webPage/index.html.twig', array("webPages" => $webPages));
     }
+    /**
+     * @Route("/web/page/{code}", name="web_page")
+     */
+    public function getAction($code, Request $request) {
+        $api = $this->container->get('winefing.api_controller');
+        $serializer = $this->container->get('jms_serializer');
+        $response = $api->get($this->get('_router')->generate('api_get_web_page', array('code'=>$code, 'language'=>$request->getLocale())));
+        $webPage = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\WebPage', 'json');
+        return $this->render('user/webPage/card.html.twig', array("webPage" => $webPage));
+    }
 }

@@ -12,20 +12,25 @@
                 <form method="post" name="order" action="{{ path('rental_paiement_date', {'id':rental.id}) }}">
                     <div id="sandbox-container">
                         <div class="input-daterange input-group" id="datepicker">
-                            <input type="text" class="input-sm form-control" id="start" name="start" />
+                            <input type="text" class="input-sm form-control" id="start" name="start" value="{% if startDate %}{{ startDate }}{% endif %}" />
                             <span class="input-group-addon">{% trans %}label.to{% endtrans %}</span>
-                            <input type="text" class="input-sm form-control" id="end" name="end" />
+                            <input type="text" class="input-sm form-control" id="end" name="end" value="{% if endDate %}{{ endDate }}{% endif %}" />
                         </div>
                     </div>
                     <br>
                     <input name="rental" value="{{ app.request.get('id') }}" hidden>
+                    <div id="error">
+                        <div class="alert alert-danger" role="alert">
+                            <span>{{ 'error.minimum_rental_period' | transchoice(rental.minimumRentalPeriod, {'%number%': rental.minimumRentalPeriod}) }}</span>
+                        </div>
+                    </div>
                     <div id="bill" hidden>
                         <div class="service-box-v1">
                             <div class="service-block service-block-default no-margin-bottom">
                                 <ul class="list-unstyled">
                                     <li>
                                         <label>
-                                            {% trans %}label.price{% endtrans %}/{% trans %}label.night{% endtrans %} :
+                                            {% trans %}label.price{% endtrans %}/{{ 'label.night' | transchoice(1, {}) ~ ':'}}
                                             <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans %}help.average_price{% endtrans %}">
                                         <span class="glyphicon glyphicon-info-sign" aria-hidden="true">
                                         </span>
@@ -62,10 +67,6 @@
 </div>
     <script>
         $('[data-toggle="tooltip"]').tooltip();
-        var startDate = new Date();
-        var endDate = new Date();
-        var daysNumber = 0;
-        var averagePrice = 0.0;
 
         var rentalPromotionsArray = {{ rentalPromotions|json_encode|raw }};
         function init(){
@@ -75,19 +76,62 @@
             }
         }
 
-        function getDaysNumber(){
+        function getDaysNumber(startDate, endDate){
             var timeDiff = Math.abs(endDate.getTime() - startDate.getTime());
             var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
             return diffDays;
         }
-        function getPrice() {
+        function getPrice(averagePrice, daysNumber) {
             return Number((averagePrice * daysNumber).toFixed(2));
         }
+        /**
+         * If the date selected is not empty
+         */
+        function getStartDate() {
+            start = $('#start').val();
+            return new Date(start.substr(6, 4), start.substr(3, 2) -1, start.substr(0, 2));
+        }
+        function getEndDate() {
+            end = $('#end').val();
+            return new Date(end.substr(6, 4), end.substr(3, 2) -1, end.substr(0, 2));
+        }
+        function initInput() {
+            console.log('in');
+            if($('#start, #end').val()) {
+                displayPrice();
+            }
+        }
+        function displayPrice() {
+            var startDate = getStartDate();
+            var endDate = getEndDate();
+            var daysNumber = getDaysNumber(startDate, endDate);
+            if(daysNumber >= '{{ rental.minimumRentalPeriod }}') {
+                //check if the minimum period is well selected
+                var averagePrice = 0.0;
+                $('#bill').show();
+                $('#error').hide();
+
+                $("span[id='daysNumber']").html(daysNumber);
+                var count = 0;
+                var date = startDate;
+                while (date.getTime() < endDate.getTime()) {
+                    averagePrice += getPriceByDate(date);
+                    date.setDate(date.getDate() + 1);
+                    count++;
+                }
+                averagePrice = Number((averagePrice / count).toFixed(2));
+                $("span[id='averagePrice']").html(averagePrice);
+                $("span[id='price']").html(getPrice(averagePrice, daysNumber));
+            } else {
+                $('#bill').hide();
+                $('#error').show();
+            }
+        }
+
         function getPriceByDate(date) {
             var price = {{ rental.price }};
             for(var i = 0; i<rentalPromotionsArray.length; ++i){
                 if((date.getTime() >= rentalPromotionsArray[i].startDate.getTime()) && (date.getTime() <= rentalPromotionsArray[i].endDate.getTime())){
-                    console.log(date);
                     price = rentalPromotionsArray[i].price;
                     break;
                 }
@@ -96,6 +140,9 @@
         }
         $(document).ready(function() {
             init();
+            initInput();
+            console.log('{{ startDate }}');
+            console.log('{{ endDate }}');
             $('#sandbox-container .input-daterange').datepicker({
                 startDate: ""+getFormattedDate(new Date)+"'",
                 format: 'dd-mm-yyyy',
@@ -105,30 +152,18 @@
                     var objet = {enabled:true, tooltip:getPriceByDate(date)+" €"};
                     return objet;
                 }
-            }).each(function() {
+            })
+            .each(function() {
                 $(this).datepicker().on('changeDate', function (ev) {
-                    console.log(ev);
+                    var startDate = getStartDate();
+                    var endDate = getEndDate();
                     if(ev.target.id === 'start') {
                         startDate = ev.date;
-                        console.log(startDate);
                     } else {
                         endDate = ev.date;
-                        console.log(endDate);
                     }
                     if(endDate.getTime() > startDate.getTime()) {
-                        $('#bill').show();
-                        daysNumber = getDaysNumber();
-                        $("span[id='daysNumber']").html(daysNumber);
-                        var count = 0;
-                        var date = startDate;
-                        while (date.getTime() < endDate.getTime()) {
-                            averagePrice += getPriceByDate(date);
-                            date.setDate(date.getDate() + 1);
-                            count++;
-                        }
-                        averagePrice = Number((averagePrice / count).toFixed(2));
-                        $("span[id='averagePrice']").html(averagePrice);
-                        $("span[id='price']").html(getPrice());
+                        displayPrice();
                     } else {
                         $('#bill').hide();
                     }

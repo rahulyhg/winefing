@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <!-- Interactive Slider v2 -->
+    <div class="cover-img" style="background: url({{ banner_directory ~'web-page.png' }})">
+        <h1>{{ webPage.title }}</h1>
+    </div>
+    <!-- End Interactive Slider v2 -->
+    <div>
+        <div class="container">
+            <div class="content-sm">
+                {{ webPage.content|raw }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

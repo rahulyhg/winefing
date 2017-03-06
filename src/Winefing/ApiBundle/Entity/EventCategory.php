@@ -31,8 +31,8 @@ class EventCategory
      */
     private $eventCategoryTrs;
 
-    public function _construct() {
-        $this->eventCategoryTrs[] = new ArrayCollection();
+    public function __construct() {
+        $this->eventCategoryTrs = new ArrayCollection();
         return $this;
     }
 

@@ -24,7 +24,7 @@ services:
         class: Winefing\ApiBundle\Controller\MissingCharacteristicController
     winefing.lemonway_controller:
         class: PaiementBundle\Controller\LemonWayController
-        arguments: ["@doctrine.orm.entity_manager", "@jms_serializer" ]
+        arguments: ["@doctrine.orm.entity_manager", "@jms_serializer", "@winefing.api_controller","@router"]
     winefing.component.authentication.handler.login_success_handler:
         class:  %winefing.login_success_handler.class%
         arguments:  ["@router", "@winefing.api_controller", "@winefing.webpath_controller", '@session', '@jms_serializer']

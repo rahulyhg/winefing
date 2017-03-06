@@ -26,7 +26,7 @@ class Rental
     private $id;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\RentalOrder", inversedBy="rental", fetch="EXTRA_LAZY")
+     * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\RentalOrder", mappedBy="rental")
      * @Groups({"rentalOrders"})
      */
     private $rentalOrders;
@@ -120,7 +120,7 @@ class Rental
         $this->rentalPromotions[] = $rentalPromotion;
     }
 
-    public function _construct() {
+    public function __construct() {
         $this->characteristicValues = new ArrayCollection();
         $this->medias = new ArrayCollection();
         $this->rentalPromotions = new ArrayCollection();

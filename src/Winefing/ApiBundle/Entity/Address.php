@@ -139,6 +139,9 @@ class Address
     }
     public function __clone() {
         $this->id = null;
+        $this->domains = new ArrayCollection();
+        $this->properties = new ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
 

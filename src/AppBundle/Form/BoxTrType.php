@@ -30,8 +30,8 @@ class BoxTrType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('name', null, array('attr'=>array('class'=>'form-control')))
-            ->add('description', TextareaType::class, array('attr'=>array('class'=>'form-control')))
+            ->add('name', null, array('attr'=>array('class'=>'form-control', 'maxlength'=>'255')))
+            ->add('description', TextareaType::class, array('attr'=>array('class'=>'form-control', 'style'=>'height: 200px', 'maxlength'=>'255')))
             ->add('language', EntityType::class,  array(
                 'class' => 'WinefingApiBundle:Language',
                 'choice_label' => 'name'));

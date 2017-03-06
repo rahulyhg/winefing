@@ -53,9 +53,9 @@ class PropertyCategory
      */
     private $name;
 
-    public function _construct(){
-        $this->propertyCategoryTrs[] = new ArrayCollection();
-        $this->properties[] = new ArrayCollection();
+    public function __construct(){
+        $this->propertyCategoryTrs = new ArrayCollection();
+        $this->properties = new ArrayCollection();
         return $this;
     }
 

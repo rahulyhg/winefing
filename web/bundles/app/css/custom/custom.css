@@ -394,7 +394,7 @@ span.btn-card-love:hover {
 }
 .cover-img {
     z-index: 1;
-    padding: 100px 0;
+    padding: 95px 0;
     position: relative;
     text-align: center;
     background-size: cover;
@@ -431,3 +431,219 @@ span.btn-card-love:hover {
 /*.services a:hover{color:#000;}*/
 /*.services h1{margin-top:0px !important;}*/
 /*.heading-container p{font-family:'Lato', sans-serif;text-align:center;font-size:16px !important;text-transform:uppercase;}*/
+
+.vcenter {
+    display: inline-block;
+    vertical-align: middle;
+    float: none!important;
+}
+.lol {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-width: 100%;
+    max-height: 100%;
+    margin: auto;
+    overflow: auto;
+}
+
+.bg-color-light {
+    background-color: #f7f7f7 !important;
+}
+.bg-color-white {
+    background-color: #fff !important;
+}
+.bg-color-white {
+    color: #555;
+}
+.margin-bottom-30 {
+    margin-bottom: 30px;
+}
+.blog-author {
+    padding: 20px;
+    background: #fff;
+}
+.margin-bottom-30 {
+    margin-bottom: 30px;
+}
+.margin-bottom-50 {
+    margin-bottom: 50px;
+}
+.margin-bottom-5, .margin-bottom-10, .margin-bottom-15, .margin-bottom-20, .margin-bottom-25, .margin-bottom-30, .margin-bottom-35, .margin-bottom-40, .margin-bottom-45, .margin-bottom-50, .margin-bottom-55, .margin-bottom-60, .margin-bottom-100 {
+    clear: both;
+}
+.row {
+    margin-right: -15px;
+    margin-left: -15px;
+}
+.news-v3 .news-v3-in {
+    padding: 35px 30px;
+}
+.blog-author .blog-author-desc {
+    overflow: hidden;
+}
+.overflow-h {
+    overflow: hidden;
+}
+.blog-author .blog-author-desc h4 {
+    float: left;
+    font-size: 18px;
+    margin: 0 0 10px;
+    text-transform: uppercase;
+}
+.margin-bottom-60 {
+    margin-bottom: 60px;
+}
+/*for the footer*/
+#footer {
+    width: 100%;
+    padding: 60px 0 0;
+    background-color: #2a2b2b;
+}
+#footer .widget h3 {
+    font-size: 20px;
+    line-height: 26px;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 30px;
+}
+#footer .widget {
+    margin-bottom: 20px;
+}
+#footer a {
+    color: #fff;
+    text-decoration: none;
+}
+#footer p, address{
+    color: #fff;
+}
+
+#footer a:hover, a:focus {
+    color: #cc6666;
+    cursor: hand;
+}
+.list-inline {
+    padding-left: 0;
+    margin-left: -5px;
+    list-style: none;
+}
+.list-inline>li {
+    display: inline-block;
+    padding-right: 5px;
+    padding-left: 5px;
+}
+/*#footer .social-links > li > a > .fa {*/
+    /*position: absolute;*/
+    /*left: 50%;*/
+    /*top: 50%;*/
+    /*width: 18px;*/
+    /*height: 18px;*/
+    /*margin-left: -9px;*/
+    /*margin-top: -9px;*/
+    /*color: #1b1d2a;*/
+    /*font-size: 19px;*/
+/*}*/
+/*#footer .social-links > li > a {*/
+    /*position: relative;*/
+    /*width: 40px;*/
+    /*height: 40px;*/
+    /*margin-top: 25px;*/
+    /*background: #6b6e80;*/
+    /*display: block;*/
+    /*border-radius: 100%;*/
+/*}*/
+/*#footer .social-links > li > .icon:hover{*/
+    /*background: #cc6666;*/
+/*}*/
+/*end for the footer*/
+
+/*for the twitter and facebook button aligned*/
+.fb_iframe_widget span
+{
+    vertical-align: baseline !important;
+}
+/*end for the twitter and facebook button aligned*/
+
+/*for the contact part*/
+.headline {
+    display: block;
+    margin: 10px 0 25px 0;
+    border-bottom: 1px dotted #e4e9f0;
+}
+.headline h2, .headline h3, .headline h4 {
+    margin: 0 0 -2px 0;
+    padding-bottom: 5px;
+    display: inline-block;
+    border-bottom: 2px solid #cc6666;
+}
+.sky-form .sky-space-20 {
+    margin-bottom: 20px;
+}
+.sky-form .row {
+    margin: 0 -15px;
+}
+.sky-form.contact-style {
+    border: none;
+}
+.sky-form {
+    box-shadow: none;
+    border: 1px solid #eee;
+}
+/*end for the contact part*/
+
+.discover-img {
+    height: auto;
+    width: 100%;
+}
+.navbar-nav > li > a:hover,
+.navbar-nav > li > a:focus {
+color: #cc6666!important;
+background-color: transparent;
+}
+.navbar-nav > li > a {
+     text-shadow: none!important;
+}
+.header-v6 .navbar-nav > .active > a {
+    color: #fff!important;
+    font-weight: 800!important;
+}
+.header-v6 .navbar-nav > .active > a::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 15px;
+    height: 8px;
+    width: 8px;
+    margin-left: -4px;
+    background: #fff;
+    -webkit-border-radius: 100%;
+    -moz-border-radius: 100%;
+    -ms-border-radius: 100%;
+    -o-border-radius: 100%;
+    border-radius: 100%;
+}
+.btn-wine-owner {
+    background-color: #27ae60!important;
+    border: none!important;
+}
+.stepwizard-step p  {
+    font-weight: 800;
+}
+.circular-landscape {
+    display: inline-block;
+    position: relative;
+    width: 200px;
+    height: 200px;
+    overflow: hidden;
+    border-radius: 50%;
+}
+.circular-min-landscape {
+    display: inline-block;
+    position: relative;
+    width: 35px;
+    height: 35px;
+    overflow: hidden;
+    border-radius: 50%;
+}

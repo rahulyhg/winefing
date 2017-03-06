@@ -27,14 +27,25 @@ class AdminUserType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $transformer = new StringToArrayTransformer();
+//        $builder->add($builder->create('role', 'choice', array(
+//            'label' => 'I am:',
+//            'mapped' => true,
+//            'expanded' => true,
+//            'multiple' => false,
+//            'choices' => array(
+//                'ROLE_NORMAL' => 'Standard',
+//                'ROLE_VIP' => 'VIP',
+//            )
+//        ))->addModelTransformer($transformer));
         $builder
             ->add('id', HiddenType::class, array('required'=>false))
             ->add('firstName', null, array('attr'=> array('maxlength'=>"60", 'class'=>'form-control')))
             ->add('lastName', null, array('attr'=> array('maxlength'=>"60", 'class'=>'form-control')))
             ->add('phoneNumber', null, array('attr'=> array('maxlength'=>"10", 'class'=>'form-control')))
             ->add('email', EmailType::class, array('attr'=>['class'=>'form-control']))
-            ->add('roles', ChoiceType::class,  array(
-                'choices' => array(UserGroupEnum::Blog => UserGroupEnum::Blog, UserGroupEnum::Managment => UserGroupEnum::Managment)));
+            ->add($builder->create('roles', ChoiceType::class,  array(
+                'choices' => array(UserGroupEnum::Blog => UserGroupEnum::Blog, UserGroupEnum::Managment => UserGroupEnum::Managment)))->addModelTransformer($transformer))
+        ;
     }
     public function configureOptions(OptionsResolver $resolver)
     {

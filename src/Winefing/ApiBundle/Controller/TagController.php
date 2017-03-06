@@ -15,8 +15,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use Doctrine\ORM\EntityManager;
 use Doctrine\Common\Collections\ArrayCollection;
+use Winefing\ApiBundle\Entity\MediaFormatEnum;
 use Winefing\ApiBundle\Entity\Tag;
-use Winefing\ApiBundle\Entity\TagTr;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
@@ -25,7 +25,9 @@ use FOS\RestBundle\Controller\Annotations\FileParam;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Winefing\ApiBundle\Entity\LanguageEnum;
+use JMS\Serializer\SerializationContext;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+
 
 
 
@@ -37,10 +39,38 @@ class TagController extends Controller implements ClassResourceInterface
      */
     public function cgetAction()
     {
-        $serializer = $this->container->get('winefing.serializer_controller');
+        $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Tag');
         $tags = $repository->findAll();
-        return new Response($serializer->serialize($tags, 'json'));
+        return new Response($serializer->serialize($tags, 'json', SerializationContext::create()->setGroups(array('default', 'language', 'id', 'trs'))));
+    }
+    /**
+     * Liste de toutes les tags possible en base
+     * @return Response
+     */
+    public function cgetArticlesAction($language)
+    {
+        $serializer = $this->container->get('jms_serializer');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Tag');
+        $tags = $repository->findForArticles();
+        foreach($tags as $tag) {
+            $tag->setTr($language);
+        }
+        return new Response($serializer->serialize($tags, 'json', SerializationContext::create()->setGroups(array('default', 'id'))));
+    }
+    /**
+     * Liste de toutes les tags possible en base
+     * @return Response
+     */
+    public function cgetDomainsAction($language, Request $request)
+    {
+        $serializer = $this->container->get('jms_serializer');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Tag');
+        $tags = $repository->findForDomains($request->query->all());
+        foreach($tags as $tag) {
+            $tag->setTr($language);
+        }
+        return new Response($serializer->serialize($tags, 'json', SerializationContext::create()->setGroups(array('default', 'id'))));
     }
 
     /**
@@ -82,10 +112,60 @@ class TagController extends Controller implements ClassResourceInterface
     {
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Tag');
         $tag = $repository->findOneById($id);
+        if (!empty($tag->getPicture())) {
+            if (!unlink($this->getParameter('tag_directory_upload') . $tag->getPicture())) {
+                throw new HttpException("Problem on server to delete the picture.");
+            }
+        }
         $em = $this->getDoctrine()->getManager();
         $em->remove($tag);
         $em->flush();
         return new Response(json_encode([200, "success"]));
     }
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "index","user" },
+     *  description="New object.",
+     *  parameters={
+     *     {
+     *          "name"="media", "dataType"="file", "required"=true, "description"="user's picture"
+     *      },
+     *      {
+     *          "name"="user", "dataType"="integer", "required"=true, "description"="user id"
+     *      }
+     *     },
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         204="Returned when no content",
+     *         400="Returned when the entity is not valid",
+     *         409="Returned when a user already exist with the same email",
+     *
+     *     }
+     * )
+     */
+    public function postPictureAction(Request $request) {
+        $em = $this->getDoctrine()->getManager();
+        $uploadedFile = $request->files->get('media');
+        $fileName = md5(uniqid()) . '.' . $uploadedFile->getClientOriginalExtension();
+        $mediaFormat = $this->container->get('winefing.media_format_controller');
+        $extentionCorrect = $mediaFormat->checkFormat($uploadedFile->getClientOriginalExtension(), MediaFormatEnum::Image);
+        if($extentionCorrect != 1) {
+            throw new BadRequestHttpException($extentionCorrect);
+        }
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Tag');
+        $tag = $repository->findOneById($request->request->get('tag'));
+        if(!empty($tag->getPicture())) {
+            unlink($this->getParameter('tag_directory_upload') . $tag->getPicture());
+        }
+        $tag->setPicture($fileName);
+        $uploadedFile->move(
+            $this->getParameter('tag_directory_upload'),
+            $fileName
+        );
+        $em->persist($tag);
+        $em->flush();
+    }
+
 
 }

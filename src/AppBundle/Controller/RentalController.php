@@ -53,13 +53,10 @@ class RentalController extends Controller
         $rental = $this->getRental($id);
         $rentalPromotions = $this->getRentalPromotions($id);
         $rentalPromotionsArray = $this->formateDate($rental, $rentalPromotions);
-//        if($request->isMethod('POST')) {
-//            $this->get('session')->set('rental', $id);
-//            $this->get('session')->set('startDate', $request->request->get('start'));
-//            $this->get('session')->set('endDate', $request->request->get('end'));
-//            return $this->redirectToRoute('rental_paiement_billing_address');
-//        }
-        return $this->render('user/rental/singleCard.html.twig', array('rental' => $rental, 'rentalPromotions'=>$rentalPromotionsArray));
+        return $this->render('user/rental/singleCard.html.twig', array('rental' => $rental,
+            'rentalPromotions'=>$rentalPromotionsArray,
+            'startDate'=>$request->query->get('startDate'),
+            'endDate'=>$request->query->get('endDate')));
     }
     /**
      * @Route("users/rental/{id}/paiement", name="rental_paiement_date")
@@ -108,7 +105,7 @@ class RentalController extends Controller
                 throw $this->createAccessDeniedException('You cannot access this page!');
             }
         } else {
-            $this->container->setParameter('domain_id', $id);
+            $this->get('session')->set('domainId', $id);
         }
         $api = $this->container->get('winefing.api_controller');
         $serializer = $this->container->get('jms_serializer');

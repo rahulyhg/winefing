@@ -42,8 +42,8 @@ class ArticleTr
     /**
      * @var string
      *
-     * @ORM\Column(name="title", type="string", length=60)
-     * @Groups({"title"})
+     * @ORM\Column(name="title", type="string", length=255)
+     * @Groups({"default"})
      */
     private $title;
 

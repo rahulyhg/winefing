@@ -1,8 +1,4 @@
-{% if is_granted("ROLE_HOST") %}
-    {% set domainId = app.session.get('domainId') %}
-{% elseif is_granted("ROLE_MANAGMENT") or is_granted("ROLE_BLOG") or is_granted("ROLE_TECHNIQUE") %}
-    {% set domainId = domain_id %}
-{% endif %}
+{% set domainId = app.session.get('domainId') %}
 <nav class="navbar navbar-inverse navbar-static-top">
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
@@ -14,7 +10,7 @@
                 <span class="icon-bar"></span>
             </button>
         </div>
-        {% set route = app.request.attributes.get('_route') %}
+        {% set route = app.request.get('_route') %}
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
@@ -37,8 +33,13 @@
                     {#<a href="{{ path('host_reviews', {'id': domainId}) }}">{% trans %}label.my_reviews{% endtrans %}#}
                     {#</a>#}
                 {#</li>#}
+                {% if is_granted("ROLE_HOST") %}
+                    {% set routeUserEdit = path('user_edit', {'id' : app.user.id}) %}
+                {% else %}
+                    {% set routeUserEdit = path('user_edit', {'id' :app.session.get('hostId')}) %}
+                {% endif %}
                 <li class="{% if route == 'user_edit'%}active-nav-back-end{% endif %}">
-                    <a href="{{ path('user_edit', {'id' : app.user.id}) }}">{% trans %}label.my_profil{% endtrans %} </a>
+                    <a href="{{ routeUserEdit }}">{% trans %}label.my_profil{% endtrans %} </a>
                 </li>
             </ul>
         </div><!-- /.navbar-collapse -->

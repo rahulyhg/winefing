@@ -1,73 +1,77 @@
 <!-- begin:footer -->
 <div id="footer">
     <div class="container">
-        <div class="row">
+        <div class="row text-center">
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="widget">
-                    <h3>Top Real Estate Listed</h3>
+                    <h3>{{ 'label.language'|transchoice(2) }}</h3>
+                    {% set params = app.request.attributes.get('_route_params') %}
+                    <a href="{{ path(app.request.attributes.get('_route'), params|merge({'_locale': 'en'})) }}">
+                        <img src="{{ asset('english.svg') }}"height="40px" style="margin-right: 20px">
+                    </a>
+                    <a href="{{ path(app.request.attributes.get('_route'), params|merge({'_locale': 'fr'})) }}">
+                        <img src="{{ asset('french.svg') }}"height="40px">
+                    </a>
+                </div>
+            </div>
+            <!-- break -->
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="widget">
+                    <img style="width: 100%" src="{{asset('Logoblanc_fondtransparent-06.png')}}" alt="Winefing">
+                    <p>
+                        {{ 'meta.description'|trans() }}
+                    </p>
+                </div>
+            </div>
+            <!-- break -->
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="widget">
+                    <h3>Winefing</h3>
                     <ul class="list-unstyled">
-                        <li><a href="#">Apartments</a></li>
-                        <li><a href="#">Office</a></li>
-                        <li><a href="#">Bungalows</a></li>
-                        <li><a href="#">Serviced Residence</a></li>
-                        <li><a href="#">Villa</a></li>
+                        <li><a href="{{ path('web_page', {'code': web_page_about}) }}">{{ 'label.about_us'|trans() }}</a></li>
+                        <li><a href="{{ path('contact') }}">{{ 'label.contact'|trans() }}</a></li>
+                        <li><a href="{{ path('web_page', {'code': web_page_faq}) }}">{{ 'label.help'|trans() }}</a></li>
+                        <li><a href="{{ path('web_page', {'code': web_page_legal_notice}) }}">{{ 'label.legal_notice'|trans() }}</a></li>
+                        <li><a href="{{ path('web_page', {'code': web_page_gtu}) }}">{{ 'label.gtu'|trans() }}</a></li>
+                        <li><a href="{{ path('web_page', {'code': web_page_gts}) }}">{{ 'label.gts'|trans() }}</a></li>
                     </ul>
                 </div>
             </div>
             <!-- break -->
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="widget">
-                    <h3>Top Agents Listed</h3>
-                    <ul class="list-unstyled">
-                        <li><a href="#">Lorenso</a></li>
-                        <li><a href="#">Bardiman</a></li>
-                        <li><a href="#">Tarjono noto boto limo</a></li>
-                        <li><a href="#">Surti</a></li>
-                        <li><a href="#">Ngatinem</a></li>
-                    </ul>
-                </div>
-            </div>
-            <!-- break -->
-            <div class="col-md-3 col-sm-6 col-xs-12">
-                <div class="widget">
-                    <h3>Features</h3>
-                    <ul class="list-unstyled">
-                        <li><a href="#">My Account</a></li>
-                        <li><a href="#">How To</a></li>
-                        <li><a href="#">Market Trend</a></li>
-                        <li><a href="#">Android App</a></li>
-                        <li><a href="#">IOS App</a></li>
-                    </ul>
-                </div>
-            </div>
-            <!-- break -->
-            <div class="col-md-3 col-sm-6 col-xs-12">
-                <div class="widget">
-                    <h2>Winefing</h2>
+                    <h3>Contact</h3>
                     <address>
-                        <strong>Adresse rue.</strong><br>
-                        33600 PESSAC<br>
+                        {{ winefing_street_address ~ ' ' ~ winefing_route }}<br>
+                        {{ winefing_postal_code ~ ' ' ~ winefing_locality }}<br>
+                        {{ winefing_country }}<br>
                         <br>
-                        Telp. : +62-345678910<br>
-                        Email : contact@winefing.com
+                        {{ 'label.phone_number'|trans() }}. : {{ winefing_phone_number }}<br>
+                        Email : {{ winefing_email }}
                     </address>
                 </div>
             </div>
             <!-- break -->
         </div>
         <!-- break -->
-
+    </div>
+    <div style="background-color: #333">
         <!-- begin:copyright -->
-        <div class="row">
-            <div class="col-md-12 copyright">
-                <p>Copyright &copy; 2014 Company, Inc. All Right Reserved.</p>
-                <p>Theme : Arillo 1.0 Designed by <strong>avriqqlabs.</strong></p>
-                <a href="#top" class="btn btn-danger scroltop"><i class="fa fa-angle-up"></i></a>
-                <ul class="list-inline social-links">
-                    <li><a href="#" class="icon-twitter" rel="tooltip" title="" data-placement="bottom" data-original-title="Twitter"><i class="fa fa-twitter"></i></a></li>
-                    <li><a href="#" class="icon-facebook" rel="tooltip" title="" data-placement="bottom" data-original-title="Facebook"><i class="fa fa-facebook"></i></a></li>
-                    <li><a href="#" class="icon-gplus" rel="tooltip" title="" data-placement="bottom" data-original-title="Gplus"><i class="fa fa-google-plus"></i></a></li>
-                </ul>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <p style="margin-top: 14px">Copyright &copy; 2017 Winefing SARL. All Right Reserved.</p>
+                </div>
+                <div class="col-md-6" style="text-align: right">
+                    <ul class="list-inline social-links" style="margin-top: 12px;">
+                        <li><a href="{{ winefing_twitter }}" class="icon" rel="tooltip" title="" data-placement="bottom" data-original-title="Twitter"><i class="fa fa-twitter"></i></a></li>
+                        <li><a href="{{ winefing_facebook }}" class="icon" rel="tooltip" title="" data-placement="bottom" data-original-title="Facebook"><i class="fa fa-facebook"></i></a></li>
+                        <li><a href="{{ winefing_google }}" class="icon" rel="tooltip" title="" data-placement="bottom" data-original-title="Gplus"><i class="fa fa-google-plus"></i></a></li>
+                        <li><a href="{{ winefing_instagram }}" class="icon" rel="tooltip" title="" data-placement="bottom" data-original-title="Instagram"><i class="fa fa-instagram"></i></a></li>
+                        <li><a href="#top" class="btn btn-danger scroltop"><i class="fa fa-angle-up"></i></a></li>
+                    </ul>
+                    {#<div id="topcontrol" title="Scroll Back to Top" style="position: fixed; bottom: 5px; right: 5px; opacity: 1; cursor: pointer;"></div>#}
+                </div>
             </div>
         </div>
         <!-- end:copyright -->

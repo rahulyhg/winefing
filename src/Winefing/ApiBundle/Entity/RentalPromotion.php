@@ -54,7 +54,7 @@ class RentalPromotion
      */
     private $rentals;
 
-    public function _construct() {
+    public function __construct() {
         $this->rentals = new ArrayCollection();
         return $this;
     }

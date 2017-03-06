@@ -65,30 +65,34 @@ class RegistrationController extends Controller
      * @Route("/registration", name="registration")
      */
     public function userAction(Request $request) {
+        $api = $this->container->get('winefing.api_controller');
+        $serializer = $this->container->get("jms_serializer");
         $user = new User();
         $form =$this->createForm(UserRegistrationType::class, $user);
         $form->handleRequest($request);
-        if($form->isSubmitted() && $form->isValid()) {
-            $body = $request->request->get('user_registration');
-            $body['roles'] = UserGroupEnum::User;
-            $body['email'] = $request->request->get('user_registration')['email']['first'];
-            if($this->emailExist($body['email'])) {
-                $form->get('email')['first']->addError(new FormError($this->get('translator')->trans('error.email_existing')));
-            } else {
-                $body['password'] = $request->request->get('user_registration')['password']['first'];
-                $user = $this->submitUser($body);
+        if($form->isSubmitted()) {
+            if($form->isValid()) {
+                $body = $request->request->get('user_registration');
+                $body['roles'] = UserGroupEnum::User;
+                $body['email'] = $request->request->get('user_registration')['email']['first'];
+                if($this->emailExist($api, $body['email'])) {
+                    $form->get('email')['first']->addError(new FormError($this->get('translator')->trans('error.email_existing', array('%link%'=>$this->get('_router')->generate('login')))));
+                    $this->addFlash('error', $this->get('translator')->trans($this->get('translator')->trans('error.email_existing', array('%link%'=>$this->get('_router')->generate('login')))));
+                } else {
+                    $body['password'] = $request->request->get('user_registration')['password']['first'];
+                    $user = $this->submitUser($api, $serializer, $body);
 
-                //create the wallet on lemon way
-                try {
-                    $this->createWallet($user);
-                } catch(\Exception $e) {
-                    $logger = $this->get('logger');
-                    $logger->critical($e->getMessage());
+                    //login user
+                    $this->logIn($user, $request);
+                    $this->addFlash('success', $this->get('translator')->trans('success.account_well_created'));
+
+                    //send email of welcoming
+                    $this->sendEmailRegistration($api, $body);
+
+                    return $this->redirectToRoute('registration');
                 }
-
-                //login user
-                $this->logIn($user);
-                return $this->redirectToRoute('home');
+            } else {
+                $this->addFlash('error', $this->get('translator')->trans('error.generic_form_error'));
             }
 
         }
@@ -102,13 +106,16 @@ class RegistrationController extends Controller
      */
     public function submitAction(Request $request)
     {
+        $api = $this->container->get('winefing.api_controller');
+        $serializer = $this->container->get("jms_serializer");
+
         $domain = new Domain();
         $domainForm =  $this->createForm(DomainRegistrationType::class, $domain);
         $return = array();
         $return['domainForm'] = $domainForm->createView();
         $domainForm->handleRequest($request);
         if($domainForm->isSubmitted() && $domainForm->isValid()) {
-            if(!$this->emailExist($domainForm->get('user')['email']->getData())) {
+            if(!$this->emailExist($api, $domainForm->get('user')['email']->getData())) {
                 //submit address
                 $address = $request->request->get('domain_registration')['address'];
                 $geocoder = $this->container->get('winefing.geocoder_controller');
@@ -121,20 +128,26 @@ class RegistrationController extends Controller
                     $address['lat'] = $coordinate[0];
                     $address['lng'] = $coordinate[1];
                 }
-                $address = $this->submitAddress($address);
+                $address = $this->submitAddress($api, $serializer, $address);
                 //submit user
                 $user = $request->request->get('domain_registration')['user'];
                 $user['roles'] = UserGroupEnum::Host;
                 $user['password'] = $user['password']['first'];
                 $user['email'] = $user['email']['first'];
-                $user = $this->submitUser($user);
+                $user = $this->submitUser($api, $serializer, $user);
+
+                //submit the company information
+                $company['name'] = $request->request->get('domain_registration')['name'];
+                $company["address"] = $address->getId();
+                $company["user"] = $user->getId();
+                $this->submitCompany($api, $company);
 
                 //submit domain
                 $domainNew['name'] = $request->request->get('domain_registration')['name'];
                 $domainNew['wineRegion'] = $request->request->get('domain_registration')['wineRegion'];
                 $domainNew["address"] = $address->getId();
                 $domainNew["user"] = $user->getId();
-                $domain = $this->submitDomain($domainNew);
+                $domain = $this->submitDomain($api, $serializer, $domainNew);
 
                 //create the wallet on lemon way
                 try {
@@ -147,10 +160,10 @@ class RegistrationController extends Controller
 
                 //create the subscription
                 if(array_key_exists('subscription', $request->request->get('domain_registration'))) {
-                    $this->submitAllSubscriptions($body);
+                    $this->submitAllSubscriptions($api, $body);
                 }
                 //send email of welcoming
-                $this->sendEmailRegistration($body);
+                $this->sendEmailRegistration($api, $body);
 
                 //login user
                 $this->logIn($user, $request);
@@ -160,10 +173,9 @@ class RegistrationController extends Controller
                 $this->addFlash('contactError', $this->get('translator')->trans('error.email_already_exist'));
             }
         }
-        return $this->render('host/user/new.html.twig', $return);
+        return $this->render('host/registration.html.twig', $return);
     }
-    public function sendEmailRegistration($body) {
-        $api = $this->container->get('winefing.api_controller');
+    public function sendEmailRegistration($api, $body) {
         $api->post($this->get('_router')->generate('api_post_email_registration'), $body);
     }
 
@@ -171,20 +183,18 @@ class RegistrationController extends Controller
      * If the user want to subscribe to the newsletter, all the king of newsletter is associated with the user.
      * @param $body
      */
-    public function submitAllSubscriptions($body) {
-        $api = $this->container->get('winefing.api_controller');
+    public function submitAllSubscriptions($api, $body) {
         $api->patch($this->get('_router')->generate('api_patch_subscription_user'), $body);
     }
-    public function submitDomain($domain) {
-        $serializer = $this->container->get("jms_serializer");
-        $api = $this->container->get('winefing.api_controller');
+    public function submitCompany($api, $body) {
+        $api->post($this->get('_router')->generate('api_post_company'), $body);
+    }
+    public function submitDomain($api, $serializer, $domain) {
         $response = $api->post($this->get('_router')->generate('api_post_domain'), $domain);
         $domain = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Domain', 'json');
         return $domain;
     }
-    public function submitAddress($address) {
-        $serializer = $this->container->get("jms_serializer");
-        $api = $this->container->get('winefing.api_controller');
+    public function submitAddress($api, $serializer, $address) {
         $response = $api->post($this->get('_router')->generate('api_post_address'), $address);
         $address = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Domain', 'json');
         return $address;
@@ -195,9 +205,8 @@ class RegistrationController extends Controller
      * @param $email
      * @return bool
      */
-    public function emailExist($email) {
+    public function emailExist($api, $email) {
         $result = false;
-        $api = $this->container->get('winefing.api_controller');
         $response =  $api->get($this->get('router')->generate('api_get_user_by_email', array('email' => $email)));
         if($response->getStatusCode() != StatusCodeEnum::empty_response) {
             $result = true;
@@ -210,31 +219,20 @@ class RegistrationController extends Controller
      * @param $user
      * @return mixed
      */
-    public function submitUser($user)
+    public function submitUser($api, $serializer, $user)
     {
-        $api = $this->container->get('winefing.api_controller');
-        $serializer = $this->container->get("jms_serializer");
         $response =  $api->post($this->get('router')->generate('api_post_user'), $user);
         $user = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\User', 'json');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
         return $repository->findOneById($user->getId());
     }
-
-    public function submitPicture($picture, $user)
+    public function submitPassword($api, $password)
     {
-        $api = $this->container->get('winefing.api_controller');
-        $api->file($this->get('router')->generate('api_post_user_picture'), $user, $picture);
-    }
-
-    public function submitPassword($password)
-    {
-        $api = $this->container->get('winefing.api_controller');
         $api->patch($this->get('router')->generate('api_patch_user_password'), $password);
     }
 
-    public function submitSubscriptions($subscription)
+    public function submitSubscriptions($api, $subscription)
     {
-        $api = $this->container->get('winefing.api_controller');
         $api->patch($this->get('router')->generate('api_patch_user_subscriptions'), $subscription);
     }
     public function logIn($user, $request) {

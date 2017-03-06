@@ -106,7 +106,7 @@ class MediaController extends Controller implements ClassResourceInterface
         $em->flush();
         return new Response();
     }
-    public function putBoxAction(Request $request)
+    public function patchBoxAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Media');
@@ -181,6 +181,30 @@ class MediaController extends Controller implements ClassResourceInterface
                     $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Rental');
                     break;
             }
+            //get the object correspond to the media (rental domain or property)
+            $object = $repository->findOneWithMediaId($id);
+
+            //check if the object has already a presentation media.
+            foreach ($object->getMedias() as $media) {
+                if ($media->isPresentation()) {
+                    $media->setPresentation(0);
+                    $em->persist($media);
+                    $em->flush();
+                    break;
+                }
+            }
+        }
+        $currentMedia->setPresentation($request->request->get('presentation') == 'true' ? 1 : 0);
+        $em->persist($currentMedia);
+        $em->flush();
+    }
+
+    public function patchPresentationBoxAction($id, Request $request) {
+        $em = $this->getDoctrine()->getManager();
+        $mediaRepository = $this->getDoctrine()->getRepository('WinefingApiBundle:Media');
+        $currentMedia = $mediaRepository->findOneById($id);
+        if($request->request->get('presentation') == 'true') {
+            $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Box');
             //get the object correspond to the media (rental domain or property)
             $object = $repository->findOneWithMediaId($id);
 

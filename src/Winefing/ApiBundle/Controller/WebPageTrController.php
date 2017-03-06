@@ -52,7 +52,7 @@ class WebPageTrController extends Controller implements ClassResourceInterface
         }
         $webPageTr->setLanguage($language);
         $webPageTr->setWebPage($webPage);
-        $webPageTr->setActivated($request->request->get("activated"));
+//        $webPageTr->setActivated($request->request->get("activated"));
         $webPageTr->setTitle($request->request->get("title"));
         $webPageTr->setContent($request->request->get("content"));
         $validator = $this->get('validator');
@@ -93,7 +93,7 @@ class WebPageTrController extends Controller implements ClassResourceInterface
             throw new HttpException(400, "The webPageId is mandatory");
         }
         $webPageTr->setWebPage($webPage);
-        $webPageTr->setActivated($request->request->get("activated"));
+//        $webPageTr->setActivated($request->request->get("activated"));
         $webPageTr->setTitle($request->request->get("title"));
         $webPageTr->setContent($request->request->get("content"));
         $validator = $this->get('validator');
@@ -141,12 +141,12 @@ class WebPageTrController extends Controller implements ClassResourceInterface
         return new Response($json);
     }
 
-    public function putActivatedAction(Request $request) {
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:WebPageTr');
-        $webPageTr = $repository->findOneById($request->request->get("id"));
-        $webPageTr->setActivated($request->request->get("activated"));
-        $em = $this->getDoctrine()->getManager();
-        $em->flush();
-        return new Response(json_encode([200, "success"]));
-    }
+//    public function putActivatedAction(Request $request) {
+//        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:WebPageTr');
+//        $webPageTr = $repository->findOneById($request->request->get("id"));
+//        $webPageTr->setActivated($request->request->get("activated"));
+//        $em = $this->getDoctrine()->getManager();
+//        $em->flush();
+//        return new Response(json_encode([200, "success"]));
+//    }
 }

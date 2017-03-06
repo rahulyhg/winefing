@@ -81,9 +81,31 @@ twig:
         banner_directory: '%protocol%://%host_name%/%banner_directory%/'
         mail_chimp_token: '82eeea1796fe25cf7d185ec3ce2af340-us14'
         mail_chimp_url: 'https://us14.api.mailchimp.com/export/1.0/'
-        domain_id: '%domain_id%'
         rental_order_gift_price: '%rental_order_gift_price%'
-
+        order_initiate: '%order_initiate%'
+        order_validate: '%order_validate%'
+        order_pay: '%order_pay%'
+        order_cancel: '%order_cancel%'
+        order_refuse: '%order_refused%'
+        tag_directory: '%protocol%://%host_name%/%tag_directory%/'
+        winefing_facebook: '%winefing_facebook%'
+        winefing_twitter: '%winefing_twitter%'
+        winefing_instagram: '%winefing_instagram%'
+        winefing_google: '%winefing_google%'
+        winefing_email: '%winefing_email%'
+        winefing_phone_number: '%winefing_phone_number%'
+        winefing_street_address: '137'
+        winefing_route: 'Rue Achard'
+        winefing_postal_code: '33300'
+        winefing_country: 'France'
+        winefing_locality: 'Bordeaux'
+        web_page_legal_notice: '%web_page_legal_notice%'
+        web_page_gtu: '%web_page_gtu%'
+        web_page_gts: '%web_page_gts%'
+        web_page_faq: '%web_page_faq%'
+        web_page_about: '%web_page_about%'
+        gtu_route: '%gtu_route%'
+        gts_route: '%gts_route%'
 # Doctrine Configuration
 doctrine:
     dbal:
@@ -134,6 +156,9 @@ assetic:
     filters:
         cssrewrite: ~
     assets:
+        font_awesome_css:
+            inputs:
+            - 'assets/vendor/font-awesome-4.7.0.2/css/font-awesome.min.css'
         clockpicker_css:
             inputs:
                 - 'assets/vendor/clockpicker/dist/bootstrap-clockpicker.min.css'

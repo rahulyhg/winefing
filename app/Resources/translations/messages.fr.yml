@@ -29,7 +29,7 @@ label.country: Pays
 label.edit_profil: Modifier le profil
 label.profil_picture: Modifier la photo
 label.edit_password: Modifier le mot de passe
-label.bank_details: IBAM
+label.bank_details: IBAN
 label.sex: Sexe
 label.age: Age
 label.birth_date: Date de naissance
@@ -73,7 +73,7 @@ success.picture_edit: La photo est bien modifiée.
 success.password_edit: Le mot de passe est bien modifié.
 success.modifications_saved: Les modifications ont bien été sauvegardé.
 error.not_current_password: Le mot de passe ne correpond pas à celui actuel.
-error.email_already_exist: Un compte avec ce mail existe déjà.
+error.email_already_exist: Un compte avec ce mail existe déjà. <a href="%link%">Se connecter.</a>
 error.domain_already_exist: Vous ne pouvez créer deux domains par compte. Un domain existe déjà pour ce compte.
 label.card_type : Type de carte
 label.card_number : Numéro de carte
@@ -101,7 +101,7 @@ label.end_date: Date de fin
 label.actions: Actions
 label.delete: Supprimer
 
-error.email_existing: Un compte avec ce mail existe déjà.
+error.email_existing: Un compte avec ce mail existe déjà. <a href="%link%">Sign in.</a>
 error.password_format: Le mot de passe doit contenir 8 charactères, dont au moins une chiffre et une lettre majuscule.
 error.email_not_corresponding: Les emails ne correspondent pas.
 error.password_not_corresponding: Les mot de passe ne correspondent pas.
@@ -116,7 +116,7 @@ example.address_additional_information: Ex. Numéro d'appartement, digit code...
 warning.delete_address: Etes vous sûr de vouloir supprimer cette addresse ?
 label.cancel: Annuler
 
-label.agree_sales_conditions: J'accepte les conditions générals de vente
+label.agree_sales_conditions: J'accepte les <a href="%link%" target="_blank">conditions générales de vente</a>
 label.save_credit_card: Sauvegarder ma carte de crédit pour des prochaines transactions
 label.order_resume: Résumé de la commande
 label.here : Ici
@@ -131,7 +131,7 @@ label.create_an_account: Créer un compte
 
 question.forgotten_password: Mot de passe oublié ?
 question.already_have_account: Vous avez déjà un compte ?
-label.agree_with_terms_of_use:  J'accepte les conditions d'acceptations général.
+label.agree_with_terms_of_use:  J'accepte les conditions <a href="%link%" target="_blank">d'acceptations général</a>.
 
 label.my_wine_list: Ma Wine List
 
@@ -150,7 +150,7 @@ label.invalid_number: Numéro non valide
 label.street: N°
 label.route: Rue
 error.address_not_correct: L'addresse n'est pas valide.
-label.subscribe_newsletter: S'inscrire aux newsletter
+label.subscribe_newsletter: S'inscrire aux newsletters
 
 label.welcome: Bienvenue
 text.welcome: Bienvenue %name% sur la communité winefing
@@ -225,3 +225,112 @@ label.bill: La facture
 help.rental_offer: Vous souhaitez offrir le séjour à une personne ? Ajouter un mot personnalisé pour que la magie soit à son comble.
 label.no_thanks: Non merci
 label.gift_card: Carte cadeau
+label.order_initiate: Commandes en attente de validation
+label.order_validate: Commandes validées
+label.last_connexion: Dernière connexion
+label.action: Action
+label.order: order|orders
+label.logout: Log out
+label.home: Accueil
+label.amount_receive: Montant reçu
+label.order_amount: Montant de la comande
+label.waiting_validation: En attente de validation
+label.order_validated: Commande validée
+label.amount: Montant
+label.shure_valid_order: Etes-vous sûr de vouloir valider cette commande ? Vous ne pourrez pas l'annuler par la suite.
+label.canceled: Annulée
+label.underway: En cours
+label.over: Passée
+label.validated: Validée
+label.validate: Valider
+label.refuse: Refuser
+label.refused: Refusée
+label.status: Statut
+label.company_informations: Informations entreprise
+label.client_informations: Informations client
+label.company_siren: SIREN
+label.tva_number: N° de TVA
+label.bill_detail: Facture détailles
+label.bill_item: Article
+label.bank_details: Informations bancaires
+label.company_name: Nom de l'entreprise
+label.company_address: Addresse de l'entreprise
+help.company_informations: Les informations appparaîtront sur votre facture.
+help.bic: Pas d'espace, par exemple ABCDEFGHIJK
+help.iban: Pas d'espace, par exemple FR1420041010050500013M02606
+help.company_name: Nom lié à l'IBAN ou vous souhaitez recevoir l'argent.
+label.price_from: A partir de
+help.price_variation: Les prix peuvent changer en fonction de la période.
+error.minimum_rental_period: Vous devez réserver minimum %number% jour pour cette location. | Vous devez réserver minimum %number% jours pour cette location.
+label.night_minimum: %number% nuit minimum | %number% nuits minimum
+warning.delete_rental_order_gift: Voullez vous vraiment supprimer le cadeau ?
+label.paiement_safe: Paiement sécurisé avec notre partenaire Lemon Way.
+label.when_pay_agree_sales_conditions: En payant vous acceptez les confitions générales de ventes de Winefing.
+label.the_concept: Le concept
+text.box_concept: Le meilleur des propriétés Winefing, c'est trois séjours oenologiques clés en main à offrir à tous les amoureux du vin, du patrimoine et de la gastronomie.<br><br>Notre équipe de passionnées a pré-sélectionné pour vous trois domaines pleins de charme qui vous accueilleront le temps d'un weekend pour vous faire partager une expérience unique faite de convivialité et de partage.<br><br>Idéal pour offrir, chaque séjour fait l'objet d'une jolie carte cadeau que vous pouvez commander en ligne pour la recevoir directement chez vous.
+label.box_and_gift_card: Les boxes et cartes cadeaux
+label.box_contains: Cette boxe contient
+label.box_concept_quote: C'est l'idée parfaite pour un anniversaire, noël ou pour dire je t'aime sans un cocombre.
+label.team_winefing: L'équipe Winefing
+label.how_use_box: Comment utiliser la box ?
+text.how_use_box: A l'achat de votre carte, c'est-à-dire une fois le paiement effectué, nous vous envoyons un email de confirmation contenant un code personnel.<br><br> Vous pouvez effectuer votre demande de réservation en vous rendant sur la fiche du domaine choisi via notre site mère www.winefing.com ou bien en contactant directement le château que vous avez choisi.<br><br> N'oubliez pas de renseigner votre code au moment de la réservation.
+label.buy: Acheter
+label.price: Prix
+label.total_ttc: Total TTC
+label.blog: Blog
+label.last_articles: Dernier articles
+label.by: Par
+label.in: Dans
+label.posted: Posté le
+label.read_more: Lire la suite
+label.great_article: Super article
+label.page_of_total: %page% sur %total%
+label.newer: Plus récent
+label.older: Plus ancien
+label.comments: Commentaire
+label.similar_articles: Articles similaires
+label.know_more: En savoir plus
+meta.description: Winefing, c'est le site qui vous permet de trouver l'hébergement qui vous correspond dans les domaines viticoles français.
+label.language: Langue|Langues
+label.sales_conditions: CGV
+message.contact: Vous avez une question ? N'hésitez pas et envoyez nous un message !
+label.send_message: Envoyer le message
+label.legal_notice: Mentions légales
+label.gtu: CGU
+label.gts: CGV
+label.previous: Précédent
+label.next: Suivant
+label.how_it_works: Comment ça marche ?
+label.find: Trouver
+label.your_destination: Votre déstination
+label.order: Commander
+label.online: En ligne
+label.live: Vivez
+label.a_exceptional_moment: Vivez un moment exceptionel
+label.how_it_works: Comment ça marche ?
+label.find: Trouver
+label.your_destination: Votre destination
+label.order_online: En ligne
+label.live: Vivez
+label.a_exceptional_moment: Vivez un moment d'exception
+label.welcome_to: Bienvenue sur %name%
+label.wine_region_month: Région viticole du mois
+label.let_yourself_be_guided: Laissez vous guider
+text.offer_home: Carte cadeaux ou coffret, offrez-vous un moment d'exception
+label.see_domains: Voir les domaines
+label.price_from: Prix à partir de %price%
+label.select_wine_region: Selectionner une région
+label.select: Selectionner
+label.price_from_to: Prix à partir de %minPrice%€ jusqu'à %maxPrice%€
+label.see_more_domains: Voir plus de domaines
+label.why_create_an_acount: Pourquoi créer un compte ?
+label.not_have_account: Vous n'avez pas de compte ?
+label.you_are: Vous-êtes ?
+text.registration: Winefing, c’est la manière la plus simple de vivre une expérience au coeur du vignoble. Chaque nuit réservée sur winefing.com comprend une visite des lieux et une dégustation des vins du domaine. Notre équipe est aux petits soins pour vous faire vivre le meilleur des séjours et sélectionne pour vous les propriétés et les viticulteurs les plus charismatiques et les plus passionnés de France.<br><br> En créant un compte, vous pourrez gérer vos réservations en toute simplicité, prendre contact avec votre hôte, créer votre wishlist de propriétés et recevoir en exclusivité les dernières nouvelles de Winefing et de nos partenaires.
+label.resetting_password: Réinitialiser le mot de passe
+text.resetting_password: Saisissez l'adresse e-mail associée à votre compte. Nous vous enverrons un lien par e-mail pour réinitialiser votre mot de passe.
+label.send_resetting_password:  Envoyer le lien de réinitialisation
+error.resetting_password: L'email donné n'existe pas.
+success.resetting_password: Un email vient d'être envoyer afin de réinitialiser le mot de passe.
+label.max_size: Taille maximum %maxSize%
+error.max_file_size: Le fichier est trop volumineux. Ce dernier ne doit pas exceder %maxSize%.

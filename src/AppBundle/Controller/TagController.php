@@ -29,9 +29,9 @@ class TagController extends Controller
      */
     public function cgetAction() {
         $api = $this->container->get('winefing.api_controller');
-        $serializer = $this->container->get('winefing.serializer_controller');
+        $serializer = $this->container->get('jms_serializer');
         $response = $api->get($this->get('_router')->generate('api_get_tags'));
-        $tags = $serializer->decode($response->getBody()->getContents());
+        $tags = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\Tag>', 'json');
         return $this->render('admin/tag/index.html.twig', array("tags" => $tags));
     }
 
@@ -75,6 +75,10 @@ class TagController extends Controller
         if(empty($tag["id"])) {
             $response = $api->post($this->get('_router')->generate('api_post_tag'), $tag);
             $tag = $serializer->decode($response->getBody()->getContents());
+        }
+        $picture = $request->files->all()["tag"]["picture"];
+        if(!empty($picture)) {
+            $api->file($this->get('_router')->generate('api_post_tag_picture'), array('tag'=>$tag['id']), $picture);
         }
         foreach($tagTrs as $tagTr) {
             var_dump($tagTr);

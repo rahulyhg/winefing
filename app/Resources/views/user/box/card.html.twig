@@ -1,0 +1,141 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-8 nopadding">
+            <a href="{{ box_directory ~ box.mediaPresentation }}" title="{{ box.name }}" data-rel="gallery" class="fancybox img-hover-v1">
+                <img src="{{ box_directory ~ box.mediaPresentation }}" class="img-big-domain-card">
+            </a>
+        </div>
+        <div class="hidden-sm hidden-xs col-md-4 nopadding">
+            <a href="{{ box_directory ~ box.medias[0].name }}" title="{{ box.name }}" data-rel="gallery" class="fancybox img-hover-v1">
+                <img src="{{ box_directory ~ box.medias[0].name }}" class="img-little-domain-card">
+            </a>
+            <br>
+            <div>
+                <a href="{{ box_directory ~ box.medias[1].name }}" title="{{ box.name }}" data-rel="gallery" class="fancybox">
+                    <img src="{{ box_directory ~ box.medias[1].name }}" class="img-little-domain-card">
+                    <div class="property-features-grey text-center">
+                        <span>{% trans %}label.see_more_picture{% endtrans %}</span>
+                        <span class="glyphicon glyphicon-search picture-zoom-principal"></span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="hidden">
+        {% for media in box.medias|slice(2, box.medias|length) if box.medias|length >= 3 %}
+            <a href="{{ box_directory ~ media.name }}" title="{{ box.name }}" data-rel="gallery" class="fancybox img-hover-v1">
+            </a>
+        {% endfor %}
+    </div>
+    <div class="container content" style="padding-bottom: 0px!important">
+        <div class="property-details" id="darcy-house">
+            <div id="propertyintrobox">
+                <h1 id="uniquename">{{ box.name }}</h1>
+                <p class="location">
+                    <em id="uniquelocation">{{ 'label.price'|trans() ~ ': ' ~box.price ~ ' €' }}</em></p>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 col-md-6">
+                        <a href="{{ path('box_order', {'id': box.id}) }}">
+                            <input id="order" class="btn btn-primary" value="{{ 'label.buy'|trans() }}">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container content" style="padding-top: 0px">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="text-center">
+                    <h3>{{ 'label.description'|trans() }}</h3>
+                    <p>{{ box.description }}</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="text-center">
+                    <h3>{{ 'label.how_use_box'|trans() }}</h3>
+                    <p>{{ 'text.how_use_box'|trans()|raw }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="bg-grey">
+        <div class="container">
+            <div class="content">
+                <div class="row">
+                    <div class="col-md-6 vcenter">
+                        <div class="text-center">
+                            <h4>{% trans %}label.box_contains{% endtrans %}</h4>
+                            <br>
+                            {% for boxItem in box.boxItems %}
+                                {% if boxItem.boxItemChoices|length ==0 %}
+                                    <strong>{{ boxItem.name }}</strong>
+                                    <p>{{ boxItem.description }}</p>
+                                {% endif %}
+                                {% for boxItemChoice in boxItem.boxItemChoices %}
+                                    <strong>{{ boxItemChoice.name }}</strong>
+                                    <p>{{ boxItemChoice.description }}</p>
+                                    {% if loop.index < boxItem.boxItemChoices|length %}
+                                        <p style="font-size: 14px">{% trans %}label.or{% endtrans %}</p>
+                                    {% endif %}
+                                {% endfor %}
+                                {% if loop.index < box.boxItems|length %}
+                                    <p style="font-size: 24px">+</p>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div><!--
+                    --><div class="col-md-6 vcenter">
+                        {% if box.medias|length >= 3 %}
+                            <img src="{{ box_directory ~ box.medias[2].name }}" class="img-responsive">
+                        {% else %}
+                            <img src="{{ box_directory ~ box.mediaPresentation }}" class="img-responsive">
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    {{ parent() }}
+    <script>
+        FancyBox.initFancybox();
+        function rentalOrder(url) {
+            if ('{{ is_granted('IS_AUTHENTICATED_FULLY') }}') {
+                $.ajax({
+                    url: url,
+                    type: 'PATCH',
+                    async: false,
+                    success: function (data, textStatus, jqXHR) {
+                        $('#endBody').html(data);
+                        $('#rental').modal('show');
+
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log('error');
+                    }
+                });
+            } else {
+                $('#login').modal('show');
+            }
+        }
+        {#function initMap() }#}
+            {#var uluru = {lat: {{ box.address.lat }}, lng: {{ box.address.lng }}};#}
+            {#var map = new google.maps.Map(document.getElementById('map'), }#}
+                {#center: uluru,#}
+                {#scrollwheel: false,#}
+                {#zoom: 14#}
+            {#});#}
+            {#var marker = new google.maps.Marker(}#}
+                {#position: uluru,#}
+                {#map: map#}
+            {#});#}
+        {#}#}
+    </script>
+    {#<script async defer#}
+            {#src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBXbn5jGttQkXWIfV91bBmsMg-HS_o_f7o&callback=initMap">#}
+    {#</script>#}
+{% endblock %}

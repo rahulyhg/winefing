@@ -134,7 +134,7 @@ class Property
         return $this->id;
     }
 
-    public function _construct() {
+    public function __construct() {
         $this->rentals = new ArrayCollection();
         $this->characteristicValues = new ArrayCollection();
         $this->medias = new ArrayCollection();

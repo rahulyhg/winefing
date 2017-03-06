@@ -33,7 +33,7 @@ function base64ToFile(dataURI, origFile) {
 }
 //*************************** DROPZONZ *******************************************************************************
 var myDropzone = new Dropzone("div#my-dropzone-container", {
-  maxFilesize: 5,
+  maxFilesize: 2,
   thumbnailWidth: 120,
   acceptedFiles:"image/*",
   thumbnailHeight: null,

@@ -22,22 +22,10 @@ use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use FOS\RestBundle\Controller\Annotations\Get;
 use Winefing\ApiBundle\Entity\DomainMediasPresentation;
+use Winefing\ApiBundle\Entity\DomainStatistic;
 
 class DomainController extends Controller implements ClassResourceInterface
 {
-    public function cgetByCriteriaAction(Request $request)
-    {
-        $serializer = $this->container->get('jms_serializer');
-        $criterias = $request->query->all();
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Domain');
-        $domains = $repository->findWithCriterias($criterias);
-        foreach($domains as $domain) {
-            $domainMediasPresentation = new DomainMediasPresentation($domain);
-            $domain->setDomainMediasPresentation($domainMediasPresentation);
-        }
-        $json = $serializer->serialize($domains, 'json', SerializationContext::create()->setGroups(array('default', 'domainMediasPresentation')));
-        return new Response($json);
-    }
     /**
      * @ApiDoc(
      *  resource=true,
@@ -109,7 +97,7 @@ class DomainController extends Controller implements ClassResourceInterface
         $domainMediasPresentation = new DomainMediasPresentation($domain);
         $domain->setDomainMediasPresentation($domainMediasPresentation);
 
-        $json = $serializer->serialize($domain, 'json', SerializationContext::create()->setGroups(array('domainMediasPresentation','address','default', 'wineRegion', 'medias', 'characteristicValues', 'properties', 'rentals', 'user')));
+        $json = $serializer->serialize($domain, 'json', SerializationContext::create()->setGroups(array('domainMediasPresentation','address','default', 'medias', 'characteristicValues', 'properties', 'rentals', 'user')));
         return new Response($json);
     }
     public function cgetExploreAction($language) {
@@ -117,10 +105,13 @@ class DomainController extends Controller implements ClassResourceInterface
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Domain');
         $domains = $repository->findGroupByWineRegion();
         foreach($domains as $domain) {
-            $domain->setMediaPresentation();
+            $domainMediasPresentation = new DomainMediasPresentation($domain);
+            $domain->setDomainMediasPresentation($domainMediasPresentation);
+            $domainStatistic = new DomainStatistic($domain);
+            $domain->setDomainStatistic($domainStatistic);
             $domain->setTr($language);
         }
-        $json = $serializer->serialize($domains, 'json', SerializationContext::create()->setGroups(array('default', 'wineRegion', 'tags')));
+        $json = $serializer->serialize($domains, 'json', SerializationContext::create()->setGroups(array('default', 'domains', 'domainMediasPresentation', 'stat')));
         return new Response($json);
     }
     /**
@@ -130,7 +121,7 @@ class DomainController extends Controller implements ClassResourceInterface
      *  description="Get a entity by its id.",
      *  output= {
      *      "class"="Winefing\ApiBundle\Entity\Domain",
-     *      "groups"={"id", "characteristicValues", "default", "address"}
+     *      "groups"={"id", "characteristicValues", "default", "address", "tags"}
      *     },
      *  statusCodes={
      *         200="Returned when successful",
@@ -150,7 +141,7 @@ class DomainController extends Controller implements ClassResourceInterface
         $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Domain');
         $domain = $repository->findOneById($id);
-        $json = $serializer->serialize($domain, 'json', SerializationContext::create()->setGroups(array('id','characteristicValues', 'default', 'medias', 'address')));
+        $json = $serializer->serialize($domain, 'json', SerializationContext::create()->setGroups(array('id','characteristicValues', 'default', 'medias', 'address', 'tags')));
         return new Response($json);
     }
     /**
@@ -179,7 +170,7 @@ class DomainController extends Controller implements ClassResourceInterface
         $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Domain');
         $domain = $repository->findOneWithUser($userId);
-        $json = $serializer->serialize($domain, 'json', SerializationContext::create()->setGroups(array('id')));
+        $json = $serializer->serialize($domain, 'json', SerializationContext::create()->setGroups(array('id', 'default', 'tags')));
         return new Response($json);
     }
     /**
@@ -246,6 +237,15 @@ class DomainController extends Controller implements ClassResourceInterface
         $domain->setName($request->request->get('name'));
         $domain->setDescription($request->request->get('description'));
         $domain->setHistory($request->request->get('history'));
+        $tags = $request->request->get('tags');
+        if(!empty($tags)) {
+            $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Tag');
+            $domain->resetTags();
+            foreach($tags as $tag) {
+                $domain->addTag($repository->findOneById($tag));
+            }
+        }
+
         $validator = $this->get('validator');
         $errors = $validator->validate($domain);
         if (count($errors) > 0) {

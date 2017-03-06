@@ -28,19 +28,20 @@ class Box
     /**
      * @var BoxItems
      * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\BoxItem", mappedBy="box", fetch="EAGER", cascade="ALL")
-     * @Groups({"trs"})
+     * @Groups({"boxItems"})
      */
     private $boxItems;
 
     /**
      * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Media", inversedBy="boxes", cascade={"persist", "merge", "detach"})
+     * @Groups({"medias"})
      */
     private $medias;
 
     /**
      * @var BoxTrs
      * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\BoxTr", mappedBy="box", fetch="EAGER", cascade="ALL")
-     * @Groups({"boxTrs"})
+     * @Groups({"trs"})
      */
     private $boxTrs;
 
@@ -58,16 +59,24 @@ class Box
      */
     private $hasChoice = 0;
 
-    public function _construct() {
+    public function __construct() {
         $this->boxItems = new ArrayCollection();
         $this->boxTrs = new ArrayCollection();
         $this->medias = new ArrayCollection();
         return $this;
     }
+//    public function __clone()
+//    {
+//        // TODO: Implement __clone() method.
+//        $this->boxTrs(clone $this->boxTrs);
+//        $this->boxItems(clone $this->boxItems);
+//        $this->medias = new ArrayCollection();
+//
+//    }
 
     /**
      * @var float
-     *
+     * @Groups({"default"})
      * @ORM\Column(name="price", type="float")
      */
     private $price;
@@ -89,13 +98,14 @@ class Box
     /**
      * @return mixed
      */
-    public function getHasChoice()
+    public function gethasChoice()
     {
         foreach($this->boxItems as $boxItem){
             if(count($boxItem->getBoxItemChoices())) {
                 $this->hasChoice = true;
             }
         }
+        return $this->hasChoice;
     }
 
     /**
@@ -195,12 +205,14 @@ class Box
             foreach ($this->medias as $media) {
                 if ($media->isPresentation()) {
                     $this->mediaPresentation = $media->getName();
+                    $this->medias->removeElement($media);
                     break;
 
                 }
             }
             if(empty($this->mediaPresentation)) {
                 $this->mediaPresentation = $this->medias[0]->getName();
+                $this->medias->removeElement($this->medias[0]);
 
             }
         } else {
@@ -266,6 +278,14 @@ class Box
                 $boxItemChoice->setTr($language);
             }
         }
+    }
+
+    /**
+     * @param BoxItems $boxItems
+     */
+    public function setBoxItems($boxItems)
+    {
+        $this->boxItems = $boxItems;
     }
 }
 

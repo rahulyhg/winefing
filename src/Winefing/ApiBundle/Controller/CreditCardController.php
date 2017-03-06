@@ -43,6 +43,17 @@ class CreditCardController extends Controller implements ClassResourceInterface
         $creditCards = $repository->findAll();
         return new Response($serializer->serialize($creditCards, 'json', SerializationContext::create()->setGroups(array('default'))));
     }
+    /**
+     * Liste de tout les languages possible en base
+     * @return Response
+     */
+    public function cgetByUserAction($userId)
+    {
+        $serializer = $this->container->get('winefing.serializer_controller');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:CreditCard');
+        $creditCards = $repository->findByUser($userId);
+        return new Response($serializer->serialize($creditCards, 'json', SerializationContext::create()->setGroups(array('default'))));
+    }
 
     /**
      * Create or update a language from the submitted data.<br/>
@@ -54,10 +65,8 @@ class CreditCardController extends Controller implements ClassResourceInterface
         $creditCard = new CreditCard();
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
         $creditCard->setUser($repository->findOneById($request->request->get('user')));
-        $creditCard->setNumber($request->request->get('number'));
         $creditCard->setOwner($request->request->get('owner'));
         $creditCard->setLemonWayId($request->request->get('lemonWayId'));
-        $creditCard->setExpirationDate(new \DateTime('00/'.$request->request->get('expirationDate')));
         $validator = $this->get('validator');
         $errors = $validator->validate($creditCard);
         if (count($errors) > 0) {

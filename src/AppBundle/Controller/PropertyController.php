@@ -69,6 +69,8 @@ class PropertyController extends Controller
     public function putAction($id, $nav = '#presentation', Request $request) {
         $return = array();
         $property = $this->getProperty($id);
+        //persit the domain object
+        $this->getDoctrine()->getEntityManager()->persist($property->getDomain());
         $propertyForm =  $this->createForm(PropertyType::class, $property, array('language'=>$request->getLocale()));
         $propertyForm->handleRequest($request);
         if ($propertyForm->isSubmitted()) {

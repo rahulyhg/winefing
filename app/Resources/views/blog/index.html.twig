@@ -1,0 +1,175 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <!-- Interactive Slider v2 -->
+    <div class="cover-img" style="background: url({{ banner_directory ~'blog.png' }})">
+        <h1>{% trans %}label.blog{% endtrans %}</h1>
+    </div>
+    <!-- End Interactive Slider v2 -->
+    <!--=== Blog Posts ===-->
+    <div class="bg-color-light">
+        <div class="container content-sm">
+            <div class="row">
+                <!-- Blog All Posts -->
+                <div class="col-md-9">
+                    {% for article in articles %}
+                        <!-- Blog Posts -->
+                        <div class="news-v3 bg-color-white margin-bottom-60">
+                            <img class="img-responsive full-width" src="{{ article_directory ~ article.picture }}" alt="{{ article.title }}">
+                            <div class="news-v3-in">
+                                <ul class="list-inline posted-info">
+                                    <li>{{ 'label.by'|trans() }} <a href="{{ path('articles', {'user':article.user.id}) }}">{{ article.user.fullName }}</a></li>
+                                    <li>{{ 'label.in'|trans() }}
+                                        {% for articleCategory in article.articleCategories %}
+                                            <a href="{{ path('articles', {"article_filter":{'articleCategory':articleCategory.id}}) }}">
+                                                {{ articleCategory.name }}
+                                            </a></li>
+                                        {% endfor %}
+                                    <li>{{ 'label.posted'|trans() ~ ' ' ~ article.created|date('D, d F Y') }}</li>
+                                    <li>
+                                        {% for tag in article.tags %}
+                                            <a href="{{ path('articles', {"article_filter": {'tag': tag.id}}) }}">
+                                                {{ '#'~tag.name|replace({"'": ''})|title|replace({' ': ''})~' ' }}
+                                            </a>
+                                        {% endfor %}
+
+                                    </li>
+                                </ul>
+                                <h2><a href="{{ path('article', {'id':article.id}) }}">{{ article.title }}</a></h2>
+                                <p>{{ article.shortDescription }}</p>
+                                <a class="btn btn-primary btn-lg" href="{{ path('article', {'id': article.id}) }}">
+                                    {{ 'label.read_more'|trans() }}
+                                </a>
+                            </div>
+                        </div>
+                        <!-- End Blog Posts -->
+                    {% endfor %}
+
+                    <!-- Pager v2 -->
+                    <div class="content-sm text-center">
+                        {% set currentPage = 1 %}
+                        {% if app.request.get('page') %}
+                            {% set currentPage = app.request.get('page') %}
+                        {% endif %}
+                        {% if total > 1 %}
+
+                            {# the number of first and last pages to be displayed #}
+                            {% set extremePagesLimit = 3 %}
+
+                            {# the number of pages that are displayed around the active page #}
+                            {% set paginationPath = path('articles', {'article_filter': app.request.get('article_filter') }) %}
+                            {% set nearbyPagesLimit = 2 %}
+                            {% set showAlwaysFirstAndLast = false %}
+                            <ul class="pagination pagination-lg">
+                                {% if currentPage > 1 %}
+                                    <li><a href="{{ paginationPath }}{{ '?page='~(currentPage-1) }}">&larr;</a></li>
+
+                                    {% for i in range(1, extremePagesLimit) if ( i < currentPage - nearbyPagesLimit ) %}
+                                        <li><a href="{{ path('articles', {'article_filter': app.request.get('article_filter'), 'page': i}) }}">{{ i }}</a></li>
+                                    {% endfor %}
+
+                                    {% if extremePagesLimit + 1 < currentPage - nearbyPagesLimit %}
+                                        <li class="disabled"><a href="#">...</a></li>
+                                    {% endif %}
+
+                                    {% for i in range(currentPage-nearbyPagesLimit, currentPage-1) if ( i > 0 ) %}
+                                        <li><a href="{{ path('articles', {'article_filter': app.request.get('article_filter'), 'page': i}) }}">{{ i }}</a></li>
+                                    {% endfor %}
+                                {% elseif showAlwaysFirstAndLast %}
+                                    <li><a href="#">{{ 'label.previous'|trans() }}</a></li>
+                                {% endif %}
+
+                                <li class="active"><a href="#">{{ currentPage }}</a></li>
+
+                                {% if currentPage < total %}
+                                    {% for i in range(currentPage+1, currentPage + nearbyPagesLimit) if ( i <= total ) %}
+                                        <li><a href="{{ path('articles', {'article_filter': app.request.get('article_filter'), 'page': i}) }}">{{ i }}</a></li>
+                                    {% endfor %}
+
+                                    {% if  (total - extremePagesLimit) > (currentPage + nearbyPagesLimit) %}
+                                        <li class="disabled"><a href="#">...</a></li>
+                                    {% endif %}
+
+                                    {% for i in range(total - extremePagesLimit+1, total) if ( i > currentPage + nearbyPagesLimit ) %}
+                                        <li><a href="{{ path('articles', {'article_filter': app.request.get('article_filter'), 'page': i}) }}">{{ i }}</a></li>
+                                    {% endfor %}
+
+                                    <li><a href="{{ path('articles', {'article_filter': app.request.get('article_filter'), 'page': (currentPage+1)}) }}">&rarr;</a></li>
+                                {% elseif showAlwaysFirstAndLast %}
+                                    <li><a href="{{ path('articles', {'article_filter': app.request.get('article_filter'), 'page': (currentPage+1)}) }}">{{ 'label.next'|trans() }}</a></li>
+                                {% endif %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                    <!-- End Pager v2 -->
+                </div>
+                <!-- End Blog All Posts -->
+
+                <!-- Blog Sidebar -->
+                <div class="col-md-3">
+                    <div class="headline-v2"><h2>{% trans %}label.last_articles{% endtrans %}</h2></div>
+                    <!-- Trending -->
+                    <ul class="list-unstyled blog-trending margin-bottom-50">
+                        {% for article in lastArticles %}
+                        <li>
+                            <h3><a href="{{ path('article', {'id':article.id}) }}">{{ article.title }}</a></h3>
+                            <small>{{ article.created|date('D, d F Y') }}
+                                {{ 'label.in'|trans() ~'  ' }}
+                                {% for articleCategory in article.articleCategories %}
+                                    <a href="#">{{ articleCategory.name }}</a>
+                                    {% if loop.index < article.articleCategories|length %}
+                                        <span>,</span>
+                                    {% else %}
+                                        <span>.</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </small>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <!-- End Trending -->
+
+                    <div class="headline-v2"><h2>Twitter</h2></div>
+                    <!-- Latest Links -->
+                    <a class="twitter-timeline" data-tweet-limit="5" href="https://twitter.com/winefing?lang=fr">Tweets by TwitterDev</a>
+                    <!-- End Latest Links -->
+
+                    <div class="headline-v2"><h2>Tags</h2></div>
+                    <!-- Tags v2 -->
+                    <ul class="list-inline tags-v2 margin-bottom-50">
+                        {% for tag in tags %}
+                            <li><a href="{{ path('articles', {"article_filter":{'tag':tag.id}}) }}">{{ tag.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                    <!-- End Tags v2 -->
+
+                    <div class="headline-v2" style="margin-top: 40px"><h2>Instagram</h2></div>
+                    <blockquote class="instagram-media" data-instgrm-captioned data-instgrm-version="7" style=" background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width:658px; padding:0; width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);"><div style="padding:8px;"> <div style=" background:#F8F8F8; line-height:0; margin-top:40px; padding:50.0% 0; text-align:center; width:100%;"> <div style=" background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACwAAAAsCAMAAAApWqozAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAMUExURczMzPf399fX1+bm5mzY9AMAAADiSURBVDjLvZXbEsMgCES5/P8/t9FuRVCRmU73JWlzosgSIIZURCjo/ad+EQJJB4Hv8BFt+IDpQoCx1wjOSBFhh2XssxEIYn3ulI/6MNReE07UIWJEv8UEOWDS88LY97kqyTliJKKtuYBbruAyVh5wOHiXmpi5we58Ek028czwyuQdLKPG1Bkb4NnM+VeAnfHqn1k4+GPT6uGQcvu2h2OVuIf/gWUFyy8OWEpdyZSa3aVCqpVoVvzZZ2VTnn2wU8qzVjDDetO90GSy9mVLqtgYSy231MxrY6I2gGqjrTY0L8fxCxfCBbhWrsYYAAAAAElFTkSuQmCC); display:block; height:44px; margin:0 auto -44px; position:relative; top:-22px; width:44px;"></div></div> <p style=" margin:8px 0 0 0; padding:0 4px;"> <a href="https://www.instagram.com/p/BQ0UkOZBlXq/" style=" color:#000; font-family:Arial,sans-serif; font-size:14px; font-style:normal; font-weight:normal; line-height:17px; text-decoration:none; word-wrap:break-word;" target="_blank">Lorsque l&#39;#artcontemporain s&#39;invite dans le #vignoble. Le lièvre Hospitality veille sur les vieilles #vignes de #cabernetfranc  du Château Smith Haut-Lafitte. #wine #winetime #winelover #oenotourisme #vin #vinsdebordeaux #igersfrance #igersgironde #igersbordeaux #loveaquitaine #art #hospitalitydesign</a></p> <p style=" color:#c9c8cd; font-family:Arial,sans-serif; font-size:14px; line-height:17px; margin-bottom:0; margin-top:8px; overflow:hidden; padding:8px 0 7px; text-align:center; text-overflow:ellipsis; white-space:nowrap;">Une publication partagée par Winefing (@wine.fing) le <time style=" font-family:Arial,sans-serif; font-size:14px; line-height:17px;" datetime="2017-02-22T14:38:46+00:00">22 Févr. 2017 à 6h38 PST</time></p></div></blockquote>
+                    <script async defer src="//platform.instagram.com/en_US/embeds.js"></script>
+                    <!-- Photostream -->
+                    {#<iframe src="https://snapwidget.com/embed/343169" class="snapwidget-widget" allowTransparency="true" frameborder="0" scrolling="no" style="border:none; overflow:hidden; width:100%; "></iframe>#}
+
+                    {#<div class="headline-v2" style="margin-top: 40px"><h2>Newsletter</h2></div>#}
+                    {#<!-- Blog Newsletter -->#}
+                    {#<div class="blog-newsletter">#}
+                        {#<p>Subscribe to our newsletter for good news, sent out every month.</p>#}
+                        {#<div class="input-group">#}
+                            {#<input type="text" class="form-control" placeholder="Email">#}
+                            {#<span class="input-group-btn">#}
+									{#<button class="btn-u" type="button">Subscribe</button>#}
+								{#</span>#}
+                        {#</div>#}
+                    {#</div>#}
+                    {#<!-- End Blog Newsletter -->#}
+                </div>
+                <!-- End Blog Sidebar -->
+            </div>
+        </div>
+    </div>
+    <!--=== End Blog Posts ===-->
+{% endblock %}
+{% block script %}
+{{ parent() }}
+    <script>
+
+    </script>
+{% endblock %}

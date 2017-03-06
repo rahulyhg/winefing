@@ -11,13 +11,14 @@
                 </th>
                 <th>Autheur</th>
                 <th>Catégorie(s)</th>
+                <th>Trad. manquante</th>
             </tr>
             </thead>
         <tbody>
             {% for article in articles %}
                 <tr>
-                    <td data-toggle="collapse" data-target="#article-{{ article.id }}" class="accordion-toggle" style="cursor:pointer">
-                        {{ article.articleTrs[0].title }}
+                    <td data-toggle="collapse" data-target="#article-{{ article.id }}" class="accordion-toggle" style="cursor:pointer;max-width: ">
+                        <span style="font-size: 12px">{{ article.title }}</span>
                     </td>
                     <td data-toggle="collapse" data-target="#article-{{ article.id }}" class="accordion-toggle" style="cursor:pointer">
                     {{ article.user.fullName }}
@@ -30,6 +31,9 @@
                                 <span>, </span>
                             {% endif %}
                         {% endfor %}
+                    </td>
+                    <td>
+                        {{ article.missingLanguages|length }}
                     </td>
                 </tr>
                 <tr id="article-{{ article.id }}" class="collapse">
@@ -62,11 +66,11 @@
                             {% for missingLanguage in article.missingLanguages %}
                                 <tr>
                                     <td colspan="3">
-                                        <object style="float: left;" type="image/svg+xml" data="{{ language_directory }}{{ missingLanguage.picture }}" height="20px">
-                                        </object>
-                                        <span style="margin-left: 10px">
-                                            <a href="{{ path('articleTr_new_form', {'id': 0, 'articleId': article.id, 'languageId':missingLanguage.id}) }}" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span></a>
+                                        <a type="button" style="background-image: url({{ language_directory ~ missingLanguage.picture }})" class="btn btn-default btn-circle btn-plus-admin" href="{{ path('articleTr_new_form', {'id': 0, 'articleId': article.id, 'languageId':missingLanguage.id}) }}">
+                                        <span class="glyphicon-plus-missing-languages-round">
+                                            <i class="glyphicon glyphicon-plus glyphicon-plus-admin"></i>
                                         </span>
+                                        </a>
                                     </td>
                                 </tr>
                             {% endfor %}

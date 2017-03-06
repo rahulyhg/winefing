@@ -56,10 +56,10 @@ class CharacteristicValue
      */
     private $value;
 
-    public function _construct(){
-        $this->properties[] = new ArrayCollection();
-        $this->rentals[] = new ArrayCollection();
-        $this->domains[] = new ArrayCollection();
+    public function __construct(){
+        $this->properties = new ArrayCollection();
+        $this->rentals = new ArrayCollection();
+        $this->domains = new ArrayCollection();
     }
 
     /**

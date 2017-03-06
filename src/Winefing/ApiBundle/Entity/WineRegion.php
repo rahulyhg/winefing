@@ -39,8 +39,8 @@ class WineRegion
     private $wineRegionTrs;
 
     /**
-     * @var Domain
-     * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\Domain", mappedBy="wineRegion", fetch="EAGER", cascade="ALL")
+     * @var Domains
+     * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\Domain", mappedBy="wineRegion", fetch="EXTRA_LAZY", cascade="ALL")
      * @Groups({"domains"})
      */
     private $domains;
@@ -113,12 +113,6 @@ class WineRegion
         $wineRegionTr->setWineRegion($this);
         return $this;
     }
-
-    public function _construct() {
-        $this->wineRegionTrs = new ArrayCollection();
-        $this->domains = new ArrayCollection();
-    }
-
     public function getDisplayName($language){
         foreach($this->wineRegionTrs as $wineRegionTr){
             if($wineRegionTr->getLanguage()->getCode() == $language) {
@@ -166,7 +160,7 @@ class WineRegion
     }
 
     /**
-     * @return Domain
+     * @return Domains
      */
     public function getDomains()
     {
@@ -176,9 +170,9 @@ class WineRegion
     /**
      * @param Domain $domains
      */
-    public function setDomains($domains)
+    public function addDomain(Domain $domain)
     {
-        $this->domains = $domains;
+        $this->domains[] = $domain;
     }
 
     /**

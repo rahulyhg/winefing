@@ -49,29 +49,11 @@ class ArticleController extends Controller implements ClassResourceInterface
     {
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Article');
         $articles = $repository->findAll();
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
-        $repositoryArticleTr = $this->getDoctrine()->getRepository('WinefingApiBundle:ArticleTr');
-        foreach ($articles as $article) {
-            $languageId = array();
-            foreach($article->getArticleTrs() as $articleTr) {
-                $languageId[] = $articleTr->getLanguage()->getId();
-            }
-            $missingLanguages = $repository->findMissingLanguages($languageId);
-            $article->setMissingLanguages(new ArrayCollection($missingLanguages));
-            $tradFr = $repositoryArticleTr->findOneByArticleIdLanguageId($article->getId(), LanguageEnum::Français);
-            if(!empty($tradFr)) {
-                $article->setTitle($tradFr[0]["title"]);
-            } else {
-                $tradEn = $repositoryArticleTr->findOneByArticleIdLanguageId($article->getId(), LanguageEnum::English);
-                if(!empty($tradEn)) {
-                    $article->setTitle($tradEn[0]["title"]);
-                }
-            }
-        }
         $serializer = $this->container->get("jms_serializer");
-        $json = $serializer->serialize($articles, 'json', SerializationContext::create()->setGroups(array('default')));
+        $json = $serializer->serialize($articles, 'json', SerializationContext::create()->setGroups(array('default', 'trs', 'id', 'articleCategories', 'user', 'language')));
         return new Response($json);
     }
+
     /**
      * @ApiDoc(
      *  resource=true,
@@ -82,7 +64,7 @@ class ArticleController extends Controller implements ClassResourceInterface
      *          "name"="language", "dataType"="integer", "required"=true, "description"="language code"
      *      }
      *  },
-     *  output= {
+     * output= {
      *      "class"="Winefing\ApiBundle\Entity\Article"
      *     },
      *  statusCodes={
@@ -92,17 +74,14 @@ class ArticleController extends Controller implements ClassResourceInterface
      *         }
      *     }
      * )
-     * @Get("article/{id}/language/{language}")
      */
-    public function cgetByLanguage($language)
+    public function getByLanguageAction($id, $language)
     {
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Article');
-        $articles = $repository->findAll();
-        foreach ($articles as $article) {
-            $article->setTr($language);
-        }
+        $article = $repository->findOneById($id);
+        $article->setTr($language);
         $serializer = $this->container->get("jms_serializer");
-        $json = $serializer->serialize($articles, 'json', SerializationContext::create()->setGroups(array('default')));
+        $json = $serializer->serialize($article, 'json', SerializationContext::create()->setGroups(array('default', 'tags', 'user', 'articleCategories')));
         return new Response($json);
     }
     /**
@@ -149,7 +128,7 @@ class ArticleController extends Controller implements ClassResourceInterface
         }
         $em->persist($article);
         $em->flush();
-        return new Response($serializer->serialize($article, SerializationContext::create()->setGroups(array('id'))));
+        return new Response($serializer->serialize($article, 'json', SerializationContext::create()->setGroups(array('id'))));
     }
     /**
      * @ApiDoc(
@@ -170,6 +149,7 @@ class ArticleController extends Controller implements ClassResourceInterface
     public function putAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
+        $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Article');
         $article = $repository->findOneById($request->request->get('id'));
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
@@ -195,6 +175,7 @@ class ArticleController extends Controller implements ClassResourceInterface
         }
         $em->persist($article);
         $em->flush();
+        return new Response($serializer->serialize($article, 'json', SerializationContext::create()->setGroups(array('id'))));
     }
     /**
      * @ApiDoc(
@@ -221,7 +202,7 @@ class ArticleController extends Controller implements ClassResourceInterface
      */
     public function postFileAction(Request $request) {
         $mediaFormat = $this->container->get('winefing.media_format_controller');
-        $uploadedFile = $request->files->get('picture');
+        $uploadedFile = $request->files->get('media');
         $fileName = md5(uniqid()) . '.' . $uploadedFile->getClientOriginalExtension();
         $extentionCorrect = $mediaFormat->checkFormat($uploadedFile->getClientOriginalExtension(), MediaFormatEnum::Image);
         if($extentionCorrect != 1) {
@@ -271,6 +252,19 @@ class ArticleController extends Controller implements ClassResourceInterface
         }
         $em->remove($article);
         $em->flush();
+    }
+
+    public function cgetSimilarAction($language, $article)
+    {
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Article');
+        $article = $repository->findOneById($article);
+        $articles = $repository->findSimilar($article, $article->getArticleCategories()[0]->getId());
+        foreach ($articles as $article) {
+            $article->setTr($language);
+        }
+        $serializer = $this->container->get("jms_serializer");
+        $json = $serializer->serialize($articles, 'json', SerializationContext::create()->setGroups(array('default', 'tags', 'user', 'articleCategories')));
+        return new Response($json);
     }
 
 }

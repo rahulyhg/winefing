@@ -1,0 +1,89 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <!-- Google Map -->
+    <div id="map" class="map">
+    </div><!---/map-->
+    <!-- End Google Map -->
+
+    <!--=== Content Part ===-->
+    <div class="container content">
+        <div class="row margin-bottom-30">
+            <div class="col-md-9 mb-margin-bottom-30">
+                <div class="headline"><h2>{{ 'label.contact'|trans() }}</h2></div>
+                <p>
+                    {{ 'message.contact'|trans() }}
+                </p>
+                <form method="post" id="sky-form3" class="sky-form contact-style">
+                    <fieldset class="no-padding">
+                        <label>{{ 'label.name'|trans() }} <span class="color-red">*</span></label>
+                        <div class="row sky-space-20">
+                            <div class="col-md-7 col-md-offset-0">
+                                <div>
+                                    <input type="text" name="name" id="name" class="form-control" required>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        <label>{{ 'label.email'|trans() }} <span class="color-red">*</span></label>
+                        <div class="row sky-space-20">
+                            <div class="col-md-7 col-md-offset-0">
+                                <div>
+                                    <input type="email" name="email" id="email" class="form-control" required>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        <label>{{ 'label.message'|trans() }} <span class="color-red">*</span></label>
+                        <div class="row sky-space-20">
+                            <div class="col-md-11 col-md-offset-0">
+                                <div>
+                                    <textarea rows="8" name="message" id="message" class="form-control" required></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        <p><button type="submit" class="btn btn-primary">{{ 'label.send_message'|trans() }}</button></p>
+                    </fieldset>
+                </form>
+            </div><!--/col-md-9-->
+
+            <div class="col-md-3">
+                <!-- Contacts -->
+                <div class="headline"><h2>{{ 'label.contact'|transchoice(2) }}</h2></div>
+                <ul class="list-unstyled who margin-bottom-30">
+                    <li><a href="#"><i class="fa fa-home"></i>{{ winefing_street_address ~ ' ' ~ winefing_route ~ ', ' ~ winefing_postal_code ~ ' ' ~ winefing_locality ~ ' ' ~winefing_country }}</a></li>
+                    <li><a href="#"><i class="fa fa-envelope"></i>{{ winefing_email }}</a></li>
+                    <li><a href="#"><i class="fa fa-phone"></i>{{ winefing_phone_number }}</a></li>
+                </ul>
+
+                <!-- Why we are? -->
+                <div class="headline"><h2>Winefing</h2></div>
+                <p>{{ 'meta.description'|trans() }}</p>
+                {#<img class="img-responsive" src="{{asset('Logosaumon_fond transparent.png')}}" alt="Winefing">#}
+            </div><!--/col-md-3-->
+        </div><!--/row-->
+    </div><!--/container-->
+    <!--=== End Content Part ===-->
+{% endblock %}
+{% block script %}
+    {{ parent() }}
+<script>
+    function initMap() {
+            var aec = {lat: 44.870347, lng: -0.547749 };
+        var map = new google.maps.Map(document.getElementById('map'), {
+            center: aec,
+            scrollwheel: false,
+            zoom: 12
+        });
+        var marker = new google.maps.Marker({
+            position: aec,
+            map: map
+        });
+        }
+</script>
+<script async defer
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBXbn5jGttQkXWIfV91bBmsMg-HS_o_f7o&callback=initMap">
+</script>
+
+{% endblock script %}
+

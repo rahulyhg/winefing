@@ -29,7 +29,9 @@
                 </td>
                 <td>
                     <input type="button"  class="btn btn-primary" value="Editer" id="update" onclick="loadForm('{{ path('wineRegion_new_form', {'id' : wineRegion.id}) }}', 'wineRegion')"/>
-                    <input type="button" class="btn btn-danger" value="Suprimer" onclick="setPathDeleteButton('{{ path('wineRegion_delete', {'id' : wineRegion.id}) }}')"/>
+                    {% if wineRegion.domains|length == 0 %}
+                        <input type="button" class="btn btn-danger" value="Suprimer" onclick="setPathDeleteButton('{{ path('wineRegion_delete', {'id' : wineRegion.id}) }}')"/>
+                    {% endif %}
                 </td>
             </tr>
         {% endfor %}

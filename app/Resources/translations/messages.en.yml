@@ -102,7 +102,7 @@ label.end_date: End Date
 label.actions: Actions
 label.delete: Delete
 
-error.email_existing: An account with this email already exist.
+error.email_existing: An account with this email already exist. <a href="%link%">Sign in.</a>
 error.password_format: Le mot de passe doit contenir 8 charactères, dont au moins une chiffre et une lettre majuscule.
 error.email_not_corresponding: Les emails ne correspondent pas.
 error.password_not_corresponding: Les mot de passe ne correspondent pas.
@@ -216,3 +216,103 @@ label.bill: The bill
 help.rental_offer: You want to offer at someone the journey ? blablabla
 label.no_thanks: No thanks
 label.gift_card: Gift card
+label.order_initiate: Order waiting for approval
+label.order_validate: Order validate
+label.last_connexion: Last connexion
+label.action: Action
+label.order: commande|dommandes
+label.logout: Déconnexion
+label.home: Home
+label.amount_receive: Amount received
+label.order_amount: Order's amount
+label.waiting_validation: Wainting for validation
+label.order_validated: Order validated
+label.amount: Amount
+label.shure_valid_order: Do  you really want to validate this order ? You can't cancel it after.
+label.canceled: Canceled
+label.underway: Underway
+label.over: Over
+label.validated: Validated
+label.validate: Validate
+label.refuse: Refuse
+label.refused: Refused
+label.status: Status
+label.company_informations: Company informations
+label.client_informations: Client informations
+label.company_siren: SIREN number
+label.tva_number: TVA number
+label.bill_detail: Invoice details
+label.bill_item: Item
+label.bank_details: Bank details
+label.company_name: Company name
+label.company_address: Company Address
+help.company_informations: This informations will appear on your invoice.
+help.bic: No space, for exemple ABCDEFGHIJK
+help.iban: No space, for exemple FR1420041010050500013M02606
+help.company_name: Name related to the iban where you want to receive the money.
+label.price_from: From
+help.price_variation: The price can change regarding the period.
+error.minimum_rental_period: You should reverve %number% day for this room. | You should reverve %number% days for this room.
+label.night_minimum: %number% night minimum | %number% nights minimum
+warning.delete_rental_order_gift: Do you really want to delete the gift ?
+label.paiement_safe: Safe paiement with our partner LemonWay.
+label.when_pay_agree_sales_conditions: When you pay you agree the general condifiton of winefing.
+label.the_concept: The concept
+text.box_concept: Le meilleur des propriétés Winefing, c'est trois séjours oenologiques clés en main à offrir à tous les amoureux du vin, du patrimoine et de la gastronomie.<br><br>Notre équipe de passionnées a pré-sélectionné pour vous trois domaines pleins de charme qui vous accueilleront le temps d'un weekend pour vous faire partager une expérience unique faite de convivialité et de partage.<br><br>Idéal pour offrir, chaque séjour fait l'objet d'une jolie carte cadeau que vous pouvez commander en ligne pour la recevoir directement chez vous.
+label.box_and_gift_card: Boxes and gift cards
+label.box_contains: Box contains
+label.box_concept_quote: This is the best idea for a gift, a birthday chirsmas or to say i love you without a cucumber.
+label.team_winefing: The Winefing Team
+label.how_use_box: How to use the box ?
+text.how_use_box: A l'achat de votre carte, c'est-à-dire une fois le paiement effectué, nous vous envoyons un email de confirmation contenant un code personnel. Vous pouvez effectuer votre demande de réservation en vous rendant sur la fiche du domaine choisi via notre site mère www.winefing.com ou bien en contactant directement le château que vous avez choisi. N'oubliez pas de renseigner votre code au moment de la réservation.
+label.buy: Buy
+label.price: Price
+label.total_ttc: Total TTC
+label.blog: Blog
+label.last_articles: Last articles
+label.by: By
+label.in: In
+label.posted: Posted
+label.read_more: Read more
+label.great_article: Great Article
+label.page_of_total: %page% of %total%
+label.newer: Newer
+label.older: Older
+label.previous: Previous
+label.next: Next
+label.comments: Comments
+label.similar_articles: Similar articles
+label.know_more: Know more
+meta.description: Winefing, c'est le site qui vous permet de trouver l'hébergement qui vous correspond dans les domaines viticoles français.
+label.language: Language|Languages
+label.sales_conditions: Sales conditions
+message.contact: You have any question ? Don't hesitate to contact us ! We will be glade to help you.
+label.send_message: Send message
+label.legal_notice: Legal Notice
+label.gtu: GGU
+label.gts: GTS
+label.how_it_works: How it's work ?
+label.find: Find
+label.your_destination: Your destination
+label.order_online: On line
+label.live: Live
+label.a_exceptional_moment: Live an exceptional moment
+label.welcome_to: Welcome to %name%
+label.wine_region_month: Wine Region of the month
+label.let_yourself_be_guided: Let yourself be guided
+text.offer_home: Carte ou Coffret Cadeau, offrez plus que des émotions
+label.see_domains: See domains
+label.see_more_domains: See more domains
+label.price_from: Price from %price%
+label.select_wine_region: Select wine region
+label.select: Select
+label.price_from_to: Price from %minPrice%€ to %maxPrice%€
+label.why_create_an_acount: Why create an account ?
+label.not_have_account: You don't have an account
+label.you_are: You are ?
+text.registration: Winefing, c’est la manière la plus simple de vivre une expérience au coeur du vignoble. Chaque nuit réservée sur winefing.com comprend une visite des lieux et une dégustation des vins du domaine. Notre équipe est aux petits soins pour vous faire vivre le meilleur des séjours et sélectionne pour vous les propriétés et les viticulteurs les plus charismatiques et les plus passionnés de France.<br><br> En créant un compte, vous pourrez gérer vos réservations en toute simplicité, prendre contact avec votre hôte, créer votre wishlist de propriétés et recevoir en exclusivité les dernières nouvelles de Winefing et de nos partenaires.
+error.resetting_password: The email given do not exist.
+success.resetting_password: A email has been send to you. Just follow the instruction in.
+label.max_size: Max size %maxSize%
+error.max_file_size: The file is too big. It should not exceed %maxSize%.
+

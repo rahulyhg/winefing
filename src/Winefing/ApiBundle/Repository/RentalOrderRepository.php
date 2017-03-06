@@ -10,4 +10,27 @@ namespace Winefing\ApiBundle\Repository;
  */
 class RentalOrderRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function findWithUser($userId)
+    {
+        $query = $this->createQueryBuilder('rentalOrder')
+            ->join("rentalOrder.rental", "rental")
+            ->join("rental.property", "property")
+            ->join("property.domain", "domain")
+            ->join("domain.user", "user")
+            ->where('user.id = :userId')
+            ->setParameter('userId', $userId)
+            ->getQuery();
+        return $query->getResult();
+    }
+    public function findWithDomain($domainId)
+    {
+        $query = $this->createQueryBuilder('rentalOrder')
+            ->join("rentalOrder.rental", "rental")
+            ->join("rental.property", "property")
+            ->join("property.domain", "domain")
+            ->where('domain.id = :domainId')
+            ->setParameter('domainId', $domainId)
+            ->getQuery();
+        return $query->getResult();
+    }
 }

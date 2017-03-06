@@ -26,6 +26,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Templating\Helper\AssetsHelper;
 use JMS\Serializer\SerializationContext;
+use FOS\RestBundle\Controller\Annotations\Get;
 
 
 class BoxController extends Controller implements ClassResourceInterface
@@ -36,12 +37,12 @@ class BoxController extends Controller implements ClassResourceInterface
      */
     public function getByLanguageAction($id, $language)
     {
-        $serializer = $this->container->get('winefing.serializer_controller');
+        $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Box');
         $box = $repository->findOneById($id);
         $box->setTr($language);
         $box->setMediaPresentation();
-        return new Response($serializer->serialize($box, 'json', SerializationContext::create()->setGroups(array('default', 'boxItems', 'boxItemChoices'))));
+        return new Response($serializer->serialize($box, 'json', SerializationContext::create()->setGroups(array('default', 'box', 'boxItems', 'boxItemChoices'))));
     }
     /**
      * Liste de tout les languages possible en base
@@ -49,7 +50,7 @@ class BoxController extends Controller implements ClassResourceInterface
      */
     public function cgetByLanguageAction($language)
     {
-        $serializer = $this->container->get('winefing.serializer_controller');
+        $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Box');
         $boxes = $repository->findAll();
         foreach ($boxes as $box) {
@@ -63,6 +64,28 @@ class BoxController extends Controller implements ClassResourceInterface
             $box->setMediaPresentation();
         }
         return new Response($serializer->serialize($boxes, 'json', SerializationContext::create()->setGroups(array('default', 'boxItems', 'boxItemChoices'))));
+    }
+
+    /**
+     * @Get("/box/{id}/language/{language}")
+     * @param $language
+     * @param $id
+     * @return Response
+     */
+    public function getAction($language, $id)
+    {
+        $serializer = $this->container->get('jms_serializer');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Box');
+        $box = $repository->findOneById($id);
+        $box->setTr($language);
+        foreach ($box->getBoxItems() as $boxItem) {
+            $boxItem->setTr($language);
+            foreach($boxItem->getBoxItemChoices() as $boxItemChoice) {
+                $boxItemChoice->setTr($language);
+            }
+        }
+        $box->setMediaPresentation();
+        return new Response($serializer->serialize($box, 'json', SerializationContext::create()->setGroups(array('default', 'medias', 'boxItems', 'boxItemChoices'))));
     }
     /**
      * Liste de tout les languages possible en base

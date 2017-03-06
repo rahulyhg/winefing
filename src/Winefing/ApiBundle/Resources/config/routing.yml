@@ -191,7 +191,7 @@ creditCard:
 
 dayPrice:
     type: rest
-    resource: Winefing\ApiBundle\Controller\CreditCardController
+    resource: Winefing\ApiBundle\Controller\DayPriceController
     name_prefix:  api_
 
 rentalOrder:
@@ -207,4 +207,19 @@ email:
 rentalOrderGift:
     type: rest
     resource: Winefing\ApiBundle\Controller\RentalOrderGiftController
+    name_prefix:  api_
+
+company:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\CompanyController
+    name_prefix:  api_
+
+iban:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\IbanController
+    name_prefix:  api_
+
+pagination:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\PaginationController
     name_prefix:  api_

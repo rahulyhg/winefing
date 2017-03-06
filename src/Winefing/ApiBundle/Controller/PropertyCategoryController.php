@@ -39,7 +39,7 @@ class PropertyCategoryController extends Controller implements ClassResourceInte
         $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:PropertyCategory');
         $propertyCategories = $repository->findAll();
-        return new Response($serializer->serialize($propertyCategories, 'json', SerializationContext::create()->setGroups(array('id', 'language', 'default', 'trs'))));
+        return new Response($serializer->serialize($propertyCategories, 'json', SerializationContext::create()->setGroups(array('id', 'language', 'default', 'trs', 'properties'))));
     }
 
     /**

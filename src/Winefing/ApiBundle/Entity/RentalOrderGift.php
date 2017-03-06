@@ -36,15 +36,23 @@ class RentalOrderGift
     /**
      * @var string
      *
+     * @ORM\Column(name="price", type="float")
+     * @Groups({"default"})
+     */
+    private $price;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="signature", type="string", length=255)
      * @Groups({"default"})
      */
     private $signature;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="address", type="string", length=255)
+     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Address", cascade="ALL")
+     * @ORM\JoinColumn(nullable=false)
+     * @Groups({"address"})
      */
     private $address;
 
@@ -151,6 +159,22 @@ class RentalOrderGift
     public function setRentalOrder($rentalOrder)
     {
         $this->rentalOrder = $rentalOrder;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPrice()
+    {
+        return $this->price;
+    }
+
+    /**
+     * @param string $price
+     */
+    public function setPrice($price)
+    {
+        $this->price = $price;
     }
 }
 

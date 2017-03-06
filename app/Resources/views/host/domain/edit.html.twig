@@ -69,12 +69,15 @@
                                     {{ form_errors(domainForm.history) }}
                                     {{ form_widget(domainForm.history,  { 'attr': {'class': 'form-control'} }) }}
                                 </div>
-                                {% if is_granted("ROLE_ADMIN") %}
-                                    <label>Tags</label>
-                                    <br>
-                                    {{ form_widget(domainForm.tags) }}
+                                {% if is_granted("ROLE_ADMIN") or is_granted("ROLE_MANAGMENT") %}
+                                    <div class="form-group" >
+                                        {{ form_row(domainForm.tags) }}
+                                    </div>
                                 {% endif %}
-                                <button type="submit" class="btn btn-primary pull-right">{% trans %}label.submit{% endtrans %}</button>
+                                <br>
+                                <div class="form-group" >
+                                    <button type="submit" class="btn btn-primary pull-right">{% trans %}label.submit{% endtrans %}</button>
+                                </div>
                             {{ form_end(domainForm) }}
                         </div>
                     </div>
@@ -111,7 +114,7 @@
                         </div>
                         <div class="panel-body">
                             {{ form_start(addressForm, {'attr':{'id':'address'}}) }}
-                                {% include('host/address/form.html.twig') %}
+                                {% include('address/form.html.twig') %}
                             {{ form_end(addressForm) }}
                             <input type="button" onclick="disabledInputAddress();" value="{% trans %}label.submit{% endtrans %}"class="btn btn-primary pull-right">
 
@@ -175,6 +178,10 @@
 
         //variable for the address form
         jQuery(document).ready(function() {
+            $('.selectpicker').selectpicker({
+                noneSelectedText:'',
+                width: '100%'
+            });
             //initiate the google map new address
             adressId = 'address_formattedAddress';
             componentFormId = {

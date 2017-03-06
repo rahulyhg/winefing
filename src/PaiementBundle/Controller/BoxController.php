@@ -9,7 +9,6 @@
 namespace PaiementBundle\Controller;
 
 use AppBundle\Form\AddressType;
-use AppBundle\Form\AddressUserType;
 use PaiementBundle\Entity\CreditCard;
 use PaiementBundle\Form\CreditCardType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -27,11 +26,13 @@ use GuzzleHttp\RequestOptions;
 use Symfony\Component\HttpFoundation\File\File;
 use Winefing\ApiBundle\Entity\Address;
 use Winefing\ApiBundle\Entity\AddressTypeEnum;
+use Winefing\ApiBundle\Entity\BoxOrder;
 use Winefing\ApiBundle\Entity\CharacteristicrentalValue;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\Common\Collections\ArrayCollection;
 use Winefing\ApiBundle\Entity\StatusCodeEnum;
+use JMS\Serializer\SerializationContext;
 
 class BoxController extends Controller
 {
@@ -41,13 +42,14 @@ class BoxController extends Controller
      * @Route("box/paiement", name="box_paiement")
      */
     public function paiementAction(Request $request){
-        $box = $this->getBox($this->get('session')->get('box'), $request->getLocale());
+        $serializer = $this->container->get('jms_serializer');
+        $boxOrder = $serializer->deserialize($this->get('session')->get('boxOrder'), 'Winefing\ApiBundle\Entity\BoxOrder', 'json');
         $creditCard = new CreditCard();
         $creditCardForm = $this->createForm(CreditCardType::class, $creditCard);
         $creditCardForm->handleRequest($request);
         if($creditCardForm->isSubmitted() && $creditCardForm->isValid()) {
         }
-        return $this->render('user/box/paiement.html.twig', ['box'=>$box,
+        return $this->render('user/box/paiement.html.twig', ['boxOrder'=>$boxOrder,
             'creditCardForm'=>$creditCardForm->createView()
         ]);
     }
@@ -55,12 +57,13 @@ class BoxController extends Controller
      * @Route("/box/{id}/order", name="box_order")
      */
     public function selectBoxAction($id, Request $request) {
-        $box = $this->getBox($id, $request->getLocale());
-        $this->get('session')->set('box', $id);
-        foreach($box['boxItems'] as $boxItem) {
-            if(count($boxItem['boxItemChoices']) > 0) {
-                return  $this->redirectToRoute('box_select_item_choices', array('id'=>$id));
-            }
+        $api = $this->container->get('winefing.api_controller');
+        $serializer = $this->container->get('jms_serializer');
+        $box = $this->getBox($api, $serializer, $id, $request->getLocale());
+        $boxOrder = new BoxOrder($box, $this->getUser());
+        $this->get('session')->set('boxOrder', $serializer->serialize($boxOrder, 'json', SerializationContext::create()->setGroups(array('default', 'box', 'user', 'boxItems', 'boxItemChoices', 'boxOrderItemChoices'))));
+        if($box->gethasChoice()) {
+            return  $this->redirectToRoute('box_select_item_choices', array('id'=>$id));
         }
         return  $this->render('user/box/paiement.html.twig', array("box" => $box));
     }
@@ -72,18 +75,24 @@ class BoxController extends Controller
      * @Route("box/{id}/select/item/choices", name="box_select_item_choices")
      */
     public function selectItemChoicesAction($id, Request $request){
-        $box = $this->getBox($id, $request->getLocale());
-        if($request->isMethod('POST')) {
-            $this->get('session')->set('boxItemChoices', $request->request->get('boxItemChoice'));
-            return $this->redirectToRoute('box_paiement_address', array('addressType'=> AddressTypeEnum::address_billing));
-        }
-        return $this->render('user/box/select.html.twig', array("box" => $box));
-    }
-    public function getBox($id, $language) {
         $api = $this->container->get('winefing.api_controller');
-        $serializer = $this->container->get('winefing.serializer_controller');
+        $serializer = $this->container->get('jms_serializer');
+        $boxOrder = $serializer->deserialize($this->get('session')->get('boxOrder'), 'Winefing\ApiBundle\Entity\BoxOrder', 'json');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:BoxItemChoice');
+        if($request->isMethod('POST')) {
+            foreach($request->request->get('boxItemChoice') as $boxItem) {
+                $boxItem = $repository->findOneById($boxItem["boxItemChoice"]);
+                $boxOrder->addBoxItemChoice($boxItem);
+            }
+            $json = $serializer->serialize($boxOrder, 'json', SerializationContext::create()->setGroups(array('default', 'box', 'user', 'boxItems', 'boxOrderItemChoices')));
+            $this->get('session')->set('boxOrder', $json);
+            return $this->redirectToRoute('box_paiement_address', array('addressType'=>AddressTypeEnum::address_billing));
+        }
+        return $this->render('user/box/select.html.twig', array("box" => $boxOrder->getBox()));
+    }
+    public function getBox($api, $serializer, $id, $language) {
         $response = $api->get($this->get('router')->generate('api_get_box_by_language', array('id'=> $id, 'language' => $language)));
-        $box = $serializer->decode($response->getBody()->getContents());
+        $box = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Box', 'json');
         return $box;
     }
     public function moneyInWithCardId($user) {
@@ -112,21 +121,29 @@ class BoxController extends Controller
         }
     }
     /**
+     * route for a new address
      * @return mixed
      * @Route("/paiement/box/address/{addressType}", name="box_paiement_address")
      */
-    public function billingAddress($addressType, Request $request) {
+    public function rentalOrderAddress($addressType, Request $request) {
         $user = $this->getUser();
+
+        //get the box order stored in session
         $serializer = $this->container->get('jms_serializer');
+        $boxOrder = $serializer->deserialize($this->get('session')->get('boxOrder'), 'Winefing\ApiBundle\Entity\BoxOrder', 'json');
+
+
         $api = $this->container->get('winefing.api_controller');
         $response = $api->get($this->get('_router')->generate('api_get_addresses_by_user', array('userId'=> $user->getId())));
+
         $addresses = new ArrayCollection();
         if($response->getStatusCode() != StatusCodeEnum::empty_response) {
             $addresses = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\Address>', 'json');
         }
         $address = new Address();
-        $options['labelSubmit'] = 'label.select_address';
-        $addressForm = $this->createForm(AddressUserType::class, $address, $options);
+        $addressForm = $this->createForm(AddressType::class, $address);
+        $addressForm->add('name', null, array('required'=>true, 'label'=>'label.name', 'attr'=>array('maxlength'=>"255",'class'=>'form-control','placeholder'=>'example.address_home')));
+
         $addressForm->handleRequest($request);
         $body['user'] = $user->getId();
 
@@ -141,17 +158,28 @@ class BoxController extends Controller
     }
 
     /**
+     * set the billing address or the delivering address
      * @return mixed
      * @Route("/paiement/box/select/{id}/{addressType}", name="box_paiement_select_address")
      */
     public function setAddressSession($id, $addressType) {
+        //get the box order stored in session
+        $serializer = $this->container->get('jms_serializer');
+        $boxOrder = $serializer->deserialize($this->get('session')->get('boxOrder'), 'Winefing\ApiBundle\Entity\BoxOrder', 'json');
+        //get the address
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Address');
+        $address = $repository->findOneById($id);
         if($addressType == AddressTypeEnum::address_billing) {
-            $this->get('session')->set('billingAddress', $id);
-            return $this->redirectToRoute('box_paiement_address', array('addressType'=>AddressTypeEnum::address_delivering));
+            $boxOrder->setBillingAddress($address);
+            $route = $this->get('_router')->generate('box_paiement_address', array('addressType'=>AddressTypeEnum::address_delivering));
         } else {
-            $this->get('session')->set('deliveryAddress', $id);
-            return $this->redirectToRoute('box_paiement');
+            $boxOrder->setDeliveringAddress($address);
+            $route = $this->get('_router')->generate('box_paiement');
         }
+        $json = $serializer->serialize($boxOrder, 'json', SerializationContext::create()->setGroups(array('default', 'box', 'user', 'boxItems', 'boxOrderItemChoices', 'billingAddress', 'deliveringAddress')));
+        $this->get('session')->set('boxOrder', $json);
+        return $this->redirect($route);
+
     }
 
 

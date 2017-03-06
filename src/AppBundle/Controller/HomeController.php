@@ -21,6 +21,9 @@ class HomeController extends Controller
      */
     public function indexAction(Request $request)
     {
+        $api = $this->container->get("winefing.api_controller");
+        $serializer = $this->container->get("jms_serializer");
+
         $filterForm = $this->createForm(DomainFilterType::class, null, array('language'=>$request->getLocale(), 'action' => $this->generateUrl('domains_by_criteria'),
             'method' => 'GET',
         ));
@@ -30,6 +33,15 @@ class HomeController extends Controller
         if($filterForm->isSubmitted() && $filterForm->isValid()) {
 
         }
+
+        //get the domain tag
+        //get the tags
+        $response = $api->get($this->get('router')->generate('api_get_tags_domains', array('language'=>$request->getLocale())), array('maxResult'=> 6));
+        $tags = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\Tag>', 'json');
+
+        //get the tags
+        $response = $api->get($this->get('router')->generate('api_get_wine_region_by_name', array('language'=>$request->getLocale(), 'name'=> 'bordelais')));
+        $wineRegion = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\WineRegion', 'json');
 //        $token = ->findOneByUser(98);
 //        $this->token = $this->getToken($token->getToken());
 
@@ -84,6 +96,6 @@ class HomeController extends Controller
 //            $body
 //        );
 //        var_dump($response->getBody()->getContents());
-        return $this->render('index.html.twig', array('filterForm'=>$filterForm->createView()));
+        return $this->render('index.html.twig', array('filterForm'=>$filterForm->createView(), 'tags'=>$tags, 'wineRegion'=>$wineRegion));
     }
 }

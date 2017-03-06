@@ -8,8 +8,6 @@
             {{ form_widget(form.article.id, {'id' : 'article'}) }}
         </fieldset>
         <div class="row">
-
-
             <div class="col-md-3">
                 {{ form_label(form.article.user) }}
                 <br>
@@ -66,12 +64,14 @@
         <input type='hidden' value='0' name='article_tr[activated]'>
         {{ form_widget(form.activated,  { 'attr': {'data-toggle':"toggle", 'data-off':"Not activated", 'data-on':"Activated", 'data-onstyle':"success"} }) }}
     </fieldset>
-    <a href="{{ path('articles') }}" type="button" class="btn btn-default" data-dismiss="modal">Retour</a>
+    <a href="{{ path('admin_articles') }}" type="button" class="btn btn-default" data-dismiss="modal">Retour</a>
     <button type="submit" class="btn btn-primary">Valider</button>
+    {{ form_end(form) }}
 {% endblock %}
 {% block modal %}
 {% endblock %}
 {% block script %}
+    {{ parent() }}
     <script>
         $(document).ready(function() {
             $('#summernote').summernote({

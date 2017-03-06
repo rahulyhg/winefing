@@ -50,10 +50,43 @@ class ArticleCategoryController extends Controller implements ClassResourceInter
     public function cgetAction() {
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:ArticleCategory');
         $articleCategories = $repository->findAll();
-        $serializer = $this->container->get('winefing.serializer_controller');
-        $json = $serializer->serialize($articleCategories);
+        $serializer = $this->container->get('jms_serializer');
+        $json = $serializer->serialize($articleCategories, 'json', SerializationContext::create()->setGroups(array('id', 'language', 'default', 'trs')));
         return new Response($json);
     }
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Get all the user by role.",
+     *  views = { "index", "blog" },
+     *  output= {
+     *      "class"="Winefing\ApiBundle\Entity\ArticleCategory",
+     *      "groups"={"id", "default"}
+     *     },
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         204={
+     *           "Returned when no content",
+     *         }
+     *     },
+     *  requirements={
+     *     {
+     *          "name"="role", "dataType"="string", "required"=true, "description"="user role"
+     *      }
+     *     }
+     * )
+     */
+    public function cgetByLanguageAction($language) {
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:ArticleCategory');
+        $articleCategories = $repository->findAll();
+        foreach($articleCategories as $articleCategory) {
+            $articleCategory->setTr($language);
+        }
+        $serializer = $this->container->get('jms_serializer');
+        $json = $serializer->serialize($articleCategories, 'json', SerializationContext::create()->setGroups(array('default', 'id')));
+        return new Response($json);
+    }
+
 
     public function postAction(Request $request)
     {
@@ -73,8 +106,8 @@ class ArticleCategoryController extends Controller implements ClassResourceInter
         }
         $em->persist($articleCategory);
         $em->flush();
-        $serializer = $this->container->get("winefing.serializer_controller");
-        $json = $serializer->serialize($articleCategory);
+        $serializer = $this->container->get("jms_serializer");
+        $json = $serializer->serialize($articleCategory, 'json', SerializationContext::create()->setGroups(array('default', 'id')));
         return new Response($json);
     }
 
@@ -107,8 +140,8 @@ class ArticleCategoryController extends Controller implements ClassResourceInter
         }
         $em->persist($articleCategory);
         $em->flush();
-        $serializer = $this->container->get("winefing.serializer_controller");
-        $json = $serializer->serialize($articleCategory);
+        $serializer = $this->container->get("jms_serializer");
+        $json = $serializer->serialize($articleCategory, 'json', SerializationContext::create()->setGroups(array('default', 'id')));
         return new Response($json);
     }
 

@@ -3,9 +3,9 @@
 namespace Winefing\ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
 use JMS\Serializer\Annotation\Groups;
-use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation\Type;
+use Doctrine\Common\Collections\ArrayCollection;
 /**
  * ArticleCategory
  *
@@ -42,7 +42,6 @@ class ArticleCategory
 
     /**
      * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Article", mappedBy="articleCategories")
-     * @Groups({"articles"})
      */
     private $articles;
 
@@ -56,6 +55,17 @@ class ArticleCategory
 
     private $hierarchy;
 
+    /**
+     * @var
+     * @Groups({"default"})
+     * @Type("string")
+     */
+    private $name;
+    /**
+     * @var
+     * @Groups({"default"})
+     * @Type("string")
+     */
     private $title;
 
     /**
@@ -173,6 +183,30 @@ class ArticleCategory
         foreach($this->getArticleCategoryTrs() as $tr) {
             if($tr->getLanguage()->getCode() == LanguageEnum::Français) {
                 return $tr->getName();
+            }
+        }
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param mixed $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+    public function setTr($language) {
+        foreach($this->articleCategoryTrs as $tr) {
+            if($tr->getLanguage()->getCode() == $language) {
+                $this->name = $tr->getName();
+                break;
             }
         }
     }

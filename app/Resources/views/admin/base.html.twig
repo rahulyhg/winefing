@@ -1,36 +1,34 @@
 {% extends 'base.html.twig' %}
 {% block body %}
+    <div class="cover-img" style="background: url({{ banner_directory ~'red-bottles.jpeg' }})">
+        <h1>ADMIN</h1>
+    </div>
     {{ include('admin/nav.html.twig') }}
-    <div class="container">
-        {% if app.session.flashBag.has('success') %}
-            <div class="alert alert-success">
-                {% for msg in app.session.flashBag.get('success') %}
-                    {{ msg }}
-                {% endfor %}
+        <div class="container">
+            {% if app.session.flashBag.has('success') %}
+                <div class="alert alert-success">
+                    {% for msg in app.session.flashBag.get('success') %}
+                        {{ msg }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% if app.session.flashBag.has('error') %}
+                <div class="alert alert-danger">
+                    {% for msg in app.session.flashBag.get('error') %}
+                        {{ msg }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        <div class="container">
+            <div class="content-sm">
+                {% block table %}
+                {% endblock %}
             </div>
-        {% endif %}
-        {% if app.session.flashBag.has('error') %}
-            <div class="alert alert-danger">
-                {% for msg in app.session.flashBag.get('error') %}
-                    {{ msg }}
-                {% endfor %}
-            </div>
-        {% endif %}
-        {% block table %}
-        {% endblock %}
+        </div>
         {% block modal %}
             {{ include('admin/modal/delete.html.twig') }}
             <span id="modalCreate">
             </span>
         {% endblock modal %}
-    </div>
-{% endblock %}
-{% block script %}
-    <!-- Menu Toggle Script -->
-    <script  type="text/javascript">
-        $("#menu-toggle").click(function(e) {
-            e.preventDefault();
-            $("#wrapper").toggleClass("toggled");
-        });
-    </script>
 {% endblock %}

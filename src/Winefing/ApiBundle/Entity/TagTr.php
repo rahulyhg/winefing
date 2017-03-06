@@ -26,7 +26,6 @@ class TagTr
     /**
      * @var
      * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Tag", inversedBy="tagTrs")
-     * @Groups({"tag"})
      */
     private $tag;
 

@@ -28,7 +28,6 @@ class BoxItem
     /**
      * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Box", inversedBy="boxItems", cascade={"persist", "merge"})
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"box"})
      */
     private $box;
 
@@ -60,9 +59,9 @@ class BoxItem
      */
     private $description;
 
-    public function _construct(){
-        $this->boxItemChoices[] = new ArrayCollection();
-        $this->boxItemTrs[] = new ArrayCollection();
+    public function __construct(){
+        $this->boxItemChoices = new ArrayCollection();
+        $this->boxItemTrs = new ArrayCollection();
         return $this;
     }
 

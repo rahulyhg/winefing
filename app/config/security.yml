@@ -59,14 +59,14 @@ security:
 #                entry_point: app.form_login_authenticator
 
     access_control:
-        - { path: ^/%locale%/registration, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/%locale%/login, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/%locale%/logout, role: IS_AUTHENTICATED_FULLY }
-        - { path: ^/%locale%/logout, role: IS_AUTHENTICATED_FULLY }
-        - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
-#        - { path: ^/%locale%/admin/, role: ROLE_ADMIN }
-#        - { path: ^/%locale%/host/, role: ROLE_HOST }
-        - { path: ^/%locale%/paiement/, role: IS_AUTHENTICATED_FULLY }
-        - { path: ^/api/doc, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api, role: IS_AUTHENTICATED_ANONYMOUSLY }
+#        - { path: ^/%locale%/registration, role: IS_AUTHENTICATED_ANONYMOUSLY }
+#        - { path: ^/%locale%/login, role: IS_AUTHENTICATED_ANONYMOUSLY }
+#        - { path: ^/%locale%/logout, role: IS_AUTHENTICATED_FULLY }
+#        - { path: ^/%locale%/logout, role: IS_AUTHENTICATED_FULLY }
+#        - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
+#        - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
+##        - { path: ^/%locale%/admin/, role: ROLE_ADMIN }
+##        - { path: ^/%locale%/host/, role: ROLE_HOST }
+#        - { path: ^/%locale%/paiement/, role: IS_AUTHENTICATED_FULLY }
+#        - { path: ^/api/doc, role: IS_AUTHENTICATED_ANONYMOUSLY }
+#        - { path: ^/api, role: IS_AUTHENTICATED_ANONYMOUSLY }

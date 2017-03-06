@@ -105,7 +105,7 @@ class CharacteristicCategoryController extends Controller implements ClassResour
         $characteristicCatrgory = $repository->findOneById($request->request->get('id'));
 
         $mediaFormat = $this->container->get('winefing.media_format_controller');
-        $uploadedFile = $request->files->get('picture');
+        $uploadedFile = $request->files->get('media');
         $fileName = md5(uniqid()) . '.' . $uploadedFile->getClientOriginalExtension();
         $extentionCorrect = $mediaFormat->checkFormat($uploadedFile->getClientOriginalExtension(), MediaFormatEnum::Icon);
         if($extentionCorrect != 1) {

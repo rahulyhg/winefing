@@ -7,9 +7,6 @@
  */
 
 namespace AppBundle\Controller;
-use AppBundle\Form\ArticleCategoryType;
-use AppBundle\Form\ArticleTrType;
-use AppBundle\Form\ArticleType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -27,25 +24,79 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Winefing\ApiBundle\Entity\Article;
-use Winefing\ApiBundle\Entity\ArticleCategory;
-use Winefing\ApiBundle\Entity\ArticleCategoryTr;
-use Winefing\ApiBundle\Entity\ArticleTr;
-
-
+use Winefing\ApiBundle\Entity\LanguageEnum;
 
 
 class ArticleController extends Controller
 {
     /**
+     * @Route("admin/articles/", name="admin_articles")
+     */
+    public function cgetAdminAction() {
+        $api = $this->container->get("winefing.api_controller");
+        $serializer = $this->container->get("jms_serializer");
+        $response = $api->get($this->get('router')->generate('api_get_articles'));
+        $articles = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\Article>', 'json');
+
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
+        foreach ($articles as $article) {
+            $languageId = array();
+            foreach($article->getArticleTrs() as $articleTr) {
+                $languageId[] = $articleTr->getLanguage()->getId();
+            }
+            $missingLanguages = $repository->findMissingLanguages($languageId);
+            $article->setMissingLanguages(new ArrayCollection($missingLanguages));
+            $article->setTitle();
+        }
+
+        return $this->render('admin/blog/article.html.twig', array("articles" => $articles)
+        );
+    }
+    /**
      * @Route("/articles/", name="articles")
      */
-    public function cgetAction() {
+    public function cgetAction(Request $request) {
         $api = $this->container->get("winefing.api_controller");
-        $serializer = $this->container->get("winefing.serializer_controller");
-        $response = $api->get($this->get('router')->generate('api_get_articles'));
-        $articles = $serializer->decode($response->getBody()->getContents());
-        return $this->render('admin/blog/article.html.twig', array("articles" => $articles)
+        $serializer = $this->container->get("jms_serializer");
+        $language = $request->getLocale();
+        $params = $request->query->get("article_filter");
+
+        //get the pagination article
+        $response = $api->get($this->get('router')->generate('api_get_pagination_articles', array('language'=>$language, 'maxPerPage'=>$this->getParameter('maxperpage'))), $params);
+        $pagination = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Pagination', 'json');
+
+        //get the last articles
+        $response = $api->get($this->get('router')->generate('api_get_pagination_articles', array('language'=>$language, 'maxPerPage'=>3)));
+        $paginationLastArticles = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Pagination', 'json');
+
+        //get the tags
+        $response = $api->get($this->get('router')->generate('api_get_tags_articles', array('language'=>$language)));
+        $tags = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\Tag>', 'json');
+
+        //get the articles categories
+        $response = $api->get($this->get('router')->generate('api_get_article_categories_by_language', array('language'=>$language)));
+        $articleCategories = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\ArticleCategory>', 'json');
+
+        return $this->render('blog/index.html.twig', array("articles" => $pagination->getArticles(), "lastArticles"=>$paginationLastArticles->getArticles(), "articleCategories"=>$articleCategories, "tags"=>$tags, "total"=>$pagination->getTotal())
+        );
+    }
+    /**
+     * @Route("/article/{id}", name="article")
+     */
+    public function getAction($id, Request $request) {
+        $api = $this->container->get("winefing.api_controller");
+        $serializer = $this->container->get("jms_serializer");
+        $language = $request->getLocale();
+
+        //get the articles
+        $response = $api->get($this->get('router')->generate('api_get_article_by_language', array('id'=> $id, 'language'=>$language)));
+        $article = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Article', 'json');
+
+        //get the similar articals
+        $response = $api->get($this->get('router')->generate('api_get_articles_similar', array('language'=>$language, 'article'=>$id)));
+        $articles = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\Article>', 'json');
+
+        return $this->render('blog/card.html.twig', array("article" => $article, "articles"=>$articles)
         );
     }
 }

@@ -42,7 +42,7 @@ class Subscription
      * @var bool
      *
      * @ORM\Column(name="activated", type="boolean")
-     * @Groups({"artivated"})
+     * @Groups({"default"})
      */
     private $activated;
 

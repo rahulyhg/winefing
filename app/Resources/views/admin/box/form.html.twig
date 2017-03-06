@@ -1,25 +1,79 @@
 {% extends 'admin/base.html.twig' %}
 {% block table %}
-    <div class="container" style="width: 50%">
-        {{ form_start(boxForm, {'attr' : {'id': 'box'}}) }}
-            <div class="form-group">
-                {{ form_row(boxForm.medias) }}
-            </div>
-            <div class="form-group">
-                {{ form_row(boxForm.price) }}
-            </div>
-            <br>
-            {% for boxTr in boxForm.boxTrs %}
-                <br>
-                {{ form_widget(boxTr.language, {'attr' : {'disabled': 'false'} }) }}
-                <div class="form-group">
-                    {{ form_row(boxTr.name) }}
+    {% set route = app.request.get('_route') %}
+    <div class="container">
+        <div class="col-sm-3">
+            <ul class="nav nav-pills nav-stacked" id="nav">
+                <li class="active"><a href="#presentation" data-toggle="tab"><i class="glyphicon glyphicon-home"></i> {% trans %}label.presentation{% endtrans %}</a></li>
+                {% if route == 'box_edit' %}
+                    <li><a href="#pictures" data-toggle="tab"><i class="glyphicon glyphicon-picture"></i> {% trans %}label.pictures{% endtrans %}</a></li>
+                {% endif %}
+            </ul>
+        </div>
+        <div class="col-sm-9">
+            <div class="tab-content">
+                <div class="tab-pane fade in active" id="presentation">
+                    {{ form_start(boxForm, {'attr' : {'id': 'box'}}) }}
+                        <div class="form-group">
+                            {{ form_row(boxForm.price) }}
+                        </div>
+                        <br>
+                        {% for boxTr in boxForm.boxTrs %}
+                            <br>
+                            {{ form_widget(boxTr.language, {'attr' : {'disabled': 'false'} }) }}
+                            <div class="form-group">
+                                {{ form_row(boxTr.name) }}
+                            </div>
+                            <div class="form-group">
+                                {{ form_row(boxTr.description) }}
+                            </div>
+                        {% endfor %}
+                        {{ form_row(boxForm.submit) }}
+                    {{ form_end(boxForm) }}
                 </div>
-                <div class="form-group">
-                    {{ form_row(boxTr.description) }}
-                </div>
-            {% endfor %}
-            {{ form_row(boxForm.submit) }}
-        {{ form_end(boxForm) }}
+                {% if route == 'box_edit' %}
+                    <div class="tab-pane fade" id="pictures">
+                        <h4>
+                            {% trans %}label.pictures{% endtrans %}
+                            <a href="#" data-toggle="tooltip" data-placement="right" title="{% trans %}help.pictures{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
+                        </h4>{#{% set imagePerSlide = 3 %}#}
+                        <p>{% trans %}label.add_pictures{% endtrans %}</p>
+                        <div class="dropzone upload-drop-zone" id="my-dropzone-container">
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
     </div>
 {% endblock %}
+{% if app.request.get('_route') == 'box_edit' %}
+    {% block script %}
+        {{ parent() }}
+        <script type="application/javascript">
+                var medias= {{ medias|raw }};
+
+                //variable used in the dropzone-custom.js file, to init the dropzone.
+                var upload = '{{ box_directory }}';
+                var size = 10-(medias.length);
+                var uploadDirectory = '{{ path('box_upload_picture', {'id': app.request.get('id')}) }}';
+                var directDefaultMessage = '{{ 'label.drop_files_here' | trans({}) }}';
+                var toastMessageImgPresentation = '{{ 'success.image_presentation' | trans({}) }}';
+                var toastMessageImgDeleting = '{{ 'success.delete_image' | trans({}) }}';
+                var toastMessageImgNoPresentation = '{{ 'success.image_no_presentation' | trans({}) }}';
+
+
+                //variable used in the custom.js, in different javascript function user by the dropzone.
+                deletePath = "{{ path('box_delete_picture', {'id': 'id'}) }}";
+                urlMediaPresentation = "{{ path('api_patch_media_presentation_box', {'id': 'id'}) }}";
+                Dropzone.autoDiscover = false;
+                confirmationDelete = '{{ 'confirmation.delete' | trans({}, "messages") }}';
+
+                //initiate the fancybox = slider
+                FancyBox.initFancybox();
+
+            </script>
+            {% javascripts 'bundles/app/js/dropzone-custom.js'%}
+            <script src="{{ asset_url }}"></script>
+            {% endjavascripts %}
+    {% endblock %}
+{% endif %}

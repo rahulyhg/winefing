@@ -3,9 +3,9 @@
 namespace Winefing\ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Winefing\ApiBundle\Entity\LanguageEnum;
 use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\Type;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Tag
@@ -31,6 +31,11 @@ class Tag
      * @Groups({"trs"})
      */
     private $tagTrs;
+    /**
+     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Domain", mappedBy="tags")
+     * @Groups({"articles"})
+     */
+    private $domains;
 
     /**
      * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Article", mappedBy="tags")
@@ -39,17 +44,17 @@ class Tag
     private $articles;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Domain", mappedBy="tags", fetch="EXTRA_LAZY", cascade={"persist", "merge", "detach"})
-     * @Groups({"domains"})
-     */
-    private $domains;
-
-    /**
      * @var
      * @Groups({"default"})
      * @Type("string")
      */
     private $name;
+
+    /**
+     * @ORM\Column(name="picture", type="string", length=500, nullable=true)
+     * @Groups({"default"})
+     */
+    protected $picture;
 
 
     /**
@@ -62,10 +67,10 @@ class Tag
         return $this->id;
     }
 
-    public function _construct() {
-        $this->tagTrs[] = new ArrayCollection();
-        $this->articles[] = new ArrayCollection();
-        $this->domains[] = new ArrayCollection();
+    public function __construct() {
+        $this->tagTrs = new ArrayCollection();
+        $this->articles = new ArrayCollection();
+        $this->domains = new ArrayCollection();
     }
 
     public function addTagTr(TagTr $tagTr) {
@@ -77,26 +82,12 @@ class Tag
         $this->articles[] = $article;
         return $this;
     }
+    public function getDomains() {
+        return $this->domains;
+    }
     public function getTagTrs() {
         return $this->tagTrs;
     }
-
-    /**
-     * @return mixed
-     */
-    public function getDomains()
-    {
-        return $this->domains;
-    }
-
-    /**
-     * @param mixed $domains
-     */
-    public function setDomains($domains)
-    {
-        $this->domains = $domains;
-    }
-
 
     public function getDisplayName($language){
         foreach($this->tagTrs as $tag){
@@ -146,6 +137,22 @@ class Tag
                 break;
             }
         }
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPicture()
+    {
+        return $this->picture;
+    }
+
+    /**
+     * @param mixed $picture
+     */
+    public function setPicture($picture)
+    {
+        $this->picture = $picture;
     }
 
 }

@@ -35,7 +35,7 @@ class SubscriptionController extends Controller implements ClassResourceInterfac
         $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Subscription');
         $subscriptions = $repository->findAll();
-        return new Response($serializer->serialize($subscriptions, 'json', SerializationContext::create()->setGroups(array('id', 'default'))));
+        return new Response($serializer->serialize($subscriptions, 'json', SerializationContext::create()->setGroups(array('id', 'default', 'trs', 'language'))));
     }
     public function cgetByUserAction($user, $language) {
         $serializer = $this->container->get('jms_serializer');
@@ -114,8 +114,8 @@ class SubscriptionController extends Controller implements ClassResourceInterfac
         $subscription = $repository->findOneById($request->request->get("id"));
         $subscription->setActivated($request->request->get("activated"));
         $em = $this->getDoctrine()->getManager();
+        $em->persist($subscription);
         $em->flush();
-        return new Response(json_encode([200, "success"]));
     }
     public function patchUserAction(Request $request) {
         $em = $this->getDoctrine()->getManager();

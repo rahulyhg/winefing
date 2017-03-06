@@ -10,4 +10,14 @@ namespace Winefing\ApiBundle\Repository;
  */
 class BoxRepository extends \Doctrine\ORM\EntityRepository
 {
+    function findOneWithMediaId($mediaId)
+    {
+        $query = $this->createQueryBuilder('box')
+            ->innerJoin("box.medias", "medias")
+            ->where('medias.id = :mediaId')
+            ->setParameter('mediaId', $mediaId)
+            ->setMaxResults(1)
+            ->getQuery();
+        return $query->getOneOrNullResult();
+    }
 }

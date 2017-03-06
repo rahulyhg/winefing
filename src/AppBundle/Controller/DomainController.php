@@ -26,6 +26,7 @@ use Winefing\ApiBundle\Entity\CharacteristicDomainValue;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\Common\Collections\ArrayCollection;
+use JMS\Serializer\SerializationContext;
 use Winefing\ApiBundle\Entity\ScopeEnum;
 use Symfony\Component\Form\FormError;
 use Winefing\ApiBundle\Entity\StatusCodeEnum;
@@ -33,11 +34,6 @@ use Winefing\ApiBundle\Entity\StatusCodeEnum;
 
 class DomainController extends Controller
 {
-//    protected $domain;
-//
-//    public function __construct() {
-//        $this->domain = $this->getDomain();
-//    }
     /**
      * get domains depending of criterias (people number, wineRegion, tags, price, when).
      * @Route("/filter/domains", name="domains_by_criteria")
@@ -46,27 +42,26 @@ class DomainController extends Controller
         $api = $this->container->get('winefing.api_controller');
         $serializer = $this->container->get('jms_serializer');
 
-        $domainFilterParams = $request->query->get('domain_filter');
-        if(!empty($domainFilterParams)) {
-            //get the domains depending the params
-            $response =  $api->get($this->get('router')->generate('api_get_domains_by_criteria'), $domainFilterParams);
-            $domains = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\Domain>', 'json');
-        } else {
-            //get all the domain
-            $response =  $api->get($this->get('router')->generate('api_get_domains'));
-            $domains = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\Domain>', 'json');
-        }
-
         $filterForm = $this->createForm(DomainFilterType::class, null, array('language'=>$request->getLocale()));
+        $domainFilterParams = $request->query->get('domain_filter');
 
-//        //set the wine region if not empty
+        //get the domains depending the params
+        $response =  $api->get($this->get('router')->generate('api_get_pagination_domains', array('language'=>$request->getLocale(), 'maxPerPage'=>$this->getParameter('maxperpage'))), $domainFilterParams);
+        $pagination = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Pagination', 'json');
+        $domains = $pagination->getDomains();
+
+
+        //set the wine region if not empty
         if(!empty($domainFilterParams['wineRegion'])) {
             $this->setWineRegionForm($domainFilterParams['wineRegion'], $filterForm);
         }
 
-        if($filterForm->isSubmitted() && $filterForm->isValid()) {
-
+        //set the tag if not empty
+        if(!empty($domainFilterParams['tags'])) {
+            $this->setTagForm($domainFilterParams['tags'], $filterForm);
         }
+
+
         //get the minimum price
         $response =  $api->get($this->get('router')->generate('api_get_rental_by_price', ['order'=>'ASC']));
         $rentalMinPrice = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Rental', 'json');
@@ -77,7 +72,7 @@ class DomainController extends Controller
 
         //price range slider
         if(!empty($domainFilterParams['price'])) {
-            $price = implode(",", $request->query->get('domain_filter')['price']);
+            $price = explode(",", $domainFilterParams['price']);
             $dataSliderMinValue = $price[0];
             $dataSliderMaxValue = $price[1];
         } else {
@@ -100,10 +95,7 @@ class DomainController extends Controller
             $filterForm->get('endDate')->setData(new \DateTime($domainFilterParams['endDate']));
         }
 
-
-        $filterForm->handleRequest($request);
-
-        return $this->render('user/filter.html.twig', ['domains'=>$domains, 'filterForm'=>$filterForm->createView()]);
+        return $this->render('user/domain/index.html.twig', ['domains'=>$domains, 'total'=>$pagination->getTotal(), 'filterForm'=>$filterForm->createView()]);
     }
 
     /**
@@ -117,7 +109,20 @@ class DomainController extends Controller
         foreach($wineRegions as $wineRegion) {
             $wineRegionsArray[] = $repository->findOneById($wineRegion);
         }
-        $filterForm->get('wineRegion')->setData($wineRegions);
+        $filterForm->get('wineRegion')->setData($wineRegionsArray);
+    }
+    /**
+     * Set the wineRegion field of the forms
+     * @param $wineRegions
+     * @param $filterForm
+     */
+    public function setTagForm($tags, &$filterForm) {
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Tag');
+        $tagsArray = new ArrayCollection();
+        foreach($tags as $tag) {
+            $tagsArray[] = $repository->findOneById($tag);
+        }
+        $filterForm->get('tags')->setData($tagsArray);
     }
 
     /**
@@ -143,7 +148,7 @@ class DomainController extends Controller
         $serializer = $this->container->get('jms_serializer');
         $response =  $api->get($this->get('router')->generate('api_get_domains_explore', array('language'=>$request->getLocale())));
         $domains = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\Domain>', 'json');
-        return $this->render('user/explore.html.twig', array('domains'=>$domains));
+        return $this->render('user/domain/index.html.twig', array('domains'=>$domains));
     }
     /**
      * @Route("/domain/{id}", name="domain")
@@ -194,6 +199,8 @@ class DomainController extends Controller
      * @Route("/host/domain/{id}/edit", name="domain_edit")
      */
     public function getAction($id, $nav = 'presentation', Request $request) {
+        $api = $this->container->get('winefing.api_controller');
+        $serializer = $this->container->get('jms_serializer');
 
         //check if the user can access to the edit property view
         if($this->getUser()->isHost()) {
@@ -202,10 +209,20 @@ class DomainController extends Controller
                 throw $this->createAccessDeniedException('You cannot access this page!');
             }
         } else {
-            $this->container->setParameter('domain_id', $id);
+            $this->get('session')->set('domainId', $id);
+            $domain = $this->getDomain($id);
+
+            //get the user
+            $response =  $api->get($this->get('router')->generate('api_get_user_user_by_domain', array('domain'=>$id)));
+            $user = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\User', 'json');
+            $this->get('session')->set('hostId', $user->getId());
+
         }
-        //get the domain
-        $domain = $this->getDomain($id);
+        // persist the tag object
+        foreach($domain->getTags() as $tag) {
+            $this->getDoctrine()->getEntityManager()->persist($tag);
+        }
+        //persit the wine region object
         $this->getDoctrine()->getEntityManager()->persist($domain->getWineRegion());
 
         //create the form
@@ -214,7 +231,6 @@ class DomainController extends Controller
             $domainForm->remove('tags');
         }
         $domainForm->handleRequest($request);
-
         //handle the domainForm submition
         if($domainForm->isSubmitted() && $domainForm->isValid()) {
                 $body = $request->request->get('domain');
@@ -301,7 +317,7 @@ class DomainController extends Controller
     public function getDomain($id) {
         $api = $this->container->get('winefing.api_controller');
         $serializer = $this->container->get('jms_serializer');
-        $response = $response = $api->get($this->get('_router')->generate('api_get_domain', array('id' => $id)));
+        $response = $api->get($this->get('_router')->generate('api_get_domain', array('id' => $id)));
         $domain = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Domain', 'json');
         return $domain;
     }

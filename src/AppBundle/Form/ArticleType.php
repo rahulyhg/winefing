@@ -45,15 +45,17 @@ class ArticleType extends AbstractType
             ->add('articleCategories', EntityType::class,  array(
                 'class' => 'WinefingApiBundle:ArticleCategory',
                 'choice_label' => 'title', 'multiple' =>true))
-            ->add('tags', EntityType::class,  array(
-                'class' => 'WinefingApiBundle:Tag',
-                'choice_label' => 'title', 'multiple' =>true));
+            ->add('tags', EntityType::class,  array('multiple'=>true,'class' => 'WinefingApiBundle:Tag','attr'=> array('class'=> 'selectpicker'),
+                'choice_label' => function ($tag) use ($options) {
+                    return $tag->getDisplayName($options['language']);
+                }))
         ;
     }
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
             'data_class' => 'Winefing\ApiBundle\Entity\Article',
+            'language'=>'fr'
         ));
     }
 }

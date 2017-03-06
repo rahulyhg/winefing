@@ -33,6 +33,7 @@ use Winefing\ApiBundle\Entity\ArticleCategoryTr;
 use Winefing\ApiBundle\Entity\ArticleTr;
 use Winefing\ApiBundle\Entity\Box;
 use Winefing\ApiBundle\Entity\BoxTr;
+use JMS\Serializer\SerializationContext;
 
 
 class BoxController extends Controller
@@ -43,10 +44,20 @@ class BoxController extends Controller
      */
     public function cgetAction(Request $request) {
         $api = $this->container->get('winefing.api_controller');
-        $serializer = $this->container->get('winefing.serializer_controller');
+        $serializer = $this->container->get('jms_serializer');
         $response = $api->get($this->get('router')->generate('api_get_boxes_by_language', array('language' => $request->getLocale())));
-        $boxes = $serializer->decode($response->getBody()->getContents());
+        $boxes = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\Box>', 'json');
         return $this->render('user/box/index.html.twig', array("boxes" => $boxes));
+    }
+    /**
+     * @Route("/box/{id}", name="box")
+     */
+    public function getAction($id, Request $request) {
+        $api = $this->container->get('winefing.api_controller');
+        $serializer = $this->container->get('jms_serializer');
+        $response = $api->get($this->get('router')->generate('api_get_box', array('language' => $request->getLocale(), 'id'=>$id)));
+        $box = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Box', 'json');
+        return $this->render('user/box/card.html.twig', array("box" => $box));
     }
 
     /**
@@ -74,7 +85,7 @@ class BoxController extends Controller
     }
 
     /**
-     * @Route("/box/new", name="box_new")
+     * @Route("/admin/box/new", name="box_new")
      */
     public function newAction(Request $request) {
         $box = new Box();
@@ -93,21 +104,44 @@ class BoxController extends Controller
             $body['id'] = $boxId;
             $body['boxTrs'] = $request->request->get('box')['boxTrs'];
             $this->submitBoxTrs($body);
-            $this->postMedias($boxId, $request->files->get('box')['medias']);
-            return $this->redirectToRoute('boxes_admin');
         }
         return $this->render('admin/box/form.html.twig', array(
             'boxForm' => $boxForm->createView()
         ));
     }
     /**
+     * @Route("/box/{id}/upload/picture", name="box_upload_picture")
+     */
+    public function boxUploadPicture($id, Request $request) {
+        $media = array();
+        $logger = $this->get('logger');
+        $logger->info($request->files->get('file'));
+        ($request->files->get('file'));
+        $media['media'] = $request->files->get('file');
+        $media["box"] = $id;
+        return new Response($this->submitPictures($media));
+    }
+    /**
+     * @Route("/box/delete/picture/{id}", name="box_delete_picture")
+     */
+    public function domainDeletePicture($id) {
+        $api = $this->container->get('winefing.api_controller');
+        $api->delete($this->get('router')->generate('api_delete_media', array('id'=>$id, "directoryUpload"=>"box_directory_upload")));
+        return new Response();
+    }
+    /**
      * @Route("/box/edit/{id}", name="box_edit")
      */
     public function editAction($id, Request $request) {
+        $api = $this->container->get('winefing.api_controller');
+        $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Box');
         $box = $repository->findOneById($id);
 
         $languagesId = array();
+        foreach ($box->getBoxTrs() as $tr) {
+            $languagesId[] = $tr->getLanguage()->getId();
+        }
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
         $missingLanguages = $repository->findMissingLanguages($languagesId);
         foreach($missingLanguages as $language) {
@@ -118,21 +152,18 @@ class BoxController extends Controller
         $boxForm = $this->createForm(BoxType::class, $box);
         $boxForm->handleRequest($request);
         if($boxForm->isSubmitted() && $boxForm->isValid()) {
-            $boxId = $this->postBox($request->request->get('box'));
+            $boxId = $this->postBox($api, $serializer, $request->request->get('box'));
             $body = array();
             $body['id'] = $boxId;
             $body['boxTrs'] = $request->request->get('box')['boxTrs'];
             $this->submitBoxTrs($body);
-            $this->postMedias($boxId, $request->files->get('box')['medias']);
             return $this->redirectToRoute('boxes_admin');
         }
         return $this->render('admin/box/form.html.twig', array(
-            'boxForm' => $boxForm->createView()
+            'boxForm' => $boxForm->createView(), 'medias'=>$serializer->serialize($box->getMedias(), 'json',SerializationContext::create()->setGroups(array('default')))
         ));
     }
-    public function postBox($box) {
-        $api = $this->container->get('winefing.api_controller');
-        $serializer = $this->container->get('jms_serializer');
+    public function postBox($api, $serializer, $box) {
         $body["price"] = $box['price'];
         $response = $api->post($this->get('router')->generate('api_post_box'), $body);
         $box = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Box', "json");
@@ -184,4 +215,19 @@ class BoxController extends Controller
             ->add('success', "The box is well deleted.");
         return $this->redirectToRoute('boxes_admin');
     }
+
+    public function submitPictures($media)
+    {
+        $api = $this->container->get('winefing.api_controller');
+        $serializer = $this->container->get('jms_serializer');
+        $body["box"] = $media["box"];
+        $uploadDirectory["upload_directory"] = $this->getParameter('box_directory_upload');
+        $response = $api->file($this->get('router')->generate('api_post_media'), $uploadDirectory, $media['media']);
+        $jsonResponse = $response->getBody()->getContents();
+        $media = $serializer->deserialize($jsonResponse, 'Winefing\ApiBundle\Entity\Media', "json");
+        $body["media"] = $media->getId();
+        $api->patch($this->get('router')->generate('api_patch_media_box'), $body);
+        return $jsonResponse;
+    }
+
 }

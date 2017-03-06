@@ -40,7 +40,7 @@ class DomainFilterType extends AbstractType
                 'class' => 'WinefingApiBundle:WineRegion',
                 'multiple'=>"true",
                 'required'=>false,
-                'attr'=> array('class'=> 'selectpicker','data-dropup-auto'=>"false"),
+                'attr'=> array('title'=>"label.select", 'class'=> 'selectpicker','data-dropup-auto'=>"false"),
                 'placeholder'=>'',
                 'query_builder' => function (WineRegionRepository $er) {
                     return $er->createQueryBuilder('wineRegion')
@@ -56,7 +56,7 @@ class DomainFilterType extends AbstractType
                 'class' => 'WinefingApiBundle:Tag',
                 'required'=>false,
                 'multiple'=>"true",
-                'attr'=> array('required'=>'false','class'=> 'selectpicker','data-dropup-auto'=>"false"),
+                'attr'=> array('title'=>"label.select",'class'=> 'selectpicker','data-dropup-auto'=>"false"),
                 'placeholder'=>'',
                 'query_builder' => function (TagRepository $er) {
                     return $er->createQueryBuilder('tag')

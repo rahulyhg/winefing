@@ -1,8 +1,8 @@
 <?php
 
 namespace Winefing\ApiBundle\Repository;
-use Winefing\ApiBundle\Entity\Article;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 
 
 /**
@@ -21,5 +21,49 @@ class ArticleRepository extends EntityRepository
             ->getQuery();
         $users = $query->getResult();
         return $users;
+    }
+
+    function findSimilar($article, $articleCategory) {
+        $query = $this->createQueryBuilder('article')
+            ->join("article.articleCategories", "articleCategory")
+            ->where('article.id != :articleId and articleCategory.id = :articleCategory')
+            ->setParameter('articleId', $article)
+            ->setParameter('articleCategory', $articleCategory)
+            ->setMaxResults(3)
+            ->getQuery();
+        $users = $query->getResult();
+        return $users;
+    }
+    function findWithParams($maxperpage, $language, $params) {
+        $queryBuilder = $this->createQueryBuilder('article')
+            ->join("article.articleTrs", "tr")
+            ->join("tr.language", "language")
+            ->where('language.code = :language and tr.activated = 1')
+            ->setParameter('language', $language)
+            ->orderBy('tr.id', 'ASC');
+        if(array_key_exists('tag',$params)) {
+            $queryBuilder
+                ->join("article.tags", "tag")
+                ->andWhere("tag.id = :tag")
+                ->setParameter('tag', $params['tag']);
+        }
+        if(array_key_exists("user", $params)) {
+            $queryBuilder
+                ->join("article.user", "user")
+                ->andWhere("user.id = :user")
+                ->setParameter('user', $params['user']);
+
+        }
+        if(array_key_exists("articleCategory", $params)) {
+            $queryBuilder
+                ->join("article.articleCategories", "articleCategory")
+                ->andWhere("articleCategory.id = :articleCategory")
+                ->setParameter('articleCategory', $params['articleCategory']);
+        }
+        //set the pagination
+        $queryBuilder
+            ->setFirstResult(($params['page']-1) * $maxperpage)
+            ->setMaxResults($maxperpage);
+        return new Paginator($queryBuilder);
     }
 }

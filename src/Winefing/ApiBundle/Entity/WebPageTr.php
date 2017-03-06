@@ -59,7 +59,7 @@ class WebPageTr
      * @ORM\Column(name="activated", type="boolean")
      * @Groups({"default"})
      */
-    private $activated;
+    private $activated = 1;
 
 
     /**
