@@ -52,7 +52,7 @@
                                 {% endif %}
                             {% endfor %}
                         </li>
-                        <li>Posted {{ article.created|date('D, d F Y', "Europe/Paris") }}</li>
+                        <li>Posted {{ article.created|localizeddate("full", "none") }}</li>
                     </ul>
                     <h2>{{ article.title }}</h2>
                     {{ article.content|raw }}
@@ -130,11 +130,11 @@
                         <div class="news-v2-badge">
                             <img width="100%" class="img-responsive" src="{{ article_directory ~ articleSimilar.picture }}" alt="{{ articleSimilar.title }}">
                             <p>
-                                <small>{{ articleSimilar.created|date('D, d F Y') }}</small>
+                                <small>{{ articleSimilar.created|localizeddate("full", "none") }}</small>
                             </p>
                         </div>
                         <div class="news-v2-desc">
-                            <h3><a href="{{ path('article', {'id': article.id}) }}">{{ articleSimilar.title }}</a></h3>
+                            <h3><a href="{{ path('article', {'id': articleSimilar.id}) }}">{{ articleSimilar.title }}</a></h3>
                             <small>{{ 'label.by'|trans ~ ' '~articleSimilar.user.fullName ~'|'~'label.in'|trans() }}
                                 {% for articleCategory in articleSimilar.articleCategories %}
                                     <a href="{{ path('articles', {'article_filter':{'articleCategory': articleCategory.id}}) }}">{{ articleCategory.name }}</a>

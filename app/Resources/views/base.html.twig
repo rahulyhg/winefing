@@ -119,89 +119,96 @@
         {% block footer %}
             {{ include('footer.html.twig') }}
         {% endblock %}
-        {% if is_granted('IS_AUTHENTICATED_ANONYMOUSLY') %}
-            <!-- begin:modal-signin -->
-            <div class="modal fade" id="login" tabindex="-1" role="dialog" aria-labelledby="modal-signin" aria-hidden="true">
-                <div class="modal-dialog modal-sm">
-                    <div class="modal-content">
-                        <form method="post" action="{{ path('login') }}">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                                <h4 class="modal-title">{% trans %}label.sign_in{% endtrans %}</h4>
-                            </div>
-                            <div class="modal-body">
-                                <div class="form-group">
-                                    <label>{% trans %}label.email{% endtrans %}</label>
-                                    <input type="email" id="username" name="_username" class="form-control"/>
+        {% block modal %}
+            {% if is_granted('IS_AUTHENTICATED_ANONYMOUSLY') %}
+                <!-- begin:modal-signin -->
+                <div class="modal fade" id="login" tabindex="-1" role="dialog" aria-labelledby="modal-signin" aria-hidden="true">
+                    <div class="modal-dialog modal-sm">
+                        <div class="modal-content">
+                            <form method="post" action="{{ path('login') }}">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                    <h4 class="modal-title">{% trans %}label.sign_in{% endtrans %}</h4>
                                 </div>
-                                <div class="form-group">
-                                    <label>{% trans %}label.password{% endtrans %}</label>
-                                    <input type="password" id="password" name="_password" class="form-control"/>
-                                </div>
-                                <div class="checkbox">
-                                    <label>
-                                        <input type="checkbox" id="remember_me" name="_remember_me" checked> {% trans %}label.keep_me_logged_in{% endtrans %}
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <p>
-                                    <a data-toggle="modal" data-target="#modal-email">{{ 'question.forgotten_password'|trans() }}</a>
-                                    <br>
-                                    {% trans %}question.not_acccount{% endtrans %}<a href="#modal-signup"  data-toggle="modal" data-target="#modal-signup">{% trans %}label.sign_up_here{% endtrans %}</a></p>
-                                <input type="submit" class="btn btn-danger btn-block btn-lg" value="{{ 'label.validate'|trans() }}">
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            <!-- end:modal-signin -->
-
-            <!-- begin:modal-signup -->
-            <div class="modal fade" id="modal-signup" tabindex="-1" role="dialog" aria-labelledby="modal-signup" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h4 class="modal-title">{% trans %}label.registration{% endtrans %}</h4>
-                        </div>
-                        <div class="modal-body">
-                            <p class="text-center">{{ 'label.you_are'|trans() }}</p>
-                            <a href="{{ path('registration_host') }}" class="btn btn-primary btn-wine-owner btn-lg" style="width: 100%">{{ 'label.host'|trans()|upper }}</a>
-                            <br><br>
-                            <a  href="{{ path('registration') }}" class="btn btn-primary btn-lg" style="width: 100%">WINE LOVER</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% set currentPath = path(app.request.attributes.get('_route'),
-            app.request.attributes.get('_route_params')) %}
-            <!-- begin:modal-email-forgotten -->
-            <div class="modal fade" id="modal-email" tabindex="-1" role="dialog" aria-labelledby="modal-signup" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h4 class="modal-title">{% trans %}label.resetting_password{% endtrans %}</h4>
-                        </div>
-                        <form method="post" action="{{ path('reset_password', {'url': currentPath}) }}">
-                            <div class="modal-body">
-                                <p>{{ 'text.resetting_password'|trans() }}</p>
-                                <div class="form-group">
-                                    <div class="input-group">
-                                        <span class="input-group-addon">@</span>
-                                        <input name="email"type="email" class="form-control">
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label>{% trans %}label.email{% endtrans %}</label>
+                                        <input type="email" id="username" name="_username" class="form-control"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>{% trans %}label.password{% endtrans %}</label>
+                                        <input type="password" id="password" name="_password" class="form-control"/>
+                                    </div>
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" id="remember_me" name="_remember_me" checked> {% trans %}label.keep_me_logged_in{% endtrans %}
+                                        </label>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="submit" class="pull-left btn btn-primary">{{ 'label.send_resetting_password'|trans() }}</button>
-                            </div>
-                        </form>
+                                <div class="modal-footer">
+                                    <p>
+                                        <a data-toggle="modal" data-target="#modal-email">{{ 'question.forgotten_password'|trans() }}</a>
+                                        <br>
+                                        {% trans %}question.not_acccount{% endtrans %}<a href="#modal-signup"  data-toggle="modal" data-target="#modal-signup">{% trans %}label.sign_up_here{% endtrans %}</a></p>
+                                    <input type="submit" class="btn btn-danger btn-block btn-lg" value="{{ 'label.validate'|trans() }}">
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
-            </div>
-        {% endif %}
+                <!-- end:modal-signin -->
+
+                <!-- begin:modal-signup -->
+                <div class="modal fade" id="modal-signup" tabindex="-1" role="dialog" aria-labelledby="modal-signup" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 class="modal-title">{% trans %}label.registration{% endtrans %}</h4>
+                            </div>
+                            <div class="modal-body">
+                                <p class="text-center">{{ 'label.you_are'|trans() }}</p>
+                                <a href="{{ path('registration_host') }}" class="btn btn-success btn-lg" style="width: 100%">{{ 'label.host'|trans()|upper }}</a>
+                                <br><br>
+                                <a  href="{{ path('registration') }}" class="btn btn-primary btn-lg" style="width: 100%">WINE LOVER</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% set currentPath = path(app.request.attributes.get('_route'),
+                app.request.attributes.get('_route_params')) %}
+                <!-- begin:modal-email-forgotten -->
+                <div class="modal fade" id="modal-email" tabindex="-1" role="dialog" aria-labelledby="modal-signup" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 class="modal-title">{% trans %}label.resetting_password{% endtrans %}</h4>
+                            </div>
+                            <form method="post" action="{{ path('reset_password', {'url': currentPath}) }}">
+                                <div class="modal-body">
+                                    <p>{{ 'text.resetting_password'|trans() }}</p>
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <span class="input-group-addon">@</span>
+                                            <input name="email"type="email" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" class="pull-left btn btn-primary">{{ 'label.send_resetting_password'|trans() }}</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endblock %}
+        <iframe name="print_frame" width="0" height="0" frameborder="0" src="about:blank">
+
+
+        </iframe>
+
         <div id="endBody">
 
         </div>

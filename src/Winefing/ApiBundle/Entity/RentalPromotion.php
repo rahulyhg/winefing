@@ -51,6 +51,7 @@ class RentalPromotion
 
     /**
      * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Rental", inversedBy="rentalPromotions", fetch="EXTRA_LAZY", cascade={"persist", "merge", "detach"})
+     * @Groups({"rentals"})
      */
     private $rentals;
 

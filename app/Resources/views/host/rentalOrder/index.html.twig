@@ -8,10 +8,10 @@
                     {% trans %}label.first_name{% endtrans %}
                 </th>
                 <th>
-                    {% trans %}label.rental{% endtrans %}
+                    {{ 'label.rental'|transchoice(1)|capitalize }}
                 </th>
                 <th>
-                    {% trans %}label.date{% endtrans %}
+                    {{ 'label.date'|transchoice(1) }}
                 </th>
                 <th>
                     {% trans %}label.amount{% endtrans %}
@@ -48,10 +48,11 @@
                         {{ rentalOrder.amount ~' €' }}
                     </td>
                     <td>
-                        {% if rentalOrder.status ==  order_refuse %}
+                        {% set status == rentalOrder.status %}
+                        {% if status ==  order_refused %}
                             {% set label = 'label.refused' %}
                             {% set class = 'label-danger' %}
-                        {% elseif rentalOrder.status ==  order_cancel %}
+                        {% elseif status ==  order_cancel %}
                             {% set label = 'label.canceled' %}
                             {% set class = 'label-danger' %}
                         {% elseif rentalOrder.startDate <= date() and rentalOrder.endDate >= date() %}
@@ -60,29 +61,29 @@
                         {% elseif rentalOrder.endDate < date() %}
                             {% set label = 'label.over' %}
                             {% set class = 'label-info' %}
-                        {% elseif rentalOrder.status ==  order_validate %}
+                        {% elseif status ==  order_validate %}
                             {% set label = 'label.validated' %}
                             {% set class = 'label-success' %}
-                        {% elseif rentalOrder.status ==  order_pay %}
+                        {% elseif status ==  order_pay %}
                             {% set label = 'label.validated' %}
                             {% set class = 'label-success' %}
-                        {% elseif rentalOrder.status ==  order_initiate %}
+                        {% elseif status ==  order_initiate %}
                             {% set label = 'label.waiting_validation' %}
                             {% set class = 'label-warning' %}
                         {% endif %}
                         <span class="label {{ class }}">{{ label|trans() }}</span>
                     </td>
                     <td>
-                        {% if rentalOrder.status != order_refuse and rentalOrder.status != order_cancel %}
+                        {% if status != order_refused and status != order_cancel %}
                             {% if rentalOrder.endDate < date() %}
                                 <a href="{{ path('rental_order_bill', {'id' : rentalOrder.id}) }}">
                                     <input class="btn btn-primary" value="{% trans %}label.bill{% endtrans %}">
                                 </a>
-                            {% elseif rentalOrder.status ==  order_initiate and rentalOrder.endDate > date() %}
+                            {% elseif status ==  order_initiate and rentalOrder.endDate > date() %}
                                 <a href="{{ path('rental_order_status', {'id' : rentalOrder.id, 'status' : order_validate}) }}">
                                     <input style="width: 100px" class="btn btn-sm btn-success" value="{{ 'label.validate'|trans() }}">
                                 </a>
-                                <a href="{{ path('rental_order_status', {'id' : rentalOrder.id, 'status' : order_refuse}) }}">
+                                <a href="{{ path('rental_order_status', {'id' : rentalOrder.id, 'status' : order_refused}) }}">
                                     <input style="width: 100px" class="btn btn-sm btn-danger" value="{{ 'label.refuse'|trans() }}">
                                 </a>
                             {% endif %}

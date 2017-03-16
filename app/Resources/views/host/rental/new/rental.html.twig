@@ -23,7 +23,7 @@
         <br>
         <div class="form-group">
             <label>
-                *{% trans %}label.price{% endtrans %}/{% trans %}label.night{% endtrans %}
+                *{% trans %}label.price{% endtrans %}/{{ 'label.night'|transchoice(1) }}
                 <a href="#" data-toggle="tooltip" data-placement="right" title="{% trans %}help.rental_price{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
             </label>
             {{ form_errors(rentalForm.price,  { 'attr': {'class': 'form-control'} }) }}
@@ -59,4 +59,16 @@
         </div>
         <button type="submit" class="btn btn-primary btn-lg pull-right" type="button" >{% trans %}label.next{% endtrans %}</button>
     {{ form_end(rentalForm) }}
+{% endblock %}
+{% block script %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function() {
+            //remplace char by space in price input
+            $("#rental_price").keydown(function (e) {
+                // Allow: backspace, delete, tab, escape, enter and .
+                replaceChar(e);
+            });
+        })
+    </script>
 {% endblock %}

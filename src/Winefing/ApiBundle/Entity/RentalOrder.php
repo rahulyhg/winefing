@@ -27,28 +27,6 @@ class RentalOrder
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\User", inversedBy="rentalOrders")
-     * @ORM\JoinColumn(nullable=false)
-     * @Groups({"user"})
-     */
-    private $user;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="billDate", type="date")
-     * @Groups({"default"})
-     */
-    private $billDate;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Address", cascade="ALL")
-     * @ORM\JoinColumn(nullable=false)
-     * @Groups({"billingAddress"})
-     */
-    private $billingAddress;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="rentalName", type="string", length=255)
@@ -74,18 +52,9 @@ class RentalOrder
     private $domainName;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="billingName", type="string", length=255)
-     * @Groups({"default"})
-     */
-    private $billingName;
-
-
-    /**
      * @var Rental
      * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Rental", inversedBy="rentalOrders", fetch="EXTRA_LAZY")
-     * @Groups({"rental"})
+     * @Groups({"default"})
      */
     private $rental;
 
@@ -99,7 +68,7 @@ class RentalOrder
     /**
      * @ORM\OneToOne(targetEntity="Winefing\ApiBundle\Entity\RentalOrderGift", inversedBy="rentalOrder", cascade="ALL")
      * @ORM\JoinColumn(nullable=true)
-     * @Groups({"rentalOrderGift"})
+     * @Groups({"default"})
      */
     private $rentalOrderGift;
 
@@ -130,10 +99,26 @@ class RentalOrder
     /**
      * @var float
      *
+     * @ORM\Column(name="total", type="float")
+     * @Groups({"default"})
+     */
+    private $total;
+
+    /**
+     * @var float
+     *
      * @ORM\Column(name="averagePrice", type="float")
      * @Groups({"default"})
      */
     private $averagePrice;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="leftToPay", type="float")
+     * @Groups({"default"})
+     */
+    private $leftToPay;
 
     /**
      * @var float
@@ -152,165 +137,12 @@ class RentalOrder
     private $hostComission;
 
     /**
-     * @var float
-     *
-     * @ORM\Column(name="hostComissionPercentage", type="float")
-     * @Groups({"default"})
-     */
-    private $hostComissionPercentage;
-
-    /**
      * @var int
      *
      * @ORM\Column(name="dayNumber", type="integer")
      * @Groups({"default"})
      */
     private $dayNumber;
-
-    /**
-     * @var float
-     *
-     * @ORM\Column(name="totalHT", type="float")
-     * @Groups({"default"})
-     */
-    private $totalHT;
-
-    /**
-     * @var float
-     *
-     * @ORM\Column(name="totalTTC", type="float")
-     * @Groups({"default"})
-     */
-    private $totalTTC;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="status", type="integer")
-     * @Groups({"default"})
-     */
-    private $status = 0;
-
-    /**
-     * @var float
-     *
-     * @ORM\Column(name="reduction", type="float", nullable=true)
-     * @Groups({"default"})
-     */
-    private $reduction;
-
-    /**
-     * @var float
-     *
-     * @ORM\Column(name="lemonWayTransactionId", type="float", nullable=true)
-     * @Groups({"default"})
-     */
-    private $lemonWayTransactionId;
-
-    /**
-     * @var float
-     *
-     * @ORM\Column(name="lemonWayComission", type="float", nullable=true)
-     * @Groups({"default"})
-     */
-    private $lemonWayComission;
-
-    /**
-     * @var float
-     *
-     * @ORM\Column(name="totalTax", type="float")
-     * @Groups({"default"})
-     */
-    private $totalTax;
-
-    /**
-     * @var float
-     *
-     * @ORM\Column(name="tax", type="float")
-     * @Groups({"default"})
-     */
-    private $tax = 20.00;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="companyName", type="string", length=255)
-     * @Groups({"default"})
-     */
-    private $companyName ='Winefing SAS';
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="rcs", type="string", length=255)
-     * @Groups({"default"})
-     */
-    private $rcs = '819 785 577';
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="siren", type="string", length=255)
-     * @Groups({"default"})
-     */
-    private $siren = '819 785 577';
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="siret", type="string", length=255)
-     * @Groups({"default"})
-     */
-    private $siret = '819 785 577 00019';
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="rcsCity", type="string", length=255)
-     * @Groups({"default"})
-     */
-    private $rcsCity = 'Bordeaux';
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="legalForm", type="string", length=255)
-     * @Groups({"default"})
-     */
-    private $legalForm = 'SAS';
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="streetWinefing", type="string", length=255)
-     * @Groups({"default"})
-     */
-    private $streetWinefing = '6 rue de la Porte de Basse';
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="postalCodeWinefing", type="string", length=255)
-     * @Groups({"default"})
-     */
-    private $postalCodeWinefing = '33000';
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="cityWinefing", type="string", length=255)
-     * @Groups({"default"})
-     */
-    private $cityWinefing = 'Bordeaux';
-
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="tvaNumber", type="string", length=255)
-     * @Groups({"default"})
-     */
-    private $tvaNumber = '22819785577';
 
     /**
      * @var string
@@ -322,53 +154,56 @@ class RentalOrder
 
     /**
      * @ORM\OneToOne(targetEntity="Winefing\ApiBundle\Entity\Address", cascade="ALL")
-     * @ORM\JoinColumn(nullable=true)
-     * @Groups({"hostCompanyAddress"})
+     * @ORM\JoinColumn(nullable=false)
+     * @Groups({"default"})
      */
     private $hostCompanyAddress;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\InvoiceInformation", cascade="ALL")
+     * @ORM\JoinColumn(nullable=false)
+     * @Groups({"default"})
+     */
+    private $invoiceInformation;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Invoice", cascade="ALL")
+     * @ORM\JoinColumn(nullable=false)
+     * @Groups({"default"})
+     */
+    private $invoiceClient;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Invoice", cascade="ALL")
+     * @ORM\JoinColumn(nullable=false)
+     * @Groups({"default"})
+     */
+    private $invoiceHost;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\LemonWay", cascade="ALL")
+     * @ORM\JoinColumn(nullable=true)
+     * @Groups({"default"})
+     */
+    private $lemonWay;
+
+    /**
+     * @var
+     * @Groups({"default"})
+     * @Type("integer")
+     */
+    private $domainId;
 
 
     public function __construct()
     {
         $this->dayPrices = new ArrayCollection();
+        $this->invoiceInformation = new InvoiceInformation();
     }
 
     public function __clone()
     {
         // TODO: Implement __clone() method.
-    }
-
-    /**
-     * @return string
-     */
-    public function getCityWinefing()
-    {
-        return $this->cityWinefing;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getBillingAddress()
-    {
-        return $this->billingAddress;
-    }
-
-    /**
-     * @param mixed $billingAddress
-     */
-    public function setBillingAddress($billingAddress)
-    {
-        $this->billingAddress = $billingAddress;
-    }
-
-    /**
-     * @return string
-     */
-    public function getBillingName()
-    {
-        return $this->billingName;
     }
 
     /**
@@ -378,9 +213,6 @@ class RentalOrder
     {
         $this->billingName = $billingName;
     }
-
-
-
 
     /**
      * Get id
@@ -521,22 +353,6 @@ class RentalOrder
     }
 
     /**
-     * @return float
-     */
-    public function getLemonWayComission()
-    {
-        return $this->lemonWayComission;
-    }
-
-    /**
-     * @param float $lemonWayComission
-     */
-    public function setLemonWayComission($lemonWayComission)
-    {
-        $this->lemonWayComission = $lemonWayComission;
-    }
-
-    /**
      * Set dayNumber
      *
      * @param integer $dayNumber
@@ -559,21 +375,7 @@ class RentalOrder
     {
         return $this->dayNumber;
     }
-    /**
-     * @return int
-     */
-    public function getStatus()
-    {
-        return $this->status;
-    }
 
-    /**
-     * @param int $status
-     */
-    public function setStatus($status)
-    {
-        $this->status = $status;
-    }
 
     /**
      * @return dayPrices
@@ -598,273 +400,17 @@ class RentalOrder
     /**
      * @return float
      */
-    public function getTotalHT()
+    public function getTotal()
     {
-        return $this->totalHT;
+        return $this->total;
     }
 
     /**
-     * @param float $totalHT
+     * @param float $total
      */
-    public function setTotalHT($totalHT)
+    public function setTotal($total)
     {
-        $this->totalHT = $totalHT;
-    }
-
-    /**
-     * @return float
-     */
-    public function getTotalTTC()
-    {
-        return $this->totalTTC;
-    }
-
-    /**
-     * @param float $totalTTC
-     */
-    public function setTotalTTC($totalTTC)
-    {
-        $this->totalTTC = $totalTTC;
-    }
-
-    /**
-     * @return float
-     */
-    public function getReduction()
-    {
-        return $this->reduction;
-    }
-
-    /**
-     * @param float $reduction
-     */
-    public function setReduction($reduction)
-    {
-        $this->reduction = $reduction;
-    }
-
-    /**
-     * @return float
-     */
-    public function getTotalTax()
-    {
-        return $this->totalTax;
-    }
-
-    /**
-     * @param float $totalTax
-     */
-    public function setTotalTax($totalTax)
-    {
-        $this->totalTax = $totalTax;
-    }
-
-    /**
-     * @return float
-     */
-    public function getTax()
-    {
-        return $this->tax;
-    }
-
-    /**
-     * @param float $tax
-     */
-    public function setTax($tax)
-    {
-        $this->tax = $tax;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCompanyName()
-    {
-        return $this->companyName;
-    }
-
-    /**
-     * @param string $companyName
-     */
-    public function setCompanyName($companyName)
-    {
-        $this->companyName = $companyName;
-    }
-
-    /**
-     * @return string
-     */
-    public function getRcs()
-    {
-        return $this->rcs;
-    }
-
-    /**
-     * @param string $rcs
-     */
-    public function setRcs($rcs)
-    {
-        $this->rcs = $rcs;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSiren()
-    {
-        return $this->siren;
-    }
-
-    /**
-     * @param string $siren
-     */
-    public function setSiren($siren)
-    {
-        $this->siren = $siren;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSiret()
-    {
-        return $this->siret;
-    }
-
-    /**
-     * @param string $siret
-     */
-    public function setSiret($siret)
-    {
-        $this->siret = $siret;
-    }
-
-    /**
-     * @return string
-     */
-    public function getRcsCity()
-    {
-        return $this->rcsCity;
-    }
-
-    /**
-     * @param string $rcsCity
-     */
-    public function setRcsCity($rcsCity)
-    {
-        $this->rcsCity = $rcsCity;
-    }
-
-    /**
-     * @return string
-     */
-    public function getLegalForm()
-    {
-        return $this->legalForm;
-    }
-
-    /**
-     * @param string $legalForm
-     */
-    public function setLegalForm($legalForm)
-    {
-        $this->legalForm = $legalForm;
-    }
-
-    /**
-     * @return string
-     */
-    public function getStreetWinefing()
-    {
-        return $this->streetWinefing;
-    }
-
-    /**
-     * @param string $streetWinefing
-     */
-    public function setStreetWinefing($streetWinefing)
-    {
-        $this->streetWinefing = $streetWinefing;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPostalCodeWinefing()
-    {
-        return $this->postalCodeWinefing;
-    }
-
-    /**
-     * @param string $postalCodeWinefing
-     */
-    public function setPostalCodeWinefing($postalCodeWinefing)
-    {
-        $this->postalCodeWinefing = $postalCodeWinefing;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTvaNumber()
-    {
-        return $this->tvaNumber;
-    }
-
-    /**
-     * @param string $tvaNumber
-     */
-    public function setTvaNumber($tvaNumber)
-    {
-        $this->tvaNumber = $tvaNumber;
-    }
-
-    /**
-     * @return float
-     */
-    public function getAmount()
-    {
-        return $this->amount;
-    }
-
-    /**
-     * @param float $amount
-     */
-    public function setAmount($amount)
-    {
-        $this->amount = $amount;
-    }
-
-    /**
-     * @return string
-     */
-    public function getBillDate()
-    {
-        return $this->billDate;
-    }
-
-    /**
-     * @param string $billDate
-     */
-    public function setBillDate($billDate)
-    {
-        $this->billDate = $billDate;
-    }
-
-    /**
-     * @return float
-     */
-    public function getLemonWayTransactionId()
-    {
-        return $this->lemonWayTransactionId;
-    }
-
-    /**
-     * @param float $lemonWayTransactionId
-     */
-    public function setLemonWayTransactionId($lemonWayTransactionId)
-    {
-        $this->lemonWayTransactionId = $lemonWayTransactionId;
+        $this->total = $total;
     }
 
     /**
@@ -881,38 +427,6 @@ class RentalOrder
     public function setRentalOrderGift($rentalOrderGift)
     {
         $this->rentalOrderGift = $rentalOrderGift;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getUser()
-    {
-        return $this->user;
-    }
-
-    /**
-     * @param mixed $user
-     */
-    public function setUser($user)
-    {
-        $this->user = $user;
-    }
-
-    /**
-     * @return float
-     */
-    public function getHostComissionPercentage()
-    {
-        return $this->hostComissionPercentage;
-    }
-
-    /**
-     * @param float $hostComissionPercentage
-     */
-    public function setHostComissionPercentage($hostComissionPercentage)
-    {
-        $this->hostComissionPercentage = $hostComissionPercentage;
     }
 
     /**
@@ -994,5 +508,117 @@ class RentalOrder
     {
         $this->domainName = $domainName;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getInvoiceInformation()
+    {
+        return $this->invoiceInformation;
+    }
+
+    /**
+     * @param mixed $invoiceInformation
+     */
+    public function setInvoiceInformation($invoiceInformation)
+    {
+        $this->invoiceInformation = $invoiceInformation;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getInvoiceClient()
+    {
+        return $this->invoiceClient;
+    }
+
+    /**
+     * @param mixed $invoiceClient
+     */
+    public function setInvoiceClient($invoiceClient)
+    {
+        $this->invoiceClient = $invoiceClient;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getInvoiceHost()
+    {
+        return $this->invoiceHost;
+    }
+
+    /**
+     * @param mixed $invoiceHost
+     */
+    public function setInvoiceHost($invoiceHost)
+    {
+        $this->invoiceHost = $invoiceHost;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLemonWay()
+    {
+        return $this->lemonWay;
+    }
+
+    /**
+     * @param mixed $lemonWay
+     */
+    public function setLemonWay($lemonWay)
+    {
+        $this->lemonWay = $lemonWay;
+    }
+
+    /**
+     * @return float
+     */
+    public function getLeftToPay()
+    {
+        return $this->leftToPay;
+    }
+
+    /**
+     * @param float $leftToPay
+     */
+    public function setLeftToPay($leftToPay)
+    {
+        $this->leftToPay = $leftToPay;
+    }
+
+
+
+    /**
+     * @return float
+     */
+    public function getAmount()
+    {
+        return $this->amount;
+    }
+
+    /**
+     * @param float $amount
+     */
+    public function setAmount($amount)
+    {
+        $this->amount = $amount;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDomainId()
+    {
+        return $this->domainId;
+    }
+
+
+    public function setDomainId() {
+        $this->domainId = $this->getRental()->getProperty()->getDomain()->getId();
+    }
+
 }
 

@@ -296,12 +296,11 @@ class PropertyController extends Controller implements ClassResourceInterface
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Property');
         $property = $repository->findOneById($id);
         $em = $this->getDoctrine()->getManager();
-        foreach($$property->getRentals() as $rental) {
-            if(!empty($rental->getOrders())) {
-                return new HttpException(422, "You can't delete this property because some rental has related order.");
-            }
+        if(count($property->getRentals()) > 0) {
+            $property->setActivated(0);
+        } else {
+            $em->remove($property);
         }
-        $em->remove($property);
         $em->flush();
     }
     /**

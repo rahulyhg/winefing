@@ -5,35 +5,14 @@
             <ul class="nav nav-pills nav-stacked" id="nav">
                 <li class="active"><a href="#presentation" data-toggle="tab"><i class="glyphicon glyphicon-home"></i> {% trans %}label.presentation{% endtrans %}</a></li>
                 <li><a href="#pictures" data-toggle="tab"><i class="glyphicon glyphicon-picture"></i> {% trans %}label.pictures{% endtrans %}</a></li>
-                <li><a href="#address" data-toggle="tab"><i class="glyphicon glyphicon-zoom-in"></i> {% trans %}label.address{% endtrans %}</a></li>
+                <li><a href="#nav-address" data-toggle="tab"><i class="glyphicon glyphicon-zoom-in"></i> {% trans %}label.address{% endtrans %}</a></li>
                 <li><a href="#informations" data-toggle="tab"><i class="glyphicon glyphicon-info-sign"></i> {% trans %}label.informations{% endtrans %}</a></li>
             </ul>
         </div>
         <div class="col-sm-9">
-            {% if app.session.flashBag.has('success') %}
-                <div class="alert alert-success">
-                    {% for msg in app.session.flashBag.get('success') %}
-                        {{ msg }}
-                    {% endfor %}
-                </div>
-            {% endif %}
-            {% if app.session.flashBag.has('error') %}
-                <div class="alert alert-danger">
-                    {% for msg in app.session.flashBag.get('error') %}
-                        {{ msg }}
-                    {% endfor %}
-                </div>
-            {% endif %}
             <div class="tab-content">
                 <div class="tab-pane fade in active" id="presentation">
                     {# start error - success message #}
-                    {% if app.session.flashBag.has('successPresentation') %}
-                        <div class="alert alert-success">
-                            {% for msg in app.session.flashBag.get('successPresentation') %}
-                                {{ msg }}
-                            {% endfor %}
-                        </div>
-                    {% endif %}
                     {% if app.session.flashBag.has('errorPresentation') %}
                         <div class="alert alert-danger">
                             {% for msg in app.session.flashBag.get('errorPresentation') %}
@@ -58,6 +37,21 @@
                                     {{ form_errors(domainForm.name) }}
                                     {{ form_widget(domainForm.name,  { 'attr': {'class': 'form-control'} }) }}
                                 </div>
+                                <br>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <a href="https://www.twil.fr/" target="_blank"><img src="{{ asset('twil.png') }}" width="100px"></a>
+                                    </div>
+                                    <div class="col-md-10">
+                                        <div class="form-group">
+                                            <label>{{ 'label.twil'|trans()|raw }}
+                                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans %}help.twil{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
+                                            </label>
+                                            {{ form_widget(domainForm.twil) }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <br>
                                 <div class="form-group {% if domainForm.description.vars.errors|length %}has-error{% endif %}">
                                     <label>*{% trans %}label.description{% endtrans %} </label>
                                     {{ form_errors(domainForm.description) }}
@@ -91,15 +85,7 @@
                     <div class="dropzone upload-drop-zone" id="my-dropzone-container">
                     </div>
                 </div>
-                <div class="tab-pane fade in" id="address">
-                    {# start error - success message #}
-                    {% if app.session.flashBag.has('successAddress') %}
-                        <div class="alert alert-success">
-                            {% for msg in app.session.flashBag.get('successAddress') %}
-                                {{ msg }}
-                            {% endfor %}
-                        </div>
-                    {% endif %}
+                <div class="tab-pane fade in" id="nav-address">
                     {% if app.session.flashBag.has('errorAddress') %}
                         <div class="alert alert-danger">
                             {% for msg in app.session.flashBag.get('errorAddress') %}
@@ -116,20 +102,12 @@
                             {{ form_start(addressForm, {'attr':{'id':'address'}}) }}
                                 {% include('address/form.html.twig') %}
                             {{ form_end(addressForm) }}
-                            <input type="button" onclick="disabledInputAddress();" value="{% trans %}label.submit{% endtrans %}"class="btn btn-primary pull-right">
-
+                            <input type="button" onclick="disabledInputAddress('address');" value="{% trans %}label.submit{% endtrans %}"class="btn btn-primary pull-right">
                         </div>
                     </div>
                 </div>
                 <div class="tab-pane fade in" id="informations">
                     {# start error - success message #}
-                    {% if app.session.flashBag.has('successInformations') %}
-                        <div class="alert alert-success">
-                            {% for msg in app.session.flashBag.get('successInformations') %}
-                                {{ msg }}
-                            {% endfor %}
-                        </div>
-                    {% endif %}
                     {% if app.session.flashBag.has('errorInformations') %}
                         <div class="alert alert-danger">
                             {% for msg in app.session.flashBag.get('errorInformations') %}

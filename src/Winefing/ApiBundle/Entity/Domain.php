@@ -122,6 +122,14 @@ class Domain
      */
     private $domainStatistic;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="twil", type="string", length=255, nullable=true)
+     * @Groups({"default"})
+     */
+    private $twil;
+
     public function __construct() {
         $this->medias = new ArrayCollection();
         $this->characteristicValues = new ArrayCollection();
@@ -428,6 +436,22 @@ class Domain
     public function setDomainStatistic($domainStatistic)
     {
         $this->domainStatistic = $domainStatistic;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTwil()
+    {
+        return $this->twil;
+    }
+
+    /**
+     * @param string $twil
+     */
+    public function setTwil($twil)
+    {
+        $this->twil = $twil;
     }
 }
 

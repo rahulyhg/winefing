@@ -13,6 +13,8 @@ use PaiementBundle\Entity\CreditCard;
 use PaiementBundle\Entity\Wallet;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Winefing\ApiBundle\Entity\BoxOrder;
+use Winefing\ApiBundle\Entity\RentalOrder;
 use Winefing\ApiBundle\Entity\User;
 use Doctrine\ORM\EntityManager;
 use JMS\Serializer\Serializer;
@@ -29,7 +31,7 @@ class LemonWayController
     protected $informations;
     protected $api;
     protected $router;
-    protected $winefingWalletId = "SC";
+    protected $winefingWalletId = "winefing";
 
     public function __construct(EntityManager $entityManager, Serializer $serializer, Api $api, Router $router){
         $this->em = $entityManager;
@@ -39,6 +41,43 @@ class LemonWayController
         $this->api = $api;
         $this->router = $router;
     }
+    public function sendPayment($user, $amount){
+        $client = new \Soapclient($this->directkit_ws."?wsdl");
+        $body = array();
+        $body['debitWallet'] = 'SC';
+        $body['creditWallet'] = $user->getId();
+        $body['amount'] = strval(number_format($amount));
+        $body['message'] = '';
+        $response = $client->SendPaiement(array_merge($this->informations, $body));
+        var_dump($response);
+        if(empty($response->SendPaymentResult->E)) {
+            var_dump($response->SendPaymentResult->MONEYIN->HPAY->STATUS);
+//            $this->newCreditCard($response->RegisterCardResult->CARD, $creditCardForm, $user);
+        } else {
+            switch ($response->SendPaymentResult->E->Code){
+                default :
+                    throw new \Exception($response->SendPaymentResult->E->Msg);
+            }
+        }
+
+    }
+    public function refundMoneyIn($transactionId, $amountToRefund) {
+        $client = new \Soapclient($this->directkit_ws."?wsdl");
+        $response = $client->RefundMoneyIn(array_merge($this->informations, array('transactionId'=>$transactionId, 'amountToRefound'=>$amountToRefund)));
+        var_dump($response);
+        if(empty($response->RefundMoneyInResult->E)) {
+            var_dump($response->RefundMoneyInResult->MONEYIN->HPAY->STATUS);
+//            $this->newCreditCard($response->RegisterCardResult->CARD, $creditCardForm, $user);
+        } else {
+            switch ($response->RefundMoneyInResult->E->Code){
+                default :
+                    throw new \Exception($response->RefundMoneyInResult->E->Msg);
+            }
+        }
+
+    }
+
+
     public function registerIban(User $user, &$ibanForm) {
         $client = new \Soapclient($this->directkit_ws."?wsdl");
         $iban = $ibanForm->getData();
@@ -57,6 +96,7 @@ class LemonWayController
     public function moneyInValidate($transactionId) {
         $client = new \Soapclient($this->directkit_ws."?wsdl");
         $response = $client->MoneyInValidate(array_merge($this->informations, array('transactionId'=>$transactionId)));
+        var_dump($response);
         if(empty($response->MoneyInValidateResult->E)) {
             var_dump($response->MoneyInValidateResult->MONEYIN->HPAY->STATUS);
 //            $this->newCreditCard($response->RegisterCardResult->CARD, $creditCardForm, $user);
@@ -68,22 +108,27 @@ class LemonWayController
         }
 
     }
-    public function moneyIn($user, $creditCardForm, $rentalOrder) {
+    public function moneyIn($user, $creditCardForm, $object) {
         $client = new \Soapclient($this->directkit_ws."?wsdl");
-        var_dump($rentalOrder->getTotalTTC());
-        $card['wallet'] = $user->getId();
-        $card['amountCom'] = strval(number_format($rentalOrder->getTotalTTC(), 2));
-        $card['amountTot'] = strval(number_format($rentalOrder->getTotalTTC(), 2));
-        $card['isPreAuth'] = 1;
-        $card['returnUrl'] = $this->router->generate('rental_paiement');
-
+        if($object instanceof RentalOrder) {
+            $rentalOrder = $object;
+            $card['wallet'] = $user->getId();
+            $card['amountCom'] = strval(number_format($rentalOrder->getLemonWay()->getAmountCom(), 2));
+            $card['amountTot'] = strval(number_format($rentalOrder->getLemonWay()->getAmountTot(), 2));
+            $card['isPreAuth'] = 1;
+        } elseif ($object instanceof BoxOrder) {
+            $boxOder = $object;
+            $card['wallet'] = $this->winefingWalletId;
+            $card['amountCom'] = strval(number_format($boxOder->getLemonWay()->getAmountCom(), 2));
+            $card['amountTot'] = strval(number_format($boxOder->getLemonWay()->getAmountTot(), 2));
+            $card['isPreAuth'] = 0;
+        }
         $this->setCard($card, $creditCardForm);
         $response = $client->MoneyIn(array_merge($this->informations, $card));
-        var_dump($rentalOrder->getId());
+        var_dump($response);
 
         if(empty($response->MoneyInResult->E)) {
             return $response->MoneyInResult->TRANS->HPAY->ID;
-//            $this->newCreditCard($response->RegisterCardResult->CARD, $creditCardForm, $user);
         } else {
             switch ($response->MoneyInResult->E->Code){
                 case '212' :

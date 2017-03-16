@@ -18,8 +18,7 @@
             <tr>
                 <td>
                     {% for tagTr in tag.tagTrs %}
-                        <object style="float: left;" type="image/svg+xml" data="{{ language_directory }}{{ tagTr.language.picture }}" height="20px">
-                        </object>
+                        <img style="" src="{{ language_directory ~ tagTr.language.picture }}" height="20px">
                         <span style="margin-left: 10px">{{ tagTr.name }}</span>
                         <br><br>
                     {% endfor %}

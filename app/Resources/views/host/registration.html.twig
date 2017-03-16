@@ -87,23 +87,25 @@
                                     </label><br>
                                     {{ form_errors(domainForm.user.password.first) }}
                                     <div class="input-group">
-                                        <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-                                        {{ form_widget(domainForm.user.password.first, {'attr':{'onkeyup':'checkPassword(this);'}})) }}
+                                        <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
+                                        {{ form_widget(domainForm.user.password.first, {'attr':{'onkeyup':'checkPassword(this);'}}) }}
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <div class="input-group">
-                                        <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-                                        {{ form_widget(domainForm.user.password.second, {'attr':{'onkeyup':'checkPassword(this);'}})) }}
+                                        <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
+                                        {{ form_widget(domainForm.user.password.second, {'attr':{'onkeyup':'checkPassword(this);'}}) }}
                                     </div>
                                 </div>
-                                <button class="btn btn-primary nextBtn pull-right" type="button" >{% trans %}label.next{% endtrans %}</button>
+                                <div class="form-group">
+                                    <button class="btn btn-primary nextBtn pull-right" type="button" >{% trans %}label.next{% endtrans %}</button>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div class="row setup-content" id="step-2">
                         <div class="col-xs-6 col-md-offset-3">
-                            <div class="col-md-12">
+                            <div class="service-block-v8">
                                 {% if app.session.flashBag.has('domainSuccess') %}
                                     <div class="alert alert-success">
                                         {% for msg in app.session.flashBag.get('domainSuccess') %}
@@ -146,7 +148,7 @@
                                 {{ form_row(domainForm.address.country) }}
                                 <br>
                                 <div>
-                                    {% trans%}label.agree_with_terms_of_use{% endtrans %}
+                                    {{ 'label.agree_with_terms_of_use'|trans({'%link%' : path('web_page', {'code' : web_page_gtu})})|raw }}
                                     {{ form_widget(domainForm.agree) }}
                                 </div>
                                 <div>
@@ -178,15 +180,15 @@
                 postal_code: 'domain_registration_address_postalCode'
             };
             //Allows to check is the email's format is correct, and if the confirmation correspond.
-            $('#domain_registration_user_email_first, #domain_registration_user_email_second').on('keyup', function() {
-                        if(checkFormatEmail(this)) {
-                            $(this).parent().closest('.form-group').removeClass().addClass("form-group has-success");
-                            checkCorrepondance(this, $('#domain_registration_user_email_first'), $('#domain_registration_user_email_second'));
-                        } else {
-                            $(this).parent().closest('.form-group').removeClass().addClass("form-group has-error");
-                        }
-                    }
-            );
+//            $('#domain_registration_user_email_first, #domain_registration_user_email_second').on('keyup', function() {
+//                        if(checkFormatEmail(this)) {
+//                            $(this).parent().closest('.form-group').removeClass().addClass("form-group has-success");
+//                            checkCorrepondance(this, $('#domain_registration_user_email_first'), $('#domain_registration_user_email_second'));
+//                        } else {
+//                            $(this).parent().closest('.form-group').removeClass().addClass("form-group has-error");
+//                        }
+//                    }
+//            );
 //            initAutocomplete();
 //            var componentForm = {
 //                locality: 'domain_registration_address_locality',

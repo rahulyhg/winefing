@@ -15,8 +15,13 @@
                     <button type="button" class="btn btn-default btn-circle btn-plus-admin" onclick="loadForm('{{ url('user_new_form')}}', 'user')">
                         <i class="glyphicon glyphicon-plus glyphicon-plus-admin"></i>
                     </button>Utilisateur
+                {% else %}
+                    Nom
                 {% endif %}
             </th>
+            {% if app.request.get('group') == role_host %}
+                <th>Domain</th>
+            {% endif %}
             {% if app.request.get('group') != role_host %}
                 <th>{% trans %}label.phone_number{% endtrans %}</th>
                 <th>{% trans %}label.email{% endtrans %}</th>
@@ -31,7 +36,10 @@
         <tbody>
         {% for user in users %}
             <tr>
-                <td>{{ user.firstName }} {{ user.lastName }}</td>
+                <td>{{ user.fullName }}</td>
+                {% if app.request.get('group') == role_host %}
+                    <td>{{ user.domains[0].name }}</td>
+                {% endif %}
                 {% if app.request.get('group') != role_host %}
                     <td>{{ user.phoneNumber }}</td>
                     <td>{{ user.email }}</td>
@@ -39,7 +47,7 @@
                     {% set orderInitiate = 0 %}
                     {% set orderValidate = 0 %}
                     {% for rentalOrder in user.hostRentalOrders %}
-                        {% if rentalOrder.status == 0 %}
+                        {% if rentalOrder.invoiceInformation.status == order_initiate %}
                             {% set orderInitiate = orderInitiate + 1 %}
                         {% else  %}
                             {% set orderValidate = orderValidate + 1 %}

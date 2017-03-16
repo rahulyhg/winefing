@@ -1,0 +1,30 @@
+{% set domainId = app.session.get('domainId') %}
+<nav class="navbar navbar-inverse navbar-static-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+        {% set route = app.request.get('_route') %}
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li class="{% if route == 'user_orders'%}active-nav-back-end{% endif %}">
+                    <a href="{{ path('user_orders', {'id' : app.user.id}) }}">{{ 'label.my_orders'|trans() }}</a>
+                </li>
+                <li class="{% if route == 'wishlist'%}active-nav-back-end{% endif %}">
+                    <a href="{{ path('wishlist') }}">{{ 'label.my'|transchoice(2)|capitalize ~ ' Wine List' }}</a>
+                </li>
+                {% set routeUserEdit = path('user_edit', {'id' : app.user.id}) %}
+                <li class="{% if route == 'user_edit'%}active-nav-back-end{% endif %}">
+                    <a href="{{ routeUserEdit }}">{% trans %}label.my_profil{% endtrans %} </a>
+                </li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>

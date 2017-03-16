@@ -1,0 +1,8 @@
+<ul class="list-unstyled">
+    {% if address.name %}
+        <li>{{ address.name }}</li>
+    {% endif %}
+    <li>{{ address.streetAddress ~ ' ' ~address.route ~ ' ' ~ address.additionalInformation }}</li>
+    <li>{{ address.postalCode ~ ' ' ~address.locality }}</li>
+    <li>{{ address.country }}</li>
+</ul>

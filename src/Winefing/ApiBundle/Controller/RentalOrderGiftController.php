@@ -39,10 +39,6 @@ class RentalOrderGiftController extends Controller implements ClassResourceInter
 
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:RentalOrder');
         $rentalOrderGift->setRentalOrder($repository->findOneById($request->request->get('rentalOrder')));
-
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Address');
-        $rentalOrderGift->setAddress($repository->findOneById($request->request->get('address')));
-
         $rentalOrderGift->setMessage($request->request->get('message'));
         $rentalOrderGift->setSignature($request->request->get('signature'));
         $rentalOrderGift->setPrice($this->getParameter('rental_order_gift_price'));

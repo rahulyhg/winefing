@@ -72,7 +72,7 @@ class WineRegionController extends Controller
      */
     public function submitAction(Request $request) {
         $api = $this->container->get('winefing.api_controller');
-        $serializer = $this->container->get('winefing.serializer_controller');
+        $serializer = $this->container->get('jms_serializer');
         $wineRegion = $request->request->all()["wine_region"];
         $wineRegionTrs = $wineRegion["wineRegionTrs"];
         unset($wineRegion["wineRegionTrs"]);
@@ -81,9 +81,9 @@ class WineRegionController extends Controller
         } else {
             $response = $api->put($this->generateUrl('api_put_wine_region'), $wineRegion);
         }
-        $wineRegion = $serializer->decode($response->getBody()->getContents());
+        $wineRegion = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\APiBundle\Entity\WineRegion', 'json');
         foreach ($wineRegionTrs as $wineRegionTr) {
-            $wineRegionTr["wineRegion"] = $wineRegion["id"];
+            $wineRegionTr["wineRegion"] = $wineRegion->getId();
             if(empty($wineRegionTr["id"])) {
                 $api->post($this->generateUrl('api_post_wineregion_tr'), $wineRegionTr);
             } else {

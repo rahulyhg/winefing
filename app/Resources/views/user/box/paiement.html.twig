@@ -1,146 +1,77 @@
 {% extends 'user/box/base.html.twig' %}
 {% block new %}
-    <div class="row">
-        <div class="col-md-8">
+<div class="row">
+    <div class="col-md-8">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                {% trans %}label.pay{% endtrans %}
+                </h4>
+            </div>
+            <div class="panel-body">
+                {{ include('user/paiement/creditCard.html.twig') }}
+            </div>
+        </div>
+        <div class="panel-group" id="accordion">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h4 class="panel-title">
-                    {% trans %}label.pay{% endtrans %}
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne"><span class="glyphicon glyphicon-file">
+                        </span>  {% trans %}label.order_resume{% endtrans %}</a>
                     </h4>
                 </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            {{ form_start(creditCardForm) }}
-                            <div class="panel panel-default">
-                                <div class="panel-body">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="form-group {% if creditCardForm.cardName.vars.errors|length %}has-error{% endif %}">
-                                                {{ form_row(creditCardForm.cardName) }}
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group {% if creditCardForm.cardType.vars.errors|length %}has-error{% endif %}">
-                                                {{ form_row(creditCardForm.cardType) }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group {% if creditCardForm.cardNumber.vars.errors|length %}has-error{% endif %}">
-                                        {{ form_row(creditCardForm.cardNumber) }}
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="form-group {% if creditCardForm.cardCode.vars.errors|length %}has-error{% endif %}">
-                                                {{ form_row(creditCardForm.cardCode) }}
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group {% if creditCardForm.cardDate.vars.errors|length %}has-error{% endif %}">
-                                                {{ form_row(creditCardForm.cardDate) }}
-                                            </div>
-                                        </div>
+                <div id="collapseOne" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="service-box-v1">
+                                    <div class="service-block service-block-default no-margin-bottom" style="text-align: left!important;padding-top: 3px!important;">
+                                        <h4>{% trans %}label.billing_address{% endtrans %}
+                                            <a href="{{ path('rental_paiement_billing_address') }}">
+                                                <span style="float: right" class="glyphicon glyphicon-pencil"></span>
+                                            </a>
+                                        </h4>
+                                        <p style="margin-bottom:3px!important">
+                                            <strong>{{ boxOrder.invoiceInformation.billingAddress.name }}</strong>
+                                            <br>
+                                            {{ boxOrder.invoiceInformation.billingAddress.additionalInformation }}<br>
+                                            {{ boxOrder.invoiceInformation.billingAddress.streetAddress ~ '' ~boxOrder.invoiceInformation.billingAddress.route }}<br>
+                                            {{ boxOrder.invoiceInformation.billingAddress.postalCode ~ '' ~boxOrder.invoiceInformation.billingAddress.locality }}<br>
+                                            {{ boxOrder.invoiceInformation.billingAddress.country }}</p>
                                     </div>
                                 </div>
                             </div>
-                            <br>
-                            <div style="font-weight: normal!important;font-style: italic">
-                                <spam>{% trans %}label.agree_sales_conditions{% endtrans %}</spam>
-                                -                                    </div>
-                            <div class="form-group">
-                                {{ form_row(creditCardForm.submit) }}
-                            </div>
-                            {{ form_end(creditCardForm) }}
-                        </div>
-                        <div class="col-md-6">
-                            <div class='card-wrapper'></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            </div>
-            <div class="panel-group" id="accordion">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne"><span class="glyphicon glyphicon-file">
-                            </span>  {% trans %}label.order_resume{% endtrans %}</a>
-                        </h4>
-                    </div>
-                    <div id="collapseOne" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    <div class="service-box-v1">
-                                        <div class="service-block service-block-default no-margin-bottom" style="text-align: left!important;padding-top: 3px!important;">
-                                            <h4>{% trans %}label.billing_address{% endtrans %}
-                                                <a href="{{ path('rental_paiement_billing_address') }}">
-                                                    <span style="float: right" class="glyphicon glyphicon-pencil"></span>
-                                                </a>
-                                            </h4>
-                                            <p style="margin-bottom:3px!important">
-                                                <strong>{{ boxOrder.billingAddress.name }}</strong>
-                                                <br>
-                                                {{ boxOrder.billingAddress.additionalInformation }}<br>
-                                                {{ boxOrder.billingAddress.streetAddress ~ '' ~boxOrder.billingAddress.route }}<br>
-                                                {{ boxOrder.billingAddress.postalCode ~ '' ~boxOrder.billingAddress.locality }}<br>
-                                                {{ boxOrder.billingAddress.country }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6">
-                                    <div class="service-box-v1">
-                                        <div class="service-block service-block-default no-margin-bottom" style="text-align: left!important;padding-top: 3px!important;">
-                                            <h4>{% trans %}label.delivery_address{% endtrans %}</h4>
-                                            <p style="margin-bottom:3px!important"><strong>{{ boxOrder.deliveringAddress.name }}</strong><br>
-                                                {{ boxOrder.deliveringAddress.additionalInformation }}<br>
-                                                {{ boxOrder.deliveringAddress.streetAddress ~ '' ~boxOrder.deliveringAddress.route }}<br>
-                                                {{ boxOrder.deliveringAddress.postalCode ~ '' ~boxOrder.deliveringAddress.locality }}<br>
-                                                {{ boxOrder.deliveringAddress.country }}</p>
-                                        </div>
+                            <div class="col-sm-6">
+                                <div class="service-box-v1">
+                                    <div class="service-block service-block-default no-margin-bottom" style="text-align: left!important;padding-top: 3px!important;">
+                                        <h4>{% trans %}label.delivery_address{% endtrans %}
+                                            <a href="{{ path('rental_paiement_billing_address') }}">
+                                                <span style="float: right" class="glyphicon glyphicon-pencil"></span>
+                                            </a>
+                                        </h4>
+                                        <p style="margin-bottom:3px!important"><strong>{{ boxOrder.invoiceInformation.deliveringAddress.name }}</strong><br>
+                                            {{ boxOrder.invoiceInformation.deliveringAddress.additionalInformation }}<br>
+                                            {{ boxOrder.invoiceInformation.deliveringAddress.streetAddress ~ '' ~boxOrder.invoiceInformation.deliveringAddress.route }}<br>
+                                            {{ boxOrder.invoiceInformation.deliveringAddress.postalCode ~ '' ~boxOrder.invoiceInformation.deliveringAddress.locality }}<br>
+                                            {{ boxOrder.invoiceInformation.deliveringAddress.country }}</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="property-container">
-                <div class="property-image">
-                    <a href="{{ box_directory ~ boxOrder.box.mediaPresentation }}" title="{{ boxOrder.box.name }}" data-rel="gallery" class="fancybox img-hover-v1">
-                        <img src="{{ box_directory ~ boxOrder.box.mediaPresentation }}" alt="{{ boxOrder.box.name }}">
-                        <div class="hidden-xs">
-                            <span class="glyphicon glyphicon-search picture-zoom"></span>
-                        </div>
-                        <div class="property-features-grey text-center">
-                            {{ boxOrder.box.name }}
-                        </div>
-                    </a>
-                </div>
-                <div class="property-content">
-                    <div class="service-box-v1" style="text-align: center">
-                        <ul class="list-unstyled">
-                            {% for boxItem in boxOrder.box.boxItems %}
-                                {% if boxItem.boxItemChoices|length <= 0 %}
-                                    <li>{{ boxItem.name }}</li>
-                                {% endif %}
-                            {% endfor %}
-                            {% for boxItemChoice in boxOrder.boxItemChoices %}
-                                <li>{{ boxItemChoice.name }}</li>
-                            {% endfor %}
-                            <li><strong>{% trans %}label.total_ttc{% endtrans %}{{ ': ' ~ boxOrder.price ~'€.' }}</strong></li>
-                        </ul>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <div class="col-md-4">
+
+    </div>
+</div>
 {% endblock %}
 {% block script %}
+    {{ parent() }}
     <script>
-        {{ parent() }}
+        FancyBox.initFancybox();
         $(document).ready(function(){
             $('[data-toggle="popover"]').popover();
             var card = new Card({
@@ -148,7 +79,7 @@
                 container: '.card-wrapper',
                 placeholders: {
                     number: '**** **** **** ****',
-                    name: 'Audrey Carval',
+                    name: '{{ app.user.fullName }}',
                     expiry: '**/****',
                     cvc: '***'
                 }
@@ -157,40 +88,5 @@
         $('#credit_card_cardNumber').on('change', function() {
             console.log(card.type);
         });
-        //        var card = new Card({
-        //            // a selector or DOM element for the form where users will
-        //            // be entering their information
-        //            form: 'form', // *required*
-        //            // a selector or DOM element for the container
-        //            // where you want the card to appear
-        //            container: '.card-wrapper', // *required*
-        //
-        //            formSelectors: {
-        //                numberInput: 'input#number', // optional — default input[name="number"]
-        //                expiryInput: 'input#expiry', // optional — default input[name="expiry"]
-        //                cvcInput: 'input#cvc', // optional — default input[name="cvc"]
-        //                nameInput: 'input#name' // optional - defaults input[name="name"]
-        //            },
-        //
-        //            width: 200, // optional — default 350px
-        //            formatting: true, // optional - default true
-        //
-        //            // Strings for translation - optional
-        //            messages: {
-        //                validDate: 'valid\ndate', // optional - default 'valid\nthru'
-        //                monthYear: 'mm/yyyy', // optional - default 'month/year'
-        //            },
-        //
-        //            // Default placeholders for rendered fields - optional
-        //            placeholders: {
-        //                number: '•••• •••• •••• ••••',
-        //                name: 'Full Name',
-        //                expiry: '••/••',
-        //                cvc: '•••'
-        //            },
-        //
-        //            // if true, will log helpful messages for setting up Card
-        //            debug: false // optional - default false
-        //        });
     </script>
 {% endblock %}

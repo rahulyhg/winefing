@@ -28,9 +28,15 @@ class Box
     /**
      * @var BoxItems
      * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\BoxItem", mappedBy="box", fetch="EAGER", cascade="ALL")
-     * @Groups({"boxItems"})
+     * @Groups({"default"})
      */
     private $boxItems;
+
+    /**
+     * @var BoxItems
+     * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\BoxOrder", mappedBy="box", fetch="EXTRA_LAZY")
+     */
+    private $boxOrders;
 
     /**
      * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Media", inversedBy="boxes", cascade={"persist", "merge", "detach"})
@@ -59,10 +65,18 @@ class Box
      */
     private $hasChoice = 0;
 
+    /**
+     * @var
+     * @Groups({"default"})
+     * @Type("integer")
+     */
+    private $boxOrdersNumber = 0;
+
     public function __construct() {
         $this->boxItems = new ArrayCollection();
         $this->boxTrs = new ArrayCollection();
         $this->medias = new ArrayCollection();
+        $this->boxOrders = new ArrayCollection();
         return $this;
     }
 //    public function __clone()
@@ -94,6 +108,14 @@ class Box
      * @Type("string")
      */
     private $description;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="activated", type="boolean")
+     * @Groups({"default"})
+     */
+    private $activated = 1;
 
     /**
      * @return mixed
@@ -286,6 +308,38 @@ class Box
     public function setBoxItems($boxItems)
     {
         $this->boxItems = $boxItems;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBoxOrdersNumber()
+    {
+        return $this->boxOrdersNumber;
+    }
+
+    /**
+     * @param mixed $boxOrdersNumber
+     */
+    public function setBoxOrdersNumber()
+    {
+        $this->boxOrdersNumber = $this->boxOrders->count();
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isActivated()
+    {
+        return $this->activated;
+    }
+
+    /**
+     * @param boolean $activated
+     */
+    public function setActivated($activated)
+    {
+        $this->activated = $activated;
     }
 }
 

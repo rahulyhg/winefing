@@ -4,6 +4,7 @@
     <div class="cover-img" style="background: url({{ banner_directory ~'red-bottles.jpeg' }})">
         <h1>{% trans %}label.my_profil{% endtrans %}</h1>
     </div>
+    <div class="bg-grey">
     <!-- End Interactive Slider v2 -->
     {% if is_granted("ROLE_HOST") %}
         {{ include('host/nav.html.twig') }}
@@ -16,229 +17,232 @@
             {{ include('host/nav.html.twig') }}
         {% endif %}
     {% endif %}
-    <div class="container">
-        <div class="content">
-            <div class="row">
-                <div class="col-sm-3">
-                    <ul class="nav nav-pills nav-stacked">
-                        <li class="active"><a href="#profil" data-toggle="tab">{% trans %}label.edit_profil{% endtrans %} </a></li>
-                        <li><a href="#picture" data-toggle="tab">{% trans %}label.profil_picture{% endtrans %} </a></li>
-                        <li><a href="#password" data-toggle="tab">{% trans %}label.edit_password{% endtrans %} </a></li>
-                        {% if is_granted("ROLE_USER") or  is_granted("ROLE_HOST") %}
-                            <li><a href="#subscriptions" data-toggle="tab">{% trans %}label.notifications{% endtrans %} </a></li>
-                        {% endif %}
-                        {% if ibanForm is defined %}
-                            <li><a href="#iban" data-toggle="tab">{% trans %}label.bank_details{% endtrans %} </a></li>
-                        {% endif %}
-                    </ul>
-                </div>
-                <div class="col-sm-9">
-                    <div class="tab-content">
-                        <div class="tab-pane fade in active" id="profil">
-                            {{ form_start(userForm, {'attr':{'id':'user'}}) }}
-                            {{ form_errors(userForm) }}
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <h4>{% trans %}label.mandatory_informations{% endtrans %}</h4>
-                                </div>
-                                <div class="panel-body">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label>*{% trans %}label.first_name{% endtrans %} </label>
-                                                {{ form_errors(userForm.firstName)}}
-                                                {{ form_widget(userForm.firstName,  { 'attr': {'class': 'form-control'} }) }}
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label>*{% trans %}label.last_name{% endtrans %} </label>
-                                                {{ form_errors(userForm.lastName)}}
-                                                {{ form_widget(userForm.lastName,  { 'attr': {'class': 'form-control'} }) }}
-                                            </div>
-                                        </div>
+    <div id="userEdit" class="">
+        <div class="container">
+            <div class="content">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <ul class="nav nav-pills nav-stacked">
+                            <li class="active"><a href="#profil" data-toggle="tab">{% trans %}label.edit_profil{% endtrans %} </a></li>
+                            <li><a href="#picture" data-toggle="tab">{% trans %}label.profil_picture{% endtrans %} </a></li>
+                            <li><a href="#password" data-toggle="tab">{% trans %}label.edit_password{% endtrans %} </a></li>
+                            {% if is_granted("ROLE_USER") or  is_granted("ROLE_HOST") %}
+                                <li><a href="#subscriptions" data-toggle="tab">{% trans %}label.notifications{% endtrans %} </a></li>
+                            {% endif %}
+                            {% if ibanForm is defined %}
+                                <li><a href="#iban" data-toggle="tab">{% trans %}label.bank_details{% endtrans %} </a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="tab-content">
+                            <div class="tab-pane fade in active" id="profil">
+                                {{ form_start(userForm, {'attr':{'id':'user'}}) }}
+                                {{ form_errors(userForm) }}
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4>{% trans %}label.mandatory_informations{% endtrans %}</h4>
                                     </div>
-                                    <div class="form-group">
-                                        <label>*{% trans %}label.birth_date{% endtrans %} </label>
-                                        {{ form_errors(userForm.birthDate)}}
-                                        <div id="sandbox-container">
-                                            <div class="input-group date">
-                                                {{ form_widget(userForm.birthDate) }}<span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>*{% trans %}label.sex{% endtrans %} </label>
-                                        {{ form_errors(userForm.sex)}}
-                                        {{ form_widget(userForm.sex,  { 'attr': {'class': 'form-control'} }) }}
-                                    </div>
-                                    <div class="form-group">
-                                        <label>*{% trans %}label.email{% endtrans %} </label>
-                                        <div class="input-group">
-                                            {{ form_errors(userForm.email)}}
-                                            {{ form_widget(userForm.email,  { 'attr': {'class': 'form-control'} }) }}<span class="input-group-addon">@</span>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <div id="phone_number_group_div"class="form-group has-feedback">
-                                            <label>*{{ form_label(userForm.phoneNumber) }}</label>
-                                            {{ form_errors(userForm.phoneNumber) }}<br>
-                                            {{ form_widget(userForm.phoneNumber) }}
-                                            <span id="valid-phone-number" class="hide">&nbsp;&nbsp;<span class="glyphicon glyphicon-ok"></span>&nbsp;&nbsp;{% trans %}label.valid{% endtrans %}</span>
-                                            <span id="error-phone-number" class="hide">&nbsp;&nbsp;<span class="glyphicon glyphicon-remove"></span>&nbsp;&nbsp;{% trans %}label.invalid_number{% endtrans %}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <br>
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <h4>{% trans %}label.complementary_informations{% endtrans %}</h4>
-                                </div>
-                                <div class="panel-body">
-                                    <div class="form-group">
-                                        <label>{% trans %}label.description{% endtrans %} </label>
-                                        {{ form_errors(userForm.description)}}
-                                        {{ form_widget(userForm.description,  { 'attr': {'class': 'form-control'} }) }}
-                                    </div>
-                                    <label>Réseaux sociaux (fournir URL)</label>
-                                    <br>
-                                    {% if admin is defined %}
-                                        {{ form_row(userForm.facebook)}}
-                                        {{ form_row(userForm.twitter)}}
-                                        {{ form_row(userForm.instagram)}}
-                                        {{ form_row(userForm.google)}}
-                                    {% endif %}
-                                </div>
-                            </div>
-                            <input type="button" onclick="submitUser();" value="{% trans %}label.submit{% endtrans %}" class="btn btn-primary pull-right">
-                            {{ form_end(userForm) }}
-                        </div>
-                        <div class="tab-pane fade in" id="picture">
-                            <img class="circular-landscape" src="{{ user_directory ~ picture}}" width="200px" height="auto">
-                            <br><br>
-                            <h4>{{ 'label.edit_picture'|trans() ~ ' ('~ 'label.max_size'|trans({'%maxSize%' : '1Mo'}) ~ ') :' }}</h4>
-                            <br>
-                            {{ form_start(pictureForm) }}
-                            {{ form_end(pictureForm) }}
-                        </div>
-                        <div class="tab-pane fade in" id="password">
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <h4>{% trans %}label.edit_password{% endtrans %}</h4>
-                                </div>
-                                <div class="panel-body">
-                                    {{ form_start(passwordForm, {'attr':{'id':'password'}}) }}
-                                        {{ form_errors(passwordForm) }}
-                                        <div class="form-group {% if passwordForm.currentPassword.vars.errors|length >0 %}has-error{% endif %}">
-                                            <label class="control-label">
-                                                *{% trans %}label.password{% endtrans %}
-                                            </label><br>
-                                            {{ form_errors(passwordForm.currentPassword) }}
-                                            <div class="input-group">
-                                                <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-                                                {{ form_widget(passwordForm.currentPassword) }}
-                                            </div>
-                                        </div>
-                                        <div class="form-group {% if passwordForm.password.first.vars.errors|length > 0 %}has-error{% endif %}">
-                                            <label class="control-label">
-                                                *{% trans %}label.password{% endtrans %}
-                                                <a href="#" id="password-indication"data-toggle="tooltip" data-placement="top" title="{% trans %}error.password_format{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
-                                            </label><br>
-                                            {{ form_errors(passwordForm.password.first) }}
-                                            <div class="input-group">
-                                                <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-                                                {{ form_widget(passwordForm.password.first, {'attr':{'onkeyup':'checkPassword(this);'}}) }}
-                                            </div>
-                                        </div>
-                                        <div class="form-group {% if passwordForm.password.second.vars.errors|length >0 %}has-error{% endif %}">
-                                            <div class="input-group">
-                                                <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-                                                {{ form_widget(passwordForm.password.second, {'attr':{'onkeyup':'checkPassword(this);'}}) }}
-                                            </div>
-                                        </div>
-                                        <input type="button" onclick="checkPasswordBeforeSubmit();" value="{% trans %}label.submit{% endtrans %}" class="btn btn-primary pull-right">
-                                    {{ form_end(passwordForm) }}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade in" id="subscriptions">
-                            <form name="subscriptionForm" method="post">
-                                {% set i = 0 %}
-                                {% for format,subscriptions in subscriptionFormatList %}
-                                    <div class="panel panel-default">
-                                        <div class="panel-heading">
-                                            <h4>{{ 'label.notification_by'|trans({'%format%': format|lower}) }}</h4>
-                                        </div>
-                                        <div class="panel-body">
-                                            {% for subscription in subscriptions %}
-                                                {% set name = "subscriptionForm[subscription]["~i~"][value]" %}
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <input name="subscriptionForm[subscription][{{ i }}][id]" value="{{ subscription.id }}" hidden>
-                                                    {% set checked = "" %}
-                                                    {% if subscription.checked %}
-                                                        {% set checked = "checked" %}
-                                                    {% endif %}
-                                                    {{ subscription.name }}
-                                                    <input name="{{ name }}" type="checkbox" value="0" hidden checked>
-                                                    <input name="{{ name }}" type="checkbox" {{ checked }} value="1">
+                                                    <label>*{% trans %}label.first_name{% endtrans %} </label>
+                                                    {{ form_errors(userForm.firstName)}}
+                                                    {{ form_widget(userForm.firstName,  { 'attr': {'class': 'form-control'} }) }}
                                                 </div>
-                                                {% set i = i+1 %}
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                {% endfor %}
-                                <button type="submit" class="btn btn-primary pull-right">{% trans %}label.submit{% endtrans %}</button>
-                            </form>
-                        </div>
-                        {% if ibanForm is defined %}
-                            <div class="tab-pane fade in" id="iban">
-                                {{ form_start(ibanForm, {'attr': {'id' : 'iban'}}) }}
-                                    <div class="panel panel-default">
-                                        <div class="panel-heading">
-                                            <h4>{% trans %}label.company_informations{% endtrans %}
-                                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans %}help.company_informations{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
-                                            </h4>
-                                        </div>
-                                        <div class="panel-body">
-                                            <div class="form-group">
-                                                *{{ form_label(ibanForm.company.name) }}
-                                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans %}help.company_name{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
-                                                {{ form_errors(ibanForm.company.name) }}
-                                                {{ form_widget(ibanForm.company.name) }}
                                             </div>
-                                            <br>
-                                            {% set addressForm = ibanForm.company.address %}
-                                            {% include('address/form.html.twig') %}
-                                        </div>
-                                    </div>
-                                    <div class="panel panel-default">
-                                        <div class="panel-heading">
-                                            <h4>{% trans %}label.bank_details{% endtrans %}</h4>
-                                        </div>
-                                        <div class="panel-body">
-                                            <div class="form-group">
-                                                *{{ form_label(ibanForm.bic) }}
-                                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans %}help.bic{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
-                                                {{ form_errors(ibanForm.bic) }}
-                                                {{ form_widget(ibanForm.bic) }}
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>*{% trans %}label.last_name{% endtrans %} </label>
+                                                    {{ form_errors(userForm.lastName)}}
+                                                    {{ form_widget(userForm.lastName,  { 'attr': {'class': 'form-control'} }) }}
+                                                </div>
                                             </div>
-                                            <div class="form-group {% if ibanForm.iban.vars.errors|length %}has-error{% endif %}">
-                                                *{{ form_label(ibanForm.iban) }}
-                                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans %}help.iban{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
-                                                {{ form_errors(ibanForm.iban) }}
-                                                {{ form_widget(ibanForm.iban) }}
+                                        </div>
+                                        <div class="form-group">
+                                            <label>*{% trans %}label.birth_date{% endtrans %} </label>
+                                            {{ form_errors(userForm.birthDate)}}
+                                            <div id="sandbox-container">
+                                                <div class="input-group date">
+                                                    {{ form_widget(userForm.birthDate) }}<span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>*{% trans %}label.sex{% endtrans %} </label>
+                                            {{ form_errors(userForm.sex)}}
+                                            {{ form_widget(userForm.sex,  { 'attr': {'class': 'form-control'} }) }}
+                                        </div>
+                                        <div class="form-group">
+                                            <label>*{% trans %}label.email{% endtrans %} </label>
+                                            <div class="input-group">
+                                                {{ form_errors(userForm.email)}}
+                                                {{ form_widget(userForm.email,  { 'attr': {'class': 'form-control'} }) }}<span class="input-group-addon">@</span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div id="phone_number_group_div"class="form-group has-feedback">
+                                                <label>*{{ form_label(userForm.phoneNumber) }}</label>
+                                                {{ form_errors(userForm.phoneNumber) }}<br>
+                                                {{ form_widget(userForm.phoneNumber) }}
+                                                <span id="valid-phone-number" class="hide">&nbsp;&nbsp;<span class="glyphicon glyphicon-ok"></span>&nbsp;&nbsp;{% trans %}label.valid{% endtrans %}</span>
+                                                <span id="error-phone-number" class="hide">&nbsp;&nbsp;<span class="glyphicon glyphicon-remove"></span>&nbsp;&nbsp;{% trans %}label.invalid_number{% endtrans %}</span>
                                             </div>
                                         </div>
                                     </div>
-                                    <input type="button" onclick="disabledInputAddress('iban');" value="{% trans %}label.submit{% endtrans %}"class="btn btn-primary pull-right">
-                                {{ form_end(ibanForm) }}
+                                </div>
+                                <br>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4>{% trans %}label.complementary_informations{% endtrans %}</h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="form-group">
+                                            <label>{% trans %}label.description{% endtrans %} </label>
+                                            {{ form_errors(userForm.description)}}
+                                            {{ form_widget(userForm.description,  { 'attr': {'class': 'form-control'} }) }}
+                                        </div>
+                                        <br>
+                                        {% if admin is defined %}
+                                            <label>Réseaux sociaux (fournir URL)</label>
+                                            {{ form_row(userForm.facebook)}}
+                                            {{ form_row(userForm.twitter)}}
+                                            {{ form_row(userForm.instagram)}}
+                                            {{ form_row(userForm.google)}}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <input type="button" onclick="submitUser();" value="{% trans %}label.submit{% endtrans %}" class="btn btn-primary pull-right">
+                                {{ form_end(userForm) }}
                             </div>
-                        {% endif %}
+                            <div class="tab-pane fade in" id="picture">
+                                <img class="circular-landscape" src="{{ user_directory ~ picture}}" width="200px" height="auto">
+                                <br><br>
+                                <h4>{{ 'label.edit_picture'|trans() ~ ' ('~ 'label.max_size'|trans({'%maxSize%' : '1Mo'}) ~ ') :' }}</h4>
+                                <br>
+                                {{ form_start(pictureForm) }}
+                                {{ form_end(pictureForm) }}
+                            </div>
+                            <div class="tab-pane fade in" id="password">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4>{% trans %}label.edit_password{% endtrans %}</h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        {{ form_start(passwordForm, {'attr':{'id':'password'}}) }}
+                                            {{ form_errors(passwordForm) }}
+                                            <div class="form-group {% if passwordForm.currentPassword.vars.errors|length >0 %}has-error{% endif %}">
+                                                <label class="control-label">
+                                                    *{% trans %}label.password{% endtrans %}
+                                                </label><br>
+                                                {{ form_errors(passwordForm.currentPassword) }}
+                                                <div class="input-group">
+                                                    <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                                                    {{ form_widget(passwordForm.currentPassword) }}
+                                                </div>
+                                            </div>
+                                            <div class="form-group {% if passwordForm.password.first.vars.errors|length > 0 %}has-error{% endif %}">
+                                                <label class="control-label">
+                                                    *{% trans %}label.password{% endtrans %}
+                                                    <a href="#" id="password-indication"data-toggle="tooltip" data-placement="top" title="{% trans %}error.password_format{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
+                                                </label><br>
+                                                {{ form_errors(passwordForm.password.first) }}
+                                                <div class="input-group">
+                                                    <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                                                    {{ form_widget(passwordForm.password.first, {'attr':{'onkeyup':'checkPassword(this);'}}) }}
+                                                </div>
+                                            </div>
+                                            <div class="form-group {% if passwordForm.password.second.vars.errors|length >0 %}has-error{% endif %}">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                                                    {{ form_widget(passwordForm.password.second, {'attr':{'onkeyup':'checkPassword(this);'}}) }}
+                                                </div>
+                                            </div>
+                                            <input type="button" onclick="checkPasswordBeforeSubmit();" value="{% trans %}label.submit{% endtrans %}" class="btn btn-primary pull-right">
+                                        {{ form_end(passwordForm) }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade in" id="subscriptions">
+                                <form name="subscriptionForm" method="post">
+                                    {% set i = 0 %}
+                                    {% for format,subscriptions in subscriptionFormatList %}
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                <h4>{{ 'label.notification_by'|trans({'%format%': format|lower}) }}</h4>
+                                            </div>
+                                            <div class="panel-body">
+                                                {% for subscription in subscriptions %}
+                                                    {% set name = "subscriptionForm[subscription]["~i~"][value]" %}
+                                                    <div class="form-group">
+                                                        <input name="subscriptionForm[subscription][{{ i }}][id]" value="{{ subscription.id }}" hidden>
+                                                        {% set checked = "" %}
+                                                        {% if subscription.checked %}
+                                                            {% set checked = "checked" %}
+                                                        {% endif %}
+                                                        {{ subscription.name }}
+                                                        <input name="{{ name }}" type="checkbox" value="0" hidden checked>
+                                                        <input name="{{ name }}" type="checkbox" {{ checked }} value="1">
+                                                    </div>
+                                                    {% set i = i+1 %}
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                    <button type="submit" class="btn btn-primary pull-right">{% trans %}label.submit{% endtrans %}</button>
+                                </form>
+                            </div>
+                            {% if ibanForm is defined %}
+                                <div class="tab-pane fade in" id="iban">
+                                    {{ form_start(ibanForm, {'attr': {'id' : 'iban'}}) }}
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                <h4>{% trans %}label.company_informations{% endtrans %}
+                                                    <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans %}help.company_informations{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
+                                                </h4>
+                                            </div>
+                                            <div class="panel-body">
+                                                <div class="form-group">
+                                                    *{{ form_label(ibanForm.company.name) }}
+                                                    <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans %}help.company_name{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
+                                                    {{ form_errors(ibanForm.company.name) }}
+                                                    {{ form_widget(ibanForm.company.name) }}
+                                                </div>
+                                                <br>
+                                                {% set addressForm = ibanForm.company.address %}
+                                                {% include('address/form.html.twig') %}
+                                            </div>
+                                        </div>
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                <h4>{% trans %}label.bank_details{% endtrans %}</h4>
+                                            </div>
+                                            <div class="panel-body">
+                                                <div class="form-group">
+                                                    *{{ form_label(ibanForm.bic) }}
+                                                    <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans %}help.bic{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
+                                                    {{ form_errors(ibanForm.bic) }}
+                                                    {{ form_widget(ibanForm.bic) }}
+                                                </div>
+                                                <div class="form-group {% if ibanForm.iban.vars.errors|length %}has-error{% endif %}">
+                                                    *{{ form_label(ibanForm.iban) }}
+                                                    <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans %}help.iban{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
+                                                    {{ form_errors(ibanForm.iban) }}
+                                                    {{ form_widget(ibanForm.iban) }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <input type="button" onclick="disabledInputAddress('iban');" value="{% trans %}label.submit{% endtrans %}"class="btn btn-primary pull-right">
+                                    {{ form_end(ibanForm) }}
+                                </div>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
     </div>
 {% endblock %}
 {% block script %}

@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <div class="cover-img" style="background: url({{ banner_directory ~'red-bottles.jpeg' }})">
+        <h1>{{ 'label.bill'|trans() }}</h1>
+    </div>
+    <div class="container">
+        <div class="content-sm">
+            {{ include('user/invoice/invoice.html.twig') }}
+            <a href="{{ path('box_order_invoice', {'id' : order.id, 'type': 'pdf'}) }}"class="btn btn-primary">{{ 'label.generate_pdf'|trans() }}</a>
+        </div>
+    </div>
+{% endblock %}

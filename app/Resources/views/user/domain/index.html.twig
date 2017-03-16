@@ -149,9 +149,6 @@
                             {% set extremePagesLimit = 3 %}
 
                             {# the number of pages that are displayed around the active page #}
-                            {% if app.request.get('page') %}
-                                {{ 'in' }}
-                            {% endif %}
                             {% set paginationPath = path('domains_by_criteria', {'domain_filter': app.request.get('domain_filter') }) %}
                             {% set nearbyPagesLimit = 2 %}
                             {% set showAlwaysFirstAndLast = false %}
@@ -203,16 +200,39 @@
 {% block script %}
     {{ parent() }}
     <script>
+        var locale = '{{ app.request.getLocale() }}';
         $("#slider").slider({});
         $('#sandbox-container .input-daterange').datepicker({
             startDate: ""+getFormattedDate(new Date)+"'",
             format: 'dd-mm-yyyy',
             orientation: "bottom auto",
-            autoclose: true
-        });
-        $('.selectpicker').selectpicker({
-            noneSelectedText:'',
-            width: '100%'
-        });
+            autoclose: true,
+            language: locale
+        })
+                .each(function() {
+                    $(this).datepicker().on('changeDate', function (ev) {
+                        var startDate = getStartDate('#domain_filter_startDate');
+                        var endDate = getEndDate('#domain_filter_endDate');
+                        if(ev.target.id === 'domain_filter_startDate') {
+                            startDate = ev.date;
+                        } else {
+                            endDate = ev.date;
+                        }
+                        var daysNumber = getDaysNumber(startDate, endDate);
+                        console.log(daysNumber);
+                        if(daysNumber <= 0 && ev.target.id === 'domain_filter_startDate') {
+                            endDate.setDate(startDate.getDate() + 1);
+                            $('#domain_filter_endDate').val(getFormattedDate(endDate));
+                        }
+                        if(daysNumber <= 0 && ev.target.id === 'domain_filter_endDate') {
+                            startDate.setDate(endDate.getDate() - 1);
+                            $('#domain_filter_startDate').val(getFormattedDate(startDate));
+                        }
+                    })
+                });
+//        $('.selectpicker').selectpicker({
+//            noneSelectedText:'',
+//            width: '100%'
+//        });
     </script>
 {% endblock %}

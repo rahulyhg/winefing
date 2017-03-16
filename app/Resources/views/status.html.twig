@@ -1,0 +1,23 @@
+{% if status ==  order_refused %}
+    {% set label = 'label.refused' %}
+    {% set class = 'label-danger' %}
+{% elseif status ==  order_cancel %}
+    {% set label = 'label.canceled' %}
+    {% set class = 'label-danger' %}
+{% elseif rentalOrder.startDate is defined and rentalOrder.startDate <= date() and rentalOrder.endDate >= date() %}
+    {% set label = 'label.underway' %}
+    {% set class = 'label-info' %}
+{% elseif rentalOrder.endDate is defined and rentalOrder.endDate < date() %}
+    {% set label = 'label.over' %}
+    {% set class = 'label-info' %}
+{% elseif status ==  order_validate %}
+    {% set label = 'label.validated' %}
+    {% set class = 'label-success' %}
+{% elseif status ==  order_pay %}
+    {% set label = 'label.validated' %}
+    {% set class = 'label-success' %}
+{% elseif status ==  order_initiate %}
+    {% set label = 'label.waiting_validation' %}
+    {% set class = 'label-warning' %}
+{% endif %}
+<span class="label {{ class }}">{{ label|trans() }}</span>

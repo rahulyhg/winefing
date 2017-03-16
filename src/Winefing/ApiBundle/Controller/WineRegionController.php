@@ -50,7 +50,9 @@ class WineRegionController extends Controller implements ClassResourceInterface
         $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:WineRegion');
         $wineRegion = $repository->findWithName($name);
-        $wineRegion->setTr($language);
+        if($wineRegion instanceof WineRegion) {
+            $wineRegion->setTr($language);
+        }
         return new Response($serializer->serialize($wineRegion, 'json', SerializationContext::create()->setGroups(array('default'))));
     }
 

@@ -16,6 +16,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
@@ -31,7 +32,7 @@ class RentalPromotionType extends AbstractType
         $builder
             ->add('startDate', DateType::class, ['label'=>false, 'format'=>'dd-MM-yyyy', 'widget' => 'single_text', 'html5'=> false, 'attr'=>['class'=>'input-sm form-control']])
             ->add('endDate', DateType::class, ['label'=>false, 'format'=>'dd-MM-yyyy', 'widget' => 'single_text', 'html5'=> false, 'attr'=>['class'=>'input-sm form-control']])
-            ->add('reduction', IntegerType::class, array('label'=> false, 'attr' => array('min'=> 1, 'max'=>100, 'scale'=> 2, 'class'=>'form-control', 'step'=>0.01)))
+            ->add('reduction', NumberType::class, array('label'=> false,'scale'=>2,'attr' => array('min'=> 1.00, 'step'=>0.01, 'class'=>'form-control')))
             ->add('rentals', EntityType::class,  array(
                 'class' => 'WinefingApiBundle:Rental',
                 'query_builder' => function (EntityRepository $er) use ($userId){

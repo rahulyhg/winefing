@@ -1,6 +1,10 @@
-<html>
-    <body>
+{% extends 'email/base.html.twig' %}
+{% block table %}
+<table  border="0" cellpadding="0" cellspacing="0" >
+    <tr>
+        <td  class="center" style="font-size: 16px; color: #ffffff; font-weight: bold; text-align: left; font-family: Arial, Helvetica, sans-serif; line-height: 25px; vertical-align: middle; padding: 50px 0px 0 20px; ">
+                    </td>
+    </tr>
     {#<p>{{ 'text.welcome' | trans({"%name%":user.firstName}, "messages", language) }}.</p>#}
-    <p>Félicitation votre réservation à bien été effectué. Le viticulteur à 6 jours pour accepter votre demande à la suite de quoi votre carte sera débité</p>
-    </body>
-</html>
+</table>
+{% endblock %}

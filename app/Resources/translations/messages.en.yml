@@ -49,7 +49,6 @@ label.new_address: New address
 label.property_pictures_explication: Only property frontage or commun room (such as the castel's living room).
 label.rental_pictures_explication: You can put up to 10 pictures of the rental. Don't hesitate to take details of the rental.
 label.prices: Prices
-label.rentals: Rentals
 label.my_properties: My properties
 label.edit: Edit
 label.no_rental_for_property: You have no rental for this property
@@ -67,7 +66,7 @@ label.people_number_explanation: The number of people that the room contain
 label.minimum_rental_period: Minimum rental period
 label.minimum_rental_period_explanation: Minimum rental period that has to be order
 label.promotions: Promotions
-label.date: Date
+label.date: Date|Dates
 label.reduction: Reduction
 success.profil_edit: The profil is well modified.
 success.picture_edit: The picture is well modified.
@@ -81,8 +80,8 @@ label.card_number : Card number
 label.card_code : Card code
 label.card_expiration_date : Card expiration date
 label.price_details : Price details
-label.service_fees : Service fees:
-label.total : Total:
+label.service_fees : Service fees
+label.total : Total
 
 label.about_us: About us
 label.or: Or
@@ -256,7 +255,7 @@ error.minimum_rental_period: You should reverve %number% day for this room. | Yo
 label.night_minimum: %number% night minimum | %number% nights minimum
 warning.delete_rental_order_gift: Do you really want to delete the gift ?
 label.paiement_safe: Safe paiement with our partner LemonWay.
-label.when_pay_agree_sales_conditions: When you pay you agree the general condifiton of winefing.
+label.when_pay_agree_sales_conditions: When you pay you agree the <a href="%url%" target="_blank">general condifiton</a> of winefing.
 label.the_concept: The concept
 text.box_concept: Le meilleur des propriétés Winefing, c'est trois séjours oenologiques clés en main à offrir à tous les amoureux du vin, du patrimoine et de la gastronomie.<br><br>Notre équipe de passionnées a pré-sélectionné pour vous trois domaines pleins de charme qui vous accueilleront le temps d'un weekend pour vous faire partager une expérience unique faite de convivialité et de partage.<br><br>Idéal pour offrir, chaque séjour fait l'objet d'une jolie carte cadeau que vous pouvez commander en ligne pour la recevoir directement chez vous.
 label.box_and_gift_card: Boxes and gift cards
@@ -315,4 +314,56 @@ error.resetting_password: The email given do not exist.
 success.resetting_password: A email has been send to you. Just follow the instruction in.
 label.max_size: Max size %maxSize%
 error.max_file_size: The file is too big. It should not exceed %maxSize%.
+text.legal_age: You have to be adult in order to register on winefing's website.
+label.my: my|my
+label.remove: Remove
+label.see: See
+success.paiement_well_done: Paiement well done
+label.left_to_pay: Left to pay
+label.box: Box
+label.quantity: Quantity
+label.unit_cost: Unit cost
+label.generate_pdf: Generate pdf
+label.print: Print
+label.total_ht: Total without taxes
+label.tax: Tax
+label.total_tax: Total taxes
 
+label.see_the_invoice: See the bill
+label.get_bill_pdf: Get a bill pdf
+
+label.advance_payment: Advance paiement
+text.advance_payment: L'accompte à payer dépend de la somme total du panier voir les <a href="%url%">conditions générals de vente</a>. Il vous restera à payer en main propre au viticulteur %leftToPay% €.
+label.explanation: Explanation
+success.booking_request_sent: Your booking request has been sent
+label.winefing_fees: Winefing's fees
+label.detail: Detail|Details
+label.cancel_order: Cancel booking
+label.paid: Payed
+label.see_order_details: See order details
+label.advance_paiement_paid: Advance payment payed
+label.paiement_information: Paiement information
+label.useful_information: Useful information|Useful informations
+success.new_property: The property is well added ! Don't forget to add the picture.
+label.see_gts: See the <a href="%url%" target="_blank">cancel policy</a>.
+error.can_cancel_rental_order: You can't cancel this order.
+success.rental_order_validated: The rental order is well validated.
+success.rental_order_refused: The rental order is well refused.
+label.stay_connected: Stay connected
+text.stay_connected: Stay connected, and follow us on the different social media !
+text.find: Trouvez le domain de vos rêve pour toute occasion.
+text.order: Commendez rapidemment et facilement à travers le site internet.
+text.live: Vivez un moment d'exception au coeur du domain choisi.
+
+#text for the email
+text.host_order_canceled: La réservation du %startDate% au %endDate% vient d'être annuler par le client. Vous serez remboursé à la hauteur de %price%. <a href="%url%">Voir</a>.
+text.user_order_refused: Votre demande de réservation du %startDate% à %endDate% vient d'être refusé par le viticulteur. Nous vous intions à regarder les autres locations disponibles sur <a src="%url%">winefing.com</a>.
+text.user_order_valid: Votre demande de réservation du %startDate% à %endDate% vient d'être accepté par le viticulteur ! Vous pouvez consulter votre commande <a href="%url%">ici</a>.
+text.user_order_canceled: La réservation du %startDate% à %endDate% à bien été annulée.
+text.user_rental_order: Félicitation votre réservation à bien été effectué. Le viticulteur à 6 jours pour accepter votre demande à la suite de quoi votre carte sera débité. Voir le détail de la commande <a href="%url%">ici</a>.
+text.host_rental_order: Une nouvelle demande de réservation réservation vient d'être effectuée.<br> Vous avez 6 jours pour accepter la demande, sinon quoi cette dernière sera annulée.<br> Voir la commande <a href="%url%">ici</a>.
+text.user_box_order: Félicitation votre réservation à bien été effectué. Voir le détail de la commande <a href="%url%">ici</a>.
+help.rental_reduction: La réduction s'applique en pourcentage sur la nuit. Exemple une réduction de 10% affichera le prix d'une chambre à 100€ à 90€.
+label.futur: Futur
+label.percentage: Percentage
+label.delete_rental_promotion: Etes-vous sur de vouloir supprimer cette promotion ?

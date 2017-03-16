@@ -34,14 +34,14 @@ class BoxItem
     /**
      * @var CharacteristicCategoryTr
      * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\BoxItemTr", mappedBy="boxItem", fetch="EAGER", cascade="ALL")
-     * @Groups({"boxItemTrs"})
+     * @Groups({"trs"})
      */
     private $boxItemTrs;
 
     /**
      * @var CharacteristicCategoryTr
      * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\BoxItemChoice", mappedBy="boxItem", fetch="EAGER", cascade="ALL")
-     * @Groups({"boxItemChoices"})
+     * @Groups({"default"})
      */
     private $boxItemChoices;
 

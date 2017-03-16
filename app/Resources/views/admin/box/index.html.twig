@@ -12,6 +12,7 @@
             </th>
             <th>Price</th>
             <th>Picture</th>
+            <th>Nb. de commande</th>
             <th>Action</th>
         </tr>
         </thead>
@@ -20,8 +21,7 @@
             <tr>
                 <td data-toggle="collapse" data-target="#box-{{ box.id }}" class="accordion-toggle" style="cursor:pointer">
                     {% for boxTr in box.boxTrs %}
-                        <object style="float: left;" type="image/svg+xml" data="{{ language_directory ~ boxTr.language.picture }}" height="20px">
-                        </object>
+                        <img src="{{ language_directory ~ boxTr.language.picture }}" height="20px">
                         <span style="margin-left: 10px">{{ boxTr.name }}</span>
                         <br><br>
                     {% endfor %}
@@ -32,11 +32,20 @@
                 <td style="width: 25%">
                     <img class="img-responsive" src="{{ box_directory ~ box.mediaPresentation }}">
                 </td>
+                <td>{{ box.boxOrdersNumber }}</td>
                 <td>
                     <a href="{{ path('box_edit', {'id' : box.id}) }}">
                         <input type="button"  class="btn btn-primary" value="Editer"/>
                     </a>
-                    <input type="button" class="btn btn-danger" value="Supprimer" onclick="setPathDeleteButton('{{ path('box_delete', {'id' : box.id}) }}')"/>
+                    {% if box.boxOrdersNumber == 0 %}
+                        <input type="button" class="btn btn-danger" value="Supprimer" onclick="setPathDeleteButton('{{ path('box_delete', {'id' : box.id}) }}')"/>
+                    {% endif %}
+                    {% if box.activated == 1 %}
+                        {% set checked = 'checked' %}
+                    {% else %}
+                        {% set checked = '' %}
+                    {% endif %}
+                    <input {{ checked }} onchange="activate('{{ path('api_put_box_activated') }}', 'boxActivatedToggle', '{{ box.id }}')" id="boxActivatedToggle-{{ box.id }}" type="checkbox" value="{{ box.id }}" data-toggle="toggle" data-off="Not activated" data-on="Activated" data-width="200"  data-onstyle="success">
                 </td>
             </tr>
             <tr id="box-{{ box.id }}" class="collapse">
@@ -54,15 +63,16 @@
                                 <tr>
                                     <td data-toggle="collapse" data-target="#boxItem-{{ boxItem.id }}" class="accordion-toggle" style="cursor:pointer">
                                         {% for boxItemTr in boxItem.boxItemTrs %}
-                                            <object style="float: left;" type="image/svg+xml" data="{{ language_directory }}{{ boxItemTr.language.picture }}" height="20px">
-                                            </object>
+                                            <img src="{{ language_directory ~ boxItemTr.language.picture }}" height="20px">
                                             <span style="margin-left: 10px">{{ boxItemTr.name }}</span>
                                             <br><br>
                                         {% endfor %}
                                     </td>
                                     <td>
-                                        <input type="button" class="btn btn-primary" value="Editer" id="update" onclick="loadForm('{{ path('box_item_form', {'boxId': box.id, 'id' : boxItem.id, }) }}', 'boxItem')"/>
-                                        <input type="button" class="btn btn-danger" value="Supprimer" onclick="setPathDeleteButton('{{ path('box_item_delete', {'id' : boxItem.id}) }}')"/>
+                                        {% if box.boxOrdersNumber == 0 %}
+                                            <input type="button" class="btn btn-primary" value="Editer" id="update" onclick="loadForm('{{ path('box_item_form', {'boxId': box.id, 'id' : boxItem.id, }) }}', 'boxItem')"/>
+                                            <input type="button" class="btn btn-danger" value="Supprimer" onclick="setPathDeleteButton('{{ path('box_item_delete', {'id' : boxItem.id}) }}')"/>
+                                        {% endif %}
                                     </td>
                                 </tr>
                                 <tr id="boxItem-{{ boxItem.id }}" class="collapse">
@@ -73,15 +83,16 @@
                                                 <tr>
                                                     <td>
                                                         {% for boxItemChoiceTr in boxItemChoice.boxItemChoiceTrs %}
-                                                            <object style="float: left;" type="image/svg+xml" data="{{ language_directory }}{{ boxItemChoiceTr.language.picture }}" height="20px">
-                                                            </object>
+                                                            <img src="{{ language_directory ~ boxItemChoiceTr.language.picture }}" height="20px">
                                                             <span style="margin-left: 10px">{{ boxItemChoiceTr.name }}</span>
                                                             <br><br>
                                                         {% endfor %}
                                                     </td>
                                                     <td>
-                                                        <input type="button"  class="btn btn-primary" value="Editer" id="update" onclick="loadForm('{{ path('box_item_choice_form', {'boxItemId': boxItem.id, 'id' :boxItemChoice.id}) }}', 'boxItemChoice')"/>
-                                                        <input type="button" class="btn btn-danger" value="Supprimer" onclick="setPathDeleteButton('{{ path('box_item_choice_delete', {'id' : boxItemChoice.id })}}')"/>
+                                                        {% if box.boxOrdersNumber == 0 %}
+                                                            <input type="button"  class="btn btn-primary" value="Editer" id="update" onclick="loadForm('{{ path('box_item_choice_form', {'boxItemId': boxItem.id, 'id' :boxItemChoice.id}) }}', 'boxItemChoice')"/>
+                                                            <input type="button" class="btn btn-danger" value="Supprimer" onclick="setPathDeleteButton('{{ path('box_item_choice_delete', {'id' : boxItemChoice.id })}}')"/>
+                                                        {% endif %}
                                                     </td>
                                                 </tr>
                                             {% endfor %}

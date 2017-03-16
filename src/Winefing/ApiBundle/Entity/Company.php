@@ -40,7 +40,7 @@ class Company
     private $address;
 
     /**
-     * @ORM\OneToOne(targetEntity="Winefing\ApiBundle\Entity\User")
+     * @ORM\OneToOne(targetEntity="Winefing\ApiBundle\Entity\User", inversedBy="company")
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"user"})
      */

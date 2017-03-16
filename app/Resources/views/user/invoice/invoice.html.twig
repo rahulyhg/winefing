@@ -1,0 +1,188 @@
+{% if app.request.get('_route') == 'box_order_invoice' %}
+    {% set user = order.invoiceInformation.user %}
+    {% set billingAddress = order.invoiceInformation.billingAddress %}
+    {% set deliveringAddress = order.invoiceInformation.billingAddress %}
+    {% set invoiceInformation = order.invoiceInformation %}
+    {% set invoice = order.invoice %}
+{% elseif app.request.get('invoiceType') == invoice_host %}
+    {% set user = order.invoiceInformation.user %}
+    {% set billingAddress = order.hostCompanyAddress %}
+    {% set invoiceInformation = order.invoiceInformation %}
+    {% set invoice = order.invoiceHost %}
+{% elseif app.request.get('invoiceType') == invoice_user %}
+    {% set user = order.invoiceInformation.user %}
+    {% set billingAddress = order.invoiceInformation.billingAddress %}
+    {% set invoiceInformation = order.invoiceInformation %}
+    {% set invoice = order.invoiceClient %}
+{% endif %}
+<!--=== Content Part ===-->
+<div id="invoice">
+    <div class="row">
+    <!--Invoice Header-->
+    <div class="col-md-6">
+        <div class="tag-box tag-box-v3 no-margin-bottom">
+            <img src="{{ absolute_url(asset('Logosaumon_fond_transparent.png')) }}" alt="Winefing" width="200px">
+            <address class="no-margin-bottom">
+                <ul class="list-unstyled">
+                    <li><strong>{% trans %}label.company_informations{% endtrans %}:</strong>{{ invoiceInformation.legalForm ~ ' ' ~ invoiceInformation.companyName }}</li>
+                    <li><strong>{% trans %}label.company_siren{% endtrans %}:</strong> {{ invoiceInformation.siren }}</li>
+                    <li><strong>{% trans %}label.address{% endtrans %}:</strong>
+                        <ul class="list-unstyled">
+                            <li>
+                                {{ invoiceInformation.streetWinefing  ~' ' ~invoiceInformation.cityWinefing}}
+                            </li>
+                            <li>
+                                {{ invoiceInformation.postalCodeWinefing ~' ' ~invoiceInformation.cityWinefing }}
+                            </li>
+                        </ul>
+                    </li>
+                    <li><strong>{% trans %}label.tva_number{% endtrans %}:</strong> {{ invoiceInformation.tvaNumber }}</li>
+                </ul>
+            </address>
+        </div>
+    </div>
+    <!--End Invoice Header-->
+    </div>
+
+    <!--Invoice Detials-->
+    <div class="row invoice-info">
+        <div class="col-xs-4">
+            <div class="tag-box tag-box-v3">
+                <h4>{% trans %}label.client_informations{% endtrans %}</h4>
+                <ul class="list-unstyled">
+                    {% if app.request.get('invoiceType') == invoice_host  %}
+                        <li><strong>{% trans %}label.company_name{% endtrans %}:</strong>{{ order.hostCompanyName }}</li>
+                    {% else %}
+                        <li><strong>{% trans %}label.first_name{% endtrans %}:</strong>{{ user.firstName }}</li>
+                        <li><strong>{% trans %}label.last_name{% endtrans %}:</strong>{{ user.lastName }}</li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+        <div class="col-xs-4">
+            <div class="tag-box tag-box-v3">
+                <h4>{% trans %}label.billing_address{% endtrans %}</h4>
+                <ul class="list-unstyled">
+                    <li>
+                        {{ billingAddress.streetAddress ~ ' ' ~ billingAddress.route }}
+                    </li>
+                    <li>
+                        {{ billingAddress.locality ~ ' ' ~ billingAddress.country }}
+                    </li>
+                    <li>
+                        {{ billingAddress.country|upper }}
+                    </li>
+                </ul>
+            </div>
+        </div>
+        {% if deliveringAddress is defined %}
+            <div class="col-xs-4">
+                <div class="tag-box tag-box-v3">
+                    <h4>{% trans %}label.delivery_address{% endtrans %}</h4>
+                    <ul class="list-unstyled">
+                        <li>
+                            {{ deliveringAddress.streetAddress  ~ ' ' ~ deliveringAddress.route }}
+                        </li>
+                        <li>
+                            {{ deliveringAddress.postalCode ~ ' ' ~billingAddress.locality }}
+                        </li>
+                        <li>
+                            {{ deliveringAddress.country|upper }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    <!--End Invoice Detials-->
+
+    <!--Invoice Table-->
+    <div class="panel panel-default margin-bottom-40">
+        <div class="panel-heading">
+            <h4 class="panel-title">{{ 'label.bill_detail'|trans()~ '-   #'~order.id ~ '   -' ~ invoiceInformation.billDate|date('d-m-Y') }}</h4>
+        </div>
+        {% if app.request.get('_route') == 'box_order_invoice' %}
+            <table class="table table-striped invoice-table">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>{{ 'label.box'|trans() }}</th>
+                    <th>{{ 'label.description'|trans() }}</th>
+                    <th>{{ 'label.quantity'|trans() }}</th>
+                    <th>{{ 'label.unit_cost'|trans() }}</th>
+                    <th>{{ 'label.total'|trans()|trim(':') }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>{{ order.id }}</td>
+                    <td>{{ order.box.name }}</td>
+                    <td>
+                        {% for item in order.box.boxItems %}
+                            {% if item.boxItemChoices|length == 0 %}
+                                {{ item.name ~ ' - ' }}
+                            {% endif %}
+                        {% endfor %}
+                        {% for itemChoice in order.boxItemChoices %}
+                            {{ itemChoice.name ~ ' - ' }}
+                        {% endfor %}
+                    </td>
+                    <td>1</td>
+                    <td>{{ order.invoice.totalTTC|number_format(2) ~ '€'}}</td>
+                    <td>{{ order.invoice.totalTTC|number_format(2) ~ '€' }}</td>
+                </tr>
+                </tbody>
+            </table>
+        {% else %}
+            <table class="table table-striped invoice-table">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>{{ 'label.rental'|transchoice(1) }}</th>
+                    <th>{{ 'label.date'|transchoice(1) }}</th>
+                    <th>{{ 'label.winefing_fees'|transchoice(1) }}</th>
+                    {% if app.request.get('invoiceType') == invoice_host %}<th>{{ 'label.detail'|transchoice(1) }}</th>{% endif %}
+                    <th>{{ 'label.total'|trans()|trim(':') }}</th>
+                <tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ order.id }}</td>
+                        {% set domain = order.rentalName ~ '<br>' ~ order.propertyName ~ '<br>'~ order.domainName %}
+                        <td>{{ domain|raw }}</td>
+                        <td>
+                            {{ 'label.from'|trans() ~ ' ' ~ order.startDate|date('d-m-Y') ~ ' '~'label.to'|trans()~ ' ' ~ order.endDate|date('d-m-Y') }}
+                        </td>
+                        <td>
+                            {% if app.request.get('invoiceType') == invoice_host %}
+                                {{ order.hostComission ~ '%' }}
+                            {% elseif app.request.get('invoiceType') == invoice_user %}
+                                {{ order.clientComission|number_format(2) ~ '€' }}
+                            {% endif %}
+                        </td>
+                        {% if app.request.get('invoiceType') == invoice_host %}
+                            <td>{{ order.amount|number_format(2) ~ '€ *'~ (order.hostComission/100)|number_format(2) }}</td>
+                        {% endif %}
+                        <td>{{ invoice.totalTTC|number_format(2) ~ '€' }}</td>
+                        {#<td>{{ invoice.totalTTC|number_format(2) ~ '€' }}</td>#}
+                    </tr>
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+    <!--End Invoice Table-->
+
+    <!--Invoice Footer-->
+    <div class="row">
+        <div class="col-xs-6 text-right col-xs-offset-6">
+            <ul class="list-unstyled invoice-total-info">
+                <li><strong>{{ 'label.total_ht'|trans() }}</strong>{{ invoice.totalHT|number_format(2) ~ '€' }}</li>
+                <li><strong>{{ 'label.tax'|trans() }}</strong>{{ invoice.tax ~ '%' }}</li>
+                <li><strong>{{ 'label.total_tax'|trans() }}</strong>{{ invoice.totalTax|number_format(2)  ~ '€'}}</li>
+                <li><strong>{{ 'label.total_ttc'|trans() }}</strong>{{ invoice.totalTTC|number_format(2) ~ '€' }}</li>
+            </ul>
+        </div>
+    </div>
+    <!--End Invoice Footer-->
+</div><!--/container-->
+<!--=== End Content Part ===-->

@@ -3,11 +3,11 @@
     <div class="row">
         <div class="col-sm-3">
             <ul class="nav nav-pills nav-stacked" id="nav">
-                <li class="active"><a href="#presentation" data-toggle="tab"><i class="glyphicon glyphicon-home"></i> {% trans %}label.presentation{% endtrans %}</a></li>
-                <li><a href="#rentals" data-toggle="tab"><i class="glyphicon glyphicon-home"></i> {% trans %}label.rentals{% endtrans %}</a></li>
-                <li><a href="#medias" data-toggle="tab"><i class="glyphicon glyphicon-picture"></i> {% trans %}label.pictures{% endtrans %}</a></li>
-                <li><a href="#address" data-toggle="tab"><i class="glyphicon glyphicon-zoom-in"></i> {% trans %}label.address{% endtrans %}</a></li>
-                <li><a href="#informations" data-toggle="tab"><i class="glyphicon glyphicon-info-sign"></i> {% trans %}label.informations{% endtrans %}</a></li>
+                <li class="active"><a href="#presentation" data-toggle="tab"><i class="glyphicon glyphicon-home"></i>{% trans %}label.presentation{% endtrans %}</a></li>
+                <li><a href="#rentals" data-toggle="tab"><i class="fa fa-bed" aria-hidden="true"></i>{{ 'label.rental'|transchoice(2) }}</a></li>
+                <li><a href="#medias" data-toggle="tab"><i class="glyphicon glyphicon-picture"></i>{% trans %}label.pictures{% endtrans %}</a></li>
+                <li><a href="#address" data-toggle="tab"><i class="glyphicon glyphicon-zoom-in"></i>{% trans %}label.address{% endtrans %}</a></li>
+                <li><a href="#informations" data-toggle="tab"><i class="glyphicon glyphicon-info-sign"></i>{% trans %}label.informations{% endtrans %}</a></li>
             </ul>
         </div>
         <div class="col-sm-9">
@@ -62,7 +62,7 @@
                         <div class="panel panel-default">
                             <div class="panel-heading">
                                 <div>
-                                    <span style="font-size: 18px;font-family: 'Raleway', sans-serif;font-weight: 800">{% trans %}label.rentals{% endtrans %}</span>
+                                    <span style="font-size: 18px;font-family: 'Raleway', sans-serif;font-weight: 800">{{ 'label.rental'|transchoice(2)|capitalize }}</span>
                                     <a href="{{ path('rental_new', {'property': app.request.get('id')}) }}">
                                         <button class="btn btn-primary btn-circle btn-lg">
                                             <span class="glyphicon glyphicon-plus"></span>

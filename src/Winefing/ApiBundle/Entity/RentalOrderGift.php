@@ -50,13 +50,6 @@ class RentalOrderGift
     private $signature;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Address", cascade="ALL")
-     * @ORM\JoinColumn(nullable=false)
-     * @Groups({"address"})
-     */
-    private $address;
-
-    /**
      * @ORM\OneToOne(targetEntity="Winefing\ApiBundle\Entity\RentalOrder", mappedBy="rentalOrderGift")
      * @ORM\JoinColumn(nullable=true)
      */
@@ -119,30 +112,6 @@ class RentalOrderGift
     public function getSignature()
     {
         return $this->signature;
-    }
-
-    /**
-     * Set address
-     *
-     * @param string $address
-     *
-     * @return RentalOrderGift
-     */
-    public function setAddress($address)
-    {
-        $this->address = $address;
-
-        return $this;
-    }
-
-    /**
-     * Get address
-     *
-     * @return string
-     */
-    public function getAddress()
-    {
-        return $this->address;
     }
 
     /**

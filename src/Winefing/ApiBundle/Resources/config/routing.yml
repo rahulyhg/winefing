@@ -199,6 +199,11 @@ rentalOrder:
     resource: Winefing\ApiBundle\Controller\RentalOrderController
     name_prefix:  api_
 
+boxOrder:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\BoxOrderController
+    name_prefix:  api_
+
 email:
     type: rest
     resource: Winefing\ApiBundle\Controller\EmailController
@@ -222,4 +227,21 @@ iban:
 pagination:
     type: rest
     resource: Winefing\ApiBundle\Controller\PaginationController
+    name_prefix:  api_
+
+
+invoice:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\InvoiceController
+    name_prefix:  api_
+
+
+invoiceInformation:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\InvoiceInformationController
+    name_prefix:  api_
+
+lemonWay:
+    type: rest
+    resource: Winefing\ApiBundle\Controller\LemonWayController
     name_prefix:  api_

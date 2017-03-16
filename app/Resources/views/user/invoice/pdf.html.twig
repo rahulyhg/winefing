@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="{{ absolute_url(asset('assets/vendor/bootstrap/dist/css/bootstrap.min.css')) }}" />
+    <link rel="stylesheet" href="{{ absolute_url(asset('bundles/app/css/custom/custom.css')) }}" />
+    <link rel="stylesheet" href="{{ absolute_url(asset('bundles/app/css/arillo/style.css')) }}" />
+    <link rel="stylesheet" href="{{ absolute_url(asset('bundles/app/css/unify/blocks.css')) }}" />
+</head>
+<body style="background-color: white">
+    {{ include('user/invoice/invoice.html.twig') }}
+</body>

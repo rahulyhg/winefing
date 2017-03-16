@@ -115,6 +115,14 @@ class Rental
      */
     private $characteristicValuesByCategory;
 
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="activated", type="boolean")
+     * @Groups({"default"})
+     */
+    private $activated = 1;
+
 
     public function addRentalPromotion(RentalPromotion $rentalPromotion) {
         $this->rentalPromotions[] = $rentalPromotion;
@@ -375,6 +383,22 @@ class Rental
     public function setCharacteristicValuesByCategory($characteristicValuesByCategory)
     {
         $this->characteristicValuesByCategory = $characteristicValuesByCategory;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isActivated()
+    {
+        return $this->activated;
+    }
+
+    /**
+     * @param boolean $activated
+     */
+    public function setActivated($activated)
+    {
+        $this->activated = $activated;
     }
 }
 

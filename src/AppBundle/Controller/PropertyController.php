@@ -66,7 +66,7 @@ class PropertyController extends Controller
      * @return
      * @Route("/property/{id}/edit/{nav}", name="property_edit")
      */
-    public function putAction($id, $nav = '#presentation', Request $request) {
+    public function putAction($id, $nav = 'presentation', Request $request) {
         $return = array();
         $property = $this->getProperty($id);
         //persit the domain object
@@ -81,7 +81,7 @@ class PropertyController extends Controller
                 $this->submit($propertyEdit);
                 $request->getSession()
                     ->getFlashBag()
-                    ->add('presentationSuccess', $this->get('translator')->trans('success.generic_edit_form'));
+                    ->add('success', $this->get('translator')->trans('success.generic_edit_form'));
                 return $this->redirect($this->generateUrl('property_edit', array('id' => $property->getId(), 'nav' => $nav)));
             } else {
                 $request->getSession()
@@ -103,10 +103,19 @@ class PropertyController extends Controller
                 $addressForm = $request->request->all()['address'];
                 $addressForm["property"] = $property->getId();
                 $addressForm["id"] = $address->getId();
+
+                $adapter  = new \Ivory\HttpAdapter\CurlHttpAdapter();
+                $geocoder = new \Geocoder\Provider\GoogleMaps($adapter);
+                $coordinate = $geocoder->geocode($addressForm["formattedAddress"])->first();
+
+                //get the address's lat and lng
+                $addressForm["lat"] = $coordinate->getLatitude();
+                $addressForm["lng"] = $coordinate->getLongitude();
+
                 $this->submitAddress($addressForm);
                 $request->getSession()
                     ->getFlashBag()
-                    ->add('addressSuccess', $this->get('translator')->trans('success.generic_edit_form'));
+                    ->add('success', $this->get('translator')->trans('success.generic_edit_form'));
                 return $this->redirect($this->generateUrl('property_edit', array('id' => $property->getId(), 'nav' => $nav)));
             } else {
                 $request->getSession()
@@ -122,7 +131,7 @@ class PropertyController extends Controller
                 $this->submitCharacteristicPropertyValues($characteristicValueForm);
                 $request->getSession()
                     ->getFlashBag()
-                    ->add('informationsSuccess', $this->get('translator')->trans('success.generic_edit_form'));
+                    ->add('success', $this->get('translator')->trans('success.generic_edit_form'));
                 return $this->redirect($this->generateUrl('property_edit', array('id' => $property->getId(), 'nav' => $nav)));
             }
         }
@@ -192,7 +201,11 @@ class PropertyController extends Controller
      * @return
      * @Route("/property/{idProperty}/address", name="property_address")
      */
-    public function putPropertyAddress($idProperty, Request $request) {
+    public function putPropertyAddress($idProperty = '', Request $request) {
+        if(empty($idProperty)) {
+            $this->addFlash('success', $this->get('translator')->trans('success.new_property'));
+            return $this->redirectToRoute('property_edit', array('id' => $idProperty, 'nav'=>'medias'));
+        }
         $property = $this->getProperty($idProperty);
         $address = $this->getAddress($property);
         $addressForm = $this->createForm(AddressType::class, $address);
@@ -207,10 +220,10 @@ class PropertyController extends Controller
                 $addressForm["property"] = $property->getId();
                 $addressForm["id"] = $address->getId();
                 $this->submitAddress($addressForm);
-                return $this->redirectToRoute('property_picture', array('idProperty' => $idProperty));
+                $this->addFlash('success', $this->get('translator')->trans('success.new_property'));
+                return $this->redirectToRoute('property_edit', array('id' => $idProperty, 'nav'=>'medias'));
             }
         }
-
         $return['addressForm'] = $addressForm->createView();
         return $this->render('host/property/new/address.html.twig', $return);
     }
@@ -400,11 +413,22 @@ class PropertyController extends Controller
     public function deleteAction($id, Request $request)
     {
         $api = $this->container->get('winefing.api_controller');
+        $serializer = $this->container->get('jms_serializer');
+        //get the domain correspondant
+        $response = $response = $api->get($this->get('_router')->generate('api_get_domain_by_property', array('propertyId' => $id)));
+        $domain = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Domain', 'json');
+
+        $response = $response = $api->get($this->get('_router')->generate('api_get_rentals_by_property', array('propertyId' => $id)));
+        $rentals = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\Rental>', 'json');
+        foreach($rentals as $rental) {
+            if($rental->isActivated()) {
+                $this->addFlash('error', $this->get('translator')->trans('error.delete_property_with_rental'));
+                return $this->redirectToRoute('host_domain_properties', array('id'=>$domain->getId()));
+            }
+        }
         $api->delete($this->get('router')->generate('api_delete_property', array('id'=>$id)));
-        $request->getSession()
-            ->getFlashBag()
-            ->add('success', "The property is well deleted.");
-        return $this->redirectToRoute('property_user');
+        $this->addFlash('success', $this->get('translator')->trans('success.generic_delete'));
+        return $this->redirectToRoute('host_domain_properties', array('id'=>$domain->getId()));
     }
 
     /**

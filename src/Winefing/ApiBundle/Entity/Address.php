@@ -39,7 +39,6 @@ class Address
 
     /**
      * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\User", fetch="EXTRA_LAZY", cascade={"persist", "merge", "detach"})
-     * @Groups({"addresses"})
      */
     private $users;
 

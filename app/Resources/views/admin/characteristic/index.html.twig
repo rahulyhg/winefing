@@ -18,8 +18,7 @@
             <tr>
                 <td data-toggle="collapse" data-target="#characteristics-{{ characteristicCategory.id }}" class="accordion-toggle" style="cursor:pointer">
                     {% for characteristicCategoryTr in characteristicCategory.characteristicCategoryTrs %}
-                        <object style="float: left;" type="image/svg+xml" data="{{ language_directory }}{{ characteristicCategoryTr.language.picture }}" height="20px">
-                        </object>
+                        <img src="{{ language_directory ~ characteristicCategoryTr.language.picture }}" height="20px">
                         <span style="margin-left: 10px">{{ characteristicCategoryTr.name }}</span>
                         <br><br>
                     {% endfor %}
@@ -55,16 +54,14 @@
                                 <tr>
                                     <td>
                                     {% for characteristicTr in characteristic.characteristicTrs %}
-                                        <object style="float: left;" type="image/svg+xml" data="{{ language_directory }}{{ characteristicTr.language.picture }}" height="20px">
-                                        </object>
+                                        <img src="{{ language_directory ~characteristicTr.language.picture }}" height="20px">
                                         <span style="margin-left: 10px">{{ characteristicTr.name }}</span>
                                         <br><br>
                                     {% endfor %}
                                     </td>
                                     <td>
                                         {% if characteristic.picture is not null  %}
-                                            <object  type="image/svg+xml" data="{{ characteristic_directory ~  characteristic.picture }}" height="20px">
-                                            </object>
+                                            <img src="{{ characteristic_directory ~  characteristic.picture }}" height="20px">
                                         {% endif %}
                                     </td>
                                     <td>

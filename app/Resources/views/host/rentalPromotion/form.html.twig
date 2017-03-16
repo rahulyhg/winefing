@@ -3,55 +3,50 @@
     <div class="container">
         <div class="row">
             <div class="col-md-6 col-md-offset-3">
-                {{ app.request.getLocale() }}
-                {% if app.session.flashBag.has('success') %}
-                    <div class="alert alert-success">
-                        {% for msg in app.session.flashBag.get('success') %}
-                            {{ msg }}
-                        {% endfor %}
-                    </div>
-                {% endif %}
-                {% if app.session.flashBag.has('error') %}
-                    <div class="alert alert-danger">
-                        {% for msg in app.session.flashBag.get('error') %}
-                            {{ msg }}
-                        {% endfor %}
-                    </div>
-                {% endif %}
-                    {#{{ form_start(domainForm) }}#}
-                    {#{% for property in domainForm.properties %}#}
-                        {#<label>{{ property.name.vars.value }}</label>#}
-                        {#{{ form_widget(property.rentals) }}#}
-                        {#{{ form_widget(property.name) }}#}
-                        {#<br>#}
-                    {#{% endfor %}#}
-                {#{{ form_end(domainForm) }}#}
-            {{ form_start(rentalPromotionForm) }}
-                <label>{% trans %}label.date{% endtrans %}</label>
-                <div id="sandbox-container">
-                    <div class="input-daterange input-group" id="datepicker">
-                        {{ form_row(rentalPromotionForm.startDate) }}
-                        <span class="input-group-addon">{% trans %}label.to{% endtrans %}</span>
-                        {{ form_row(rentalPromotionForm.endDate) }}
-                    </div>
+                <div class="service-block-v8">
+                    {% if app.session.flashBag.has('error') %}
+                        <div class="alert alert-danger">
+                            {% for msg in app.session.flashBag.get('error') %}
+                                {{ msg }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    {{ form_start(rentalPromotionForm) }}
+                        <label>{{ 'label.date'|transchoice(1) }}</label>
+                        {{ form_errors(rentalPromotionForm.startDate) }}
+                        {{ form_errors(rentalPromotionForm.endDate) }}
+                        <div id="sandbox-container">
+                            <div class="input-daterange input-group" id="datepicker">
+                                {{ form_widget(rentalPromotionForm.startDate) }}
+                                <span class="input-group-addon">{% trans %}label.to{% endtrans %}</span>
+                                {{ form_widget(rentalPromotionForm.endDate) }}
+                            </div>
+                        </div>
+                        <br>
+                        <div class="form-group">
+                            <label>
+                                {% trans %}label.reduction{% endtrans %}
+                                <a href="#" data-toggle="tooltip" data-placement="right" title="{% trans %}help.rental_reduction{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
+                            </label>
+                            {{ form_errors(rentalPromotionForm.reduction) }}
+                            <div class="input-group">
+                                {{ form_widget(rentalPromotionForm.reduction) }}
+                                <div class="input-group-addon">%</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>{{ 'label.rental'|transchoice(2)|capitalize }}</label>
+                            <br>
+                            {{ form_row(rentalPromotionForm.rentals) }}
+                        </div>
+                    {{ form_end(rentalPromotionForm) }}
                 </div>
-                <br>
-                <div class="form-group">
-                    <label>{% trans %}label.reduction{% endtrans %}</label>
-                    <div class="input-group">
-                        {{ form_row(rentalPromotionForm.reduction) }}
-                        <div class="input-group-addon">%</div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>{% trans %}label.rentals{% endtrans %}</label>
-                    <br>
-                    {{ form_row(rentalPromotionForm.rentals) }}
-                </div>
-            {{ form_end(rentalPromotionForm) }}
             </div>
         </div>
     </div>
+{% endblock %}
+{% block script %}
+    {{ parent() }}
     <script>
         $(document).ready(function() {
             $('#sandbox-container .input-daterange').datepicker({
@@ -59,6 +54,11 @@
                 format: 'dd-mm-yyyy',
                 orientation: "bottom auto",
                 autoclose: true
+            });
+            //remplace char by space in price input
+            $("#rental_promotion_reduction").keydown(function (e) {
+                // Allow: backspace, delete, tab, escape, enter and .
+                replaceChar(e);
             });
         });
 

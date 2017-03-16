@@ -16,15 +16,15 @@
                     <a type="button" class="btn btn-circle {% if route != 'property_address' %}{{ 'disabled btn-default' }}{% else %}{{  'btn-primary' }}{% endif %}">3</a>
                     <p>{% trans %}label.address{% endtrans %}</p>
                 </div>
-                <div class="stepwizard-step">
-                    <a type="button" class="btn btn-circle {% if route != 'property_picture' %}{{ 'disabled btn-default' }}{% else %}{{  'btn-primary' }}{% endif %}">4</a>
-                    <p>{% trans %}label.presentation_picture{% endtrans %}</p>
-                </div>
+                {#<div class="stepwizard-step">#}
+                    {#<a type="button" class="btn btn-circle {% if route != 'property_picture' %}{{ 'disabled btn-default' }}{% else %}{{  'btn-primary' }}{% endif %}">4</a>#}
+                    {#<p>{% trans %}label.presentation_picture{% endtrans %}</p>#}
+                {#</div>#}
             </div>
         </div>
         <div class="row">
             <div class="col-xs-6 col-md-offset-3">
-                <div class="col-md-12">
+                <div class="service-block-v8">
                     {% block new %}
                     {% endblock %}
                 </div>

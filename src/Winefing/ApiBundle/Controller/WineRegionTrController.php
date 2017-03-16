@@ -55,6 +55,7 @@ class WineRegionTrController extends Controller implements ClassResourceInterfac
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
         $wineRegionTr->setLanguage($repository->findOneById($request->request->get("language")));
         $wineRegionTr->setName($request->request->get("name"));
+        $wineRegionTr->setDescription($request->request->get("description"));
         $validator = $this->get('validator');
         $errors = $validator->validate($wineRegionTr);
         if (count($errors) > 0) {
@@ -76,6 +77,7 @@ class WineRegionTrController extends Controller implements ClassResourceInterfac
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:WineRegionTr');
         $wineRegionTr = $repository->findOneById($request->request->get("id"));
         $wineRegionTr->setName($request->request->get("name"));
+        $wineRegionTr->setDescription($request->request->get("description"));
         $validator = $this->get('validator');
         $errors = $validator->validate($wineRegionTr);
         if (count($errors) > 0) {

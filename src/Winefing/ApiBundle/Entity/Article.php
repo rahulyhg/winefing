@@ -339,5 +339,6 @@ class Article
             $articleCategory->setTr($language);
         }
     }
+
 }
 

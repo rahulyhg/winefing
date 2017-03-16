@@ -18,7 +18,7 @@
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="widget">
                     <img style="width: 100%" src="{{asset('Logoblanc_fondtransparent-06.png')}}" alt="Winefing">
-                    <p>
+                    <p class="text-white">
                         {{ 'meta.description'|trans() }}
                     </p>
                 </div>
@@ -40,8 +40,8 @@
             <!-- break -->
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="widget">
-                    <h3>Contact</h3>
-                    <address>
+                    <h3>{{ 'label.contact'|trans() }}</h3>
+                    <address class="text-white">
                         {{ winefing_street_address ~ ' ' ~ winefing_route }}<br>
                         {{ winefing_postal_code ~ ' ' ~ winefing_locality }}<br>
                         {{ winefing_country }}<br>

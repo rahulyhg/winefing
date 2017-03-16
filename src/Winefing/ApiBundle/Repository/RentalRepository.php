@@ -17,7 +17,7 @@ class RentalRepository extends \Doctrine\ORM\EntityRepository
                 ->join("rental.property", "property")
                 ->join("property.domain", "domain")
                 ->join("domain.user", "user")
-                ->where('user.id = :userId')
+                ->where('user.id = :userId and rental.activated = 1')
                 ->setParameter('userId', $userId)
                 ->getQuery();
             return $query->getResult();
@@ -44,7 +44,7 @@ class RentalRepository extends \Doctrine\ORM\EntityRepository
         $query = $this->createQueryBuilder('rental')
             ->join("rental.property", "property")
             ->join("property.domain", "domain")
-            ->where('domain.id = :domainId')
+            ->where('domain.id = :domainId and rental.activated = 1')
             ->setParameter('domainId', $domainId)
             ->getQuery();
         return $query->getResult();

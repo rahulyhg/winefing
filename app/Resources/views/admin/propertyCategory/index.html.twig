@@ -17,8 +17,7 @@
             <tr>
                 <td>
                     {% for propertyCategoryTr in propertyCategory.propertyCategoryTrs %}
-                        <object style="float: left;" type="image/svg+xml" data="{{ language_directory }}{{ propertyCategoryTr.language.picture }}" height="20px">
-                        </object>
+                        <img src="{{ language_directory ~ propertyCategoryTr.language.picture }}" height="20px">
                         <span style="margin-left: 10px">{{ propertyCategoryTr.name }}</span>
                         <br><br>
                     {% endfor %}

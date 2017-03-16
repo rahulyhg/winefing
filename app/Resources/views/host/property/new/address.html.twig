@@ -7,7 +7,7 @@
         {{ form_end(addressListChoice) }}
         {% set hidden = 'hidden' %}
         <div id="buttonNextAddress">
-            <a class="btn btn-primary btn-lg pull-right" href="{{ path('property_picture', {'idProperty' : app.request.get('idProperty')}) }}">{% trans %}label.next{% endtrans %}</a>
+            <a class="btn btn-primary btn-lg pull-right" href="{{ path('property_edit', {'id': app.request.get('idProperty'), 'nav': 'medias'}) }}">{% trans %}label.next{% endtrans %}</a>
         </div>
     {% endif %}
     <br>

@@ -16,32 +16,69 @@
                 <div class="row container-realestate">
                     {% for property in i..(i+2) if (i < length) %}
                         <div class="col-md-4 col-sm-6 col-xs-12">
-                            <div class="property-container">
-                                <div class="property-image">
-                                    <img src="{{ property_directory ~ properties[i].mediaPresentation }}" alt="{{ properties[i].name }}">
-                                    <div class="property-features-grey text-center">
-                                        <span class="glyphicon glyphicon-tag property-features-span-margin">
-                                            {{ properties[i].propertyCategory.name}}
-                                        </span>
-                                        {% if properties[i].propertyStatistic.nbRental > 0 %}
-                                            <span class="glyphicon glyphicon-home property-features-span-margin">
-                                                {{ 'label.rental_number' | transchoice(properties[i].propertyStatistic.nbRental, {"%number%":properties[i].propertyStatistic.nbRental}) }}
+                            <a href="{{ path('property_edit', {'id': properties[i].id }) }}">
+                                <div class="property-container">
+                                    <div class="property-image">
+                                        <img src="{{ property_directory ~ properties[i].mediaPresentation }}" alt="{{ properties[i].name }}">
+                                        <div class="property-features-grey text-center">
+                                            <span class="glyphicon glyphicon-tag property-features-span-margin">
+                                                {{ properties[i].propertyCategory.name}}
                                             </span>
-                                            <span class="glyphicon glyphicon-euro property-features-span-margin">
-                                                {{ properties[i].propertyStatistic.minPrice ~ "-" ~ properties[i].propertyStatistic.maxPrice }}
-                                            </span>
-                                        {% endif %}
+                                            {% if properties[i].propertyStatistic.nbRental > 0 %}
+                                                <span class="glyphicon glyphicon-home property-features-span-margin">
+                                                    {{ 'label.rental_number' | transchoice(properties[i].propertyStatistic.nbRental, {"%number%":properties[i].propertyStatistic.nbRental}) }}
+                                                </span>
+                                                <span class="glyphicon glyphicon-euro property-features-span-margin">
+                                                    {{ properties[i].propertyStatistic.minPrice ~ "-" ~ properties[i].propertyStatistic.maxPrice }}
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="property-content">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h3><a href="{{ path('property_edit', {'id': properties[i].id }) }}">{{ properties[i].name }}</a></h3>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="dropdown" style="margin-top: 20px">
+                                                    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">{{ 'label.actions'|trans() }}
+                                                        <span class="caret"></span></button>
+                                                    <ul class="dropdown-menu">
+                                                        <li><a href="{{ path('rental_edit', {'id': properties[i].id }) }}">{% trans %}label.edit{% endtrans %}</a></li>
+                                                        <li><a onclick="setPathDeleteButton('{{ path('property_delete', {'id' : properties[i].id }) }}')">{% trans %}label.delete{% endtrans %}</a></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="property-content">
-                                    <h3><a href="{{ path('property_edit', {'id': properties[i].id }) }}">{{ properties[i].name }}</a> <small>{{ properties[i].description }}</small></h3>
-                                </div>
-                            </div>
+                            </a>
                         </div>
                         {% set i = i+1 %}
                     {% endfor %}
                 </div>
             {% endfor %}
         </div>
+    </div>
+{% endblock %}
+{% block modal %}
+    {{ parent() }}
+    <span id="modalDelete">
+    <div class="modal fade" tabindex="-1" role="dialog" id="confirmation">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">{{ 'label.delete'|trans() }}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>{{ 'label.delete_property'|trans() }}</p>
+                </div><!-- /.modal-content -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ 'label.cancel'|trans() }}</button>
+                    <a id="delete" type="submit" class="btn btn-primary pull-right">{{ 'label.delete'|trans() }}</a>
+                </div>
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
     </div>
 {% endblock %}

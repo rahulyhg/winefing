@@ -13,6 +13,7 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
+                <li class="{% if route == 'user_orders' %}active-nav-back-end{% endif %}"><a href="{{ path('user_orders', {'id' : app.user.id }) }}">{{ 'label.order'|transchoice(2)|capitalize }}</a></li>
                 <li class="dropdown {% if route == 'languages' or route =='formats' or route == 'countries'%}active-nav-back-end{% endif %}">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Technique<span class="caret"></span></a>
                     <ul class="dropdown-menu active">

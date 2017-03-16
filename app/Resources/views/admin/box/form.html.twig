@@ -14,20 +14,30 @@
             <div class="tab-content">
                 <div class="tab-pane fade in active" id="presentation">
                     {{ form_start(boxForm, {'attr' : {'id': 'box'}}) }}
-                        <div class="form-group">
-                            {{ form_row(boxForm.price) }}
+                        <div class="form-group {% if boxForm.price.vars.errors|length %}has-error{% endif %}">
+                            <label>
+                                *{% trans %}label.price{% endtrans %}/{{ 'label.night'|transchoice(1) }}
+                                <a href="#" data-toggle="tooltip" data-placement="right" title="{% trans %}help.rental_price{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
+                            </label>
+                            {{ form_errors(boxForm.price,  { 'attr': {'class': 'form-control'} }) }}
+                            <div class="input-group">
+                                {{ form_widget(boxForm.price,  { 'attr': {'class': 'form-control'} }) }}
+                                <div class="input-group-addon">€</div>
+                            </div>
                         </div>
                         <br>
-                        {% for boxTr in boxForm.boxTrs %}
-                            <br>
-                            {{ form_widget(boxTr.language, {'attr' : {'disabled': 'false'} }) }}
-                            <div class="form-group">
-                                {{ form_row(boxTr.name) }}
-                            </div>
-                            <div class="form-group">
-                                {{ form_row(boxTr.description) }}
-                            </div>
-                        {% endfor %}
+                        {% if boxForm.boxTrs is defined %}
+                            {% for boxTr in boxForm.boxTrs %}
+                                <br>
+                                {{ form_widget(boxTr.language, {'attr' : {'disabled': 'false'} }) }}
+                                <div class="form-group">
+                                    {{ form_row(boxTr.name) }}
+                                </div>
+                                <div class="form-group">
+                                    {{ form_row(boxTr.description) }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
                         {{ form_row(boxForm.submit) }}
                     {{ form_end(boxForm) }}
                 </div>
@@ -46,34 +56,45 @@
         </div>
     </div>
 {% endblock %}
-{% if app.request.get('_route') == 'box_edit' %}
-    {% block script %}
-        {{ parent() }}
+{% block script %}
+    {{ parent() }}
+    <script>
+        //remplace char by space in price input
+        jQuery(document).ready(function() {
+            $("#box_price").keydown(function (e) {
+                // Allow: backspace, delete, tab, escape, enter and .
+                replaceChar(e);
+            });
+        });
+    </script>
+    {% if app.request.get('_route') == 'box_edit' %}
         <script type="application/javascript">
-                var medias= {{ medias|raw }};
+            var medias= {{ medias|raw }};
 
-                //variable used in the dropzone-custom.js file, to init the dropzone.
-                var upload = '{{ box_directory }}';
-                var size = 10-(medias.length);
-                var uploadDirectory = '{{ path('box_upload_picture', {'id': app.request.get('id')}) }}';
-                var directDefaultMessage = '{{ 'label.drop_files_here' | trans({}) }}';
-                var toastMessageImgPresentation = '{{ 'success.image_presentation' | trans({}) }}';
-                var toastMessageImgDeleting = '{{ 'success.delete_image' | trans({}) }}';
-                var toastMessageImgNoPresentation = '{{ 'success.image_no_presentation' | trans({}) }}';
+            //variable used in the dropzone-custom.js file, to init the dropzone.
+            var upload = '{{ box_directory }}';
+            var size = 10-(medias.length);
+            var uploadDirectory = '{{ path('box_upload_picture', {'id': app.request.get('id')}) }}';
+            var directDefaultMessage = '{{ 'label.drop_files_here' | trans({}) }}';
+            var toastMessageImgPresentation = '{{ 'success.image_presentation' | trans({}) }}';
+            var toastMessageImgDeleting = '{{ 'success.delete_image' | trans({}) }}';
+            var toastMessageImgNoPresentation = '{{ 'success.image_no_presentation' | trans({}) }}';
 
 
-                //variable used in the custom.js, in different javascript function user by the dropzone.
-                deletePath = "{{ path('box_delete_picture', {'id': 'id'}) }}";
-                urlMediaPresentation = "{{ path('api_patch_media_presentation_box', {'id': 'id'}) }}";
-                Dropzone.autoDiscover = false;
-                confirmationDelete = '{{ 'confirmation.delete' | trans({}, "messages") }}';
+            //variable used in the custom.js, in different javascript function user by the dropzone.
+            deletePath = "{{ path('box_delete_picture', {'id': 'id'}) }}";
+            urlMediaPresentation = "{{ path('api_patch_media_presentation_box', {'id': 'id'}) }}";
+            Dropzone.autoDiscover = false;
+            confirmationDelete = '{{ 'confirmation.delete' | trans({}, "messages") }}';
 
-                //initiate the fancybox = slider
-                FancyBox.initFancybox();
+            //initiate the fancybox = slider
+            FancyBox.initFancybox();
 
-            </script>
-            {% javascripts 'bundles/app/js/dropzone-custom.js'%}
-            <script src="{{ asset_url }}"></script>
-            {% endjavascripts %}
-    {% endblock %}
-{% endif %}
+
+
+        </script>
+        {% javascripts 'bundles/app/js/dropzone-custom.js'%}
+        <script src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+    {% endif %}
+{% endblock %}

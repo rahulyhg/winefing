@@ -80,7 +80,6 @@ class PaginationController extends Controller implements ClassResourceInterface
     public function getDomainsAction($language, $maxPerPage, Request $request)
     {
         $serializer = $this->container->get('jms_serializer');
-        $params = $request->query->all();
         $page = 1;
         $params = $request->query->all();
         if(array_key_exists('page', $params)) {

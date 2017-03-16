@@ -31,13 +31,6 @@ class User implements UserInterface, \Serializable
     protected $id;
 
     /**
-     * @var RentalOrders
-     * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\RentalOrder", mappedBy="user", fetch="EAGER", cascade="ALL")
-     * @Groups({"rentalOrders"})
-     */
-    private $rentalOrders;
-
-    /**
      * @var CreditCards
      * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\CreditCard", mappedBy="user", fetch="EXTRA_LAZY", cascade="ALL")
      * @Groups({"creditCards"})
@@ -198,8 +191,8 @@ class User implements UserInterface, \Serializable
 
     /**
      * @var
-     * @Groups({"hostRentalOrders"})
      * @Type("array<Winefing\ApiBundle\Entity\RentalOrder>")
+     * @Groups({"hostRentalOrders"})
      */
     protected $hostRentalOrders;
 
@@ -225,6 +218,12 @@ class User implements UserInterface, \Serializable
      */
     protected $google;
 
+    /**
+     * @ORM\OneToOne(targetEntity="Winefing\ApiBundle\Entity\Company", mappedBy="user")
+     * @Groups({"company"})
+     */
+    private $company;
+
     public function __construct()
     {
         $this->subscriptions = new ArrayCollection();
@@ -235,7 +234,6 @@ class User implements UserInterface, \Serializable
         $this->isActive = true;
         $this->creditCards = new ArrayCollection();
         $this->hostRentalOrders = new ArrayCollection();
-        $this->rentalOrders = new ArrayCollection();
 
         return $this;
     }
@@ -711,38 +709,6 @@ class User implements UserInterface, \Serializable
     }
 
     /**
-     * @return RentalOrders
-     */
-    public function getRentalOrders()
-    {
-        return $this->rentalOrders;
-    }
-
-    /**
-     * @param RentalOrders $rentalOrders
-     */
-    public function setRentalOrders($rentalOrders)
-    {
-        $this->rentalOrders = $rentalOrders;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getHostRentalOrders()
-    {
-        return $this->hostRentalOrders;
-    }
-
-    /**
-     * @param mixed $hostRentalOrders
-     */
-    public function setHostRentalOrders($rentalOrders)
-    {
-        $this->hostRentalOrders = $rentalOrders;
-    }
-
-    /**
      * @return mixed
      */
     public function getTwitter()
@@ -806,4 +772,35 @@ class User implements UserInterface, \Serializable
         $this->google = $google;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getCompany()
+    {
+        return $this->company;
+    }
+
+    /**
+     * @param mixed $company
+     */
+    public function setCompany($company)
+    {
+        $this->company = $company;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHostRentalOrders()
+    {
+        return $this->hostRentalOrders;
+    }
+
+    /**
+     * @param mixed $hostRentalOrders
+     */
+    public function setHostRentalOrders($hostRentalOrders)
+    {
+        $this->hostRentalOrders = $hostRentalOrders;
+    }
 }

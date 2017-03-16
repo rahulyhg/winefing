@@ -249,6 +249,13 @@ class RentalController extends Controller implements ClassResourceInterface
         $json = $serializer->serialize($rentals, 'json', SerializationContext::create()->setGroups(array('default')));
         return new Response($json);
     }
+    public function cgetByPropertyAction($propertyId) {
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Property');
+        $property = $repository->findOneById($propertyId);
+        $serializer = $this->container->get('jms_serializer');
+        $json = $serializer->serialize($property->getRentals(), 'json', SerializationContext::create()->setGroups(array('default')));
+        return new Response($json);
+    }
     /**
      * @ApiDoc(
      *  resource=true,
@@ -355,10 +362,12 @@ class RentalController extends Controller implements ClassResourceInterface
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Rental');
         $rental = $repository->findOneById($id);
         $em = $this->getDoctrine()->getManager();
-        if(!empty($rental->getRentalOrders())) {
-            return new HttpException(422, "can't delete this rental because order are related.");
+        if(count($rental->getRentalOrders()) > 0) {
+            $rental->setActivated(0);
+            $em->persist($rental);
+        } else {
+            $em->remove($rental);
         }
-        $em->remove($rental);
         $em->flush();
     }
     /**

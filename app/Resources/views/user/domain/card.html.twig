@@ -32,24 +32,41 @@
     </div>
     <div class="container content" style="padding-bottom: 0px!important">
         <div class="property-details" id="darcy-house">
-                <div id="propertyintrobox">
-                    <h1 id="uniquename">{{ domain.name }}</h1>
-                    <p class="location">
-                        <em id="uniquelocation">{{ domain.wineRegion.name }}</em></p>
-                    <div class="row">
-                        <div class="col-xs-12 col-sm-6 col-md-6">
-                            <a href="#reservation">
-                             <input id="order" class="btn btn-primary" value="{% trans %}label.book{% endtrans %}">
-                            </a>
-                        </div>
-                        <div class="col-xs-12 col-sm-6 col-md-6">
-                            <div class="btn btn-primary">Acheter sur Twil</div>
-                        </div>
+            <div id="propertyintrobox">
+                <h1>{{ domain.name }}</h1>
+                 <p><em>{{ domain.wineRegion.name }}</em></p>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-4 col-md-4">
+                        <a href="#reservation">
+                         <input id="order" class="btn btn-primary" value="{% trans %}label.book{% endtrans %}" style="margin-top: 30px">
+                        </a>
                     </div>
-                    <button id="wineList" class="btn-card-love {% if wineList == 1 %}active{% endif %}">
-                        <span class="glyphicon glyphicon-heart btn-card-love"></span>
-                    </button>
+                    {% if domain.twil %}
+                        <div class="col-xs-12 col-sm-6 col-md-6 col-md-offset-1">
+                            <div class="row">
+                                <a href="{{ domain.twil }}" target="_blank">
+                                    <div class="twil-btn">
+                                        <div class="col-xs-2 nopadding">
+                                            <img src="{{ asset('bottle-and-glass-shapes-white.png') }}" height="50px">
+                                        </div>
+                                        <div class="col-xs-6 nopadding">
+                                            <p style="text-align: center">{{ 'label.twil_order'|trans() }}
+                                                <span class="glyphicon glyphicon-chevron-right"></span>
+                                            </p>
+                                        </div>
+                                        <div class="col-xs-4 nopadding">
+                                            <img style="float:right" src="{{ asset('twil.png') }}" width="80px" border="1px">
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
                 </div>
+                <button id="wineList" class="btn-card-love {% if wineList == 1 %}active{% endif %}">
+                    <span class="glyphicon glyphicon-heart btn-card-love"></span>
+                </button>
+            </div>
         </div>
     </div>
     <div class="container content" style="padding-top: 0px">
@@ -63,7 +80,6 @@
                             <li class="active"> <a href="#presentation" data-toggle="tab">{% trans %}label.presentation{% endtrans %}</a> </li>
                             <li> <a href="#wineRegion" data-toggle="tab">{% trans %}label.wine_region{% endtrans %}</a> </li>
                             <li> <a href="#wineOwner" data-toggle="tab">{% trans %}label.the_owner{% endtrans %}</a> </li>
-                            <li> <a href="#address" data-toggle="tab">{% trans %}label.address{% endtrans %}</a> </li>
                         </ul>
                         <div class="tab-content margin-tops">
                             <div class="tab-pane active fade in" id="presentation">
@@ -135,9 +151,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="tab-pane fade" id="address" style="margin: 0px 0px 0px 0px!important">
-                                <div id="map"></div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -145,7 +158,7 @@
         </section>
     </div>
     <div id="reservation">
-        {% for property in domain.properties %}
+        {% for property in domain.properties if property.rentals|length > 0 %}
             {#for the gallery one (the principal gallery)#}
             <div class="hidden">
                 {% for media in property.medias %}
@@ -197,104 +210,106 @@
                                             {% endfor %}
                                         </div>
                                     </div>
-                                    <div class="col-md-8">
-                                        <h4>{% trans %}label.description{% endtrans %}</h4>
-                                        <p>{{ property.description }}</p>
-                                    </div>
+                                    {% if property.description %}
+                                        <div class="col-md-8">
+                                            <h4>{% trans %}label.description{% endtrans %}</h4>
+                                            <p>{{ property.description }}</p>
+                                        </div>
+                                    {% endif %}
                                 </div>
                             </div>
                         {#</div>#}
                     <br>
                     <div class="row">
                         {% set rentals = property.rentals %}
-                        {% set length = rentals|length %}
-                        {% set i = 0 %}
-                        {% for j in 0..(length/3)|round(0, 'ceil') %}
-                            <div class="row container-realestate">
-                                {% for rental in i..(i+2) if (i < length) %}
-                                    <div class="hidden">
-                                        {#for the gallery one (the principal gallery)#}
-                                        {% for media in rentals[i].medias %}
-                                            <a href="{{ rental_directory ~ media.name }}" title="{{ rentals[i].name }}" data-rel="gallery" class="fancybox img-hover-v1">
-                                            </a>
-                                            <a href="{{ rental_directory ~ media.name }}" title="{{ rentals[i].name }}" data-rel="gallery gallery-{{ rentals[i].id }}" class="fancybox img-hover-v1">
-                                            </a>
-                                        {% endfor %}
-                                    </div>
-                                    <div class="col-md-4 col-sm-6 col-xs-12">
-                                        <div class="property-container">
-                                            <div class="property-image">
-                                                <a href="{{ rental_directory ~ rentals[i].mediaPresentation }}" title="{{ rentals[i].name }}" data-rel="gallery gallery-{{ rentals[i].id }}" class="fancybox img-hover-v1">
-                                                    <img src="{{ rental_directory ~ rentals[i].mediaPresentation }}" alt="{{ rentals[i].name }}">
-                                                    <div class="hidden-xs">
-                                                        <span class="glyphicon glyphicon-search picture-zoom"></span>
-                                                    </div>
-                                                </a>
-                                                <div class="property-features-grey text-center">
-                                                    <span class="glyphicon glyphicon-user property-features-span-margin">
-                                                        {{ 'label.people_number_plurial' | transchoice(rentals[i].peopleNumber, {"%number%":rentals[i].peopleNumber}) }}
-                                                    </span>
-                                                    <span class="glyphicon glyphicon-euro property-features-span-margin">
-                                                        {{ rentals[i].price ~ '/'~'label.night' | transchoice(1, {})}}
-                                                    </span>
-                                                    <span style="    font-size: 8px;margin-left: -15px; font-style: italic;position: inherit">
-                                                        {{ '*'~'label.night_minimum' | transchoice(rentals[i].minimumRentalPeriod, {'%number%': rentals[i].minimumRentalPeriod})}}
-                                                    </span>
+                        <div class="row container-realestate">
+                            {% for rental in rentals if rental.activated == 1 %}
+                                <div class="hidden">
+                                    {#for the gallery one (the principal gallery)#}
+                                    {% for media in rental.medias %}
+                                        <a href="{{ rental_directory ~ media.name }}" title="{{ rental.name }}" data-rel="gallery" class="fancybox img-hover-v1">
+                                        </a>
+                                        <a href="{{ rental_directory ~ media.name }}" title="{{ rental.name }}" data-rel="gallery gallery-{{ rental.id }}" class="fancybox img-hover-v1">
+                                        </a>
+                                    {% endfor %}
+                                </div>
+                                <div class="col-md-4 col-sm-6 col-xs-12">
+                                    <div class="property-container">
+                                        <div class="property-image">
+                                            <a href="{{ rental_directory ~ rental.mediaPresentation }}" title="{{ rental.name }}" data-rel="gallery gallery-{{ rental.id }}" class="fancybox img-hover-v1">
+                                                <img src="{{ rental_directory ~ rental.mediaPresentation }}" alt="{{ rental.name }}">
+                                                <div class="hidden-xs">
+                                                    <span class="glyphicon glyphicon-search picture-zoom"></span>
                                                 </div>
+                                            </a>
+                                            <div class="property-features-grey text-center">
+                                                <span class="glyphicon glyphicon-user property-features-span-margin">
+                                                    {{ 'label.people_number_plurial' | transchoice(rental.peopleNumber, {"%number%":rental.peopleNumber}) }}
+                                                </span>
+                                                <span class="glyphicon glyphicon-euro property-features-span-margin">
+                                                    {{ rental.price ~ '/'~'label.night' | transchoice(1, {})}}
+                                                </span>
+                                                <span style="font-size: 8px;margin-left: -15px; font-style: italic;position: inherit">
+                                                    {{ '*'~'label.night_minimum' | transchoice(rental.minimumRentalPeriod, {'%number%': rental.minimumRentalPeriod})}}
+                                                </span>
                                             </div>
-                                            <div class="property-content">
-                                                <h3>
-                                                <a data-toggle ="collapse" data-parent = "#accordion" href = "#{{ rentals[i].id }}">
-                                                    <span style="font-size: 16px">{{ rentals[i].name }}</span>
-                                                    <span class="more-information"><span class="glyphicon glyphicon-chevron-right">{% trans %}label.more_information{% endtrans %}</span></span>
-                                                </a>
-                                                <div id = "{{ rentals[i].id }}" class="collapse" style="margin-top: 20px">
-                                                    <small>
-                                                        {% for characteristicCategoryName, characteristicValues in rentals[i].characteristicValuesByCategory %}
-                                                            <h5 class="text-left" style="font-weight:600; color:#2f2f2f;">{{ characteristicCategoryName }}</h5>
-                                                            {% for characteristicValue in characteristicValues if characteristicValue.characteristic.activated == 1 %}
-                                                                <div>
-                                                                    {% if characteristicValue.characteristic.picture %}
-                                                                        <img style="width:35px;vertical-align:middle" type="image/svg+xml" src="{{ characteristic_directory ~ characteristicValue.characteristic.picture }}">
-                                                                    {% endif %}
-                                                                    <span>
-                                                                        {% if characteristicValue.characteristic.format.name == format_monnaie %}
-                                                                            {{ characteristicValue.characteristic.name ~ ': '~ characteristicValue.value ~ '€' }}
-                                                                        {% elseif characteristicValue.characteristic.format.name == format_boolean %}
-                                                                            {% if characteristicValue.value == '1' %}
-                                                                                {{ characteristicValue.characteristic.name }}
-                                                                            {% else %}
-                                                                                <span style="text-decoration:line-through;color: rgba(189, 195, 199,1.0)">{{ characteristicValue.characteristic.name }}</span>
-                                                                            {% endif %}
-                                                                        {% elseif characteristicValue.characteristic.format.name == format_time %}
-                                                                            {{ characteristicValue.characteristic.name ~ ': '~ characteristicValue.value }}
+                                        </div>
+                                        <div class="property-content">
+                                            <h3>
+                                            <a data-toggle ="collapse" data-parent = "#accordion" href = "#{{ rental.id }}">
+                                                <span style="font-size: 16px">{{ rental.name }}</span>
+                                                <span class="more-information"><span class="glyphicon glyphicon-chevron-right">{% trans %}label.more_information{% endtrans %}</span></span>
+                                            </a>
+                                            <div id = "{{ rental.id }}" class="collapse" style="margin-top: 20px">
+                                                <small>
+                                                    {% for characteristicCategoryName, characteristicValues in rental.characteristicValuesByCategory %}
+                                                        <h5 class="text-left" style="font-weight:600; color:#2f2f2f;">{{ characteristicCategoryName }}</h5>
+                                                        {% for characteristicValue in characteristicValues if characteristicValue.characteristic.activated == 1 %}
+                                                            <div>
+                                                                {% if characteristicValue.characteristic.picture %}
+                                                                    <img style="width:35px;vertical-align:middle" type="image/svg+xml" src="{{ characteristic_directory ~ characteristicValue.characteristic.picture }}">
+                                                                {% endif %}
+                                                                <span>
+                                                                    {% if characteristicValue.characteristic.format.name == format_monnaie %}
+                                                                        {{ characteristicValue.characteristic.name ~ ': '~ characteristicValue.value ~ '€' }}
+                                                                    {% elseif characteristicValue.characteristic.format.name == format_boolean %}
+                                                                        {% if characteristicValue.value == '1' %}
+                                                                            {{ characteristicValue.characteristic.name }}
                                                                         {% else %}
-                                                                            {{ characteristicValue.characteristic.name  ~ ': '~ characteristicValue.value }}
+                                                                            <span style="text-decoration:line-through;color: rgba(189, 195, 199,1.0)">{{ characteristicValue.characteristic.name }}</span>
                                                                         {% endif %}
-                                                                    </span>
-                                                                </div>
-                                                            {% endfor %}
+                                                                    {% elseif characteristicValue.characteristic.format.name == format_time %}
+                                                                        {{ characteristicValue.characteristic.name ~ ': '~ characteristicValue.value }}
+                                                                    {% else %}
+                                                                        {{ characteristicValue.characteristic.name  ~ ': '~ characteristicValue.value }}
+                                                                    {% endif %}
+                                                                </span>
+                                                            </div>
                                                         {% endfor %}
-                                                    </small>
-                                                </div>
+                                                    {% endfor %}
+                                                </small>
+                                            </div>
 
-                                                </h3>
-                                                <div class="row" style="margin-bottom: -10px!important">
-                                                    <input type="button" value="{% trans %}label.book{% endtrans %}" style="width:100%" onclick="rentalOrder('{{ path('rental', {'id':rentals[i].id, 'startDate':app.request.get('startDate'), 'endDate':  app.request.get('endDate')}) }}')" class="btn btn-primary pull-right">
-                                                </div>
+                                            </h3>
+                                            <div class="row" style="margin-bottom: -10px!important">
+                                                <input type="button" value="{% trans %}label.book{% endtrans %}" style="width:100%" onclick="rentalOrder('{{ path('rental', {'id':rental.id, 'startDate':app.request.get('startDate'), 'endDate':  app.request.get('endDate')}) }}')" class="btn btn-primary pull-right">
                                             </div>
                                         </div>
                                     </div>
-                                    {% set i = i+1 %}
-                                {% endfor %}
-                            </div>
-                        {% endfor %}
+                                </div>
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
             </div>
         {% endfor %}
         <div class="container">
             <p style="font-style: italic">*{% trans %}help.price_variation{% endtrans %}</p>
+        </div>
+        <div>
+            <div id="map" style="width:100%; height:400px">
+
+            </div>
         </div>
     </div>
 {% endblock %}
@@ -304,46 +319,47 @@
         FancyBox.initFancybox();
         var toastMessageDomainAdded = '{{ 'success.domain_added_winelist' | trans({}) }}';
         var toastMessageDomainRemoved = '{{ 'success.domain_removed_winelist' | trans({}) }}';
-        $('#wineList').on('click', function() {
-            if ('{{ is_granted('IS_AUTHENTICATED_FULLY') }}') {
-                $.ajax({
-                    url: '{{ path('domain_add_to_wishlist', {'id':app.request.get('id'), 'userId': app.user.id }) }}',
-                    type: 'PATCH',
-                    async: false,
-                    success: function (data, textStatus, jqXHR) {
-                        //remove file from the dropzone
-                        var message = toastMessageDomainAdded;
-                        if($('#wineList').hasClass('active')) {
-                            message = toastMessageDomainRemoved;
-                            $('#wineList').removeClass('active');
-                        } else {
-                            $('#wineList').addClass('active');
-                        }
-                        $.toast({
-                            heading: toastHeadingSuccess,
-                            text: message,
-                            showHideTransition: 'slide',
-                            icon: 'success',
-                            position: 'top-right'
-                        });
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        $.toast({
-                            heading: toastHeadingError,
-                            text: toastMessageError,
-                            showHideTransition: 'fade',
-                            icon: 'error',
-                            position: 'top-right'
-                        });
-                    }
-                });
-            } else {
-                $('#login').modal('show');
-            }
-        });
+        {#$('#wineList').on('click', function() {#}
+            {#console.log('{{ is_granted('IS_AUTHENTICATED_FULLY') }}');#}
+            {#if ({{ is_granted('IS_AUTHENTICATED_FULLY') }}) {#}
+                {#$.ajax({#}
+                    {#url: '{{ path('domain_add_to_wishlist', {'id':app.request.get('id'), 'userId': app.user.id }) }}',#}
+                    {#type: 'PATCH',#}
+                    {#async: false,#}
+                    {#success: function (data, textStatus, jqXHR) {#}
+                        {#//remove file from the dropzone#}
+                        {#var message = toastMessageDomainAdded;#}
+                        {#if($('#wineList').hasClass('active')) {#}
+                            {#message = toastMessageDomainRemoved;#}
+                            {#$('#wineList').removeClass('active');#}
+                        {#} else {#}
+                            {#$('#wineList').addClass('active');#}
+                        {#}#}
+                        {#$.toast({#}
+                            {#heading: toastHeadingSuccess,#}
+                            {#text: message,#}
+                            {#showHideTransition: 'slide',#}
+                            {#icon: 'success',#}
+                            {#position: 'top-right'#}
+                        {#});#}
+                    {#},#}
+                    {#error: function (jqXHR, textStatus, errorThrown) {#}
+                        {#$.toast({#}
+                            {#heading: toastHeadingError,#}
+                            {#text: toastMessageError,#}
+                            {#showHideTransition: 'fade',#}
+                            {#icon: 'error',#}
+                            {#position: 'top-right'#}
+                        {#});#}
+                    {#}#}
+                {#});#}
+            {#} else {#}
+                {#$('#login').modal('show');#}
+            {#}#}
+        {#});#}
 
         function rentalOrder(url) {
-            if ('{{ is_granted('IS_AUTHENTICATED_FULLY') }}') {
+            if ({{ is_granted('IS_AUTHENTICATED_FULLY') }}) {
                 $.ajax({
                     url: url,
                     type: 'PATCH',
@@ -361,20 +377,19 @@
                 $('#login').modal('show');
             }
         }
-        {#function initMap() }#}
-            {#var uluru = {lat: {{ domain.address.lat }}, lng: {{ domain.address.lng }}};#}
-            {#var map = new google.maps.Map(document.getElementById('map'), }#}
-                {#center: uluru,#}
-                {#scrollwheel: false,#}
-                {#zoom: 14#}
-            {#});#}
-            {#var marker = new google.maps.Marker(}#}
-                {#position: uluru,#}
-                {#map: map#}
-            {#});#}
-        {#}#}
+        function initializeMap() {
+            var domain = {lat: {{ domain.address.lat }}, lng: {{ domain.address.lng}} };
+            var map = new google.maps.Map(document.getElementById('map'), {
+                center: domain,
+                scrollwheel: false,
+                zoom: 14
+            });
+            var marker = new google.maps.Marker({
+                position: domain,
+                map: map
+            });
+        }
     </script>
-    {#<script async defer#}
-            {#src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBXbn5jGttQkXWIfV91bBmsMg-HS_o_f7o&callback=initMap">#}
-    {#</script>#}
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBXbn5jGttQkXWIfV91bBmsMg-HS_o_f7o&callback=initializeMap">
+    </script>
 {% endblock %}

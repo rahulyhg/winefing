@@ -21,6 +21,7 @@ class DomainRepository extends \Doctrine\ORM\EntityRepository
             ->getQuery();
         return $query->getOneOrNullResult();
     }
+
     function findGroupByWineRegion()
     {
         $query = $this->createQueryBuilder('domain')
@@ -33,6 +34,7 @@ class DomainRepository extends \Doctrine\ORM\EntityRepository
             ->getQuery();
         return $query->getResult();
     }
+
     function findOneWithMediaId($mediaId)
     {
         $query = $this->createQueryBuilder('domain')
@@ -43,7 +45,9 @@ class DomainRepository extends \Doctrine\ORM\EntityRepository
             ->getQuery();
         return $query->getOneOrNullResult();
     }
-    function findWithCriterias($maxperpage, $criterias) {
+
+    function findWithCriterias($maxperpage, $criterias)
+    {
         //basic
         $queryBuilder = $this->createQueryBuilder('domain')
             ->innerJoin("domain.user", "user")
@@ -51,7 +55,7 @@ class DomainRepository extends \Doctrine\ORM\EntityRepository
             ->innerJoin("property.rentals", "rental")
             ->where("user.verify = 0");
         $peopleNumber = 1;
-        if(array_key_exists("peopleNumber", $criterias)) {
+        if (array_key_exists("peopleNumber", $criterias)) {
             $peopleNumber = $criterias["peopleNumber"];
         }
         //add the condition on the people Number
@@ -59,7 +63,7 @@ class DomainRepository extends \Doctrine\ORM\EntityRepository
             ->andWhere("rental.peopleNumber >= :peopleNumer")
             ->setParameter("peopleNumer", $peopleNumber);
 
-        if(array_key_exists("tags", $criterias)) {
+        if (array_key_exists("tags", $criterias)) {
             $queryBuilder
                 ->innerJoin("domain.tags", "tag")
                 ->andWhere("tag.id IN (:tags)")
@@ -67,27 +71,27 @@ class DomainRepository extends \Doctrine\ORM\EntityRepository
         }
 
         //check for the wineRegion parameter
-        if(array_key_exists("wineRegion", $criterias) && !empty($criterias["wineRegion"])) {
+        if (array_key_exists("wineRegion", $criterias) && !empty($criterias["wineRegion"])) {
             $queryBuilder
                 ->innerJoin("domain.wineRegion", "wineRegion")
                 ->andWhere("wineRegion.id IN (:wineRegion)")
                 ->setParameter("wineRegion", $criterias["wineRegion"]);
         }
         //check for the location available
-        if(array_key_exists("startDate", $criterias) && !empty($criterias["startDate"])) {
+        if (array_key_exists("startDate", $criterias) && !empty($criterias["startDate"])) {
 
         }
         //check for the price slider
-        if(array_key_exists("price", $criterias) && !empty($criterias["price"])) {
-            $price = explode(",",$criterias["price"]);
+        if (array_key_exists("price", $criterias) && !empty($criterias["price"])) {
+            $price = explode(",", $criterias["price"]);
             $queryBuilder
-            ->andWhere("rental.price >= :minPrice and rental.price <= :maxPrice")
-            ->setParameter("minPrice", $price[0])
-            ->setParameter("maxPrice", $price[1]);
+                ->andWhere("rental.price >= :minPrice and rental.price <= :maxPrice")
+                ->setParameter("minPrice", $price[0])
+                ->setParameter("maxPrice", $price[1]);
         }
         //set the pagination
         $queryBuilder
-            ->setFirstResult(($criterias['page']-1) * $maxperpage)
+            ->setFirstResult(($criterias['page'] - 1) * $maxperpage)
             ->setMaxResults($maxperpage);
         return new Paginator($queryBuilder);
     }

@@ -58,23 +58,6 @@ class RentalController extends Controller
             'startDate'=>$request->query->get('startDate'),
             'endDate'=>$request->query->get('endDate')));
     }
-    /**
-     * @Route("users/rental/{id}/paiement", name="rental_paiement_date")
-     *
-     */
-    public function rentalPaiement($id, Request $request) {
-        //start to set in session a new rentalOrder
-        $rentalOrder = new RentalOrder();
-        $rentalOrder->setStartDate(new \DateTime($request->request->get('start')));
-        $rentalOrder->setEndDate(new \DateTime($request->request->get('end')));
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Rental');
-        $rental = $repository->findOneById($id);
-        $rental->setMediaPresentation();
-        $rentalOrder->setRental($rental);
-        $serializer = $this->container->get('jms_serializer');
-        $this->get('session')->set('rentalOrder', $serializer->serialize($rentalOrder, 'json', SerializationContext::create()->setGroups(array('default', 'rental'))));
-        return $this->redirectToRoute('rental_paiement_billing_address');
-    }
     public function getRentalPromotions($rentalId) {
         $api = $this->container->get('winefing.api_controller');
         $serializer = $this->container->get('jms_serializer');
@@ -126,19 +109,19 @@ class RentalController extends Controller
         //create the form
         $rentalForm =  $this->createForm(RentalType::class, $rental, array('user'=>$this->getUser()->getId()));
         $rentalForm->get('property')->setData($rental->getProperty());
-        $rentalForm->get('price')->setData($rental->getPrice());
 
         $rentalForm->handleRequest($request);
         if ($rentalForm->isSubmitted()) {
             if($rentalForm->isValid()) {
                 $nav = 'presentation';
                 $rentalEdit = $request->request->all()['rental'];
+                $rentalEdit['price'] = $rentalForm->get('price')->getData();
                 $rentalEdit["id"] = $rental->getId();
                 $rentalEdit["property"] = $rental->getProperty()->getId();
                 $rental = $this->submit($rentalEdit);
                 $request->getSession()
                     ->getFlashBag()
-                    ->add('rentalSuccess', $this->get('translator')->trans('success.generic_edit_form'));
+                    ->add('success', $this->get('translator')->trans('success.generic_edit_form'));
                 return $this->redirect($this->generateUrl('rental_edit', array('id' => $rental->getId(), 'nav' => $nav)));
             } else {
                 $request->getSession()
@@ -154,7 +137,7 @@ class RentalController extends Controller
                 $nav = 'informations';
                 $request->getSession()
                     ->getFlashBag()
-                    ->add('informationsSuccess', $this->get('translator')->trans('success.generic_edit_form'));
+                    ->add('success', $this->get('translator')->trans('success.generic_edit_form'));
                 return $this->redirect($this->generateUrl('rental_edit', array('id' => $rental->getId(), 'nav' => $nav)));
             }
         }
@@ -172,9 +155,9 @@ class RentalController extends Controller
      */
     public function newAction($property = '', Request $request) {
         $rental = new Rental();
-        $rental->setPrice(50.00);
         $rental->setMinimumRentalPeriod(1);
         $rental->setPeopleNumber(2);
+        $rental->setPrice(50,00);
 
         $options['user'] = $this->getUser()->getId();
         $rentalForm = $this->createForm(RentalType::class, $rental, $options);
@@ -189,12 +172,13 @@ class RentalController extends Controller
         $rentalForm->handleRequest($request);
         if ($rentalForm->isSubmitted()) {
             if($rentalForm->isValid()) {
-                $rentalForm = $request->request->all()['rental'];
-                if(empty($rentalForm["property"])) {
+                $rentalEdit = $request->request->all()['rental'];
+                if(empty($rentalEdit["property"])) {
                     return $this->redirect($this->generateUrl('property_new'));
                 }
-                $rentalForm["id"] = $rental->getId();
-                $rental = $this->submit($rentalForm);
+                $rentalEdit["id"] = $rental->getId();
+                $rentalEdit["price"] = $rentalForm->get('price')->getData();
+                $rental = $this->submit($rentalEdit);
                 $rentalId = $rental->getId();
                 return $this->redirect($this->generateUrl('rental_characteristics', array('idRental'=> $rentalId)));
             }
@@ -213,7 +197,10 @@ class RentalController extends Controller
             if (!empty($characteristicValueForm)) {
                 $characteristicValueForm["rental"] = $rental->getId();
                 $this->submitCharacteristicValues($characteristicValueForm);
-                return $this->redirect($this->generateUrl('rental_picture', array('idRental'=> $idRental)));
+                $request->getSession()
+                    ->getFlashBag()
+                    ->add('success', $this->get('translator')->trans('success.new_rental'));
+                return $this->redirect($this->generateUrl('rental_edit', array('id'=> $idRental, 'nav'=>'medias')));
             }
         }
         return $this->render('host/rental/new/information.html.twig', $return);
@@ -266,11 +253,12 @@ class RentalController extends Controller
     public function deleteAction($id, Request $request)
     {
         $api = $this->container->get('winefing.api_controller');
+        $serializer = $this->container->get('jms_serializer');
+        $response = $response = $api->get($this->get('_router')->generate('api_get_domain_by_rental', array('rentalId' => $id)));
+        $domain = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Domain', 'json');
         $api->delete($this->get('router')->generate('api_delete_rental', array('id'=>$id)));
-        $request->getSession()
-            ->getFlashBag()
-            ->add('success', "The rental is well deleted.");
-        return $this->redirectToRoute('rental_user');
+        $this->addFlash('success', $this->get('translator')->trans('success.generic_delete'));
+        return $this->redirectToRoute('host_rentals', array('id'=> $domain->getId()));
     }
 
     /**

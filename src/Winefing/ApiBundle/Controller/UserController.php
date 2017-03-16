@@ -211,8 +211,10 @@ class UserController extends Controller implements ClassResourceInterface
         $user->setPhoneNumber($newUser['phoneNumber']);
         $user->setEmail($newUser['email']);
         $user->setUserName($newUser['email']);
-        $user->setVerify(0);
+        //CHANGER
+        $user->setVerify(1);
         $user->setLastLogin(new \DateTime());
+        $newUser['password'] = "winefing";
     }
     public function setUser($user, $newUser) {
         $user->setFirstName($newUser['firstName']);
@@ -220,9 +222,7 @@ class UserController extends Controller implements ClassResourceInterface
         $user->setEmail($newUser['email']);
         $user->setUserName($newUser['email']);
         $user->setLastLogin(new \DateTime());
-        if(!empty($newUser['birthDate'])) {
-            $user->setBirthDate(date_create_from_format('U', $newUser('birthDate')));
-        }
+        $user->setBirthDate(date_create_from_format('U', $newUser['birthDate']));
     }
     public function setAdmin($user, &$newUser) {
         $user->setFirstName($newUser['firstName']);
@@ -732,5 +732,24 @@ class UserController extends Controller implements ClassResourceInterface
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Domain');
         $domain = $repository->findOneById($domain);
         return new Response($serializer->serialize($domain->getUser(), 'json', SerializationContext::create()->setGroups(array('id'))));
+    }
+
+    /**
+     * @ApiDoc(
+     *  resource=true,
+     *  views = { "id"},
+     *  description="Return user for a domain id given",
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         204="Returned when no content"
+     *     }
+     *
+     * )
+     */
+    public function getHostByRentalAction($rental) {
+        $serializer = $this->container->get("jms_serializer");
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
+        $user = $repository->findOneWithRental($rental);
+        return new Response($serializer->serialize($user, 'json', SerializationContext::create()->setGroups(array('id'))));
     }
 }

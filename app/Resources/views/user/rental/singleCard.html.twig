@@ -76,57 +76,6 @@
             }
         }
 
-        function getDaysNumber(startDate, endDate){
-            var timeDiff = Math.abs(endDate.getTime() - startDate.getTime());
-            var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
-            return diffDays;
-        }
-        function getPrice(averagePrice, daysNumber) {
-            return Number((averagePrice * daysNumber).toFixed(2));
-        }
-        /**
-         * If the date selected is not empty
-         */
-        function getStartDate() {
-            start = $('#start').val();
-            return new Date(start.substr(6, 4), start.substr(3, 2) -1, start.substr(0, 2));
-        }
-        function getEndDate() {
-            end = $('#end').val();
-            return new Date(end.substr(6, 4), end.substr(3, 2) -1, end.substr(0, 2));
-        }
-        function initInput() {
-            console.log('in');
-            if($('#start, #end').val()) {
-                displayPrice();
-            }
-        }
-        function displayPrice() {
-            var startDate = getStartDate();
-            var endDate = getEndDate();
-            var daysNumber = getDaysNumber(startDate, endDate);
-            if(daysNumber >= '{{ rental.minimumRentalPeriod }}') {
-                //check if the minimum period is well selected
-                var averagePrice = 0.0;
-                $('#bill').show();
-                $('#error').hide();
-
-                $("span[id='daysNumber']").html(daysNumber);
-                var count = 0;
-                var date = startDate;
-                while (date.getTime() < endDate.getTime()) {
-                    averagePrice += getPriceByDate(date);
-                    date.setDate(date.getDate() + 1);
-                    count++;
-                }
-                averagePrice = Number((averagePrice / count).toFixed(2));
-                $("span[id='averagePrice']").html(averagePrice);
-                $("span[id='price']").html(getPrice(averagePrice, daysNumber));
-            } else {
-                $('#bill').hide();
-                $('#error').show();
-            }
-        }
 
         function getPriceByDate(date) {
             var price = {{ rental.price }};
@@ -148,6 +97,7 @@
                 format: 'dd-mm-yyyy',
                 autoclose: true,
                 todayHighlight: true,
+                language: '{{ app.request.getLocale() }}',
                 beforeShowDay: function(date) {
                     var objet = {enabled:true, tooltip:getPriceByDate(date)+" €"};
                     return objet;
@@ -155,15 +105,15 @@
             })
             .each(function() {
                 $(this).datepicker().on('changeDate', function (ev) {
-                    var startDate = getStartDate();
-                    var endDate = getEndDate();
+                    var startDate = getStartDate('#start');
+                    var endDate = getEndDate('#end');
                     if(ev.target.id === 'start') {
                         startDate = ev.date;
                     } else {
                         endDate = ev.date;
                     }
                     if(endDate.getTime() > startDate.getTime()) {
-                        displayPrice();
+                        displayPrice('#start', '#end', {{ rental.minimumRentalPeriod }});
                     } else {
                         $('#bill').hide();
                     }

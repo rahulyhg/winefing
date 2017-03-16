@@ -98,4 +98,6 @@ class HomeController extends Controller
 //        var_dump($response->getBody()->getContents());
         return $this->render('index.html.twig', array('filterForm'=>$filterForm->createView(), 'tags'=>$tags, 'wineRegion'=>$wineRegion));
     }
+
+
 }

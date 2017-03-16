@@ -65,9 +65,9 @@ class BoxController extends Controller
      */
     public function cgetAdminAction() {
         $api = $this->container->get('winefing.api_controller');
-        $serializer = $this->container->get('winefing.serializer_controller');
+        $serializer = $this->container->get('jms_serializer');
         $response = $api->get($this->get('router')->generate('api_get_boxes'));
-        $boxes = $serializer->decode($response->getBody()->getContents());
+        $boxes = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\Box>', 'json');
         return $this->render('admin/box/index.html.twig', array("boxes" => $boxes)
         );
     }
@@ -88,6 +88,8 @@ class BoxController extends Controller
      * @Route("/admin/box/new", name="box_new")
      */
     public function newAction(Request $request) {
+        $api = $this->container->get('winefing.api_controller');
+        $serializer = $this->container->get('jms_serializer');
         $box = new Box();
         $languagesId = array();
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Language');
@@ -100,10 +102,12 @@ class BoxController extends Controller
         $boxForm = $this->createForm(BoxType::class, $box);
         $boxForm->handleRequest($request);
         if($boxForm->isSubmitted() && $boxForm->isValid()) {
-            $boxId = $this->postBox($request->request->get('box'));
+            $boxId = $this->postBox($api, $serializer, $request->request->get('box'));
             $body['id'] = $boxId;
             $body['boxTrs'] = $request->request->get('box')['boxTrs'];
             $this->submitBoxTrs($body);
+            $this->addFlash('success', $this->get('translator')->trans('success.generic_added'));
+            return $this->redirectToRoute('box_edit', array('id'=>$boxId));
         }
         return $this->render('admin/box/form.html.twig', array(
             'boxForm' => $boxForm->createView()
@@ -137,6 +141,7 @@ class BoxController extends Controller
         $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Box');
         $box = $repository->findOneById($id);
+        $box->setBoxOrdersNumber();
 
         $languagesId = array();
         foreach ($box->getBoxTrs() as $tr) {
@@ -150,13 +155,18 @@ class BoxController extends Controller
             $box->addBoxTr($boxTr);
         }
         $boxForm = $this->createForm(BoxType::class, $box);
+        if($box->getBoxOrdersNumber() > 0) {
+            $boxForm->remove('boxTrs');
+        }
         $boxForm->handleRequest($request);
         if($boxForm->isSubmitted() && $boxForm->isValid()) {
-            $boxId = $this->postBox($api, $serializer, $request->request->get('box'));
+            $boxId = $this->putBox($api, $serializer, $request->request->get('box')['price'], $box->getId());
             $body = array();
             $body['id'] = $boxId;
-            $body['boxTrs'] = $request->request->get('box')['boxTrs'];
-            $this->submitBoxTrs($body);
+            if(($box->getBoxOrdersNumber()== 0)) {
+                $body['boxTrs'] = $request->request->get('box')['boxTrs'];
+                $this->submitBoxTrs($body);
+            }
             return $this->redirectToRoute('boxes_admin');
         }
         return $this->render('admin/box/form.html.twig', array(
@@ -166,6 +176,13 @@ class BoxController extends Controller
     public function postBox($api, $serializer, $box) {
         $body["price"] = $box['price'];
         $response = $api->post($this->get('router')->generate('api_post_box'), $body);
+        $box = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Box', "json");
+        return $box->getId();
+    }
+    public function putBox($api, $serializer, $price, $id) {
+        $body["price"] = $price;
+        $body["id"] = $id;
+        $response = $api->put($this->get('router')->generate('api_put_box'), $body);
         $box = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Box', "json");
         return $box->getId();
     }

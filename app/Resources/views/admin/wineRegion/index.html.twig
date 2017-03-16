@@ -18,8 +18,7 @@
             <tr>
                 <td data-toggle="collapse" data-target="#characteristics-{{ wineRegion.id }}" class="accordion-toggle" style="cursor:pointer">
                     {% for wineRegionTr in wineRegion.wineRegionTrs %}
-                        <object style="float: left;" type="image/svg+xml" data="{{ language_directory }}{{ wineRegionTr.language.picture }}" height="20px">
-                        </object>
+                        <img style="" src="{{ language_directory ~ wineRegionTr.language.picture }}" height="20px">
                         <span style="margin-left: 10px">{{ wineRegionTr.name }}</span>
                         <br><br>
                     {% endfor %}

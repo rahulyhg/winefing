@@ -14,6 +14,11 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
+                {% if is_granted("ROLE_HOST") %}
+                    {% set userId = app.user.id %}
+                {% else %}
+                    {% set userId = app.session.get('hostId') %}
+                {% endif %}
                 <li class="{% if route == 'domain_edit'%}active-nav-back-end{% endif %}">
                     <a href="{{ path('domain_edit', {'id':domainId}) }}">{% trans %}label.my_domain{% endtrans %} </a>
                 </li>
@@ -23,23 +28,18 @@
                 <li class="{% if route == 'host_rentals' or route == 'rental_edit' %}active-nav-back-end{% endif %}">
                     <a href="{{ path('host_rentals', {'id':domainId}) }}">{% trans %}label.my_rentals{% endtrans %}</a>
                 </li>
-                <li class="{% if route == 'host_rental_orders'%}active-nav-back-end{% endif %}">
-                    <a href="{{ path('host_rental_orders', {'id':domainId}) }}">{% trans %}label.my_reservations{% endtrans %} </a>
+                <li class="{% if route == 'user_orders'%}active-nav-back-end{% endif %}">
+                    <a href="{{ path('user_orders', {'id':userId}) }}">{% trans %}label.my_reservations{% endtrans %} </a>
                 </li>
-                <li class="{% if route == 'rentals_promotions' or route == 'rentals_promotion_new' or route == 'rentals_promotion_edit'%}active-nav-back-end{% endif %}">
+                <li class="{% if route == 'rentals_promotions' or route == 'rentals_promotion' or route == 'rentals_promotion_edit'%}active-nav-back-end{% endif %}">
                     <a href="{{ path('rentals_promotions') }}">{% trans %}label.promotions{% endtrans %}</a>
                 </li>
                 {#<li class="{% if route == 'host_reviews'%}active-nav-back-end{% endif %}">#}
                     {#<a href="{{ path('host_reviews', {'id': domainId}) }}">{% trans %}label.my_reviews{% endtrans %}#}
                     {#</a>#}
                 {#</li>#}
-                {% if is_granted("ROLE_HOST") %}
-                    {% set routeUserEdit = path('user_edit', {'id' : app.user.id}) %}
-                {% else %}
-                    {% set routeUserEdit = path('user_edit', {'id' :app.session.get('hostId')}) %}
-                {% endif %}
                 <li class="{% if route == 'user_edit'%}active-nav-back-end{% endif %}">
-                    <a href="{{ routeUserEdit }}">{% trans %}label.my_profil{% endtrans %} </a>
+                    <a href="{{ path('user_edit', {'id' : userId}) }}">{% trans %}label.my_profil{% endtrans %} </a>
                 </li>
             </ul>
         </div><!-- /.navbar-collapse -->

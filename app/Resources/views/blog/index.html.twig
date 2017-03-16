@@ -24,7 +24,7 @@
                                                 {{ articleCategory.name }}
                                             </a></li>
                                         {% endfor %}
-                                    <li>{{ 'label.posted'|trans() ~ ' ' ~ article.created|date('D, d F Y') }}</li>
+                                    <li>{{ 'label.posted'|trans() ~ ' ' ~ article.created|localizeddate("full", "none") }}</li>
                                     <li>
                                         {% for tag in article.tags %}
                                             <a href="{{ path('articles', {"article_filter": {'tag': tag.id}}) }}">
@@ -112,7 +112,7 @@
                         {% for article in lastArticles %}
                         <li>
                             <h3><a href="{{ path('article', {'id':article.id}) }}">{{ article.title }}</a></h3>
-                            <small>{{ article.created|date('D, d F Y') }}
+                            <small>{{ article.created|localizeddate("full", "none", app.request.get('_locale')) }}
                                 {{ 'label.in'|trans() ~'  ' }}
                                 {% for articleCategory in article.articleCategories %}
                                     <a href="#">{{ articleCategory.name }}</a>

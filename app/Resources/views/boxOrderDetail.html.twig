@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <!-- Interactive Slider v2 -->
+    <div class="cover-img" style="background: url({{ banner_directory ~'red-bottles.jpeg' }})">
+        <h1>{{ 'label.order_resume'|trans() }}</h1>
+    </div>
+    <div class="bg-grey">
+        <!-- End Interactive Slider v2 -->
+        {% if is_granted("ROLE_HOST") %}
+            {{ include('host/nav.html.twig') }}
+        {% elseif is_granted("ROLE_USER") %}
+            {{ include('user/nav.html.twig') }}
+        {% elseif is_granted("ROLE_MANAGMENT") or is_granted("ROLE_BLOG") or is_granted("ROLE_TECHNIQUE") %}
+            {{ include('admin/nav.html.twig') }}
+        {% endif %}
+        <div class="container">
+            <div class="content-sm">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 col-md-4" id="{{ boxOrder.box.id }}">
+                        {{ include('user/box/boxCard.html.twig') }}
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-content">
+                                <div class="headline">
+                                    <h2>{{ 'label.paiement_information'|trans() }}</h2>
+                                </div>
+                                <ul class="list-unstyled">
+                                    <li><strong>{{ 'label.date'|transchoice(1) }}:</strong>{{ boxOrder.invoiceInformation.billDate|localizeddate("full", "none") }}</li>
+                                    <li><strong>{{ 'label.paid'|trans() }}:</strong>{{ boxOrder.lemonWay.amountTot|number_format(2)~'€' }}</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    {#<div class="col-md-4">#}
+                        {#<div class="card">#}
+                            {#<div class="card-content">#}
+                                {#<div class="headline">#}
+                                    {#<h2>{{ 'label.useful_information'|transchoice(2) }}</h2>#}
+                                {#</div>#}
+                                {#{% set address = boxOrder.rental.property.address %}#}
+                                {#<label><a href="{{ path('domain', {'id':boxOrder.rental.property.domain.id}) }}">{{ 'label.property'|trans() ~ ' - ' ~ boxOrder.propertyName }}</a></label>#}
+                                {#<br>#}
+                                {#<label>{{ 'label.address'|trans() ~':'}}</label>#}
+                                {#{{ include('address/card.html.twig') }}#}
+                                {#<label><a href="{{ path('domain', {'id':boxOrder.rental.property.domain.id}) }}">{{ 'label.domain'|trans() ~ ' -  ' ~  boxOrder.domainName }}</a></label>#}
+                                {#<br>#}
+                                {#<label>{{ 'label.address'|trans() ~':'}}</label>#}
+                                {#{% set address = boxOrder.rental.property.address %}#}
+                                {#{{ include('address/card.html.twig') }}#}
+                            {#</div>#}
+                        {#</div>#}
+                    {#</div>#}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    {{ parent() }}
+    <script>
+        //initiate the fancybox = slider
+        FancyBox.initFancybox();
+        $(document).ready(function() {
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+{% endblock %}

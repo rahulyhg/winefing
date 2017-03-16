@@ -25,6 +25,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Winefing\ApiBundle\Entity\LanguageEnum;
+use Winefing\ApiBundle\Entity\Pagination;
 
 
 class ArticleController extends Controller
@@ -60,14 +61,17 @@ class ArticleController extends Controller
         $serializer = $this->container->get("jms_serializer");
         $language = $request->getLocale();
         $params = $request->query->get("article_filter");
+        $params['page'] = $request->query->get('page');
 
         //get the pagination article
         $response = $api->get($this->get('router')->generate('api_get_pagination_articles', array('language'=>$language, 'maxPerPage'=>$this->getParameter('maxperpage'))), $params);
         $pagination = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Pagination', 'json');
+        $articles = $pagination->getArticles();
 
         //get the last articles
         $response = $api->get($this->get('router')->generate('api_get_pagination_articles', array('language'=>$language, 'maxPerPage'=>3)));
         $paginationLastArticles = $serializer->deserialize($response->getBody()->getContents(), 'Winefing\ApiBundle\Entity\Pagination', 'json');
+        $lastArticles = $paginationLastArticles->getArticles();
 
         //get the tags
         $response = $api->get($this->get('router')->generate('api_get_tags_articles', array('language'=>$language)));
@@ -77,7 +81,7 @@ class ArticleController extends Controller
         $response = $api->get($this->get('router')->generate('api_get_article_categories_by_language', array('language'=>$language)));
         $articleCategories = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\ArticleCategory>', 'json');
 
-        return $this->render('blog/index.html.twig', array("articles" => $pagination->getArticles(), "lastArticles"=>$paginationLastArticles->getArticles(), "articleCategories"=>$articleCategories, "tags"=>$tags, "total"=>$pagination->getTotal())
+        return $this->render('blog/index.html.twig', array("articles" => $articles, "lastArticles"=>$lastArticles, "articleCategories"=>$articleCategories, "tags"=>$tags, "total"=>$pagination->getTotal())
         );
     }
     /**

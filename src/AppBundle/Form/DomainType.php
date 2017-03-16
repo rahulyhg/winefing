@@ -30,6 +30,7 @@ class DomainType extends AbstractType
     {
         $builder
             ->add('name', null, array('attr'=> array('maxlength'=>"60")))
+            ->add('twil', null, array('attr'=>['maxlength'=>"255", 'class'=>'form-control']))
             ->add('description', TextareaType::class, array('attr'=> array('maxlength'=>"3000", 'style' => 'height:250px')))
             ->add('history', TextareaType::class, array('label'=>'label.domain_history','required' => false, 'attr'=> array('maxlength'=>"3000", 'style' => 'height:250px')))
             ->add('wineRegion', EntityType::class,  array('class' => 'WinefingApiBundle:WineRegion', 'attr'=> array('class'=> 'selectpicker'),

@@ -34,8 +34,7 @@
                 <td>{{ language.code }}</td>
                 <td>
                     {% if language.picture is not null %}
-                        <object type="image/svg+xml" data="{{ language_directory }}{{ language.picture }}" height="40px">
-                        </object>
+                        <img src="{{ language_directory ~ language.picture }}" height="40px">
                     {% endif %}
                 </td>
                 <td>

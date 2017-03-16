@@ -1,0 +1,51 @@
+{% set detail = '' %}
+            {% for dayPrice in rentalOrder.dayPrices %}
+                {% set date =  dayPrice.date|date('d-m-Y')%}
+                {% set price = dayPrice.price %}
+                {% set detail = detail ~ "<label>" ~ date ~ ": "  ~ price|number_format(2) ~"€"~ "</label> <br>" %}
+            {% endfor %}
+<div class="property-container">
+    <div class="property-image">
+        <a href="{{ rental_directory ~ rentalOrder.rental.mediaPresentation }}" title="{{ rentalOrder.rental.name }}" data-rel="gallery" class="fancybox img-hover-v1">
+            <img src="{{ rental_directory ~ rentalOrder.rental.mediaPresentation }}" alt="{{ rentalOrder.rental.name }}">
+            <div class="hidden-xs">
+                <span class="glyphicon glyphicon-search picture-zoom"></span>
+            </div>
+            <div class="property-features-grey text-center">
+                {{ rentalOrder.rental.name }}
+            </div>
+        </a>
+    </div>
+    <div class="property-content">
+        <div class="service-box-v1" style="text-align: center">
+            <p>{{ 'label.from'|trans() ~ ' ' ~ rentalOrder.startDate|localizeddate("full", "none") ~ ' ' ~ 'label.to'|trans() ~ ' ' ~ rentalOrder.endDate|localizeddate("full", "none") }}</p>
+            <ul class="list-unstyled">
+                <li>
+                    <label>{{ rentalOrder.averagePrice ~'€ *' }} {{ rentalOrder.dayNumber ~' '~'label.night' | transchoice(rentalOrder.dayNumber) }}</label>
+                    <a data-html="true" style="border:none" type="button" title="{% trans %}label.price_details{% endtrans %}" data-container="body" data-toggle="popover" data-placement="bottom" data-content="{{ detail }}">
+                        <spam class="glyphicon glyphicon-question-sign"></spam>
+                    </a>
+                    <label> : </label>
+                    <span>{{ rentalOrder.amount|number_format(2) ~'€'}}</span>
+                </li>
+                {% if rentalOrder.rentalOrderGift %}
+                    <li>
+                        <label>{% trans %}label.gift_card{% endtrans %} :</label>
+                        <span >{{ rental_order_gift_price ~'€'}}</span>
+                        <a onclick="setPathDeleteButton('{{ path('remove_rental_paiement_gift') }}');">
+                            <span style="margin-left: 10px" class="glyphicon glyphicon-trash"></span>
+                        </a>
+                    </li>
+                {% endif %}
+                <li>
+                    <label>{% trans %}label.service_fees{% endtrans %} :</label>
+                    <span>{{ rentalOrder.invoiceClient.totalTTC|number_format(2) ~ '€' }}</span>
+                </li>
+                <li>
+                    <label>{% trans %}label.total{% endtrans %} :</label>
+                    <span>{{ rentalOrder.total|number_format(2)  ~ '€' }}</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

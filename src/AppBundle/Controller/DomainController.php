@@ -41,9 +41,9 @@ class DomainController extends Controller
     public function cgetDomainByCriteria(Request $request) {
         $api = $this->container->get('winefing.api_controller');
         $serializer = $this->container->get('jms_serializer');
-
         $filterForm = $this->createForm(DomainFilterType::class, null, array('language'=>$request->getLocale()));
         $domainFilterParams = $request->query->get('domain_filter');
+        $domainFilterParams['page'] = $request->query->get('page');
 
         //get the domains depending the params
         $response =  $api->get($this->get('router')->generate('api_get_pagination_domains', array('language'=>$request->getLocale(), 'maxPerPage'=>$this->getParameter('maxperpage'))), $domainFilterParams);
@@ -198,7 +198,11 @@ class DomainController extends Controller
     /**
      * @Route("/host/domain/{id}/edit", name="domain_edit")
      */
-    public function getAction($id, $nav = 'presentation', Request $request) {
+    public function getAction($id, Request $request) {
+        $nav = $request->query->get('nav');
+        if(empty($nav)) {
+            $nav = 'presentation';
+        }
         $api = $this->container->get('winefing.api_controller');
         $serializer = $this->container->get('jms_serializer');
 
@@ -236,6 +240,8 @@ class DomainController extends Controller
                 $body = $request->request->get('domain');
                 $body["id"] = $domain->getId();
                 $this->submit($body);
+                $this->addFlash('success', $this->get('translator')->trans($this->get('translator')->trans('success.modifications_saved')));
+                return $this->redirectToRoute('domain_edit', array('id'=>$domain->getId()));
         }
         //create the address form
         $addressForm = $this->createForm(AddressType::class, $domain->getAddress());
@@ -245,18 +251,21 @@ class DomainController extends Controller
         if($addressForm->isSubmitted()) {
             $nav = 'address';
             if($addressForm->isValid()) {
-                $geocoder = $this->container->get('winefing.geocoder_controller');
-                $coordinate = $geocoder->geocode($request->request->get('address')['formattedAddress']);
+                $adapter  = new \Ivory\HttpAdapter\CurlHttpAdapter();
+                $geocoder = new \Geocoder\Provider\GoogleMaps($adapter);
+                $coordinate = $geocoder->geocode($addressForm->get('formattedAddress')->getData())->first();
+                //get the address's lat and lng
                 if(!$coordinate){
                     $addressForm->get('formattedAddress')->addError(new FormError($this->get('translator')->trans('error.address_not_correct')));
                 } else {
                     $addressForm = $request->request->get('address');
                     $addressForm["id"] = $domain->getAddress()->getId();
                     $addressForm["domain"] = $domain->getId();
-                    $addressForm["lat"] = $coordinate[0];
-                    $addressForm["lng"] = $coordinate[1];
+                    $addressForm["lat"] = $coordinate->getLatitude();
+                    $addressForm["lng"] = $coordinate->getLongitude();
                     $this->submitAddress($addressForm);
-                    return $this->redirect($this->generateUrl('domain_edit', array('id'=>$domain->getId(), 'nav' => 'address')));
+                    $this->addFlash('success', $this->get('translator')->trans($this->get('translator')->trans('success.modifications_saved')));
+                    return $this->redirect($this->generateUrl('domain_edit', array('id'=>$domain->getId(), 'nav' => 'nav-address')));
                 }
             }
         }
@@ -284,7 +293,8 @@ class DomainController extends Controller
             'domainForm' => $domainForm->createView(),
             'addressForm'=>$addressForm->createView(),
             'characteristicCategories' => $characteristicCategories,
-            'medias' => $serializer->serialize($domain->getMedias(), 'json'), 'nav'=>$nav)
+            'medias' => $serializer->serialize($domain->getMedias(), 'json'),
+                'nav'=>$nav)
         );
     }
     /**

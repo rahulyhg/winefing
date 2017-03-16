@@ -1,47 +1,91 @@
 {% extends 'host/base.html.twig' %}
 {% block table %}
         <div class="container">
-        <div class="row">
-             <a href="{{ path('rentals_promotion_new') }}">
-                 <input type="button" class="btn btn-primary" value="Add">
-             </a>
-            <table class="table table-striped">
-                <thead>
-                <tr>
-                    <th>
-                        <a href="{{ path('rentals_promotion_new') }}">
-                            <i class="glyphicon glyphicon-plus glyphicon-plus-admin"></i>
-                        </a>
-                        {% trans %}label.end_date{% endtrans %}
-                    </th>
-                    <th>{% trans %}label.start_date{% endtrans %}</th>
-                    <th>{% trans %}label.reduction{% endtrans %}</th>
-                    <th>{% trans %}label.rentals{% endtrans %}</th>
-                    <th>{% trans %}label.actions{% endtrans %}</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for rentalPromotion in rentalsPromotions %}
-                    <tr>
-                        <td>{{ rentalPromotion.startDate|date("m/d/Y")}}</td>
-                        <td>{{ rentalPromotion.endDate|date("m/d/Y")}}</td>
-                        <td>
-                            {{ rentalPromotion.reduction }}
-                        </td>
-                        <td>
-                            {% for rental in rentalPromotion.rentals %}
-                                {{ rental.name }} : {{ rental.price }}
-                            {% endfor %}
+            <a href="{{ path('rentals_promotion') }}">
+                <button class="btn btn-primary btn-circle btn-xl">
+                    <span class="glyphicon glyphicon-plus"></span>
+                </button>
+            </a>
+            <div class="card" style="margin-top: 10px">
+                <div class="card-content">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>
+                                {{ 'label.date'|transchoice(2) }}
+                            </th>
+                            <th>{{ 'label.days_number'|trans() }}</th>
+                            <th>{{ 'label.percentage'|trans() }}</th>
+                            <th>{{ 'label.rental'|transchoice(2)|capitalize }}</th>
+                            <th>{{ 'label.status'|trans() }}</th>
+                            <th>{% trans %}label.actions{% endtrans %}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for rentalPromotion in rentalsPromotions %}
+                            <tr>
+                                <td>{{ rentalPromotion.startDate|date()|localizeddate("medium", "none") ~ ' - ' ~ rentalPromotion.endDate|date()|localizeddate("medium", "none")}}</td>
+                                <td>{{ (date(rentalPromotion.endDate).diff(rentalPromotion.startDate)).days }}</td>
+                                <td>
+                                    {{ rentalPromotion.reduction|number_format(2) ~'%' }}
+                                </td>
+                                <td>
+                                    {% for rental in rentalPromotion.rentals %}
+                                        {% set price = (rental.price * ((100- rentalPromotion.reduction)/100))|round(2) %}
+                                        {{ rental.name ~ '(' ~ price|number_format(2) ~ '€) - ' }}
+                                    {% endfor %}
 
-                        </td>
-                        <td>
-                            <input type="button"  class="btn btn-primary" value="{% trans %}label.edit{% endtrans %}" id="update" onclick="loadForm('{{ path('rentals_promotion_new', {'id' : rentalPromotion.id}) }}', 'language')"/>
-                            <input type="button" class="btn btn-danger" value="{% trans %}label.delete{% endtrans %}" onclick="setPathDeleteButton('{{ path('rental_promotion_delete', {'id' : rentalPromotion.id}) }}')"/>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
+                                </td>
+                                <td>
+                                    {% if rentalPromotion.startDate > date() %}
+                                        {% set label = 'label.futur' %}
+                                        {% set class = 'label-info' %}
+                                    {% elseif rentalPromotion.endDate < date() %}
+                                        {% set label = 'label.over' %}
+                                        {% set class = 'label-danger' %}
+                                    {% else  %}
+                                        {% set label = 'label.underway' %}
+                                        {% set class = 'label-success' %}
+                                    {% endif %}
+                                    <span class="label {{ class }}">{{ label|trans() }}</span>
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">{{ 'label.actions'|trans() }}
+                                            <span class="caret"></span></button>
+                                        <ul class="dropdown-menu" style="left:-100%">
+                                            <li><a href="{{ path('rentals_promotion', {'id': rentalPromotion.id}) }}">{% trans %}label.edit{% endtrans %}</a></li>
+                                            <li><a onclick="setPathDeleteButton('{{ path('rental_promotion_delete', {'id' : rentalPromotion.id}) }}')">{% trans %}label.delete{% endtrans %}</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
     </div>
+{% endblock %}
+{% block modal %}
+    {{ parent() }}
+    <span id="modalDelete">
+    <div class="modal fade" tabindex="-1" role="dialog" id="confirmation">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">{{ 'label.delete'|trans() }}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>{{ 'label.delete_rental_promotion'|trans() }}</p>
+                </div><!-- /.modal-content -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ 'label.cancel'|trans() }}</button>
+                    <a id="delete" type="submit" class="btn btn-primary pull-right">{{ 'label.delete'|trans() }}</a>
+                </div>
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+    </div>
+</span>
 {% endblock %}

@@ -8,7 +8,7 @@
             <div class="content-sm">
                 <div class="row">
                     <div class="col-sm-5 sm-margin-bottom-50 col-sm-offset-1">
-                        <div class="service-block-v8" style="height: 600px">
+                        <div class="service-block-v8" style="height: 700px">
                             <h3 class="text-center">{% trans %}label.create_an_account{% endtrans %}</h3>
                             {% set class = "form-group has-error" %}
                             {{ form_start(user, {'attr':{'id': 'user_registration'} }) }}
@@ -52,6 +52,17 @@
                                 {{ form_errors(user.password.second) }}
                                 {{ form_widget(user.password.second) }}
                             </div>
+                            <div class="form-group">
+                                <label>*{% trans %}label.birth_date{% endtrans %} </label>
+                                <a href="#" data-toggle="tooltip" title="{% trans %}text.legal_age{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
+                                {{ form_errors(user.birthDate)}}
+                                <div id="sandbox-container">
+                                    <div class="input-group date">
+                                        {{ form_widget(user.birthDate) }}
+                                        <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="form-group {% if user.agree.vars.errors|length %}has-error{% endif %}">
                                 <span style="font-style: italic">{{ 'label.agree_with_terms_of_use'|trans({'%link%' : path('web_page', {'code': web_page_gtu })})|raw }}</a></span>
                                 {{ form_errors(user.agree) }}
@@ -69,7 +80,7 @@
                         </div>
                     </div>
                     <div class="col-sm-5 sm-margin-bottom-50">
-                        <div class="service-block-v8"  style="height: 600px">
+                        <div class="service-block-v8"  style="height: 700px">
                             <h3 class="text-center">{{ 'label.why_create_an_acount'|trans() }}</h3>
                             <br>
                             <p class="text-justify ">
@@ -90,6 +101,15 @@
     {{ parent() }}
     <script>
         $(document).ready(function(){
+            //the user has to be older than 18 year's old
+            var minBirthDate =  new Date();
+            minBirthDate.setFullYear(minBirthDate.getFullYear()-18);
+            $('#sandbox-container .input-group.date').datepicker({
+                endDate: ""+getFormattedDate(minBirthDate)+"'",
+                format: 'dd-mm-yyyy',
+                autoclose: true
+            });
+
             //Allows to check is the email's format is correct, and if the confirmation correspond.
             $('#user_registration_email_first, #user_registration_email_second').on('keyup', function() {
                         if(checkFormatEmail(this)) {

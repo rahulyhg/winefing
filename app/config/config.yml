@@ -8,7 +8,16 @@ imports:
 # Put parameters here that don't need to change on each machine where the app is deployed
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 
+services:
+    twig.extension.text:
+       class: Twig_Extensions_Extension_Text
+       tags:
+            - { name: twig.extension }
 
+    twig.extension.intl:
+        class: Twig_Extensions_Extension_Intl
+        tags:
+            - { name: twig.extension }
 # Swiftmailer Configuration
 swiftmailer:
     transport: "%mailer_transport%"
@@ -86,7 +95,7 @@ twig:
         order_validate: '%order_validate%'
         order_pay: '%order_pay%'
         order_cancel: '%order_cancel%'
-        order_refuse: '%order_refused%'
+        order_refused: '%order_refused%'
         tag_directory: '%protocol%://%host_name%/%tag_directory%/'
         winefing_facebook: '%winefing_facebook%'
         winefing_twitter: '%winefing_twitter%'
@@ -106,6 +115,8 @@ twig:
         web_page_about: '%web_page_about%'
         gtu_route: '%gtu_route%'
         gts_route: '%gts_route%'
+        invoice_host: '%invoice_host%'
+        invoice_user: '%invoice_user%'
 # Doctrine Configuration
 doctrine:
     dbal:
@@ -266,3 +277,15 @@ fos_oauth_server:
       options:
           supported_scopes: user
           access_token_lifetime: 3600
+knp_snappy:
+    temporary_folder: %kernel.cache_dir%/snappy
+
+knp_snappy:
+    pdf:
+        enabled:    true
+        binary:     /usr/bin/wkhtmltopdf #"\"C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe\"" for Windows users
+        options:    []
+#    image:
+#        enabled:    true
+#        binary:     http://azure.archive.ubuntu.com/ubuntu #"\"C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltoimage.exe\"" for Windows users
+#        options:    []

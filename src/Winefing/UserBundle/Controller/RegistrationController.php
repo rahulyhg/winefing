@@ -32,6 +32,7 @@ use Winefing\ApiBundle\Entity\Domain;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
+use Ivory\HttpAdapter;
 class RegistrationController extends Controller
 {
     public function testMailIsSentAndContentIsOk()
@@ -79,16 +80,24 @@ class RegistrationController extends Controller
                     $form->get('email')['first']->addError(new FormError($this->get('translator')->trans('error.email_existing', array('%link%'=>$this->get('_router')->generate('login')))));
                     $this->addFlash('error', $this->get('translator')->trans($this->get('translator')->trans('error.email_existing', array('%link%'=>$this->get('_router')->generate('login')))));
                 } else {
-                    $body['password'] = $request->request->get('user_registration')['password']['first'];
-                    $user = $this->submitUser($api, $serializer, $body);
+                    $birthDate = $form->get('birthDate')->getData();
+                    $now = new \DateTime();
+                    $interval = $now->diff($birthDate);
+                    if($interval->format('%y') < 18) {
+                        $this->addFlash('error', $this->get('translator')->trans($this->get('translator')->trans('text.legal_age')));
+                    } else {
+                        $body['birthDate'] = strtotime($request->request->get('user_registration')["birthDate"]);
+                        var_dump($body['birthDate']);
+                        $body['password'] = $request->request->get('user_registration')['password']['first'];
+                        $user = $this->submitUser($api, $serializer, $body);
 
-                    //login user
-                    $this->logIn($user, $request);
-                    $this->addFlash('success', $this->get('translator')->trans('success.account_well_created'));
+                        //login user
+                        $this->logIn($user, $request);
+                        $this->addFlash('success', $this->get('translator')->trans('success.account_well_created'));
 
-                    //send email of welcoming
-                    $this->sendEmailRegistration($api, $body);
-
+                        //send email of welcoming
+                        $this->sendEmailRegistration($api, $body);
+                    }
                     return $this->redirectToRoute('registration');
                 }
             } else {
@@ -118,15 +127,16 @@ class RegistrationController extends Controller
             if(!$this->emailExist($api, $domainForm->get('user')['email']->getData())) {
                 //submit address
                 $address = $request->request->get('domain_registration')['address'];
-                $geocoder = $this->container->get('winefing.geocoder_controller');
-                $coordinate = $geocoder->geocode($address['formattedAddress']);
+                $adapter  = new \Ivory\HttpAdapter\CurlHttpAdapter();
+                $geocoder = new \Geocoder\Provider\GoogleMaps($adapter);
+                $coordinate = $geocoder->geocode($address['formattedAddress'])->first();
 
                 //get the address's lat and lng
                 if(!($coordinate)) {
                     $this->addFlash('contactError', $this->get('translator')->trans('error.address_not_correct'));
                 } else {
-                    $address['lat'] = $coordinate[0];
-                    $address['lng'] = $coordinate[1];
+                    $address['lat'] = $coordinate->getLatitude();
+                    $address['lng'] = $coordinate->getLongitude();
                 }
                 $address = $this->submitAddress($api, $serializer, $address);
                 //submit user
@@ -163,7 +173,7 @@ class RegistrationController extends Controller
                     $this->submitAllSubscriptions($api, $body);
                 }
                 //send email of welcoming
-                $this->sendEmailRegistration($api, $body);
+//                $this->sendEmailRegistration($api, $body);
 
                 //login user
                 $this->logIn($user, $request);

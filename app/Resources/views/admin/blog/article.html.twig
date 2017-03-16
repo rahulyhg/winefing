@@ -43,8 +43,7 @@
                             {% for articleTr in article.articleTrs %}
                                 <tr>
                                     <td>
-                                        <object style="float: left;" type="image/svg+xml" data="{{ language_directory }}{{ articleTr.language.picture }}" height="20px">
-                                        </object>
+                                        <img src="{{ language_directory ~ articleTr.language.picture }}" height="20px">
                                         <span style="margin-left: 10px">{{ articleTr.title }}</span>
                                         <br><br>
                                     </td>

@@ -41,4 +41,15 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
         return $query->getOneOrNullResult();
     }
 
+    public function findOneWithRental($rental) {
+        $query = $this->createQueryBuilder('user')
+            ->join('user.domains', 'domain')
+            ->join('domain.properties', 'property')
+            ->join('property.rentals', 'rental')
+            ->where('rental.id = :rentalId')
+            ->setParameter('rentalId', $rental)
+            ->setMaxResults(1)
+            ->getQuery();
+        return $query->getOneOrNullResult();
+    }
 }

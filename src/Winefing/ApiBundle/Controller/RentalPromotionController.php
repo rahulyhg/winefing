@@ -22,7 +22,7 @@ class RentalPromotionController extends Controller implements ClassResourceInter
         $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:RentalPromotion');
         $rentalPromotions = $repository->findByUser($userId);
-        return new Response($serializer->serialize($rentalPromotions, 'json', SerializationContext::create()->setGroups(array('default'))));
+        return new Response($serializer->serialize($rentalPromotions, 'json', SerializationContext::create()->setGroups(array('default', 'rentals'))));
 
     }
     public function cgetByRentalAction($rentalId){
@@ -97,8 +97,12 @@ class RentalPromotionController extends Controller implements ClassResourceInter
         $em->persist($rentalPromotion);
         $em->flush();
     }
-    public function deleteAction() {
-
+    public function deleteAction($id) {
+        $em = $this->getDoctrine()->getManager();
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:RentalPromotion');
+        $rentalPromotion = $repository->findOneById($id);
+        $em->remove($rentalPromotion);
+        $em->flush();
     }
 
     public function getRentalAction($startDate, $endDate, $rentalId) {

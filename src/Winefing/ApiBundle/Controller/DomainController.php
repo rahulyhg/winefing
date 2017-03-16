@@ -23,6 +23,7 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use FOS\RestBundle\Controller\Annotations\Get;
 use Winefing\ApiBundle\Entity\DomainMediasPresentation;
 use Winefing\ApiBundle\Entity\DomainStatistic;
+use Winefing\ApiBundle\Entity\User;
 
 class DomainController extends Controller implements ClassResourceInterface
 {
@@ -170,7 +171,21 @@ class DomainController extends Controller implements ClassResourceInterface
         $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Domain');
         $domain = $repository->findOneWithUser($userId);
-        $json = $serializer->serialize($domain, 'json', SerializationContext::create()->setGroups(array('id', 'default', 'tags')));
+        $json = $serializer->serialize($domain, 'json', SerializationContext::create()->setGroups(array('id', 'default', 'tags', 'medias')));
+        return new Response($json);
+    }
+    public function getByPropertyAction($propertyId) {
+        $serializer = $this->container->get('jms_serializer');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Property');
+        $property = $repository->findOneById($propertyId);
+        $json = $serializer->serialize($property->getDomain(), 'json', SerializationContext::create()->setGroups(array('id')));
+        return new Response($json);
+    }
+    public function getByRentalAction($rentalId) {
+        $serializer = $this->container->get('jms_serializer');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Rental');
+        $rental = $repository->findOneById($rentalId);
+        $json = $serializer->serialize($rental->getProperty()->getDomain(), 'json', SerializationContext::create()->setGroups(array('id')));
         return new Response($json);
     }
     /**
@@ -237,6 +252,7 @@ class DomainController extends Controller implements ClassResourceInterface
         $domain->setName($request->request->get('name'));
         $domain->setDescription($request->request->get('description'));
         $domain->setHistory($request->request->get('history'));
+        $domain->setTwil($request->request->get('twil'));
         $tags = $request->request->get('tags');
         if(!empty($tags)) {
             $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Tag');
@@ -346,11 +362,18 @@ class DomainController extends Controller implements ClassResourceInterface
      *
      * )
      */
-    public function cgetWineListAction($userId) {
+    public function cgetWineListAction($userId, $language) {
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
         $serializer = $this->container->get("jms_serializer");
         $user = $repository->findOneById($userId);
-        return new Response($serializer->serialize($user->getWinelist(), 'json', SerializationContext::create()->setGroups(array('default'))));
+        $domains = $user->getWinelist();
+        foreach($domains as $domain) {
+            $domain->setMediaPresentation();
+            $domainStatistic = new DomainStatistic($domain);
+            $domain->setDomainStatistic($domainStatistic);
+            $domain->setTr($language);
+        }
+        return new Response($serializer->serialize($domains, 'json', SerializationContext::create()->setGroups(array('default', 'stat'))));
     }
     /**
      * @ApiDoc(
@@ -373,12 +396,14 @@ class DomainController extends Controller implements ClassResourceInterface
      *     },
      *
      * )
+     * @Get("/domain/{domainId}/wineList/{userId}")
      */
     public function getWineListAction($userId, $domainId) {
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
-        $serializer = $this->container->get("jms_serializer");
-        $domain = $repository->findOneWithUserAndDomain($userId, $domainId);
-        return new Response($serializer->serialize($domain, 'json', SerializationContext::create()->setGroups(array('default'))));
+        $user = $repository->findOneWithUserAndDomain($userId, $domainId);
+        if($user instanceof User) {
+            return new Response();
+        }
     }
     /**
      * @ApiDoc(

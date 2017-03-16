@@ -38,6 +38,7 @@ use Winefing\ApiBundle\Entity\StatusOrderEnum;
 
 class RentalOrderController extends Controller
 {
+
     /**
      * @Route("host/domain/{id}/orders", name="host_rental_orders")
      */
@@ -55,27 +56,67 @@ class RentalOrderController extends Controller
         $serializer = $this->container->get('jms_serializer');
         switch ($status) {
             case StatusOrderEnum::validate :
-                $this->validRentalOrder($api, $serializer, $id);
+                $this->validRentalOrder($api, $id);
                 break;
             case StatusOrderEnum::refuse :
                 $this->setRentalOrderStatus($api, $id, StatusOrderEnum::refuse);
                 break;
+            case StatusOrderEnum::cancel :
+                $this->cancelRentalOrder($api, $id);
+                break;
             default :
                 throw new \Exception('Status non valide');
         }
-        return $this->redirectToRoute('host_rental_orders', array('id'=>$this->get('session')->get('domainId')));
+        return $this->redirect($request->query->get('url'));
     }
-    public function validRentalOrder($api, $serializer, $id) {
+    public function validRentalOrder($api, $id) {
         $lemonWay = $this->container->get('winefing.lemonway_controller');
+
+        //edit the rental status order
+        $this->setRentalOrderStatus($api, $id, StatusOrderEnum::validate);
 
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:RentalOrder');
         $rentalOrder = $repository->findOneById($id);
 
-        //validate the paiement initiated
-        var_dump($lemonWay->moneyInValidate($rentalOrder->getLemonWayTransactionId()));
+        if($rentalOrder->getLemonWay()) {
+            //validate the paiement initiated
+            $lemonWay->moneyInValidate($rentalOrder->getLemonWay()->getTransactionId());
 
-        //edit the rental status order
-        $this->setRentalOrderStatus($api, $id, StatusOrderEnum::pay);
+            //edit the rental status order
+            $this->setRentalOrderStatus($api, $id, StatusOrderEnum::pay);
+        }
+    }
+    public function cancelRentalOrder($api, $id) {
+        $lemonWay = $this->container->get('winefing.lemonway_controller');
+        $rentalOrder = $this->getRentalOrder($id);
+        $host = $rentalOrder->getRental()->getProperty()->getDomain()->getUser();
+        $today = new \DateTime();
+        $diff = date_diff($today, $rentalOrder->getStartDate())->format('%R%a');
+        if($diff > 0 || $rentalOrder->getInvoiceInformation()->getStatus() == StatusOrderEnum::cancel || $rentalOrder->getInvoiceInformation()->getStatus() == StatusOrderEnum::refuse) {
+            if($rentalOrder->getInvoiceInformation()->getStatus() == StatusOrderEnum::initiate || !$rentalOrder->getLemonWay()) {
+                $this->setRentalOrderStatus($api, $id, StatusOrderEnum::cancel);
+            } else {
+                if($diff > 21) {
+                    //set the amount to refund it
+                    $amount = $rentalOrder->getLemonWay()->getAmountTot() - $rentalOrder->getClientComission();
+                    $lemonWay->refundMoneyIn($rentalOrder->getLemonWay()->getTransactionId(), $amount);
+                } else {
+                    //cancel the lemonWay
+                    if($diff < 7) {
+                        //pay back the all amount for the host
+                        $total = $rentalOrder->getAmount() - $rentalOrder->getInvoiceHost()->getTotalTTC();
+                    } else {
+                        //pay back 50% of the amount to the host
+                        $total = round((($rentalOrder->getAmount() - $rentalOrder->getInvoiceHost()->getTotalTTC())/2), 2);
+                    }
+                    //execute the pay to pay, from the winefing wallet to the host wallet
+                    $lemonWay->sendPayment($host, $total);
+                }
+                $this->setRentalOrderStatus($api, $id, StatusOrderEnum::cancel);
+            }
+        } else {
+            $this->addFlash('error', $this->get('translator')->trans('error.can_cancel_rental_order'));
+        }
     }
     public function getRentalOrders($api, $serializer, $domainId) {
         $response = $api->get($this->get('_router')->generate('api_get_rental_order_by_domain', array('domain'=>$domainId)));

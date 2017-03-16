@@ -43,7 +43,7 @@ class ManagerController extends Controller
     public function getWishlistAction(Request $request) {
         $api = $this->container->get('winefing.api_controller');
         $serializer = $this->container->get('jms_serializer');
-        $response = $api->get($this->get('_router')->generate('api_get_domains_wine_list', array('userId' => $this->getUser()->getId())));
+        $response = $api->get($this->get('_router')->generate('api_get_domains_wine_list', array('userId' => $this->getUser()->getId(), 'language'=>$request->getLocale())));
         $domains = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\Domain>', 'json');
         $response = $api->get($this->get('_router')->generate('api_get_boxes_box_list', array('userId' => $this->getUser()->getId(), 'language'=>$request->getLocale())));
         $boxes = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\Box>', 'json');
@@ -337,5 +337,46 @@ class ManagerController extends Controller
     {
         $api = $this->container->get('winefing.api_controller');
         $api->patch($this->get('router')->generate('api_patch_user_password'), $password);
+    }
+
+    /**
+     * @Route("user/{id}/orders", name="user_orders")
+     *
+     *
+     */
+    public function ordersAction($id, Request $request) {
+        $api = $this->container->get('winefing.api_controller');
+        $serializer = $this->container->get('jms_serializer');
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
+        $user = $repository->findOneById($id);
+        if ($user->isAdmin()) {
+            $response = $api->get($this->get('_router')->generate('api_get_box_orders'));
+            $boxOrders = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\BoxOrder>', 'json');
+
+            $response = $api->get($this->get('_router')->generate('api_get_rental_orders'));
+            $rentalOrders = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\RentalOrder>', 'json');
+
+            $return['boxOrders'] = $boxOrders;
+            $return['rentalOrders'] = $rentalOrders;
+        } elseif ($user->isHost()) {
+            //get only the rental orders
+            $response = $api->get($this->get('_router')->generate('api_get_rental_orders_by_user', array('user' => $user->getId(), 'language' => $request->getLocale())));
+            $rentalOrders = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\RentalOrder>', 'json');
+
+            $return['rentalOrders'] = $rentalOrders;
+        } else {
+
+            //get the box orders
+            $response = $api->get($this->get('_router')->generate('api_get_box_orders_by_user', array('user' => $user->getId(), 'language' => $request->getLocale())));
+            $boxOrders = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\BoxOrder>', 'json');
+
+            //get the rental Orders
+            $response = $api->get($this->get('_router')->generate('api_get_rental_orders_by_user', array('user' => $user->getId(), 'language' => $request->getLocale())));
+            $rentalOrders = $serializer->deserialize($response->getBody()->getContents(), 'ArrayCollection<Winefing\ApiBundle\Entity\RentalOrder>', 'json');
+
+            $return['boxOrders'] = $boxOrders;
+            $return['rentalOrders'] = $rentalOrders;
+        }
+        return $this->render('order.html.twig', $return);
     }
 }

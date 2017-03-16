@@ -38,28 +38,31 @@ class RentalPromotionController extends Controller
      * Create a new Rental Promotion
      * @param Request $request
      * @return ''
-     * @Route("/rentals-promotion/new", name="rentals_promotion_new")
+     * @Route("/rentals-promotion/{id}", name="rentals_promotion")
      *
      */
-    public function newAction(Request $request) {
-        var_dump($request->getLocale());
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Domain');
-        $domain = $repository->findOneById(8);
-        $domainForm = $this->createForm(TestType::class, $domain);
-        $rentalPromotion = new RentalPromotion();
+    public function newAction($id = '', Request $request) {
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:RentalPromotion');
+        $rentalPromotion = $repository->findOneById($id);
+        if(!$rentalPromotion instanceof RentalPromotion) {
+            $rentalPromotion = new RentalPromotion();
+        }
         $options['user'] = $this->getUser()->getId();
         $rentalPromotionForm = $this->createForm(RentalPromotionType::class, $rentalPromotion, $options);
         $rentalPromotionForm->handleRequest($request);
         if($rentalPromotionForm->isSubmitted() && $rentalPromotionForm->isValid()) {
             $body = $request->request->get('rental_promotion');
+            $body['reduction'] = $rentalPromotionForm->get('reduction')->getData();
             $rentals = $request->request->get('rental_promotion')['rentals'];
             $rentalsWithoutConflict = $this->findConflicts($body, $rentals, $request);
             if(!empty($rentalsWithoutConflict)) {
                 $rentalPromotion = $this->submit($body);
                 $this->submitRentalsPromotion($rentalsWithoutConflict, $rentalPromotion);
+                $this->addFlash('success', $this->get('translator')->trans('success.new_rental_promotion'));
+                return $this->redirectToRoute('rentals_promotions');
             }
         }
-        return $this->render('host/rentalPromotion/form.html.twig', array('rentalPromotionForm' => $rentalPromotionForm->createView(), 'domainForm'=>$domainForm->createView()));
+        return $this->render('host/rentalPromotion/form.html.twig', array('rentalPromotionForm' => $rentalPromotionForm->createView()));
 
     }
 
@@ -94,19 +97,16 @@ class RentalPromotionController extends Controller
         $api->put($this->get('_router')->generate('api_put_rental_promotion_rental'), $body);
     }
     /**
-     * @Route("/rentals-promotion/edit/{id}", name="rentals_promotion_edit")
-     *
-     */
-    public function editAction($id) {
-
-    }
-    /**
      * Delete a Rental Promotion
      * @param $id
      * @Route("/rentals-promotion/delete/{id}", name="rental_promotion_delete")
      *
      */
     public function deleteAction($id) {
+        $api = $this->container->get('winefing.api_controller');
+        $api->delete($this->get('_router')->generate('api_delete_rental_promotion', ['id'=>$id]));
+        $this->addFlash('success', $this->get('translator')->trans('success.generic_delete'));
+        return $this->redirectToRoute('rentals_promotions');
 
     }
     /**
@@ -144,9 +144,7 @@ class RentalPromotionController extends Controller
             }
         }
         if(!empty($rentalsConflictName)) {
-            $request->getSession()
-                ->getFlashBag()
-                ->add('error', "You can't add this promotion for the following location : " . implode(", ", $rentalsConflictName).'.');
+            $this->addFlash('error', $this->get('translator')->trans($this->get('translator')->trans('error.rental_promotion_conflict', array('%rentals%'=>implode(", ", $rentalsConflictName)))));
         }
         return $rentals;
     }

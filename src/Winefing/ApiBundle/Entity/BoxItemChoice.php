@@ -33,7 +33,7 @@ class BoxItemChoice
 
     /**
      * @ORM\OneToMany(targetEntity="Winefing\ApiBundle\Entity\BoxItemChoiceTr", mappedBy="boxItemChoice", fetch="EAGER", cascade="ALL")
-     * @Groups({"boxItemChoiceTrs"})
+     * @Groups({"trs"})
      */
     private $boxItemChoiceTrs;
 

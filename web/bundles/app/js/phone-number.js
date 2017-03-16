@@ -4,7 +4,7 @@ var errorMsg = $("#error-phone-number"),
 telInput.intlTelInput({
         nationalMode: false,
         initialCountry: "auto",
-        allowDropdown: true,
+        allowDropdown: false,
         geoIpLookup: function (callback) {
             $.get('https://ipinfo.io', function () {
             }, "jsonp").always(function (resp) {

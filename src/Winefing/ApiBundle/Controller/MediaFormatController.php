@@ -14,10 +14,9 @@ use Winefing\ApiBundle\Entity\MediaFormatEnum;
 
 class MediaFormatController
 {
-    protected $iconExtentions = array("svg");
-    protected $imageExtentions = array("png", "jpg", "jpeg");
+    protected $iconExtentions = array("svg, 'SVG");
+    protected $imageExtentions = array("png", "jpg", "jpeg", 'PNG', 'JPEG', 'JPG');
     protected $videoExtentions = array("mp3");
-
     /**
      * Get path
      *

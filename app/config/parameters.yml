@@ -1,0 +1,115 @@
+# This file is a "template" of what your parameters.yml file should look like
+# Set parameters here that may be different on each deployment target of the app, e.g. development, staging, production.
+# http://symfony.com/doc/current/best_practices/configuration.html#infrastructure-related-configuration
+parameters:
+#    database_host:     127.0.0.1
+#    database_port:     ~
+#    database_name:     symfony
+#    database_user:     root
+#    database_password: WhWo//2016audrey
+#    # You should uncomment this if you want use pdo_sqlite
+#    # database_path: "%kernel.root_dir%/data.db3"
+#
+#    mailer_transport:  smtp
+#    mailer_host:       127.0.0.1
+#    mailer_user:       ~
+#    mailer_password:   ~
+
+    # A secret key that's used to generate certain security-related tokens
+    secret:            ThisTokenIsNotSoSecretChangeIt
+
+    mailer_transport: smtp
+    mailer_host: smtp-mail.outlook.com
+    mailer_user: contact@winefing.com
+    mailer_password: WhWo//general
+    mailer_port: 587
+    mail_encryption: tls
+    mail_auth_mode: login
+
+    protocol: 'https'
+    host_name: 'dev.winefing.fr'
+    locale:  fr
+    host_comission: 10.00
+    client_comission: 6.20
+    invoice_host: host
+    invoice_user: user
+    tax: 20.00
+    rental_order_gift_price: 5.00
+    max_upload_file_size: 1000000
+    gts_route: 'www.google.fr'
+    gtu_route: 'www.google.fr'
+    language_directory_upload: '%kernel.root_dir%/../web/Resources/pictures/language/'
+    characteristic_category_directory_upload: '%kernel.root_dir%/../web/Resources/pictures/characteristicCategory/'
+    characteristic_directory_upload: '%kernel.root_dir%/../web/Resources/pictures/characteristic/'
+    article_directory_upload: '%kernel.root_dir%/../web/Resources/pictures/article/'
+    domain_directory_upload: '%kernel.root_dir%/../web/Resources/pictures/domain/'
+    user_directory_upload: '%kernel.root_dir%/../web/Resources/pictures/user/'
+    property_directory_upload: '%kernel.root_dir%/../web/Resources/pictures/property/'
+    rental_directory_upload: '%kernel.root_dir%/../web/Resources/pictures/rental/'
+    box_directory_upload: '%kernel.root_dir%/../web/Resources/pictures/box/'
+    wine_region_directory_upload: '%kernel.root_dir%/../web/Resources/wineRegion/'
+    tag_directory_upload: '%kernel.root_dir%/../web/Resources/tag/'
+    user_directory : 'winefing/web/Resources/pictures/user/'
+    let_your_self_directory : 'winefing/web/Resources/let-your-self/'
+    discover_directory : 'winefing/web/Resources/discover/'
+    picture_directory : 'winefing/web/Resources/pictures/'
+    language_directory: 'winefing/web/Resources/pictures/language/'
+    credit_card_directory: 'winefing/web/Resources/credit-card/'
+    characteristic_category_directory: 'winefing/web/Resources/pictures/characteristicCategory/'
+    characteristic_directory: 'winefing/web/Resources/pictures/characteristic/'
+    article_directory: 'winefing/web/Resources/pictures/article/'
+    domain_directory: 'winefing/web/Resources/pictures/domain/'
+    user_directory: 'winefing/web/Resources/pictures/user/'
+    property_directory: 'winefing/web/Resources/pictures/property/'
+    rental_directory: 'winefing/web/Resources/pictures/rental/'
+    box_directory: 'winefing/web/Resources/pictures/box/'
+    wine_region_directory: 'winefing/web/Resources/pictures/wineRegion/'
+    banner_directory: 'winefing/web/Resources/banner/'
+    gift_card_directory: 'winefing/web/Resources/giftCard/'
+    tag_directory: 'winefing/web/Resources/tag/'
+    order_initiate: 0
+    order_validate: 1
+    order_pay: 2
+    order_cancel: 3
+    order_refused: 4
+    winefing_facebook: 'https://www.facebook.com/winefing/'
+    winefing_twitter: 'https://twitter.com/winefing'
+    winefing_google: 'https://plus.google.com/111035815332930849268'
+    winefing_instagram: 'https://www.instagram.com/wine.fing'
+    winefing_email: 'contact@winefing.com'
+    winefing_phone_number: '+337 85.34.83.63'
+    winefing_street_address: '137'
+    winefing_route: 'Rue Achard'
+    winefing_postal_code: '33300'
+    winefing_country: 'France'
+    winefing_locality: 'Bordeaux'
+    web_page_legal_notice: 'LEGAL_NOTICE'
+    web_page_gtu: 'GTU'
+    web_page_gts: 'GTS'
+    web_page_faq: 'FAQ'
+    web_page_about: 'ABOUT'
+    boxAmountCom: 100.00
+
+#    informations used during the creation of the invoice entity. To change if it's changing
+    companyName: 'Winefing SAS'
+    rcs: '819 785 577'
+    siren: '819 785 577'
+    siret: '819 785 577 00019'
+    rcsCity: 'Bordeaux'
+    legalForm: 'SAS'
+    streetWinefing: '6 rue de la Porte de Basse'
+    postalCodeWinefing: '33000'
+    cityWinefing: 'Bordeaux'
+    tvaNumber: '22819785577'
+
+#    mail_chimp_token: '82eeea1796fe25cf7d185ec3ce2af340-us14'
+#    mail_chimp_url: 'https://us14.api.mailchimp.com/export/1.0/'
+
+#    mailer_transport: smtp
+#    mailer_host: smtp.gmail.com
+#    mailer_user: carval.audrey@gmail.com
+#    mailer_password: Pouca260594*
+#    mailer_port: 587
+#    mail_encryption: ssl
+#    mail_auth_mode: login
+    maxperpage: 2

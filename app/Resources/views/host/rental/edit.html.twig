@@ -12,13 +12,6 @@
         <div class="col-sm-9">
             <div class="tab-content">
                 <div class="tab-pane fade in active" id="presentation">
-                    {% if app.session.flashBag.has('rentalSuccess') %}
-                        <div class="alert alert-success">
-                            {% for msg in app.session.flashBag.get('rentalSuccess') %}
-                                {{ msg }}
-                            {% endfor %}
-                        </div>
-                    {% endif %}
                     {% if app.session.flashBag.has('rentalError') %}
                         <div class="alert alert-danger">
                             {% for msg in app.session.flashBag.get('rentalError') %}
@@ -66,7 +59,7 @@
                             <div class="panel-body">
                                 <div class="form-group {% if rentalForm.price.vars.errors|length %}has-error{% endif %}">
                                     <label>
-                                        *{% trans %}label.price{% endtrans %}/{% trans %}label.night{% endtrans %}
+                                        *{% trans %}label.price{% endtrans %}/{{ 'label.night'|transchoice(1) }}
                                         <a href="#" data-toggle="tooltip" data-placement="right" title="{% trans %}help.rental_price{% endtrans %}"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
                                     </label>
                                     {{ form_errors(rentalForm.price,  { 'attr': {'class': 'form-control'} }) }}
@@ -116,14 +109,7 @@
                     </div>
                 </div>
                 <div class="tab-pane fade in" id="informations">
-                    {% if app.session.flashBag.has('informationsSuccess') %}
-                        <div class="alert alert-success">
-                            {% for msg in app.session.flashBag.get('informationsSuccess') %}
-                                {{ msg }}
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                    {% if app.session.flashBag.has('informationsSuccess') %}
+                    {% if app.session.flashBag.has('informationsError') %}
                         <div class="alert alert-danger">
                             {% for msg in app.session.flashBag.get('informationsError') %}
                                 {{ msg }}
@@ -138,30 +124,11 @@
             </div>
         </div>
     </div>
-    <script>
-        $(document).ready(function() {
-            $("#rental_price").keydown(function (e) {
-                // Allow: backspace, delete, tab, escape, enter and .
-                if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190, 188]) !== -1 ||
-                        // Allow: Ctrl+A, Command+A
-                        (e.keyCode === 65 && (e.ctrlKey === true || e.metaKey === true)) ||
-                        // Allow: home, end, left, right, down, up
-                        (e.keyCode >= 35 && e.keyCode <= 40)) {
-                    // let it happen, don't do anything
-                    return;
-                }
-                // Ensure that it is a number and stop the keypress
-                if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
-                    e.preventDefault();
-                }
-            });
-        });
-    </script>
+
 {% endblock %}
 {% block script %}
     {{ parent() }}
     <script type="application/javascript">
-
         var nav = '{{ nav }}';
         var medias= {{ medias|raw }};
 
@@ -186,6 +153,13 @@
 
         //variable for the address form
         jQuery(document).ready(function() {
+
+            //remplace char by space in price input
+            $("#rental_price").keydown(function (e) {
+                // Allow: backspace, delete, tab, escape, enter and .
+                replaceChar(e);
+            });
+
             //initiate the google map new address
             adressId = 'address_formattedAddress';
             componentFormId = {

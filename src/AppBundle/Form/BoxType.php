@@ -15,6 +15,7 @@ use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -25,7 +26,7 @@ class BoxType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('price', MoneyType::class, array('attr'=>array('class'=>'form-control')))
+            ->add('price', NumberType::class, array('label'=> false,'scale'=>2,'attr' => array('min'=> 1.00, 'step'=>0.01, 'class'=>'form-control')))
             ->add('submit', SubmitType::class, array('attr'=>array('class'=>'btn btn-primary pull-right')))
             ->add('boxTrs', CollectionType::class, array(
             'entry_type' => BoxTrType::class));

@@ -26,52 +26,47 @@ class BoxOrder
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Box")
+     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Box", inversedBy="boxOrders", cascade="ALL")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"box"})
+     * @Groups({"default"})
      */
     private $box;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\User")
-     * @ORM\JoinColumn(nullable=false)
-     * @Groups({"user"})
-     */
-    private $user;
-
-    /**
      * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\BoxItemChoice", cascade="ALL")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"boxOrderItemChoices"})
+     * @Groups({"default"})
      */
     private $boxItemChoices;
-    /**
-     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Address", cascade="ALL")
-     * @ORM\JoinColumn(nullable=false)
-     * @Groups({"billingAddress"})
-     */
-    private $billingAddress;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Address", cascade="ALL")
+     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\LemonWay", cascade="ALL")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"deliveringAddress"})
-     */
-    private $deliveringAddress;
-
-    /**
-     * @var float
      * @Groups({"default"})
-     * @ORM\Column(name="price", type="float")
      */
-    private $price;
+    private $lemonWay;
 
-    public function __construct(Box $box, User $user)
+    /**
+     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\Invoice", cascade="ALL")
+     * @ORM\JoinColumn(nullable=false)
+     * @Groups({"default"})
+     */
+    private $invoice;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Winefing\ApiBundle\Entity\InvoiceInformation", cascade="ALL")
+     * @ORM\JoinColumn(nullable=false)
+     * @Groups({"default"})
+     */
+    private $invoiceInformation;
+
+
+
+    public function __construct(Box $box)
     {
         $this->boxItemChoices = new ArrayCollection();
-        $this->user = $user;
+        $this->invoiceInformation = new InvoiceInformation();
         $this->box = $box;
-        $this->price = $box->getPrice();
     }
 
 
@@ -104,69 +99,6 @@ class BoxOrder
     /**
      * @return mixed
      */
-    public function getUser()
-    {
-        return $this->user;
-    }
-
-    /**
-     * @param mixed $user
-     */
-    public function setUser($user)
-    {
-        $this->user = $user;
-    }
-    /**
-     * @return mixed
-     */
-    public function getBillingAddress()
-    {
-        return $this->billingAddress;
-    }
-
-    /**
-     * @param mixed $billingAddress
-     */
-    public function setBillingAddress($billingAddress)
-    {
-        $this->billingAddress = clone $billingAddress;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getDeliveringAddress()
-    {
-        return $this->deliveringAddress;
-    }
-
-    /**
-     * @param mixed $deliveringAddress
-     */
-    public function setDeliveringAddress($deliveringAddress)
-    {
-        $this->deliveringAddress = clone $deliveringAddress;
-    }
-
-    /**
-     * @return float
-     */
-    public function getPrice()
-    {
-        return $this->price;
-    }
-
-    /**
-     * @param float $price
-     */
-    public function setPrice($price)
-    {
-        $this->price = $price;
-    }
-
-    /**
-     * @return mixed
-     */
     public function getBoxItemChoices()
     {
         return $this->boxItemChoices;
@@ -176,6 +108,54 @@ class BoxOrder
         $this->boxItemChoices[] = $boxItemChoice;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getInvoice()
+    {
+        return $this->invoice;
+    }
+
+    /**
+     * @param mixed $invoice
+     */
+    public function setInvoice($invoice)
+    {
+        $invoice->setTotalTTC($this->getBox()->getPrice());
+        $this->invoice = $invoice;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLemonWay()
+    {
+        return $this->lemonWay;
+    }
+
+    /**
+     * @param mixed $lemonWay
+     */
+    public function setLemonWay($lemonWay)
+    {
+        $this->lemonWay = $lemonWay;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getInvoiceInformation()
+    {
+        return $this->invoiceInformation;
+    }
+
+    /**
+     * @param mixed $invoiceInformation
+     */
+    public function setInvoiceInformation($invoiceInformation)
+    {
+        $this->invoiceInformation = $invoiceInformation;
+    }
 
 }
 

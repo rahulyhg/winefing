@@ -10,9 +10,18 @@ namespace Winefing\ApiBundle\Repository;
  */
 class RentalOrderRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function findWithUser($userId)
+    function findWithUser($userId)
     {
         $query = $this->createQueryBuilder('rentalOrder')
+            ->join("rentalOrder.invoiceInformation", "invoiceInformation")
+            ->join("invoiceInformation.user", "user")
+            ->where('user.id = :userId')
+            ->orderBy('rentalOrder.id', 'DESC')
+            ->setParameter('userId', $userId)
+            ->getQuery();
+        $results = $query->getResult();
+        if(empty($results)) {
+            $query = $this->createQueryBuilder('rentalOrder')
             ->join("rentalOrder.rental", "rental")
             ->join("rental.property", "property")
             ->join("property.domain", "domain")
@@ -20,8 +29,22 @@ class RentalOrderRepository extends \Doctrine\ORM\EntityRepository
             ->where('user.id = :userId')
             ->setParameter('userId', $userId)
             ->getQuery();
-        return $query->getResult();
+        $results =  $query->getResult();
+        }
+        return $results;
     }
+//    public function findWithHost($userId)
+//    {
+//        $query = $this->createQueryBuilder('rentalOrder')
+//            ->join("rentalOrder.rental", "rental")
+//            ->join("rental.property", "property")
+//            ->join("property.domain", "domain")
+//            ->join("domain.user", "user")
+//            ->where('user.id = :userId')
+//            ->setParameter('userId', $userId)
+//            ->getQuery();
+//        return $query->getResult();
+//    }
     public function findWithDomain($domainId)
     {
         $query = $this->createQueryBuilder('rentalOrder')

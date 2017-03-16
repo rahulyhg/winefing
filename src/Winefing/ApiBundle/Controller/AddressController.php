@@ -103,8 +103,8 @@ class AddressController extends Controller implements ClassResourceInterface
         $address->setLocality($request->request->get('locality'));
         $address->setName($request->request->get('name'));
         $address->setAdditionalInformation($request->request->get('additionalInformation'));
-        $address->setLat(1.0);
-        $address->setLng(1.0);
+        $address->setLat($request->request->get('lat'));
+        $address->setLng($request->request->get('lng'));
         $address->setName($request->request->get('name'));
         $address->setFormattedAddress($request->request->get('formattedAddress'));
         $validator = $this->get('validator');

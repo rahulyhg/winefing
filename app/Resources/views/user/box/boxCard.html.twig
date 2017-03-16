@@ -1,0 +1,34 @@
+<div class="property-container">
+    <div class="property-image">
+        <a href="{{ box_directory ~ boxOrder.box.mediaPresentation }}" title="{{ boxOrder.box.name }}" data-rel="gallery" class="fancybox img-hover-v1">
+            <img src="{{ box_directory ~ boxOrder.box.mediaPresentation }}" alt="{{ boxOrder.box.name }}">
+            <div class="hidden-xs">
+                <span class="glyphicon glyphicon-search picture-zoom"></span>
+            </div>
+            <div class="property-features-grey text-center">
+                {{ boxOrder.box.name }}
+            </div>
+        </a>
+    </div>
+    <div class="property-content">
+        <div class="service-box-v1" style="text-align: center">
+            <ul class="list-unstyled">
+                {% for boxItem in boxOrder.box.boxItems %}
+                    {% if boxItem.boxItemChoices|length == 0 %}
+                        <li>{{ boxItem.name }}</li>
+                    {% endif %}
+                {% endfor %}
+                {% for boxItemChoice in boxOrder.boxItemChoices %}
+                    <li>{{ boxItemChoice.name }}
+                        {% if app.request.get('_route') == 'box_paiement' %}
+                            <a href="{{ path('box_select_item_choices') }}">
+                                <span style="float: right" class="glyphicon glyphicon-pencil"></span>
+                            </a>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+                <li><strong>{% trans %}label.total_ttc{% endtrans %}{{ ': ' ~ boxOrder.lemonWay.amountTot ~'€.' }}</strong></li>
+            </ul>
+        </div>
+    </div>
+</div>

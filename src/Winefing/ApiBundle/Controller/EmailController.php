@@ -18,6 +18,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use JMS\Serializer\SerializationContext;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use Winefing\ApiBundle\Entity\RentalOrder;
 
 
 class EmailController extends Controller implements ClassResourceInterface
@@ -115,17 +116,43 @@ class EmailController extends Controller implements ClassResourceInterface
      * )
      */
     public function postPaiementAction(Request $request) {
-        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
-        $user = $repository->findOneById($request->request->get('user'));
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:RentalOrder');
+        $order = $repository->findOneById($request->request->get('order'));
+        if(!$order instanceof RentalOrder) {
+            $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:BoxOrder');
+            $order = $repository->findOneById($request->request->get('order'));
+            $message = $this->get('translator')->trans('text.user_box_order', array('%url%'=>$this->get('_router')->generate('box_order_detail', array('id'=>$order->getId()))), 'messages', $request->request->get('language'));
+        } else {
+            $message = $this->get('translator')->trans('text.user_rental_order', array('%url%'=>$this->get('_router')->generate('rental_order_detail', array('id'=>$order->getId()))), 'messages', $request->request->get('language'));
+
+            //send the mail to the wine hoster
+            $mail = \Swift_Message::newInstance()
+                ->setSubject($this->get('translator')->trans('label.order', array(), 'messages', $request->request->get('language')))
+
+                ->setFrom($this->container->getParameter('mailer_user'))
+                ->setTo('carval.audrey@gmail.com')
+                ->setBody(
+                    $this->renderView(
+                        'email/template.html.twig',
+                        array('message'=>$message)
+                    ),
+                    'text/html'
+                );
+            $this->get('mailer')->send($mail);
+
+            $message = $this->get('translator')->trans('text.user_rental_order', array('%url%'=>$this->get('_router')->generate('rental_order_detail', array('id'=>$order->getId()))), 'messages', $request->request->get('language'));
+        }
+
+        //send the mail to the
         $message = \Swift_Message::newInstance()
-            ->setSubject($this->get('translator')->trans('label.welcome', array(), 'messages', $request->request->get('language')))
+            ->setSubject($this->get('translator')->trans('label.order', array(), 'messages', $request->request->get('language')))
+
             ->setFrom($this->container->getParameter('mailer_user'))
             ->setTo('carval.audrey@gmail.com')
             ->setBody(
                 $this->renderView(
-                // app/Resources/views/Emails/registration.html.twig
-                    'email/paiement.html.twig',
-                    array('user'=>$user, 'language'=>$request->request->get('language'))
+                    'email/template.html.twig',
+                    array('message'=>$message)
             ),
                 'text/html'
             );
@@ -137,6 +164,24 @@ class EmailController extends Controller implements ClassResourceInterface
             ->setFrom($this->container->getParameter('mailer_user'))
             ->setTo($this->getParameter('winefing_email'))
             ->setBody($request->request->get('message'));
+        $this->get('mailer')->send($message);
+    }
+
+    public function postTestAction(Request $request) {
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:User');
+        $user = $repository->findOneById($request->request->get('user'));
+        $message = \Swift_Message::newInstance()
+            ->setSubject('test')
+            ->setFrom($this->container->getParameter('mailer_user'))
+            ->setTo('carval.audrey@gmail.com')
+            ->setBody(
+                $this->renderView(
+                // app/Resources/views/Emails/registration.html.twig
+                    'email/template.html.twig',
+                    array('user'=>$user, 'message'=>'<p>Coucou</p>')
+                ),
+                'text/html'
+            );
         $this->get('mailer')->send($message);
     }
 

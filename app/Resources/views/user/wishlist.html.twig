@@ -1,13 +1,83 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-    <div class="row">
-        {% for domain in domains %}
-            {{ domain.name }}
-            <br>
-        {% endfor %}
-        {% for box in boxes %}
-            {{ box.id }}
-            <br>
-        {% endfor %}
+    <div class="cover-img" style="background: url({{ banner_directory ~'red-bottles.jpeg' }})">
+        <h1>{% trans %}label.my_profil{% endtrans %}</h1>
     </div>
+    <div class="bg-grey">
+        {{ include('user/nav.html.twig') }}
+        <div class="container">
+            <div class="content-sm">
+                <div class="row">
+                    {% for domain in domains %}
+                        {% set routeDomain = path('domain', {'id': domain.id}) %}
+                        <div class="col-xs-12 col-sm-6 col-md-4" id="{{ domain.id }}">
+                            <div class="property-container">
+                                <div class="property-image">
+                                    <img src="{{ domain_directory ~ domain.mediaPresentation }}" alt="{{ domain.name }}">
+                                    <div class="hidden-xs">
+                                        <a href="{{ domain_directory ~ domain.mediaPresentation }}" title="{{ domain.name }}" data-rel="gallery gallery-{{ domain.id }}" class="fancybox img-hover-v1">
+                                            <span class="glyphicon glyphicon-search picture-zoom"></span>
+                                        </a>
+                                        <button id="wineList" onclick="removeFromWineList({{ domain.id }}, '{{ path('domain_add_to_wishlist', {'id': domain.id, 'userId': app.user.id }) }}')" class="btn-card-love active">
+                                            <span class="glyphicon glyphicon-heart btn-card-love"></span>
+                                        </button>
+                                    </div>
+                                    <div class="property-features-grey text-center">
+                                        <span>{{ 'label.price_from_to'|trans({'%minPrice%' : domain.domainStatistic.minPrice, '%maxPrice%' : domain.domainStatistic.maxPrice}) }}</span>
+                                    </div>
+                                </div>
+                                <div class="property-content" style="height: 200px;">
+                                    <a href="{{ routeDomain }}">
+                                        <h3>{{ domain.name ~ ' - '~ domain.wineRegion.name }}</h3>
+                                    </a>
+                                    <p>{{ domain.description|slice(0,100) ~ '...' }}
+                                        <a href="{{ path('domain', {'id': domain.id}) }}"><span>{{ '>'~'label.see'|trans()  }}</span></a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    {% for box in boxes %}
+                        {{ box.id }}
+                        <br>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    {{ parent() }}
+<script>
+    FancyBox.initFancybox();
+    var toastMessageDomainRemoved = '{{ 'success.domain_removed_winelist' | trans({}) }}';
+    function removeFromWineList(id, url) {
+        $.ajax({
+            url: url,
+            type: 'PATCH',
+            async: false,
+            success: function (data, textStatus, jqXHR) {
+                //remove file from the dropzone
+                $('#'+id).remove();
+                var message = toastMessageDomainRemoved;
+                $.toast({
+                    heading: toastHeadingSuccess,
+                    text: message,
+                    showHideTransition: 'slide',
+                    icon: 'success',
+                    position: 'top-right'
+                });
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                $.toast({
+                    heading: toastHeadingError,
+                    text: toastMessageError,
+                    showHideTransition: 'fade',
+                    icon: 'error',
+                    position: 'top-right'
+                });
+            }
+        });
+    };
+</script>
 {% endblock %}

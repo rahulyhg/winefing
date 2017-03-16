@@ -40,7 +40,7 @@ class ArticleRepository extends EntityRepository
             ->join("tr.language", "language")
             ->where('language.code = :language and tr.activated = 1')
             ->setParameter('language', $language)
-            ->orderBy('tr.id', 'ASC');
+            ->orderBy('tr.id', 'DESC');
         if(array_key_exists('tag',$params)) {
             $queryBuilder
                 ->join("article.tags", "tag")

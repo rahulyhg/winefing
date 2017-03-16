@@ -14,15 +14,11 @@ namespace AppBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Winefing\ApiBundle\Entity\CharacteristicCategory;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManager;
-use AppBundle\Form\WineRegionType;
-use AppBundle\Form\ArticleType;
-use Winefing\ApiBundle\Entity\Language;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
@@ -35,6 +31,7 @@ class WineRegionTrType extends AbstractType
             ->add('id',  HiddenType::class, array(
                 'required' => false))
             ->add('name', null, array('attr'=> array('maxlength'=>"150")))
+            ->add('description', TextareaType::class, array('attr'=> array('maxlength'=>"255", 'style' => 'height:150px')))
             ->add('language', EntityType::class,  array(
                 'class' => 'WinefingApiBundle:Language',
                 'choice_label' => 'name'))

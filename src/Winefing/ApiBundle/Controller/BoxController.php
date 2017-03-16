@@ -42,7 +42,7 @@ class BoxController extends Controller implements ClassResourceInterface
         $box = $repository->findOneById($id);
         $box->setTr($language);
         $box->setMediaPresentation();
-        return new Response($serializer->serialize($box, 'json', SerializationContext::create()->setGroups(array('default', 'box', 'boxItems', 'boxItemChoices'))));
+        return new Response($serializer->serialize($box, 'json', SerializationContext::create()->setGroups(array('default', 'box'))));
     }
     /**
      * Liste de tout les languages possible en base
@@ -52,7 +52,7 @@ class BoxController extends Controller implements ClassResourceInterface
     {
         $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Box');
-        $boxes = $repository->findAll();
+        $boxes = $repository->findByActivated(1);
         foreach ($boxes as $box) {
             $box->setTr($language);
             foreach ($box->getBoxItems() as $boxItem) {
@@ -63,7 +63,7 @@ class BoxController extends Controller implements ClassResourceInterface
             }
             $box->setMediaPresentation();
         }
-        return new Response($serializer->serialize($boxes, 'json', SerializationContext::create()->setGroups(array('default', 'boxItems', 'boxItemChoices'))));
+        return new Response($serializer->serialize($boxes, 'json', SerializationContext::create()->setGroups(array('default'))));
     }
 
     /**
@@ -85,7 +85,7 @@ class BoxController extends Controller implements ClassResourceInterface
             }
         }
         $box->setMediaPresentation();
-        return new Response($serializer->serialize($box, 'json', SerializationContext::create()->setGroups(array('default', 'medias', 'boxItems', 'boxItemChoices'))));
+        return new Response($serializer->serialize($box, 'json', SerializationContext::create()->setGroups(array('default', 'medias'))));
     }
     /**
      * Liste de tout les languages possible en base
@@ -93,13 +93,14 @@ class BoxController extends Controller implements ClassResourceInterface
      */
     public function cgetAction()
     {
-        $serializer = $this->container->get('winefing.serializer_controller');
+        $serializer = $this->container->get('jms_serializer');
         $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Box');
         $boxes = $repository->findAll();
         foreach ($boxes as $box) {
             $box->setMediaPresentation();
+            $box->setBoxOrdersNumber();
         }
-        return new Response($serializer->serialize($boxes, 'json', SerializationContext::create()->setGroups(array('default', 'boxTrs'))));
+        return new Response($serializer->serialize($boxes, 'json', SerializationContext::create()->setGroups(array('default', 'trs', 'language'))));
     }
     /**
      * Create or update a language from the submitted data.<br/>
@@ -143,7 +144,7 @@ class BoxController extends Controller implements ClassResourceInterface
         }
         $em->persist($box);
         $em->flush();
-        return new Response($serializer->serialize($box, 'json'));
+        return new Response($serializer->serialize($box, 'json', SerializationContext::create()->setGroups(array('default'))));
     }
 
     public function putBoxTrAction(Request $request){
@@ -180,6 +181,15 @@ class BoxController extends Controller implements ClassResourceInterface
             $box->setTr($language);
         }
         return new Response($serializer->serialize($boxes, 'json', SerializationContext::create()->setGroups(array('default'))));
+    }
+
+    public function putActivatedAction(Request $request) {
+        $repository = $this->getDoctrine()->getRepository('WinefingApiBundle:Box');
+        $articleTr = $repository->findOneById($request->request->get("id"));
+        $articleTr->setActivated($request->request->get("activated"));
+        $em = $this->getDoctrine()->getManager();
+        $em->flush();
+        return new Response(json_encode([200, "success"]));
     }
 
 }

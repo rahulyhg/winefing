@@ -1,0 +1,223 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <!-- Interactive Slider v2 -->
+    <div class="cover-img" style="background: url({{ banner_directory ~'red-bottles.jpeg' }})">
+        <h1>{{ 'label.my_orders'|trans() }}</h1>
+    </div>
+    <div class="bg-grey">
+        <!-- End Interactive Slider v2 -->
+        {% if is_granted("ROLE_HOST") %}
+            {{ include('host/nav.html.twig') }}
+        {% elseif is_granted("ROLE_USER") %}
+            {{ include('user/nav.html.twig') }}
+        {% elseif is_granted("ROLE_MANAGMENT") or is_granted("ROLE_BLOG") or is_granted("ROLE_TECHNIQUE") %}
+            {% if app.request.get('id') == app.user.id %}
+                {{ include('admin/nav.html.twig') }}
+            {% else %}
+                {{ include('host/nav.html.twig') }}
+            {% endif %}
+        {% endif %}
+        <div class="container">
+            <div class="content-sm">
+                <div class="row">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <!-- Nav tabs --><div class="card">
+                                    <ul class="nav nav-tabs" role="tablist">
+                                        {% if boxOrders is defined %}
+                                             <li role="presentation" class="active"><a href="#box" aria-controls="home" role="tab" data-toggle="tab" style="border: none">{{ 'label.box_and_gift_card'|trans() }}</a></li>
+                                        {% endif %}
+                                        <li role="presentation" class="{% if boxOrders is not defined %}active{% endif %}"><a href="#rental" aria-controls="profile" role="tab" data-toggle="tab" style="border: none">{{ 'label.rental'|transchoice(2) }}</a></li>
+                                    </ul>
+                                    <!-- Tab panes -->
+                                    <div class="tab-content">
+                                        {% if boxOrders is defined %}
+                                            <div role="tabpanel" class="tab-pane active" id="box">
+                                                {% if boxOrders|length > 0 %}
+                                                    <table class="table table-striped">
+                                                        <thead>
+                                                        <tr>
+                                                            <th>{{ 'label.order'|transchoice(1)|capitalize }}</th>
+                                                            <th>
+                                                                {{ 'label.date'|transchoice(1) }}
+                                                            </th>
+                                                            <th>{{ 'label.total'|trans()|trim(':') }}</th>
+                                                            <th>{{ 'label.status'|trans() }}</th>
+                                                            <th>{{ 'label.actions'|trans() }}</th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        {% for boxOrder in boxOrders %}
+                                                            <tr>
+                                                                <td>{{ '#'~ boxOrder.id ~ ' - '~ boxOrder.box.name }}</td>
+                                                                <td>{{ boxOrder.invoiceInformation.billDate|date('Y-d-m') }}</td>
+                                                                <td>{{ boxOrder.lemonWay.amountTot ~ ' €' }}</td>
+                                                                <td>
+                                                                    {% set status = boxOrder.invoiceInformation.status %}
+                                                                    {{ include('status.html.twig') }}
+                                                                </td>
+                                                                <td>
+                                                                    <div class="dropdown">
+                                                                        <button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown">{{ 'label.actions'|trans() }}
+                                                                            <span class="caret"></span></button>
+                                                                        <ul class="dropdown-menu">
+                                                                            <li><a href="{{ path('box_order_detail', {'id': boxOrder.id}) }}">{{ 'label.see_order_details'|trans() }}</a></li>
+                                                                            <li><a style="margin-right: 15PX" href="{{ path('box_order_invoice', {'id' : boxOrder.id, 'type': 'pdf'}) }}">{{ 'label.get_bill_pdf'|trans() }}</a></li>
+                                                                            <li><a  href="{{ path('box_order_invoice', {'id' : boxOrder.id}) }}">{{ 'label.see_the_invoice'|trans() }}</a></li>
+                                                                        </ul>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                {% endif %}
+                                            </div>
+                                        {% endif %}
+                                        <div role="tabpanel" class="tab-pane {% if boxOrders is not defined %}active{% endif %}" id="rental">
+                                            {% if rentalOrders|length > 0 %}
+                                                <table class="table table-striped">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>#</th>
+                                                        <th>{{ 'label.order'|transchoice(1)|capitalize }}</th>
+                                                        <th>
+                                                            {{ 'label.date'|transchoice(2) }}
+                                                        </th>
+                                                        <th>{{ 'label.total'|trans()|trim(':') }}</th>
+                                                        <th>{{ 'label.paid'|trans()|trim(':') }}</th>
+                                                        <th>{{ 'label.left_to_pay'|trans()|trim(':') }}</th>
+                                                        <th>{{ 'label.status'|trans() }}</th>
+                                                        <th>{{ 'label.actions'|trans() }}</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    {% for rentalOrder in rentalOrders %}
+                                                        <tr>
+                                                            <td>{{ rentalOrder.id  }}</td>
+                                                            <td><a target="_blank" href="{{ path('domain', {'id' : rentalOrder.domainId }) }}">{{rentalOrder.rental.name }}</a></td>
+                                                            <td>
+                                                                {% set text = 'label.from'|trans() ~ ' ' ~ rentalOrder.startDate|localizeddate("full", "none") ~ '<br> ' ~ 'label.to'|trans() ~ ' ' ~ rentalOrder.endDate|localizeddate("full", "none") %}
+                                                                {{ text|raw }}
+                                                            </td>
+                                                            <td>{{ rentalOrder.total|number_format(2) ~ ' €' }}</td>
+                                                            {% if rentalOrder.lemonWay is not null %}
+                                                                <td>{{ rentalOrder.lemonWay.amountTot|number_format(2) ~ ' €' }}</td>
+                                                            {% else %}
+                                                                <td>/</td>
+                                                            {% endif %}
+                                                            <td>{{ rentalOrder.leftToPay|number_format(2) ~ ' €' }}</td>
+                                                            <td>
+                                                                {% set status = rentalOrder.invoiceInformation.status %}
+                                                                {{ include('status.html.twig') }}
+                                                            </td>
+                                                            <td>
+                                                                <div class="dropdown">
+                                                                    <button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown">{{ 'label.actions'|trans() }}
+                                                                        <span class="caret"></span></button>
+                                                                    <ul class="dropdown-menu" style="left:-100%">
+                                                                        <li><a href="{{ path('rental_order_detail', {'id': rentalOrder.id}) }}">{{ 'label.see_order_details'|trans() }}</a></li>
+                                                                        {% if is_granted("ROLE_HOST") %}
+                                                                            <li><a style="margin-right: 15PX" href="{{ path('rental_order_invoice', {'id' : rentalOrder.id, 'invoiceType': invoice_host, 'type': 'pdf'}) }}">{{ 'label.get_bill_pdf'|trans() }}</a></li>
+                                                                            <li><a href="{{ path('rental_order_invoice', {'id' : rentalOrder.id, 'invoiceType': invoice_host}) }}">{{ 'label.see_the_invoice'|trans() }}</a></li>
+                                                                        {% elseif is_granted("ROLE_MANAGMENT") or is_granted("ROLE_TECHNIQUE") %}
+                                                                            <li><a style="margin-right: 15PX" href="{{ path('rental_order_invoice', {'id' : rentalOrder.id, 'invoiceType': invoice_host, 'type': 'pdf'}) }}">{{ 'label.get_bill_pdf'|trans() }}- Viti</a></li>
+                                                                            <li><a href="{{ path('rental_order_invoice', {'id' : rentalOrder.id, 'invoiceType': invoice_host}) }}">{{ 'label.see_the_invoice'|trans() }}- Viti</a></li>
+                                                                            <li><a style="margin-right: 15PX" href="{{ path('rental_order_invoice', {'id' : rentalOrder.id, 'invoiceType': invoice_user, 'type': 'pdf'}) }}">{{ 'label.get_bill_pdf'|trans() }}-User</a></li>
+                                                                            <li><a href="{{ path('rental_order_invoice', {'id' : rentalOrder.id, 'invoiceType': invoice_user}) }}">{{ 'label.see_the_invoice'|trans() }}-User</a></li>
+
+                                                                            {% set params = app.request.attributes.get('_route_params') %}
+                                                                            {% set route = path(app.request.attributes.get('_route'), params) %}
+                                                                            {% if (rentalOrder.invoiceInformation.status != order_validate)  %}
+                                                                                {% if (rentalOrder.invoiceInformation.status != order_refused) %}
+                                                                                    {% if (rentalOrder.invoiceInformation.status != order_cancel ) %}
+                                                                                        <li><a onclick="changeStatusOrder('{{ path('rental_order_status', {'id' : rentalOrder.id, 'status': order_validate, 'url': route}) }}', '{{ 'label.rental_order_validate'|trans() }}')">Valider la réservation</a></li>
+                                                                                        <li><a onclick="changeStatusOrder('{{ path('rental_order_status', {'id' : rentalOrder.id, 'status': order_refused, 'url': route}) }}', '{{ 'label.rental_order_refused'|trans() }}')">Refuser la réservation</a></li>
+                                                                                    {% endif %}
+                                                                                {% endif %}
+                                                                            {% endif %}
+                                                                        {% else %}
+                                                                            <li><a href="#"><a style="margin-right: 15PX" href="{{ path('rental_order_invoice', {'id' : rentalOrder.id, 'invoiceType': invoice_user, 'type': 'pdf'}) }}">{{ 'label.get_bill_pdf'|trans() }}</a></a></li>
+                                                                            <li><a href="#"><a href="{{ path('rental_order_invoice', {'id' : rentalOrder.id, 'invoiceType': invoice_user}) }}">{{ 'label.see_the_invoice'|trans() }}</a></a></li>
+                                                                            {% if rentalOrder.lemonWay %}
+                                                                                {% set amount = rentalOrder.lemonWay.amountTot - rentalOrder.clientComission %}
+                                                                            {% else %}
+                                                                                {% set amount = 0 %}
+                                                                            {% endif %}
+                                                                            {% if (rentalOrder.invoiceInformation.status != order_cancel)  %}
+                                                                                {% if (rentalOrder.invoiceInformation.status != order_refused) %}
+                                                                                    <li><a href="#" onclick="cancelRentalOrder('{{ rentalOrder.startDate|date('Y,m,d') }}', {{ amount }}, '{{ path('rental_order_status', {'id' : rentalOrder.id, 'status' : order_cancel}) }}')">{{ 'label.cancel_order'|trans() }}</a></li>
+                                                                                {% endif %}
+                                                                            {% endif %}
+                                                                        {% endif %}
+                                                                    </ul>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block modal %}
+    {{ parent() }}
+    <div class="modal fade" id="modal-cancel-order" tabindex="-1" role="dialog" aria-labelledby="modal-cancel-order" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">{% trans %}label.cancel_order{% endtrans %}</h4>
+                </div>
+                <div class="modal-body">
+                    <div id="body-cancel-order">
+                        <p>{{ 'text.cancel_order'|trans({'%price%' : '%price%'}) }}</p>
+                        <p>{{ 'label.see_gts'|trans({'%url%' : path('web_page', {'code' : web_page_gts})})|raw }}</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ 'label.cancel'|trans() }}</button>
+                    <a id="cancel-order" href="#" class="pull-left btn btn-primary">{{ 'label.cancel_order'|trans() }}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    {{ parent() }}
+<script>
+    function changeStatusOrder(url, message) {
+        if (confirm(message)) { // Clic sur OK
+            window.location.href = url;
+        }
+    }
+    function cancelRentalOrder(startDate, amount, url) {
+        var today = new Date();
+        startDate = new Date(startDate);
+//        if(startDate.getTime() > today.getTime()) {
+            var diffDay = getDaysNumber(today, startDate);
+            var price = 0;
+            if(diffDay >= 21) {
+                price = amount;
+            } else {
+                price = 0;
+
+            }
+            $('#body-cancel-order p:first').html($('#body-cancel-order p:first').text().replace('%price%', price));
+//            $('#body-cancel-order').html($(message));
+            $('a#cancel-order').attr('href', url);
+            $('#modal-cancel-order').modal('show');
+//        }
+    }
+</script>
+{% endblock %}

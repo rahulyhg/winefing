@@ -39,7 +39,6 @@ class Tag
 
     /**
      * @ORM\ManyToMany(targetEntity="Winefing\ApiBundle\Entity\Article", mappedBy="tags")
-     * @Groups({"articles"})
      */
     private $articles;
 
